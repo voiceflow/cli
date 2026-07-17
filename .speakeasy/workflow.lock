@@ -1,0 +1,33 @@
+speakeasyVersion: 1.790.2
+sources:
+    Realtime:
+        sourceNamespace: realtime
+        sourceRevisionDigest: sha256:da270bc4d6e6d5cfadb4181911c3457ef28772f71b5b5e4a566b73abaefb7e6b
+        sourceBlobDigest: sha256:759c09af010bbd81fbbfef10a9ee74c9b3f409e4f5a1023cb441821eed8d8aa0
+        tags:
+            - latest
+            - 1.0.0
+targets:
+    voiceflow-sdk:
+        source: Realtime
+        sourceNamespace: realtime
+        sourceRevisionDigest: sha256:da270bc4d6e6d5cfadb4181911c3457ef28772f71b5b5e4a566b73abaefb7e6b
+        sourceBlobDigest: sha256:759c09af010bbd81fbbfef10a9ee74c9b3f409e4f5a1023cb441821eed8d8aa0
+workflow:
+    workflowVersion: 1.0.0
+    speakeasyVersion: latest
+    sources:
+        Realtime:
+            inputs:
+                - location: ../realtime/openapi.stable.json
+            transformations:
+                - filterOperations:
+                    operations: StableEnvironmentController_export
+                    exclude: true
+            output: .speakeasy/out.openapi.yaml
+            registry:
+                location: registry.speakeasyapi.dev/voiceflow/engineering/realtime
+    targets:
+        voiceflow-sdk:
+            target: cli
+            source: Realtime

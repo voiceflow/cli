@@ -1,0 +1,17 @@
+workflowVersion: 1.0.0
+speakeasyVersion: latest
+sources:
+    Realtime:
+        inputs:
+            - location: ../realtime/openapi.stable.json
+        transformations:
+            - filterOperations:
+                operations: StableEnvironmentController_export
+                exclude: true
+        output: .speakeasy/out.openapi.yaml
+        registry:
+            location: registry.speakeasyapi.dev/voiceflow/engineering/realtime
+targets:
+    voiceflow-sdk:
+        target: cli
+        source: Realtime
