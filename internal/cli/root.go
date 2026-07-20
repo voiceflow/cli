@@ -9,15 +9,11 @@ import (
 	"github.com/voiceflow/cli/internal/cli/agent"
 	"github.com/voiceflow/cli/internal/cli/analytics"
 	"github.com/voiceflow/cli/internal/cli/apitool"
-	"github.com/voiceflow/cli/internal/cli/apitoolvariable"
 	"github.com/voiceflow/cli/internal/cli/conversation"
-	"github.com/voiceflow/cli/internal/cli/conversationstate"
 	"github.com/voiceflow/cli/internal/cli/document"
 	"github.com/voiceflow/cli/internal/cli/environment"
 	"github.com/voiceflow/cli/internal/cli/evaluation"
 	"github.com/voiceflow/cli/internal/cli/function"
-	"github.com/voiceflow/cli/internal/cli/functionpath"
-	"github.com/voiceflow/cli/internal/cli/functionvariable"
 	"github.com/voiceflow/cli/internal/cli/knowledgebase"
 	"github.com/voiceflow/cli/internal/cli/mcpserver"
 	"github.com/voiceflow/cli/internal/cli/mcptool"
@@ -25,7 +21,6 @@ import (
 	"github.com/voiceflow/cli/internal/cli/project"
 	"github.com/voiceflow/cli/internal/cli/tool"
 	"github.com/voiceflow/cli/internal/cli/transcript"
-	"github.com/voiceflow/cli/internal/cli/transcriptproperty"
 	"github.com/voiceflow/cli/internal/cli/variable"
 	"github.com/voiceflow/cli/internal/cli/workspace"
 	"github.com/voiceflow/cli/internal/config"
@@ -85,23 +80,11 @@ func NewRootCommand() (*cobra.Command, error) {
 	if err := apitool.InitApiToolRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init api-tool: %w", err)
 	}
-	if err := apitoolvariable.InitApiToolVariableRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init api-tool-variable: %w", err)
-	}
 	if err := transcript.InitTranscriptRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init transcript: %w", err)
 	}
-	if err := transcriptproperty.InitTranscriptPropertyRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init transcript-property: %w", err)
-	}
 	if err := function.InitFunctionRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init function: %w", err)
-	}
-	if err := functionvariable.InitFunctionVariableRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init function-variable: %w", err)
-	}
-	if err := functionpath.InitFunctionPathRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init function-path: %w", err)
 	}
 	if err := evaluation.InitEvaluationRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init evaluation: %w", err)
@@ -126,9 +109,6 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := conversation.InitConversationRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init conversation: %w", err)
-	}
-	if err := conversationstate.InitConversationStateRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init conversation-state: %w", err)
 	}
 	if err := analytics.InitAnalyticsRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init analytics: %w", err)

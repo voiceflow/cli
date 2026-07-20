@@ -221,27 +221,27 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`update`](docs/vf_api-tool_update.md) - Update API tool
 * [`delete`](docs/vf_api-tool_delete.md) - Delete API tool
 
-### [api-tool-variable](docs/vf_api-tool-variable.md)
+#### [api-tool-variable](docs/vf_api-tool_api-tool-variable.md)
 
-* [`list`](docs/vf_api-tool-variable_list.md) - List variables
-* [`create`](docs/vf_api-tool-variable_create.md) - Create variable
-* [`get`](docs/vf_api-tool-variable_get.md) - Get variable
-* [`update`](docs/vf_api-tool-variable_update.md) - Update variable
-* [`delete`](docs/vf_api-tool-variable_delete.md) - Delete variable
+* [`list`](docs/vf_api-tool_api-tool-variable_list.md) - List variables
+* [`create`](docs/vf_api-tool_api-tool-variable_create.md) - Create variable
+* [`get`](docs/vf_api-tool_api-tool-variable_get.md) - Get variable
+* [`update`](docs/vf_api-tool_api-tool-variable_update.md) - Update variable
+* [`delete`](docs/vf_api-tool_api-tool-variable_delete.md) - Delete variable
 
 ### [transcript](docs/vf_transcript.md)
 
 * [`search`](docs/vf_transcript_search.md) - Search transcripts
 * [`get`](docs/vf_transcript_get.md) - Get transcript
 
-### [transcript-property](docs/vf_transcript-property.md)
+#### [property](docs/vf_transcript_property.md)
 
-* [`list`](docs/vf_transcript-property_list.md) - List properties
-* [`create`](docs/vf_transcript-property_create.md) - Create property
-* [`get`](docs/vf_transcript-property_get.md) - Get property
-* [`update`](docs/vf_transcript-property_update.md) - Update property
-* [`delete`](docs/vf_transcript-property_delete.md) - Delete property
-* [`set-value`](docs/vf_transcript-property_set-value.md) - Set property value
+* [`list`](docs/vf_transcript_property_list.md) - List properties
+* [`create`](docs/vf_transcript_property_create.md) - Create property
+* [`get`](docs/vf_transcript_property_get.md) - Get property
+* [`update`](docs/vf_transcript_property_update.md) - Update property
+* [`delete`](docs/vf_transcript_property_delete.md) - Delete property
+* [`set-value`](docs/vf_transcript_property_set-value.md) - Set property value
 
 ### [function](docs/vf_function.md)
 
@@ -251,21 +251,21 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`update`](docs/vf_function_update.md) - Update function
 * [`delete`](docs/vf_function_delete.md) - Delete function
 
-### [function-variable](docs/vf_function-variable.md)
+#### [function-variable](docs/vf_function_function-variable.md)
 
-* [`list`](docs/vf_function-variable_list.md) - List variables
-* [`create`](docs/vf_function-variable_create.md) - Create variable
-* [`get`](docs/vf_function-variable_get.md) - Get variable
-* [`update`](docs/vf_function-variable_update.md) - Update variable
-* [`delete`](docs/vf_function-variable_delete.md) - Delete variable
+* [`list`](docs/vf_function_function-variable_list.md) - List variables
+* [`create`](docs/vf_function_function-variable_create.md) - Create variable
+* [`get`](docs/vf_function_function-variable_get.md) - Get variable
+* [`update`](docs/vf_function_function-variable_update.md) - Update variable
+* [`delete`](docs/vf_function_function-variable_delete.md) - Delete variable
 
-### [function-path](docs/vf_function-path.md)
+#### [path](docs/vf_function_path.md)
 
-* [`list`](docs/vf_function-path_list.md) - List paths
-* [`create`](docs/vf_function-path_create.md) - Create path
-* [`get`](docs/vf_function-path_get.md) - Get path
-* [`update`](docs/vf_function-path_update.md) - Update path
-* [`delete`](docs/vf_function-path_delete.md) - Delete path
+* [`list`](docs/vf_function_path_list.md) - List paths
+* [`create`](docs/vf_function_path_create.md) - Create path
+* [`get`](docs/vf_function_path_get.md) - Get path
+* [`update`](docs/vf_function_path_update.md) - Update path
+* [`delete`](docs/vf_function_path_delete.md) - Delete path
 
 ### [evaluation](docs/vf_evaluation.md)
 
@@ -321,40 +321,42 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 
 * [`send`](docs/vf_conversation_send.md) - Send
 
-### [conversation-state](docs/vf_conversation-state.md)
+#### [state](docs/vf_conversation_state.md)
 
-* [`get`](docs/vf_conversation-state_get.md) - Get state
-* [`update`](docs/vf_conversation-state_update.md) - Update state
-* [`delete`](docs/vf_conversation-state_delete.md) - Delete state
-* [`update-variables`](docs/vf_conversation-state_update-variables.md) - Update variables
+* [`get`](docs/vf_conversation_state_get.md) - Get state
+* [`update`](docs/vf_conversation_state_update.md) - Update state
+* [`delete`](docs/vf_conversation_state_delete.md) - Delete state
+* [`update-variables`](docs/vf_conversation_state_update-variables.md) - Update variables
 
 ### [analytics](docs/vf_analytics.md)
 
-* [`query-call-count`](docs/vf_analytics_query-call-count.md) - Query call count
-* [`query-call-duration`](docs/vf_analytics_query-call-duration.md) - Query call duration
-* [`query-workspace-transcript-count`](docs/vf_analytics_query-workspace-transcript-count.md) - Query workspace transcript count
-* [`query-project-transcript-count`](docs/vf_analytics_query-project-transcript-count.md) - Query project transcript count
-* [`query-project-transcript-cost`](docs/vf_analytics_query-project-transcript-cost.md) - Query transcript cost
-* [`query-workspace-interaction-count`](docs/vf_analytics_query-workspace-interaction-count.md) - Query workspace interaction count
-* [`query-project-interaction-count`](docs/vf_analytics_query-project-interaction-count.md) - Query project interaction count
-* [`query-organization-token-usage`](docs/vf_analytics_query-organization-token-usage.md) - Query organization token usage
-* [`query-workspace-token-usage`](docs/vf_analytics_query-workspace-token-usage.md) - Query workspace token usage
-* [`query-project-token-usage`](docs/vf_analytics_query-project-token-usage.md) - Query project token usage
-* [`query-hourly-organization-token-usage`](docs/vf_analytics_query-hourly-organization-token-usage.md) - Query hourly organization token usage
-* [`query-hourly-project-token-usage`](docs/vf_analytics_query-hourly-project-token-usage.md) - Query hourly project token usage
-* [`query-daily-token-usage`](docs/vf_analytics_query-daily-token-usage.md) - Query daily token usage
-* [`query-entity-token-usage`](docs/vf_analytics_query-entity-token-usage.md) - Query entity token usage
-* [`query-category-token-usage`](docs/vf_analytics_query-category-token-usage.md) - Query category token usage
-* [`query-playbook-usage`](docs/vf_analytics_query-playbook-usage.md) - Query playbook usage
-* [`query-workflow-usage`](docs/vf_analytics_query-workflow-usage.md) - Query workflow usage
-* [`query-prompt-usage`](docs/vf_analytics_query-prompt-usage.md) - Query prompt usage
-* [`query-intent-usage`](docs/vf_analytics_query-intent-usage.md) - Query intent usage
-* [`query-function-usage`](docs/vf_analytics_query-function-usage.md) - Query function usage
-* [`query-api-tool-usage`](docs/vf_analytics_query-api-tool-usage.md) - Query API tool usage
-* [`query-mcp-tool-usage`](docs/vf_analytics_query-mcp-tool-usage.md) - Query MCP tool usage
-* [`query-knowledge-base-document-usage`](docs/vf_analytics_query-knowledge-base-document-usage.md) - Query knowledge base document usage
-* [`query-integration-usage`](docs/vf_analytics_query-integration-usage.md) - Query integration usage
-* [`query-unique-user-count`](docs/vf_analytics_query-unique-user-count.md) - Query unique user count
+### [query](docs/vf_analytics_query.md)
+
+* [`call-count`](docs/vf_analytics_query_call-count.md) - Query call count
+* [`call-duration`](docs/vf_analytics_query_call-duration.md) - Query call duration
+* [`workspace-transcript-count`](docs/vf_analytics_query_workspace-transcript-count.md) - Query workspace transcript count
+* [`project-transcript-count`](docs/vf_analytics_query_project-transcript-count.md) - Query project transcript count
+* [`project-transcript-cost`](docs/vf_analytics_query_project-transcript-cost.md) - Query transcript cost
+* [`workspace-interaction-count`](docs/vf_analytics_query_workspace-interaction-count.md) - Query workspace interaction count
+* [`project-interaction-count`](docs/vf_analytics_query_project-interaction-count.md) - Query project interaction count
+* [`organization-token-usage`](docs/vf_analytics_query_organization-token-usage.md) - Query organization token usage
+* [`workspace-token-usage`](docs/vf_analytics_query_workspace-token-usage.md) - Query workspace token usage
+* [`project-token-usage`](docs/vf_analytics_query_project-token-usage.md) - Query project token usage
+* [`hourly-organization-token-usage`](docs/vf_analytics_query_hourly-organization-token-usage.md) - Query hourly organization token usage
+* [`hourly-project-token-usage`](docs/vf_analytics_query_hourly-project-token-usage.md) - Query hourly project token usage
+* [`daily-token-usage`](docs/vf_analytics_query_daily-token-usage.md) - Query daily token usage
+* [`entity-token-usage`](docs/vf_analytics_query_entity-token-usage.md) - Query entity token usage
+* [`category-token-usage`](docs/vf_analytics_query_category-token-usage.md) - Query category token usage
+* [`playbook-usage`](docs/vf_analytics_query_playbook-usage.md) - Query playbook usage
+* [`workflow-usage`](docs/vf_analytics_query_workflow-usage.md) - Query workflow usage
+* [`prompt-usage`](docs/vf_analytics_query_prompt-usage.md) - Query prompt usage
+* [`intent-usage`](docs/vf_analytics_query_intent-usage.md) - Query intent usage
+* [`function-usage`](docs/vf_analytics_query_function-usage.md) - Query function usage
+* [`api-tool-usage`](docs/vf_analytics_query_api-tool-usage.md) - Query API tool usage
+* [`mcp-tool-usage`](docs/vf_analytics_query_mcp-tool-usage.md) - Query MCP tool usage
+* [`knowledge-base-document-usage`](docs/vf_analytics_query_knowledge-base-document-usage.md) - Query knowledge base document usage
+* [`integration-usage`](docs/vf_analytics_query_integration-usage.md) - Query integration usage
+* [`unique-user-count`](docs/vf_analytics_query_unique-user-count.md) - Query unique user count
 
 </details>
 <!-- End Available Commands [operations] -->

@@ -16,6 +16,8 @@ import (
 )
 
 type Conversation struct {
+	State *State
+
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -26,6 +28,7 @@ func newConversation(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, h
 		rootSDK:          rootSDK,
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
+		State:            newState(rootSDK, sdkConfig, hooks),
 	}
 }
 

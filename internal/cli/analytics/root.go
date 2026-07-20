@@ -4,6 +4,7 @@ package analytics
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/analytics/query"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -20,103 +21,7 @@ func InitAnalyticsRoot(parent *cobra.Command) error {
 		},
 	}
 
-	if err := initQueryCallCountCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryCallDurationCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryWorkspaceTranscriptCountCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryProjectTranscriptCountCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryProjectTranscriptCostCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryWorkspaceInteractionCountCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryProjectInteractionCountCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryOrganizationTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryWorkspaceTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryProjectTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryHourlyOrganizationTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryHourlyProjectTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryDailyTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryEntityTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryCategoryTokenUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryPlaybookUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryWorkflowUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryPromptUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryIntentUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryFunctionUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryApiToolUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryMcpToolUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryKnowledgeBaseDocumentUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryIntegrationUsageCmd(AnalyticsCmd); err != nil {
-		return err
-	}
-
-	if err := initQueryUniqueUserCountCmd(AnalyticsCmd); err != nil {
+	if err := query.InitQueryRoot(AnalyticsCmd); err != nil {
 		return err
 	}
 

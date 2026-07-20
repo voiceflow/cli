@@ -4,6 +4,7 @@ package transcript
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/transcript/property"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -18,6 +19,10 @@ func InitTranscriptRoot(parent *cobra.Command) error {
 			}
 			return cmd.Help()
 		},
+	}
+
+	if err := property.InitPropertyRoot(TranscriptCmd); err != nil {
+		return err
 	}
 
 	if err := initSearchCmd(TranscriptCmd); err != nil {

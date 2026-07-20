@@ -1494,7 +1494,7 @@ paths:
           tool: voiceflow_api_tool_variable
           operation: list
           description: WHAT — List the input variables declared on an API tool (path params, query params, body fields, auth headers as placeholders).
-      x-speakeasy-group: api-tool-variable
+      x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: list
       summary: List variables
       description: List all variables by API tool ID.
@@ -1537,7 +1537,7 @@ paths:
           description: |-
             WHAT — Declare a new input variable on an API tool.
             USE WHEN — The API needs a new placeholder — path param, query param, body field, header value.
-      x-speakeasy-group: api-tool-variable
+      x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: create
       summary: Create variable
       description: Create a new variable.
@@ -1579,7 +1579,7 @@ paths:
           tool: voiceflow_api_tool_variable
           operation: create_many
           description: WHAT — Declare multiple input variables in one call.
-      x-speakeasy-group: api-tool-variable
+      x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
       summary: Create many variables
@@ -1622,7 +1622,7 @@ paths:
           tool: voiceflow_api_tool_variable
           operation: get
           description: WHAT — Fetch a single input variable's detail.
-      x-speakeasy-group: api-tool-variable
+      x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: get
       summary: Get variable
       description: Get an variable by ID.
@@ -1662,7 +1662,7 @@ paths:
           tool: voiceflow_api_tool_variable
           operation: update
           description: WHAT — Modify an input variable's name or description.
-      x-speakeasy-group: api-tool-variable
+      x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: update
       summary: Update variable
       description: Update an variable by ID.
@@ -1711,7 +1711,7 @@ paths:
           description: |-
             WHAT — Remove an input variable.
             DO NOT — Delete a variable referenced by a voiceflow_tool attachment without cleaning the binding up first.
-      x-speakeasy-group: api-tool-variable
+      x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: delete
       summary: Delete variable
       description: Delete an variable by ID.
@@ -1830,7 +1830,7 @@ paths:
           description: |-
             WHAT — List all transcript property definitions in the project.
             USE WHEN — Before creating new properties (avoid duplicates), or finding a property to set values on.
-      x-speakeasy-group: transcript-property
+      x-speakeasy-group: transcript.property
       x-speakeasy-name-override: list
       summary: List properties
       description: List all properties by project ID.
@@ -1862,7 +1862,7 @@ paths:
             WHAT — Define a new transcript property with name and type (boolean | number | string).
             USE WHEN — Adding a new dimension to tag transcripts by — root_cause, escalation_reason, csat_self_report, etc.
             DO NOT — Use a property as a runtime variable. Properties are post-hoc tags only; the agent cannot read them mid-conversation. Use voiceflow_variable for runtime state.
-      x-speakeasy-group: transcript-property
+      x-speakeasy-group: transcript.property
       x-speakeasy-name-override: create
       summary: Create property
       description: Create a new property.
@@ -1900,7 +1900,7 @@ paths:
           description: |-
             WHAT — Fetch one property by ID.
             USE WHEN — Confirming a property's type before calling voiceflow_transcript_property.set_value, or checking whether it's a default property before attempting update/delete.
-      x-speakeasy-group: transcript-property
+      x-speakeasy-group: transcript.property
       x-speakeasy-name-override: get
       summary: Get property
       description: Get property by ID.
@@ -1936,7 +1936,7 @@ paths:
           description: |-
             WHAT — Rename a property.
             DO NOT — Attempt this on a default property — it will fail. Default properties (created by Voiceflow, not the user) are read-only; check the default flag via voiceflow_transcript_property.get first.
-      x-speakeasy-group: transcript-property
+      x-speakeasy-group: transcript.property
       x-speakeasy-name-override: update
       summary: Update property
       description: Update a property by ID.
@@ -1979,7 +1979,7 @@ paths:
           description: |-
             WHAT — Permanently remove a property definition and its recorded values across all transcripts.
             DO NOT — Attempt this on a default property — it will fail. Default properties (created by Voiceflow, not the user) are read-only; check the default flag via voiceflow_transcript_property.get first.
-      x-speakeasy-group: transcript-property
+      x-speakeasy-group: transcript.property
       x-speakeasy-name-override: delete
       summary: Delete property
       description: Delete a property by ID.
@@ -2017,7 +2017,7 @@ paths:
             WHAT — Set a property value on a specific transcript.
             USE WHEN — Tagging a transcript with a diagnosis (e.g. root_cause = "missing captureResponse") so future filtered searches can find it; or recording user-reported metrics post-hoc.
             DO NOT — Expect the agent to read the value back mid-conversation — properties are read-only to the runtime.
-      x-speakeasy-group: transcript-property
+      x-speakeasy-group: transcript.property
       x-speakeasy-name-override: set-value
       summary: Set property value
       description: Set a property value on a transcript.
@@ -2347,7 +2347,7 @@ paths:
           description: |-
             WHAT — List the function's declared input and output variables, each with name and type.
             USE WHEN — Understanding what the function expects/returns before wiring it.
-      x-speakeasy-group: function-variable
+      x-speakeasy-group: function.variable
       x-speakeasy-name-override: list
       summary: List variables
       description: List all variables by function ID.
@@ -2391,7 +2391,7 @@ paths:
             WHAT — Declare a new input or output variable on a function. Type is direction (input | output), not data type — data types are inferred from value shape at runtime.
             USE WHEN — The function needs a new input (auth token, postal code) or returns a new output downstream tools will use.
             DO NOT — Return object or array values in outputVars — only string / number / boolean are supported; everything else fails silently. Stringify arrays/objects (`JSON.stringify(...)`) if downstream tools need structured data. Booleans are commonly returned as the strings "true"/"false" because Voiceflow's downstream comparisons (in prompts and conditions) are stringly-typed — match the form the next tool will consume.
-      x-speakeasy-group: function-variable
+      x-speakeasy-group: function.variable
       x-speakeasy-name-override: create
       summary: Create variable
       description: Create a new variable.
@@ -2435,7 +2435,7 @@ paths:
           description: |-
             WHAT — Create multiple function variables in one call.
             USE WHEN — Scaffolding a function with many inputs/outputs at once.
-      x-speakeasy-group: function-variable
+      x-speakeasy-group: function.variable
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
       summary: Create many variables
@@ -2480,7 +2480,7 @@ paths:
           description: |-
             WHAT — Fetch a single function variable's detail.
             USE WHEN — Before editing it.
-      x-speakeasy-group: function-variable
+      x-speakeasy-group: function.variable
       x-speakeasy-name-override: get
       summary: Get variable
       description: Get a variable by ID.
@@ -2522,7 +2522,7 @@ paths:
           description: |-
             WHAT — Modify a function variable's name or description.
             DO NOT — Rename a variable that's already referenced by a voiceflow_tool attachment's captureResponse or inputVariables map — the binding will silently fail. Update the attachment first.
-      x-speakeasy-group: function-variable
+      x-speakeasy-group: function.variable
       x-speakeasy-name-override: update
       summary: Update variable
       description: Update a variable by ID.
@@ -2571,7 +2571,7 @@ paths:
           description: |-
             WHAT — Remove a function variable.
             DO NOT — Delete a variable referenced by any voiceflow_tool attachment without cleaning those bindings up first.
-      x-speakeasy-group: function-variable
+      x-speakeasy-group: function.variable
       x-speakeasy-name-override: delete
       summary: Delete variable
       description: Delete a variable by ID.
@@ -2614,7 +2614,7 @@ paths:
           description: |-
             WHAT — List the named exit paths on a function (success, error, custom branches).
             USE WHEN — Verifying the function returns the expected branches.
-      x-speakeasy-group: function-path
+      x-speakeasy-group: function.path
       x-speakeasy-name-override: list
       summary: List paths
       description: List all paths by function ID.
@@ -2657,7 +2657,7 @@ paths:
           description: |-
             WHAT — Add a new exit path to a function (e.g. not_found, retry_needed, partial_match).
             USE WHEN — The function needs a new branch the playbook can route on. Functions commonly have 3+ paths beyond success/error — `not_found` for empty-result API calls, `retry_needed` for transient failures, `partial_match` for ambiguous lookups. Branch downstream wiring (playbook instructions or canvas-step routing) on the specific path that fires, not just success vs. error.
-      x-speakeasy-group: function-path
+      x-speakeasy-group: function.path
       x-speakeasy-name-override: create
       summary: Create path
       description: Create a new path.
@@ -2701,7 +2701,7 @@ paths:
           description: |-
             WHAT — Add multiple exit paths in one call.
             USE WHEN — Scaffolding a function with several branches at once.
-      x-speakeasy-group: function-path
+      x-speakeasy-group: function.path
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
       summary: Create many paths
@@ -2746,7 +2746,7 @@ paths:
           description: |-
             WHAT — Fetch a single exit path's detail.
             USE WHEN — Before editing it.
-      x-speakeasy-group: function-path
+      x-speakeasy-group: function.path
       x-speakeasy-name-override: get
       summary: Get path
       description: Get a path by ID.
@@ -2786,7 +2786,7 @@ paths:
           tool: voiceflow_function_path
           operation: update
           description: WHAT — Modify an existing path's name or label.
-      x-speakeasy-group: function-path
+      x-speakeasy-group: function.path
       x-speakeasy-name-override: update
       summary: Update path
       description: Update a path by ID.
@@ -2835,7 +2835,7 @@ paths:
           description: |-
             WHAT — Remove a path from a function.
             DO NOT — Delete a path that's referenced by a playbook's exit conditions or canvas-step wiring — runtime breaks when the path is gone.
-      x-speakeasy-group: function-path
+      x-speakeasy-group: function.path
       x-speakeasy-name-override: delete
       summary: Delete path
       description: Delete a path by ID.
@@ -4535,7 +4535,7 @@ paths:
           description: |-
             WHAT — Read the session's current state — stack, variables, storage.
             USE WHEN — Mid-conversation debugging — what does the agent think the customer's name is right now? Which variables actually populated after the last tool call?
-      x-speakeasy-group: conversation-state
+      x-speakeasy-group: conversation.state
       x-speakeasy-name-override: get
       summary: Get state
       description: Get conversation state for a user.
@@ -4588,7 +4588,7 @@ paths:
           description: |-
             WHAT — Patch session state directly (stack / variables / storage).
             USE WHEN — Simulating a state that would take many turns to reach organically — jumping mid-flow for testing.
-      x-speakeasy-group: conversation-state
+      x-speakeasy-group: conversation.state
       x-speakeasy-name-override: update
       summary: Update state
       description: Update conversation state for a user.
@@ -4647,7 +4647,7 @@ paths:
           description: |-
             WHAT — Reset session state. Stack and storage cleared; variables persist.
             USE WHEN — Fresh test after poking around — returns the session to a clean starting point without losing pre-seeded variables.
-      x-speakeasy-group: conversation-state
+      x-speakeasy-group: conversation.state
       x-speakeasy-name-override: delete
       summary: Delete state
       description: Delete conversation state for a user.
@@ -4701,7 +4701,7 @@ paths:
           description: |-
             WHAT — Patch session variables only — no stack/storage changes.
             USE WHEN — Pre-seeding caller info for a test scenario (e.g. caller_number = "+15555550100") before driving the conversation.
-      x-speakeasy-group: conversation-state
+      x-speakeasy-group: conversation.state
       x-speakeasy-name-override: update-variables
       summary: Update variables
       description: Updates variables in the conversation state by merging with the properties in the request body.
@@ -4756,14 +4756,14 @@ paths:
       operationId: StableAnalyticsController_queryCallCount
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_call_count
+          tool: voiceflow_analytics_query
+          operation: call_count
           description: |-
             WHAT — Query call volume for a project, bucketed by interval (hour | day | week | month).
             USE WHEN — Charting call volume trends or comparing period-over-period call load.
-            DO NOT — Treat the returned duration as talk time — it's total call duration including hold/silence. Use voiceflow_analytics.query_call_duration for actual talk time.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-call-count
+            DO NOT — Treat the returned duration as talk time — it's total call duration including hold/silence. Use voiceflow_analytics_query.call_duration for actual talk time.
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: call-count
       summary: Query call count
       description: Query call count for a project.
       parameters:
@@ -4794,13 +4794,13 @@ paths:
       operationId: StableAnalyticsController_queryCallDuration
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_call_duration
+          tool: voiceflow_analytics_query
+          operation: call_duration
           description: |-
             WHAT — Query real call duration (talk time only, excluding hold/silence) for a project, bucketed by interval.
-            USE WHEN — Measuring how long callers are actually engaged, as distinct from total call length from voiceflow_analytics.query_call_count.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-call-duration
+            USE WHEN — Measuring how long callers are actually engaged, as distinct from total call length from voiceflow_analytics_query.call_count.
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: call-duration
       summary: Query call duration
       description: Query real call duration (talk time) for a project.
       parameters:
@@ -4831,13 +4831,13 @@ paths:
       operationId: StableAnalyticsController_queryTranscriptCountByWorkspace
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_workspace_transcript_count
+          tool: voiceflow_analytics_query
+          operation: workspace_transcript_count
           description: |-
             WHAT — Transcript counts across a workspace, broken down per environment.
-            USE WHEN — Comparing transcript volume across projects/environments in a workspace, before drilling into one via voiceflow_analytics.query_project_transcript_count.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-workspace-transcript-count
+            USE WHEN — Comparing transcript volume across projects/environments in a workspace, before drilling into one via voiceflow_analytics_query.project_transcript_count.
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: workspace-transcript-count
       summary: Query workspace transcript count
       description: Query transcript count for a workspace.
       parameters:
@@ -4868,14 +4868,14 @@ paths:
       operationId: StableAnalyticsController_queryTranscriptCountByProject
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_project_transcript_count
+          tool: voiceflow_analytics_query
+          operation: project_transcript_count
           description: |-
             WHAT — Transcript counts for a single project, bucketed by interval.
             USE WHEN — Tracking conversation volume trends for one project over a date range.
             AFTER — voiceflow_transcript.search to pull the actual transcripts behind a spike or drop.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-project-transcript-count
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: project-transcript-count
       summary: Query project transcript count
       description: Query transcript count for a project.
       parameters:
@@ -4906,13 +4906,13 @@ paths:
       operationId: StableAnalyticsController_queryTranscriptCost
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_project_transcript_cost
+          tool: voiceflow_analytics_query
+          operation: project_transcript_cost
           description: |-
             WHAT — Per-interval cost and transcript count for a project.
             USE WHEN — Estimating spend trends or cost-per-transcript for a project over a date range.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-project-transcript-cost
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: project-transcript-cost
       summary: Query transcript cost
       description: Query per-interval cost and transcript count for a project.
       parameters:
@@ -4943,13 +4943,13 @@ paths:
       operationId: StableAnalyticsController_queryInteractionCountByWorkspace
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_workspace_interaction_count
+          tool: voiceflow_analytics_query
+          operation: workspace_interaction_count
           description: |-
             WHAT — Interaction counts across a workspace, grouped by interaction type.
             USE WHEN — Seeing which interaction types (text, intent, event, launch) dominate usage across a workspace's projects.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-workspace-interaction-count
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: workspace-interaction-count
       summary: Query workspace interaction count
       description: Query interaction count for a workspace.
       parameters:
@@ -4980,13 +4980,13 @@ paths:
       operationId: StableAnalyticsController_queryInteractionsByProject
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_project_interaction_count
+          tool: voiceflow_analytics_query
+          operation: project_interaction_count
           description: |-
             WHAT — Interaction counts and average latency for a single project, bucketed by interval.
             USE WHEN — Tracking a project's response volume and latency trend over a date range.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-project-interaction-count
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: project-interaction-count
       summary: Query project interaction count
       description: Query interaction count for a project.
       parameters:
@@ -5017,13 +5017,13 @@ paths:
       operationId: StableAnalyticsController_queryTokenUsageByOrganization
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_organization_token_usage
+          tool: voiceflow_analytics_query
+          operation: organization_token_usage
           description: |-
             WHAT — Token totals for an organization, grouped by model. Not time-bucketed — totals across the requested date range.
             USE WHEN — Comparing model mix or overall token spend across an entire organization.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-organization-token-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: organization-token-usage
       summary: Query organization token usage
       description: Query token usage for an organization.
       parameters:
@@ -5054,13 +5054,13 @@ paths:
       operationId: StableAnalyticsController_queryTokenUsageByWorkspace
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_workspace_token_usage
+          tool: voiceflow_analytics_query
+          operation: workspace_token_usage
           description: |-
             WHAT — Token totals for a workspace, grouped by model. Not time-bucketed.
             USE WHEN — Comparing model mix or token spend across the projects in one workspace.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-workspace-token-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: workspace-token-usage
       summary: Query workspace token usage
       description: Query token usage for a workspace.
       parameters:
@@ -5091,13 +5091,13 @@ paths:
       operationId: StableAnalyticsController_queryTokenUsageByProject
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_project_token_usage
+          tool: voiceflow_analytics_query
+          operation: project_token_usage
           description: |-
             WHAT — Token usage for a project, grouped by model and bucketed by interval.
             USE WHEN — Tracking a project's token spend trend, or seeing which model is driving usage over time.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-project-token-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: project-token-usage
       summary: Query project token usage
       description: Query token usage for a project.
       parameters:
@@ -5128,14 +5128,14 @@ paths:
       operationId: StableAnalyticsController_queryHourlyTokenUsageByOrganization
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_hourly_organization_token_usage
+          tool: voiceflow_analytics_query
+          operation: hourly_organization_token_usage
           description: |-
             WHAT — Aggregate token totals for an organization over an hourly window, with optional workspace/project filters. Returns a total-vs-filtered summary, not a per-hour breakdown.
             USE WHEN — Checking overall vs. filtered token volume for a short recent window without needing a time series.
-            DO NOT — Expect a per-hour breakdown despite the name — this returns a single summary. Use voiceflow_analytics.query_hourly_project_token_usage or voiceflow_analytics.query_daily_token_usage for an actual time series.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-hourly-organization-token-usage
+            DO NOT — Expect a per-hour breakdown despite the name — this returns a single summary. Use voiceflow_analytics_query.hourly_project_token_usage or voiceflow_analytics_query.daily_token_usage for an actual time series.
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: hourly-organization-token-usage
       summary: Query hourly organization token usage
       description: Query hourly token usage for an organization with optional workspace/project filters.
       parameters:
@@ -5166,13 +5166,13 @@ paths:
       operationId: StableAnalyticsController_queryHourlyTokenUsageByProject
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_hourly_project_token_usage
+          tool: voiceflow_analytics_query
+          operation: hourly_project_token_usage
           description: |-
             WHAT — Timezone-aware hourly token usage for a project, grouped by model and usage category.
             USE WHEN — Diagnosing a token spend spike within a single day, or seeing which usage category (playbook, function, Knowledge Base, etc.) drove it.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-hourly-project-token-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: hourly-project-token-usage
       summary: Query hourly project token usage
       description: Query timezone-aware hourly token usage for a project.
       parameters:
@@ -5203,14 +5203,14 @@ paths:
       operationId: StableAnalyticsController_queryDailyTokenUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_daily_token_usage
+          tool: voiceflow_analytics_query
+          operation: daily_token_usage
           description: |-
             WHAT — Daily breakdown of organization token usage grouped by usage class, category, and model within a date range.
             USE WHEN — Building a multi-day token trend view, or auditing spend by class/category across an organization.
             DO NOT — Ignore rows flagged as misclassified when reconciling totals — they represent usage the classifier couldn't confidently attribute to a category.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-daily-token-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: daily-token-usage
       summary: Query daily token usage
       description: Daily breakdown of organization token usage grouped by class and category within a date range.
       parameters:
@@ -5241,13 +5241,13 @@ paths:
       operationId: StableAnalyticsController_queryTokenUsageByEntity
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_entity_token_usage
+          tool: voiceflow_analytics_query
+          operation: entity_token_usage
           description: |-
             WHAT — Token totals for an organization, aggregated (not time-bucketed) per project and per workspace.
-            USE WHEN — Finding which projects or workspaces are the biggest token consumers in an organization, before drilling into one with voiceflow_analytics.query_project_token_usage.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-entity-token-usage
+            USE WHEN — Finding which projects or workspaces are the biggest token consumers in an organization, before drilling into one with voiceflow_analytics_query.project_token_usage.
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: entity-token-usage
       summary: Query entity token usage
       description: Token totals grouped per project and per workspace for an organization.
       parameters:
@@ -5278,13 +5278,13 @@ paths:
       operationId: StableAnalyticsController_queryTokenUsageByCategory
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_category_token_usage
+          tool: voiceflow_analytics_query
+          operation: category_token_usage
           description: |-
             WHAT — Timezone-aware token usage for a project, grouped by usage category and bucketed by interval.
             USE WHEN — Seeing which category of work (playbook reasoning, function calls, Knowledge Base retrieval, etc.) is driving a project's token spend over time.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-category-token-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: category-token-usage
       summary: Query category token usage
       description: Query timezone-aware hourly token usage for a project grouped by usage category.
       parameters:
@@ -5315,14 +5315,14 @@ paths:
       operationId: StableAnalyticsController_queryPlaybookUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_playbook_usage
+          tool: voiceflow_analytics_query
+          operation: playbook_usage
           description: |-
             WHAT — Per-playbook usage for a project, including success rate and average latency.
             USE WHEN — Finding which playbooks get triggered most, or spotting one with a low success rate worth investigating.
             AFTER — voiceflow_transcript.search to find failing transcripts for a specific playbook.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-playbook-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: playbook-usage
       summary: Query playbook usage
       description: Query playbook usage for a project.
       parameters:
@@ -5353,13 +5353,13 @@ paths:
       operationId: StableAnalyticsController_queryWorkflowUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_workflow_usage
+          tool: voiceflow_analytics_query
+          operation: workflow_usage
           description: |-
             WHAT — Per-workflow usage for a project.
             USE WHEN — Finding which workflows get triggered most, e.g. confirming a new workflow is actually being reached.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-workflow-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: workflow-usage
       summary: Query workflow usage
       description: Query workflow usage for a project.
       parameters:
@@ -5390,13 +5390,13 @@ paths:
       operationId: StableAnalyticsController_queryPromptUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_prompt_usage
+          tool: voiceflow_analytics_query
+          operation: prompt_usage
           description: |-
             WHAT — Per-prompt usage for a project, including success rate and average latency.
             USE WHEN — Finding which prompts run most often, or spotting one with unusually high latency or a low success rate.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-prompt-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: prompt-usage
       summary: Query prompt usage
       description: Query prompt usage for a project.
       parameters:
@@ -5427,13 +5427,13 @@ paths:
       operationId: StableAnalyticsController_queryIntentUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_intent_usage
+          tool: voiceflow_analytics_query
+          operation: intent_usage
           description: |-
             WHAT — Per-intent usage for a project.
             USE WHEN — Seeing which intents get matched most, e.g. to prioritize which intents need more training utterances.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-intent-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: intent-usage
       summary: Query intent usage
       description: Query intent usage for a project.
       parameters:
@@ -5464,13 +5464,13 @@ paths:
       operationId: StableAnalyticsController_queryFunctionUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_function_usage
+          tool: voiceflow_analytics_query
+          operation: function_usage
           description: |-
             WHAT — Per-function usage for a project, including success rate and average latency.
             USE WHEN — Finding which functions run most, or spotting one with a low success rate (frequent throws/errors) worth debugging.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-function-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: function-usage
       summary: Query function usage
       description: Query function usage for a project.
       parameters:
@@ -5501,13 +5501,13 @@ paths:
       operationId: StableAnalyticsController_queryAPIToolUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_api_tool_usage
+          tool: voiceflow_analytics_query
+          operation: api_tool_usage
           description: |-
             WHAT — Per-API-tool usage for a project, including success rate and average latency.
             USE WHEN — Finding which API tools get called most, or spotting one with a low success rate (failing calls, bad auth, timeouts).
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-api-tool-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: api-tool-usage
       summary: Query API tool usage
       description: Query API tool usage for a project.
       parameters:
@@ -5538,13 +5538,13 @@ paths:
       operationId: StableAnalyticsController_queryMCPToolUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_mcp_tool_usage
+          tool: voiceflow_analytics_query
+          operation: mcp_tool_usage
           description: |-
             WHAT — Per-MCP-tool usage for a project, keyed by tool name rather than ID, including success rate and average latency.
             USE WHEN — Finding which upstream MCP tools get called most, or spotting one with a low success rate.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-mcp-tool-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: mcp-tool-usage
       summary: Query MCP tool usage
       description: Query MCP tool usage for a project.
       parameters:
@@ -5575,13 +5575,13 @@ paths:
       operationId: StableAnalyticsController_queryKnowledgeBaseDocumentUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_knowledge_base_document_usage
+          tool: voiceflow_analytics_query
+          operation: knowledge_base_document_usage
           description: |-
             WHAT — Per-document retrieval counts for a project's Knowledge Base.
             USE WHEN — Finding which documents actually get retrieved, or spotting zero-hit documents that may be safe to prune.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-knowledge-base-document-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: knowledge-base-document-usage
       summary: Query knowledge base document usage
       description: Query knowledge base document usage for a project.
       parameters:
@@ -5612,13 +5612,13 @@ paths:
       operationId: StableAnalyticsController_queryIntegrationUsage
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_integration_usage
+          tool: voiceflow_analytics_query
+          operation: integration_usage
           description: |-
             WHAT — Per-integration usage for a project (Gmail, Salesforce, Zendesk, etc. — distinct from MCP tools), including success rate and average latency.
             USE WHEN — Finding which built-in integrations get called most, or spotting one with a low success rate.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-integration-usage
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: integration-usage
       summary: Query integration usage
       description: Query integration usage for a project.
       parameters:
@@ -5649,13 +5649,13 @@ paths:
       operationId: StableAnalyticsController_queryUniqueUserCount
       x-vf:
         mcp:
-          tool: voiceflow_analytics
-          operation: query_unique_user_count
+          tool: voiceflow_analytics_query
+          operation: unique_user_count
           description: |-
             WHAT — Unique user counts for a project, bucketed by interval.
             USE WHEN — Tracking distinct-user trends over a date range, separate from raw interaction/transcript volume.
-      x-speakeasy-group: analytics
-      x-speakeasy-name-override: query-unique-user-count
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: unique-user-count
       summary: Query unique user count
       description: Query unique users for a project.
       parameters:

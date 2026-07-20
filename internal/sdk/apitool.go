@@ -17,6 +17,8 @@ import (
 )
 
 type APITool struct {
+	Variable *APIToolVariable
+
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -27,6 +29,7 @@ func newAPITool(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks 
 		rootSDK:          rootSDK,
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
+		Variable:         newAPIToolVariable(rootSDK, sdkConfig, hooks),
 	}
 }
 

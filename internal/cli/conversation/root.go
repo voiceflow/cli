@@ -4,6 +4,7 @@ package conversation
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/conversation/state"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -18,6 +19,10 @@ func InitConversationRoot(parent *cobra.Command) error {
 			}
 			return cmd.Help()
 		},
+	}
+
+	if err := state.InitStateRoot(ConversationCmd); err != nil {
+		return err
 	}
 
 	if err := initSendCmd(ConversationCmd); err != nil {

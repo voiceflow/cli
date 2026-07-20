@@ -49,29 +49,24 @@ func Pointer[T any](v T) *T { return &v }
 
 // VoiceflowSDK - Realtime: Realtime gateway API service
 type VoiceflowSDK struct {
-	SDKVersion         string
-	Workspace          *Workspace
-	Project            *Project
-	Environment        *Environment
-	Variable           *Variable
-	Playbook           *Playbook
-	APITool            *APITool
-	APIToolVariable    *APIToolVariable
-	Transcript         *Transcript
-	TranscriptProperty *TranscriptProperty
-	Function           *Function
-	FunctionVariable   *FunctionVariable
-	FunctionPath       *FunctionPath
-	Evaluation         *Evaluation
-	Document           *Document
-	Agent              *Agent
-	McpServer          *McpServer
-	McpTool            *McpTool
-	Tool               *Tool
-	KnowledgeBase      *KnowledgeBase
-	Conversation       *Conversation
-	ConversationState  *ConversationState
-	Analytics          *Analytics
+	SDKVersion    string
+	Workspace     *Workspace
+	Project       *Project
+	Environment   *Environment
+	Variable      *Variable
+	Playbook      *Playbook
+	APITool       *APITool
+	Transcript    *Transcript
+	Function      *Function
+	Evaluation    *Evaluation
+	Document      *Document
+	Agent         *Agent
+	McpServer     *McpServer
+	McpTool       *McpTool
+	Tool          *Tool
+	KnowledgeBase *KnowledgeBase
+	Conversation  *Conversation
+	Analytics     *Analytics
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -171,12 +166,8 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Variable = newVariable(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Playbook = newPlaybook(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.APITool = newAPITool(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.APIToolVariable = newAPIToolVariable(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Transcript = newTranscript(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.TranscriptProperty = newTranscriptProperty(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Function = newFunction(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.FunctionVariable = newFunctionVariable(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.FunctionPath = newFunctionPath(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Evaluation = newEvaluation(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Document = newDocument(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Agent = newAgent(sdk, sdk.sdkConfiguration, sdk.hooks)
@@ -185,7 +176,6 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Tool = newTool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.KnowledgeBase = newKnowledgeBase(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Conversation = newConversation(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.ConversationState = newConversationState(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Analytics = newAnalytics(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk

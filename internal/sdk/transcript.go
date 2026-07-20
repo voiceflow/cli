@@ -17,6 +17,8 @@ import (
 )
 
 type Transcript struct {
+	Property *Property
+
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -27,6 +29,7 @@ func newTranscript(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hoo
 		rootSDK:          rootSDK,
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
+		Property:         newProperty(rootSDK, sdkConfig, hooks),
 	}
 }
 

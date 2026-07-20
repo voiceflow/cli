@@ -4,6 +4,7 @@ package apitool
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/apitool/apitoolvariable"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -19,6 +20,10 @@ func InitApiToolRoot(parent *cobra.Command) error {
 			return cmd.Help()
 		},
 		Aliases: []string{"at"},
+	}
+
+	if err := apitoolvariable.InitApiToolVariableRoot(ApiToolCmd); err != nil {
+		return err
 	}
 
 	if err := initListCmd(ApiToolCmd); err != nil {
