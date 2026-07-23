@@ -31,8 +31,8 @@ func newAPIToolVariable(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration
 	}
 }
 
-// List paths
-// List all paths by function ID.
+// List variables
+// List all variables by API tool ID.
 func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPIToolVariableControllerListRequest, opts ...operations.Option) (*operations.StableAPIToolVariableControllerListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
