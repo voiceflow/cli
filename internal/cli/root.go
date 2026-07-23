@@ -167,8 +167,8 @@ func NewRootCommand() (*cobra.Command, error) {
 			"Use --agent-mode=false to disable.")
 
 	// Global security flags
-	rootCmd.PersistentFlags().String("oauth2", "", "Voiceflow OAuth access token")
-	_ = rootCmd.PersistentFlags().SetAnnotation("oauth2", "speakeasy:group", []string{"Authentication"})
+	rootCmd.PersistentFlags().String("token", "", "Voiceflow bearer token")
+	_ = rootCmd.PersistentFlags().SetAnnotation("token", "speakeasy:group", []string{"Authentication"})
 
 	// Annotate persistent flags for grouped help display
 	for _, ga := range []struct{ flag, group string }{

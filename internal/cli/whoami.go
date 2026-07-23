@@ -44,10 +44,10 @@ func runWhoamiCmd(cmd *cobra.Command, args []string) error {
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Credentials:")
 
-	// Voiceflow OAuth access token
+	// Voiceflow bearer token
 	{
-		value, source := config.ResolveSecurityCredential(cmd, "oauth2")
-		fmt.Fprintf(out, "  --%-25s [%-7s] %s\n", "oauth2", source, maskSecret(value))
+		value, source := config.ResolveSecurityCredential(cmd, "token")
+		fmt.Fprintf(out, "  --%-25s [%-7s] %s\n", "token", source, maskSecret(value))
 	}
 
 	return nil

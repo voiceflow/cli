@@ -1,6 +1,6 @@
 <!-- Start SDK Example Usage [usage] -->
 ```bash
-vf workspace list --oauth2 'Bearer testToken'
+vf workspace list --token 'Bearer test_token'
 
 ```
 <!-- End SDK Example Usage [usage] -->

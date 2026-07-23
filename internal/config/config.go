@@ -27,7 +27,7 @@ const ConfigVersion = 1
 
 // SecurityConfig holds authentication credentials.
 type SecurityConfig struct {
-	Oauth2 string `yaml:"oauth2,omitempty"`
+	Token string `yaml:"token,omitempty"`
 }
 
 // Config holds the CLI configuration values.
@@ -137,8 +137,8 @@ func GetConfigValue(key string) string {
 		return ""
 	}
 	switch key {
-	case "oauth2":
-		return cfg.Security.Oauth2
+	case "token":
+		return cfg.Security.Token
 	case "output-format":
 		return cfg.OutputFormat
 	case "timeout":
