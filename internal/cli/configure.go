@@ -59,9 +59,9 @@ func runConfigureCmd(cmd *cobra.Command, args []string) error {
 	keychainStored := false
 	if noInteractive, _ := cmd.Flags().GetBool("no-interactive"); noInteractive {
 		changed := false
-		if f := cmd.Flags().Lookup("token"); f != nil && f.Changed {
-			v, _ := cmd.Flags().GetString("token")
-			if config.StoreSecret("token", v, &cfg.Security.Token) == nil {
+		if f := cmd.Flags().Lookup("oauth2"); f != nil && f.Changed {
+			v, _ := cmd.Flags().GetString("oauth2")
+			if config.StoreSecret("oauth2", v, &cfg.Security.Oauth2) == nil {
 				keychainStored = true
 			}
 			changed = true
@@ -71,17 +71,17 @@ func runConfigureCmd(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("no flags provided; use flags to set values non-interactively, or remove --no-interactive")
 		}
 	} else {
-		var authToken string
+		var authOauth2 string
 		accessible := !configureIsInteractive(cmd)
 
 		var groups []*huh.Group
 		securityFields := []huh.Field{
 			huh.NewInput().
-				Title("Voiceflow bearer token").
-				Description("--token").
+				Title("Voiceflow OAuth access token").
+				Description("--oauth2").
 				EchoMode(huh.EchoModePassword).
-				Placeholder(maskSecret(config.GetStoredSecret("token", cfg.Security.Token))).
-				Value(&authToken),
+				Placeholder(maskSecret(config.GetStoredSecret("oauth2", cfg.Security.Oauth2))).
+				Value(&authOauth2),
 		}
 		groups = append(groups, huh.NewGroup(securityFields...).Title("Authentication"))
 
@@ -116,8 +116,8 @@ func runConfigureCmd(cmd *cobra.Command, args []string) error {
 		if err := form.Run(); err != nil {
 			return fmt.Errorf("configure: %w", err)
 		}
-		if authToken != "" {
-			if config.StoreSecret("token", authToken, &cfg.Security.Token) == nil {
+		if authOauth2 != "" {
+			if config.StoreSecret("oauth2", authOauth2, &cfg.Security.Oauth2) == nil {
 				keychainStored = true
 			}
 		}

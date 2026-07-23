@@ -62,10 +62,10 @@ func resolveStringFlag(cmd *cobra.Command, name string) string {
 // Priority: flag > env var > config file.
 func buildGlobalSecurity(cmd *cobra.Command) components.Security {
 	// Resolve security credentials: flag > env var > keyring > config file
-	token, _ := config.ResolveSecurityCredential(cmd, "token")
+	oauth2, _ := config.ResolveSecurityCredential(cmd, "oauth2")
 	globalSecurity := components.Security{}
-	if token != "" {
-		globalSecurity.Token = token
+	if oauth2 != "" {
+		globalSecurity.Oauth2 = oauth2
 	}
 	return globalSecurity
 }

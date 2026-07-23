@@ -92,9 +92,9 @@ func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 	if noInteractive, _ := cmd.Flags().GetBool("no-interactive"); noInteractive {
 		// Non-interactive: store any explicitly-set flags without prompting
 		changed := false
-		if f := cmd.Flags().Lookup("token"); f != nil && f.Changed {
-			v, _ := cmd.Flags().GetString("token")
-			if config.StoreSecret("token", v, &cfg.Security.Token) == nil {
+		if f := cmd.Flags().Lookup("oauth2"); f != nil && f.Changed {
+			v, _ := cmd.Flags().GetString("oauth2")
+			if config.StoreSecret("oauth2", v, &cfg.Security.Oauth2) == nil {
 				keychainStored = true
 			}
 			changed = true
@@ -105,17 +105,17 @@ func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 		}
 	} else {
 
-		var authToken string
+		var authOauth2 string
 
 		accessible := !authIsInteractive(cmd)
 
 		fields := []huh.Field{
 			huh.NewInput().
-				Title("Voiceflow bearer token").
-				Description("--token").
+				Title("Voiceflow OAuth access token").
+				Description("--oauth2").
 				EchoMode(huh.EchoModePassword).
-				Placeholder(maskSecret(config.GetStoredSecret("token", cfg.Security.Token))).
-				Value(&authToken),
+				Placeholder(maskSecret(config.GetStoredSecret("oauth2", cfg.Security.Oauth2))).
+				Value(&authOauth2),
 		}
 
 		form := huh.NewForm(huh.NewGroup(fields...)).
@@ -128,8 +128,8 @@ func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("auth login: %w", err)
 		}
 
-		if authToken != "" {
-			if config.StoreSecret("token", authToken, &cfg.Security.Token) == nil {
+		if authOauth2 != "" {
+			if config.StoreSecret("oauth2", authOauth2, &cfg.Security.Oauth2) == nil {
 				keychainStored = true
 			}
 		}
@@ -156,9 +156,9 @@ func runAuthLogoutCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	if config.KeyringAvailable() {
-		_ = config.DeleteKeyringValue("token")
+		_ = config.DeleteKeyringValue("oauth2")
 	}
-	cfg.Security.Token = ""
+	cfg.Security.Oauth2 = ""
 
 	if err := config.SaveConfig(cfg); err != nil {
 		return fmt.Errorf("failed to save configuration: %w", err)
