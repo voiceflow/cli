@@ -23,7 +23,7 @@ func initDeleteCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete project",
-		Long:    "Delete a project by ID.",
+		Long:    "Delete a project by ID. #### Non-interactive\nCall this command with all required arguments provided on the command line.\n\n```\nvf project delete --project-id <id>\n```\n\n#### Interactive\n\nCall this command with no or limited arguments to drop into an interactive TUI\nwhere you will be prompted to provide required and optional arguments.",
 		Example: "  vf project delete --project-id <id>",
 		RunE:    runDeleteCmd,
 	}

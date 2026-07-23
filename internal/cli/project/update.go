@@ -24,7 +24,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "update",
 		Short:   "Update project",
-		Long:    "Update a project by ID.",
+		Long:    "Update a project by ID. #### Non-interactive\nCall this command with all required arguments provided on the command line.\n\n```\nvf project update --no-interactive --project-id <id> --body { \"name\": \"renamed\" }\n```\n\n#### Interactive\n\nCall this command with no or limited arguments to drop into an interactive TUI\nwhere you will be prompted to provide required and optional arguments.",
 		Example: "  vf project update --project-id <id>",
 		RunE:    runUpdateCmd,
 	}

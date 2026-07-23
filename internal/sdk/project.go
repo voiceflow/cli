@@ -32,15 +32,16 @@ func newProject(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks 
 
 // List projects
 // List all projects by workspace ID. #### Non-interactive
+// Call this command with all required arguments provided on the command line.
 //
 // ```
-// {{CMD}} --no-interactive --workspace-id <id>
+// vf project list --workspace-id <id>
 // ```
 //
 // #### Interactive
 //
 // Call this command with no or limited arguments to drop into an interactive TUI
-// where you will be prompted for any missing required arguments.
+// where you will be prompted to provide required and optional arguments.
 func (s *Project) List(ctx context.Context, request operations.StableProjectControllerListRequest, opts ...operations.Option) (*operations.StableProjectControllerListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -189,7 +190,17 @@ func (s *Project) List(ctx context.Context, request operations.StableProjectCont
 }
 
 // Create project
-// Create a new project.
+// Create a new project. #### Non-interactive
+// Call this command with all required arguments provided on the command line.
+//
+// ```
+// vf project create --no-interactive --body '{ "name": "my project", "workspaceID": "<id>", "type": "webchat" }'
+// ```
+//
+// #### Interactive
+//
+// Call this command with no or limited arguments to drop into an interactive TUI
+// where you will be prompted to provide required and optional arguments.
 func (s *Project) Create(ctx context.Context, request components.StableProjectCreateRequest, opts ...operations.Option) (*operations.StableProjectControllerCreateResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -341,7 +352,17 @@ func (s *Project) Create(ctx context.Context, request components.StableProjectCr
 }
 
 // Get project
-// Get a project by ID.
+// Get a project by ID. #### Non-interactive
+// Call this command with all required arguments provided on the command line.
+//
+// ```
+// vf project get --project-id <id>
+// ```
+//
+// #### Interactive
+//
+// Call this command with no or limited arguments to drop into an interactive TUI
+// where you will be prompted to provide required and optional arguments.
 func (s *Project) Get(ctx context.Context, request operations.StableProjectControllerGetRequest, opts ...operations.Option) (*operations.StableProjectControllerGetResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -486,7 +507,17 @@ func (s *Project) Get(ctx context.Context, request operations.StableProjectContr
 }
 
 // Update project
-// Update a project by ID.
+// Update a project by ID. #### Non-interactive
+// Call this command with all required arguments provided on the command line.
+//
+// ```
+// vf project update --no-interactive --project-id <id> --body { "name": "renamed" }
+// ```
+//
+// #### Interactive
+//
+// Call this command with no or limited arguments to drop into an interactive TUI
+// where you will be prompted to provide required and optional arguments.
 func (s *Project) Update(ctx context.Context, request operations.StableProjectControllerUpdateRequest, opts ...operations.Option) (*operations.StableProjectControllerUpdateResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -638,7 +669,17 @@ func (s *Project) Update(ctx context.Context, request operations.StableProjectCo
 }
 
 // Delete project
-// Delete a project by ID.
+// Delete a project by ID. #### Non-interactive
+// Call this command with all required arguments provided on the command line.
+//
+// ```
+// vf project delete --project-id <id>
+// ```
+//
+// #### Interactive
+//
+// Call this command with no or limited arguments to drop into an interactive TUI
+// where you will be prompted to provide required and optional arguments.
 func (s *Project) Delete(ctx context.Context, request operations.StableProjectControllerDeleteRequest, opts ...operations.Option) (*operations.StableProjectControllerDeleteResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
