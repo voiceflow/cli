@@ -23,7 +23,7 @@ func initListCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "list",
 		Short:   "List projects",
-		Long:    "List all projects by workspace ID. #### Non-interactive\nCall this command with all required arguments provided on the command line.\n\n```\nvf project list --workspace-id <id>\n```\n\n#### Interactive\n\nCall this command with no or limited arguments to drop into an interactive TUI\nwhere you will be prompted to provide required and optional arguments.",
+		Long:    "List all projects by workspace ID.",
 		Example: "  vf project list --workspace-id <id>",
 		RunE:    runListCmd,
 	}

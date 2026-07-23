@@ -26,7 +26,7 @@ func initCreateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "create",
 		Short:   "Create project",
-		Long:    "Create a new project. #### Non-interactive\nCall this command with all required arguments provided on the command line.\n\n```\nvf project create --no-interactive --body '{ \"name\": \"my project\", \"workspaceID\": \"<id>\", \"type\": \"webchat\" }'\n```\n\n#### Interactive\n\nCall this command with no or limited arguments to drop into an interactive TUI\nwhere you will be prompted to provide required and optional arguments.",
+		Long:    "Create a new project.",
 		Example: "  vf project create --name <value> --workspace-id <id> --type phone-call",
 		RunE:    runCreateCmd,
 	}
