@@ -23,7 +23,7 @@ func initListCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "list",
 		Short:   "List projects",
-		Long:    "List all projects by workspace ID.",
+		Long:    "List all projects by workspace ID.\n### Usage\n`vf project list --workspace-id foo`",
 		Example: "  vf project list --workspace-id <id>",
 		RunE:    runListCmd,
 	}

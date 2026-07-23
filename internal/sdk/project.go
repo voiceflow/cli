@@ -32,6 +32,8 @@ func newProject(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks 
 
 // List projects
 // List all projects by workspace ID.
+// ### Usage
+// `vf project list --workspace-id foo`
 func (s *Project) List(ctx context.Context, request operations.StableProjectControllerListRequest, opts ...operations.Option) (*operations.StableProjectControllerListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
