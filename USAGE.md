@@ -1,6 +1,10 @@
 <!-- Start SDK Example Usage [usage] -->
+
+
+vf project list --workspace-id foo
+
 ```bash
-vf workspace list --token 'Bearer test_token'
+vf project list --token 'Bearer test_token' --workspace-id '<id>'
 
 ```
 <!-- End SDK Example Usage [usage] -->
