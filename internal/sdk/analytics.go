@@ -8,8 +8,6 @@ import (
 )
 
 type Analytics struct {
-	// Query knowledge base
-	// Execute a query against documents in the knowledge base.
 	Query *Query
 
 	rootSDK          *VoiceflowSDK
