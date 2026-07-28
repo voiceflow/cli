@@ -13,6 +13,8 @@ const WORKSPACE_DEFAULTS = {
 };
 
 describe('vf workspace', () => {
+  const $vf_workspace: typeof $vf = (args, options) => $vf(['workspace', ...args], options);
+
   describe('CRUD', () => {
     const it = sequential();
     let workspace1: any;
@@ -22,15 +24,14 @@ describe('vf workspace', () => {
     afterAll(async () => {
       await Promise.allSettled(
         [workspace1.id, workspace2.id, workspace3.id].map((workspaceID) =>
-          $vf(['workspace', 'delete', `--workspace-id=${workspaceID}`])
+          $vf_workspace(['delete', `--workspace-id=${workspaceID}`])
         )
       );
     });
 
     it('create with args', async () => {
       const name = 'workspace from args';
-      ({ workspace: workspace1 } = await $vf([
-        'workspace',
+      ({ workspace: workspace1 } = await $vf_workspace([
         'create',
         `--name=${name}`,
         `--organization-id=${ORGANIZATION_ID}`,
@@ -41,8 +42,7 @@ describe('vf workspace', () => {
 
     it('create with body', async () => {
       const name = 'workspace from body';
-      ({ workspace: workspace2 } = await $vf([
-        'workspace',
+      ({ workspace: workspace2 } = await $vf_workspace([
         'create',
         `--organization-id=${ORGANIZATION_ID}`,
         `--body=${JSON.stringify({ name })}`,
@@ -53,7 +53,7 @@ describe('vf workspace', () => {
 
     it('create with stdin', async () => {
       const name = 'workspace from stdin';
-      ({ workspace: workspace3 } = await $vf(['workspace', 'create', `--organization-id=${ORGANIZATION_ID}`], {
+      ({ workspace: workspace3 } = await $vf_workspace(['create', `--organization-id=${ORGANIZATION_ID}`], {
         stdin: 'pipe',
         input: JSON.stringify({ name }),
       }));
@@ -62,14 +62,13 @@ describe('vf workspace', () => {
     });
 
     it('update with args', async () => {
-      const result = await $vf(['workspace', 'update', `--workspace-id=${workspace1.id}`, '--name=renamed with args']);
+      const result = await $vf_workspace(['update', `--workspace-id=${workspace1.id}`, '--name=renamed with args']);
 
       expect(result).toEqual({ message: `Workspace ${workspace1.id} updated.` });
     });
 
     it('update with body', async () => {
-      const result = await $vf([
-        'workspace',
+      const result = await $vf_workspace([
         'update',
         `--workspace-id=${workspace2.id}`,
         `--body=${JSON.stringify({ name: 'renamed with body' })}`,
@@ -79,7 +78,7 @@ describe('vf workspace', () => {
     });
 
     it('update with stdin', async () => {
-      const result = await $vf(['workspace', 'update', `--workspace-id=${workspace3.id}`], {
+      const result = await $vf_workspace(['update', `--workspace-id=${workspace3.id}`], {
         stdin: 'pipe',
         input: JSON.stringify({ name: 'renamed with stdin' }),
       });
@@ -88,7 +87,7 @@ describe('vf workspace', () => {
     });
 
     it('get', async () => {
-      const result = await $vf(['workspace', 'get', `--workspace-id=${workspace1.id}`]);
+      const result = await $vf_workspace(['get', `--workspace-id=${workspace1.id}`]);
 
       expect(result).toEqual({
         workspace: {
@@ -100,13 +99,13 @@ describe('vf workspace', () => {
     });
 
     it('delete', async () => {
-      const result = await $vf(['workspace', 'delete', `--workspace-id=${workspace1.id}`]);
+      const result = await $vf_workspace(['delete', `--workspace-id=${workspace1.id}`]);
 
       expect(result).toEqual({ message: `Workspace ${workspace1.id} deleted.` });
     });
 
     it('list', async () => {
-      const result = await $vf(['workspace', 'list']);
+      const result = await $vf_workspace(['list']);
 
       expect(result).toEqual({
         workspaces: expect.not.arrayContaining([expect.objectContaining({ id: workspace1.id })]),
