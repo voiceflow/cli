@@ -13,7 +13,7 @@ import (
 // which propagates the value here (see cmd/vf/main.go):
 //
 //	go build -ldflags "-X main.version=x.y.z" ./cmd/vf
-var Version = "0.2.4"
+var Version = "0.2.5"
 
 // BuildTime is optionally set at build time via ldflags targeting the main package.
 var BuildTime string

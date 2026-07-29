@@ -10,12 +10,62 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+type StableToolCreateRequestGenerative3 struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StableToolCreateRequestGenerative3) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestGenerative3) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestGenerative3) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StableToolCreateRequestGenerative3) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StableToolCreateRequestGenerative3) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StableToolCreateRequestGenerative3) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
+// #region class-body-stabletoolcreaterequestgenerative3
+// #endregion class-body-stabletoolcreaterequestgenerative3
+
 type StableToolCreateRequestMessages3 struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                             `json:"delayMessageID"`
+	FailureMessageID    *string                             `json:"failureMessageID"`
+	ExecutionMessageID  *string                             `json:"executionMessageID"`
+	CompletionMessageID *string                             `json:"completionMessageID"`
+	DelayMessageSeconds *float64                            `json:"delayMessageSeconds"`
+	Generative          *StableToolCreateRequestGenerative3 `json:"generative,omitzero"`
 }
 
 func (s StableToolCreateRequestMessages3) MarshalJSON() ([]byte, error) {
@@ -62,6 +112,13 @@ func (s *StableToolCreateRequestMessages3) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StableToolCreateRequestMessages3) GetGenerative() *StableToolCreateRequestGenerative3 {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 // #region class-body-stabletoolcreaterequestmessages3
@@ -426,12 +483,62 @@ func (s *StableToolCreateRequestMcp) GetMcpToolID() string {
 	return s.McpToolID
 }
 
+type StableToolCreateRequestGenerative2 struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StableToolCreateRequestGenerative2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestGenerative2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestGenerative2) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StableToolCreateRequestGenerative2) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StableToolCreateRequestGenerative2) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StableToolCreateRequestGenerative2) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
+// #region class-body-stabletoolcreaterequestgenerative2
+// #endregion class-body-stabletoolcreaterequestgenerative2
+
 type StableToolCreateRequestMessages2 struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                             `json:"delayMessageID"`
+	FailureMessageID    *string                             `json:"failureMessageID"`
+	ExecutionMessageID  *string                             `json:"executionMessageID"`
+	CompletionMessageID *string                             `json:"completionMessageID"`
+	DelayMessageSeconds *float64                            `json:"delayMessageSeconds"`
+	Generative          *StableToolCreateRequestGenerative2 `json:"generative,omitzero"`
 }
 
 func (s StableToolCreateRequestMessages2) MarshalJSON() ([]byte, error) {
@@ -478,6 +585,13 @@ func (s *StableToolCreateRequestMessages2) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StableToolCreateRequestMessages2) GetGenerative() *StableToolCreateRequestGenerative2 {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 // #region class-body-stabletoolcreaterequestmessages2
@@ -851,12 +965,62 @@ func (s *StableToolCreateRequestFunction) GetFunctionID() string {
 	return s.FunctionID
 }
 
+type StableToolCreateRequestGenerative1 struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StableToolCreateRequestGenerative1) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestGenerative1) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestGenerative1) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StableToolCreateRequestGenerative1) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StableToolCreateRequestGenerative1) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StableToolCreateRequestGenerative1) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
+// #region class-body-stabletoolcreaterequestgenerative1
+// #endregion class-body-stabletoolcreaterequestgenerative1
+
 type StableToolCreateRequestMessages1 struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                             `json:"delayMessageID"`
+	FailureMessageID    *string                             `json:"failureMessageID"`
+	ExecutionMessageID  *string                             `json:"executionMessageID"`
+	CompletionMessageID *string                             `json:"completionMessageID"`
+	DelayMessageSeconds *float64                            `json:"delayMessageSeconds"`
+	Generative          *StableToolCreateRequestGenerative1 `json:"generative,omitzero"`
 }
 
 func (s StableToolCreateRequestMessages1) MarshalJSON() ([]byte, error) {
@@ -903,6 +1067,13 @@ func (s *StableToolCreateRequestMessages1) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StableToolCreateRequestMessages1) GetGenerative() *StableToolCreateRequestGenerative1 {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 // #region class-body-stabletoolcreaterequestmessages1

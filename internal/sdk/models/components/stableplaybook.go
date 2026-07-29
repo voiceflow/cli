@@ -229,12 +229,70 @@ func (u StablePlaybookInstruction) MarshalJSON() ([]byte, error) {
 	return nil, errors.New("could not marshal union type StablePlaybookInstruction: all fields are null")
 }
 
+type StablePlaybookEndToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookEndToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookEndToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookEndToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookEndToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookEndToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookEndToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookEndToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                          `json:"delayMessageID"`
+	FailureMessageID    *string                          `json:"failureMessageID"`
+	ExecutionMessageID  *string                          `json:"executionMessageID"`
+	CompletionMessageID *string                          `json:"completionMessageID"`
+	DelayMessageSeconds *float64                         `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookEndToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookEndToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookEndToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookEndToolMessages) GetDelayMessageID() *string {
@@ -270,6 +328,13 @@ func (s *StablePlaybookEndToolMessages) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookEndToolMessages) GetGenerative() *StablePlaybookEndToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookEndToolToolSound struct {
@@ -348,12 +413,70 @@ func (s *StablePlaybookEndTool) GetDescription() string {
 	return s.Description
 }
 
+type StablePlaybookCardToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookCardToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookCardToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookCardToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookCardToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookCardToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookCardToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookCardToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                           `json:"delayMessageID"`
+	FailureMessageID    *string                           `json:"failureMessageID"`
+	ExecutionMessageID  *string                           `json:"executionMessageID"`
+	CompletionMessageID *string                           `json:"completionMessageID"`
+	DelayMessageSeconds *float64                          `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookCardToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookCardToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookCardToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookCardToolMessages) GetDelayMessageID() *string {
@@ -389,6 +512,13 @@ func (s *StablePlaybookCardToolMessages) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookCardToolMessages) GetGenerative() *StablePlaybookCardToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookCardTool struct {
@@ -429,12 +559,70 @@ func (s *StablePlaybookCardTool) GetDescription() string {
 	return s.Description
 }
 
+type StablePlaybookButtonToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookButtonToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookButtonToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookButtonToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookButtonToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookButtonToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookButtonToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookButtonToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                             `json:"delayMessageID"`
+	FailureMessageID    *string                             `json:"failureMessageID"`
+	ExecutionMessageID  *string                             `json:"executionMessageID"`
+	CompletionMessageID *string                             `json:"completionMessageID"`
+	DelayMessageSeconds *float64                            `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookButtonToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookButtonToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookButtonToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookButtonToolMessages) GetDelayMessageID() *string {
@@ -470,6 +658,13 @@ func (s *StablePlaybookButtonToolMessages) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookButtonToolMessages) GetGenerative() *StablePlaybookButtonToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookButtonTool struct {
@@ -510,12 +705,70 @@ func (s *StablePlaybookButtonTool) GetDescription() string {
 	return s.Description
 }
 
+type StablePlaybookCarouselToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookCarouselToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookCarouselToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookCarouselToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookCarouselToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookCarouselToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookCarouselToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookCarouselToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                               `json:"delayMessageID"`
+	FailureMessageID    *string                               `json:"failureMessageID"`
+	ExecutionMessageID  *string                               `json:"executionMessageID"`
+	CompletionMessageID *string                               `json:"completionMessageID"`
+	DelayMessageSeconds *float64                              `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookCarouselToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookCarouselToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookCarouselToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookCarouselToolMessages) GetDelayMessageID() *string {
@@ -551,6 +804,13 @@ func (s *StablePlaybookCarouselToolMessages) GetDelayMessageSeconds() *float64 {
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookCarouselToolMessages) GetGenerative() *StablePlaybookCarouselToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookCarouselTool struct {
@@ -610,12 +870,70 @@ func (s *StablePlaybookSkipTurnTool) GetDescription() string {
 	return s.Description
 }
 
+type StablePlaybookWebSearchToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookWebSearchToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookWebSearchToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookWebSearchToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookWebSearchToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookWebSearchToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookWebSearchToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookWebSearchToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                                `json:"delayMessageID"`
+	FailureMessageID    *string                                `json:"failureMessageID"`
+	ExecutionMessageID  *string                                `json:"executionMessageID"`
+	CompletionMessageID *string                                `json:"completionMessageID"`
+	DelayMessageSeconds *float64                               `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookWebSearchToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookWebSearchToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookWebSearchToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookWebSearchToolMessages) GetDelayMessageID() *string {
@@ -651,6 +969,13 @@ func (s *StablePlaybookWebSearchToolMessages) GetDelayMessageSeconds() *float64 
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookWebSearchToolMessages) GetGenerative() *StablePlaybookWebSearchToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookWebSearchToolToolSound struct {
@@ -745,12 +1070,70 @@ func (s *StablePlaybookWebSearchTool) GetSourceUrlsCount() optionalnullable.Opti
 	return s.SourceUrlsCount
 }
 
+type StablePlaybookCallForwardToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookCallForwardToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookCallForwardToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookCallForwardToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookCallForwardToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookCallForwardToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookCallForwardToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookCallForwardToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                                  `json:"delayMessageID"`
+	FailureMessageID    *string                                  `json:"failureMessageID"`
+	ExecutionMessageID  *string                                  `json:"executionMessageID"`
+	CompletionMessageID *string                                  `json:"completionMessageID"`
+	DelayMessageSeconds *float64                                 `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookCallForwardToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookCallForwardToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookCallForwardToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookCallForwardToolMessages) GetDelayMessageID() *string {
@@ -786,6 +1169,13 @@ func (s *StablePlaybookCallForwardToolMessages) GetDelayMessageSeconds() *float6
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookCallForwardToolMessages) GetGenerative() *StablePlaybookCallForwardToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookCallForwardToolToolSound struct {
@@ -1115,12 +1505,70 @@ func (u StablePlaybookQuery) MarshalJSON() ([]byte, error) {
 	return nil, errors.New("could not marshal union type StablePlaybookQuery: all fields are null")
 }
 
+type StablePlaybookKnowledgeBaseToolGenerative struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookKnowledgeBaseToolGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookKnowledgeBaseToolGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookKnowledgeBaseToolGenerative) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookKnowledgeBaseToolGenerative) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookKnowledgeBaseToolGenerative) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookKnowledgeBaseToolGenerative) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
 type StablePlaybookKnowledgeBaseToolMessages struct {
-	DelayMessageID      *string  `json:"delayMessageID"`
-	FailureMessageID    *string  `json:"failureMessageID"`
-	ExecutionMessageID  *string  `json:"executionMessageID"`
-	CompletionMessageID *string  `json:"completionMessageID"`
-	DelayMessageSeconds *float64 `json:"delayMessageSeconds"`
+	DelayMessageID      *string                                    `json:"delayMessageID"`
+	FailureMessageID    *string                                    `json:"failureMessageID"`
+	ExecutionMessageID  *string                                    `json:"executionMessageID"`
+	CompletionMessageID *string                                    `json:"completionMessageID"`
+	DelayMessageSeconds *float64                                   `json:"delayMessageSeconds"`
+	Generative          *StablePlaybookKnowledgeBaseToolGenerative `json:"generative,omitzero"`
+}
+
+func (s StablePlaybookKnowledgeBaseToolMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookKnowledgeBaseToolMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookKnowledgeBaseToolMessages) GetDelayMessageID() *string {
@@ -1156,6 +1604,13 @@ func (s *StablePlaybookKnowledgeBaseToolMessages) GetDelayMessageSeconds() *floa
 		return nil
 	}
 	return s.DelayMessageSeconds
+}
+
+func (s *StablePlaybookKnowledgeBaseToolMessages) GetGenerative() *StablePlaybookKnowledgeBaseToolGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
 }
 
 type StablePlaybookKnowledgeBaseToolToolSound struct {

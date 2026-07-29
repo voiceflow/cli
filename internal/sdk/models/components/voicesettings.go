@@ -16,6 +16,7 @@ const (
 	VoiceSettingsTypeGoogle     VoiceSettingsType = "google"
 	VoiceSettingsTypeCartesia   VoiceSettingsType = "cartesia"
 	VoiceSettingsTypeRimelabs   VoiceSettingsType = "rimelabs"
+	VoiceSettingsTypeSoniox     VoiceSettingsType = "soniox"
 	VoiceSettingsTypeMicrosoft  VoiceSettingsType = "microsoft"
 	VoiceSettingsTypeElevenlabs VoiceSettingsType = "elevenlabs"
 	VoiceSettingsTypeUnknown    VoiceSettingsType = "UNKNOWN"
@@ -26,6 +27,7 @@ type VoiceSettings struct {
 	GoogleVoiceSettings     *GoogleVoiceSettings     `queryParam:"inline" union:"member"`
 	CartesiaVoiceSettings   *CartesiaVoiceSettings   `queryParam:"inline" union:"member"`
 	RimelabsVoiceSettings   *RimelabsVoiceSettings   `queryParam:"inline" union:"member"`
+	SonioxVoiceSettings     *SonioxVoiceSettings     `queryParam:"inline" union:"member"`
 	MicrosoftVoiceSettings  *MicrosoftVoiceSettings  `queryParam:"inline" union:"member"`
 	ElevenLabsVoiceSettings *ElevenLabsVoiceSettings `queryParam:"inline" union:"member"`
 	UnknownRaw              json.RawMessage          `json:"-" union:"unknown"`
@@ -78,6 +80,18 @@ func CreateVoiceSettingsRimelabs(rimelabs RimelabsVoiceSettings) VoiceSettings {
 	return VoiceSettings{
 		RimelabsVoiceSettings: &rimelabs,
 		Type:                  typ,
+	}
+}
+
+func CreateVoiceSettingsSoniox(soniox SonioxVoiceSettings) VoiceSettings {
+	typ := VoiceSettingsTypeSoniox
+
+	typStr := SonioxVoiceSettingsProvider(typ)
+	soniox.Provider = typStr
+
+	return VoiceSettings{
+		SonioxVoiceSettings: &soniox,
+		Type:                typ,
 	}
 }
 
@@ -175,6 +189,15 @@ func (u *VoiceSettings) UnmarshalJSON(data []byte) error {
 		u.RimelabsVoiceSettings = rimelabsVoiceSettings
 		u.Type = VoiceSettingsTypeRimelabs
 		return nil
+	case "soniox":
+		sonioxVoiceSettings := new(SonioxVoiceSettings)
+		if err := utils.UnmarshalJSON(data, &sonioxVoiceSettings, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Provider == soniox) type SonioxVoiceSettings within VoiceSettings: %w", string(data), err)
+		}
+
+		u.SonioxVoiceSettings = sonioxVoiceSettings
+		u.Type = VoiceSettingsTypeSoniox
+		return nil
 	case "microsoft":
 		microsoftVoiceSettings := new(MicrosoftVoiceSettings)
 		if err := utils.UnmarshalJSON(data, &microsoftVoiceSettings, "", true, nil); err != nil {
@@ -216,6 +239,10 @@ func (u VoiceSettings) MarshalJSON() ([]byte, error) {
 
 	if u.RimelabsVoiceSettings != nil {
 		return utils.MarshalJSON(u.RimelabsVoiceSettings, "", true)
+	}
+
+	if u.SonioxVoiceSettings != nil {
+		return utils.MarshalJSON(u.SonioxVoiceSettings, "", true)
 	}
 
 	if u.MicrosoftVoiceSettings != nil {

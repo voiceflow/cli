@@ -18,6 +18,7 @@ const (
 	STTSettingsTypeCartesia   STTSettingsType = "cartesia"
 	STTSettingsTypeGladia     STTSettingsType = "gladia"
 	STTSettingsTypeGoogle     STTSettingsType = "google"
+	STTSettingsTypeSoniox     STTSettingsType = "soniox"
 	STTSettingsTypeUnknown    STTSettingsType = "UNKNOWN"
 )
 
@@ -28,6 +29,7 @@ type STTSettings struct {
 	CartesiaSTTSettings   *CartesiaSTTSettings   `queryParam:"inline" union:"member"`
 	GladiaSTTSettings     *GladiaSTTSettings     `queryParam:"inline" union:"member"`
 	GoogleSTTSettings     *GoogleSTTSettings     `queryParam:"inline" union:"member"`
+	SonioxSTTSettings     *SonioxSTTSettings     `queryParam:"inline" union:"member"`
 	UnknownRaw            json.RawMessage        `json:"-" union:"unknown"`
 
 	Type STTSettingsType
@@ -101,6 +103,18 @@ func CreateSTTSettingsGoogle(google GoogleSTTSettings) STTSettings {
 
 	return STTSettings{
 		GoogleSTTSettings: &google,
+		Type:              typ,
+	}
+}
+
+func CreateSTTSettingsSoniox(soniox SonioxSTTSettings) STTSettings {
+	typ := STTSettingsTypeSoniox
+
+	typStr := SonioxSTTSettingsProvider(typ)
+	soniox.Provider = typStr
+
+	return STTSettings{
+		SonioxSTTSettings: &soniox,
 		Type:              typ,
 	}
 }
@@ -193,6 +207,15 @@ func (u *STTSettings) UnmarshalJSON(data []byte) error {
 		u.GoogleSTTSettings = googleSTTSettings
 		u.Type = STTSettingsTypeGoogle
 		return nil
+	case "soniox":
+		sonioxSTTSettings := new(SonioxSTTSettings)
+		if err := utils.UnmarshalJSON(data, &sonioxSTTSettings, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Provider == soniox) type SonioxSTTSettings within STTSettings: %w", string(data), err)
+		}
+
+		u.SonioxSTTSettings = sonioxSTTSettings
+		u.Type = STTSettingsTypeSoniox
+		return nil
 	default:
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = STTSettingsTypeUnknown
@@ -224,6 +247,10 @@ func (u STTSettings) MarshalJSON() ([]byte, error) {
 
 	if u.GoogleSTTSettings != nil {
 		return utils.MarshalJSON(u.GoogleSTTSettings, "", true)
+	}
+
+	if u.SonioxSTTSettings != nil {
+		return utils.MarshalJSON(u.SonioxSTTSettings, "", true)
 	}
 
 	if u.UnknownRaw != nil {

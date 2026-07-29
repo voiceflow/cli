@@ -7523,10 +7523,12 @@ components:
         - ujet
         - genesys
         - kustomer
+        - dixa
       x-enumNames:
         - UJET
         - GENESYS
         - KUSTOMER
+        - DIXA
     ToolCallTrace:
       type: object
       properties:
@@ -7876,6 +7878,8 @@ components:
           type: object
           properties:
             reason:
+              type: string
+            message:
               type: string
           required:
             - reason
@@ -8409,12 +8413,38 @@ components:
         delayMessageSeconds:
           nullable: true
           type: number
+        generative:
+          type: object
+          properties:
+            execution:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
+            failure:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
+            delay:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
+            completion:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
       required:
         - delayMessageID
         - failureMessageID
         - executionMessageID
         - completionMessageID
         - delayMessageSeconds
+    ToolMessageGenerative:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        examples:
+          type: array
+          items:
+            $ref: '#/components/schemas/Markup'
+      required:
+        - enabled
     AgentToolCaptureInputVariable:
       type: object
       properties:
@@ -9273,6 +9303,9 @@ components:
             - $ref: '#/components/schemas/VoiceKeypadSettings'
         silenceTimeoutMs:
           type: number
+        maxDuration:
+          allOf:
+            - $ref: '#/components/schemas/VoiceMaxDurationSettings'
     STTSettings:
       oneOf:
         - $ref: '#/components/schemas/ElevenLabsSTTSettings'
@@ -9281,6 +9314,7 @@ components:
         - $ref: '#/components/schemas/CartesiaSTTSettings'
         - $ref: '#/components/schemas/GladiaSTTSettings'
         - $ref: '#/components/schemas/GoogleSTTSettings'
+        - $ref: '#/components/schemas/SonioxSTTSettings'
     ElevenLabsSTTSettings:
       type: object
       properties:
@@ -9559,6 +9593,10 @@ components:
           type: number
         EOTThreshold:
           type: number
+        languageHints:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeepgramSTTLanguage'
       required:
         - provider
     DeepgramSTTModel:
@@ -10407,12 +10445,172 @@ components:
         - TE_IN
         - TH_TH
         - UZ_UZ
+    SonioxSTTSettings:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+            - soniox
+          x-enumNames:
+            - SONIOX
+        model:
+          $ref: '#/components/schemas/SonioxSTTModel'
+        maxEndpointDelayMS:
+          type: integer
+          minimum: 500
+          maximum: 3000
+        endpointSensitivity:
+          type: number
+          minimum: -1
+          maximum: 1
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SonioxSTTLanguage'
+      required:
+        - provider
+        - model
+        - languages
+    SonioxSTTModel:
+      type: string
+      enum:
+        - stt-rt-v5
+      x-enumNames:
+        - STT_RT_V_5
+    SonioxSTTLanguage:
+      type: string
+      enum:
+        - auto
+        - af
+        - sq
+        - ar
+        - az
+        - eu
+        - be
+        - bn
+        - bs
+        - bg
+        - ca
+        - zh
+        - hr
+        - cs
+        - da
+        - nl
+        - en
+        - et
+        - fi
+        - fr
+        - gl
+        - de
+        - el
+        - gu
+        - he
+        - hi
+        - hu
+        - id
+        - it
+        - ja
+        - kn
+        - kk
+        - ko
+        - lv
+        - lt
+        - mk
+        - ms
+        - ml
+        - mr
+        - no
+        - fa
+        - pl
+        - pt
+        - pa
+        - ro
+        - ru
+        - sr
+        - sk
+        - sl
+        - es
+        - sw
+        - sv
+        - tl
+        - ta
+        - te
+        - th
+        - tr
+        - uk
+        - ur
+        - vi
+        - cy
+      x-enumNames:
+        - AUTO
+        - AFRIKAANS
+        - ALBANIAN
+        - ARABIC
+        - AZERBAIJANI
+        - BASQUE
+        - BELARUSIAN
+        - BENGALI
+        - BOSNIAN
+        - BULGARIAN
+        - CATALAN
+        - CHINESE
+        - CROATIAN
+        - CZECH
+        - DANISH
+        - DUTCH
+        - ENGLISH
+        - ESTONIAN
+        - FINNISH
+        - FRENCH
+        - GALICIAN
+        - GERMAN
+        - GREEK
+        - GUJARATI
+        - HEBREW
+        - HINDI
+        - HUNGARIAN
+        - INDONESIAN
+        - ITALIAN
+        - JAPANESE
+        - KANNADA
+        - KAZAKH
+        - KOREAN
+        - LATVIAN
+        - LITHUANIAN
+        - MACEDONIAN
+        - MALAY
+        - MALAYALAM
+        - MARATHI
+        - NORWEGIAN
+        - PERSIAN
+        - POLISH
+        - PORTUGUESE
+        - PUNJABI
+        - ROMANIAN
+        - RUSSIAN
+        - SERBIAN
+        - SLOVAK
+        - SLOVENIAN
+        - SPANISH
+        - SWAHILI
+        - SWEDISH
+        - TAGALOG
+        - TAMIL
+        - TELUGU
+        - THAI
+        - TURKISH
+        - UKRAINIAN
+        - URDU
+        - VIETNAMESE
+        - WELSH
     VoiceSettings:
       oneOf:
         - $ref: '#/components/schemas/AmazonVoiceSettings'
         - $ref: '#/components/schemas/GoogleVoiceSettings'
         - $ref: '#/components/schemas/CartesiaVoiceSettings'
         - $ref: '#/components/schemas/RimelabsVoiceSettings'
+        - $ref: '#/components/schemas/SonioxVoiceSettings'
         - $ref: '#/components/schemas/MicrosoftVoiceSettings'
         - $ref: '#/components/schemas/ElevenLabsVoiceSettings'
     AmazonVoiceSettings:
@@ -10507,6 +10705,24 @@ components:
         model:
           type: string
         voice:
+          type: string
+      required:
+        - provider
+        - voice
+    SonioxVoiceSettings:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+            - soniox
+          x-enumNames:
+            - SONIOX
+        model:
+          type: string
+        voice:
+          type: string
+        language:
           type: string
       required:
         - provider
@@ -10614,6 +10830,21 @@ components:
         - enabled
         - delimiter
         - timeoutInSeconds
+    VoiceMaxDurationSettings:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        seconds:
+          nullable: true
+          type: number
+        message:
+          nullable: true
+          type: string
+      required:
+        - enabled
+        - seconds
+        - message
     CrewNodeDataRequiredVariable:
       type: object
       properties:
@@ -10940,6 +11171,9 @@ components:
                 - $ref: '#/components/schemas/VoiceKeypadSettings'
             silenceTimeoutMs:
               type: number
+            maxDuration:
+              allOf:
+                - $ref: '#/components/schemas/VoiceMaxDurationSettings'
       additionalProperties: false
     StableAnalyticsQueryCallCountResponse:
       type: object

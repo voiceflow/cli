@@ -19,6 +19,7 @@ type VersionSettingsVoice struct {
 	AudioSync               *bool                                      `json:"audioSync,omitzero"`
 	KeypadInput             *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
 	SilenceTimeoutMs        *float64                                   `json:"silenceTimeoutMs,omitzero"`
+	MaxDuration             *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
 }
 
 func (v VersionSettingsVoice) MarshalJSON() ([]byte, error) {
@@ -81,6 +82,13 @@ func (v *VersionSettingsVoice) GetSttGoogle() *GoogleSTTSettings {
 	return nil
 }
 
+func (v *VersionSettingsVoice) GetSttSoniox() *SonioxSTTSettings {
+	if v := v.GetStt(); v != nil {
+		return v.SonioxSTTSettings
+	}
+	return nil
+}
+
 func (v *VersionSettingsVoice) GetTts() *VoiceSettings {
 	if v == nil {
 		return nil
@@ -112,6 +120,13 @@ func (v *VersionSettingsVoice) GetTtsCartesia() *CartesiaVoiceSettings {
 func (v *VersionSettingsVoice) GetTtsRimelabs() *RimelabsVoiceSettings {
 	if v := v.GetTts(); v != nil {
 		return v.RimelabsVoiceSettings
+	}
+	return nil
+}
+
+func (v *VersionSettingsVoice) GetTtsSoniox() *SonioxVoiceSettings {
+	if v := v.GetTts(); v != nil {
+		return v.SonioxVoiceSettings
 	}
 	return nil
 }
@@ -191,4 +206,11 @@ func (v *VersionSettingsVoice) GetSilenceTimeoutMs() *float64 {
 		return nil
 	}
 	return v.SilenceTimeoutMs
+}
+
+func (v *VersionSettingsVoice) GetMaxDuration() *VoiceMaxDurationSettings {
+	if v == nil {
+		return nil
+	}
+	return v.MaxDuration
 }

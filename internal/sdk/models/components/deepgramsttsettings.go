@@ -42,6 +42,7 @@ type DeepgramSTTSettings struct {
 	InterruptionWaitWords *float64                    `json:"interruptionWaitWords,omitzero"`
 	EOTTimeout            *float64                    `json:"EOTTimeout,omitzero"`
 	EOTThreshold          *float64                    `json:"EOTThreshold,omitzero"`
+	LanguageHints         []DeepgramSTTLanguage       `json:"languageHints,omitzero"`
 }
 
 func (d DeepgramSTTSettings) MarshalJSON() ([]byte, error) {
@@ -123,4 +124,11 @@ func (d *DeepgramSTTSettings) GetEOTThreshold() *float64 {
 		return nil
 	}
 	return d.EOTThreshold
+}
+
+func (d *DeepgramSTTSettings) GetLanguageHints() []DeepgramSTTLanguage {
+	if d == nil {
+		return nil
+	}
+	return d.LanguageHints
 }

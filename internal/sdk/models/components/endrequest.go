@@ -33,6 +33,7 @@ func (e *EndRequestType) UnmarshalJSON(data []byte) error {
 
 type EndRequestPayload struct {
 	Reason               string         `json:"reason"`
+	Message              *string        `json:"message,omitzero"`
 	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
 }
 
@@ -52,6 +53,13 @@ func (e *EndRequestPayload) GetReason() string {
 		return ""
 	}
 	return e.Reason
+}
+
+func (e *EndRequestPayload) GetMessage() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Message
 }
 
 func (e *EndRequestPayload) GetAdditionalProperties() map[string]any {
