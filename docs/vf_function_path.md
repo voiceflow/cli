@@ -28,7 +28,6 @@ vf function path [flags]
   -q, --jq string              Filter and transform output using a jq expression (e.g., '.name', '.items[] | .id')
       --no-interactive         Disable all interactive features (auto-prompting, explorer auto-launch, TUI forms)
   -o, --output-format string   Specify the output format. Options: pretty, json, yaml, table, toon. (default "pretty")
-      --server string          Select a server by index (for indexed servers) or name (for named servers)
       --server-url string      Override the default server URL
       --timeout string         HTTP request timeout (e.g., 30s, 5m, 100ms)
       --token string           Voiceflow bearer token
