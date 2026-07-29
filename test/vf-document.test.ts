@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 
 import { $vf, sequential, setupProjectTest } from './utils';
 
@@ -31,15 +31,16 @@ describe('vf document', () => {
     );
 
   describe('CRUD', { concurrent: false }, () => {
-    const itSeq = sequential();
+    const it = sequential();
     let urlDocument1: any;
     let urlDocument2: any;
     let urlDocument3: any;
     let tableDocument1: any;
     let tableDocument2: any;
     let tableDocument3: any;
+    let textDocument: any;
 
-    itSeq('create url document with args', async () => {
+    it('create url document with args', async () => {
       const url = 'https://example.com/from-args';
 
       ({ document: urlDocument1 } = await $vf_document(['create-url', `--url=${url}`]));
@@ -55,7 +56,7 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('create url document with body', async () => {
+    it('create url document with body', async () => {
       const url = 'https://example.com/from-body';
 
       ({ document: urlDocument2 } = await $vf_document(['create-url', `--body=${JSON.stringify({ url })}`]));
@@ -71,7 +72,7 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('create url document with stdin', async () => {
+    it('create url document with stdin', async () => {
       const url = 'https://example.com/from-stdin';
 
       ({ document: urlDocument3 } = await $vf_document(['create-url'], {
@@ -90,12 +91,7 @@ describe('vf document', () => {
       });
     });
 
-    // TODO: fix openapi schema (missing formdata body)
-    it('create text document with args');
-    it('create text document with body');
-    it('create text document with stdin');
-
-    itSeq('create table document with args', async () => {
+    it('create table document with args', async () => {
       const name = 'table document from args';
 
       ({ document: tableDocument1 } = await $vf_document([
@@ -117,7 +113,7 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('create table document with body', async () => {
+    it('create table document with body', async () => {
       const name = 'table document from body';
 
       ({ document: tableDocument2 } = await $vf_document([
@@ -141,7 +137,7 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('create table document with stdin', async () => {
+    it('create table document with stdin', async () => {
       const name = 'table document from stdin';
 
       ({ document: tableDocument3 } = await $vf_document([
@@ -165,11 +161,25 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('document processed', async () => {
+    it('create text document with args', async () => {
+      ({ document: textDocument } = await $vf_document(['create-text', `--file=./test/assets/document.txt`]));
+
+      expect(textDocument).toEqual({
+        ...DOCUMENT_DEFAULTS,
+        data: {
+          url: null,
+          name: 'document.txt',
+          type: 'text',
+          canEdit: true,
+        },
+      });
+    });
+
+    it('document processed', async () => {
       await waitUntilProcessed(urlDocument1.id);
     });
 
-    itSeq('update with args', async () => {
+    it('update with args', async () => {
       const result = await $vf_document([
         'update',
         `--document-id=${urlDocument1.id}`,
@@ -179,7 +189,7 @@ describe('vf document', () => {
       expect(result).toEqual({ message: `Document ${urlDocument1.id} updated.` });
     });
 
-    itSeq('update with body', async () => {
+    it('update with body', async () => {
       const result = await $vf_document([
         'update',
         `--document-id=${urlDocument2.id}`,
@@ -189,7 +199,7 @@ describe('vf document', () => {
       expect(result).toEqual({ message: `Document ${urlDocument2.id} updated.` });
     });
 
-    itSeq('update with stdin', async () => {
+    it('update with stdin', async () => {
       const result = await $vf_document(['update', `--document-id=${urlDocument3.id}`], {
         stdin: 'pipe',
         input: JSON.stringify({ metadata: [{ key: 'source', values: ['stdin'] }] }),
@@ -198,7 +208,7 @@ describe('vf document', () => {
       expect(result).toEqual({ message: `Document ${urlDocument3.id} updated.` });
     });
 
-    itSeq('get', async () => {
+    it('get', async () => {
       const result = await $vf_document(['get', `--document-id=${urlDocument1.id}`]);
 
       expect(result).toEqual({
@@ -209,17 +219,17 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('document updated', async () => {
+    it('document updated', async () => {
       await waitUntilProcessed(urlDocument1.id);
     });
 
-    itSeq('delete', async () => {
+    it('delete', async () => {
       const result = await $vf_document(['delete', `--document-id=${urlDocument1.id}`]);
 
       expect(result).toEqual({ message: `Document ${urlDocument1.id} deleted.` });
     });
 
-    itSeq('list', async () => {
+    it('list', async () => {
       const result = await $vf_document(['list']);
 
       expect(result).toEqual({
@@ -232,6 +242,7 @@ describe('vf document', () => {
           expect.objectContaining({ id: tableDocument1.id }),
           expect.objectContaining({ id: tableDocument2.id }),
           expect.objectContaining({ id: tableDocument3.id }),
+          expect.objectContaining({ id: textDocument.id }),
         ]),
       });
     });
