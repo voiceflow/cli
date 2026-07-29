@@ -1,6 +1,9 @@
+import { Utils } from '@voiceflow/common';
 import { isValid, parseISO } from 'date-fns';
 import { execa, Options } from 'execa';
-import { it, TestFunction } from 'vitest';
+import { afterAll, beforeAll, it, TestFunction } from 'vitest';
+
+import { createProject } from './fixtures';
 
 const DEFAULT_OPTIONS = { stdin: 'ignore' } as const;
 
@@ -16,6 +19,7 @@ export const $vf = async (args: string[], options?: Pick<Options, 'stdin' | 'inp
   try {
     return JSON.parse(result.stdout);
   } catch {
+    if (result.failed) throw new Error(result.cause);
     return result;
   }
 };
@@ -36,4 +40,20 @@ export const sequential = () => {
         throw err;
       }
     });
+};
+
+export const setupProjectTest = () => {
+  let project: any;
+
+  beforeAll(async () => {
+    ({ project } = await createProject());
+  });
+
+  afterAll(async () => {
+    await $vf(['project', 'delete', `--project-id=${project.id}`])
+      // TODO: remove once project deletion is fixed (COR-13141)
+      .catch(Utils.functional.noop);
+  });
+
+  return () => project;
 };

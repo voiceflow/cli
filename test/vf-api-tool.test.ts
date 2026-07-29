@@ -19,7 +19,7 @@ describe('vf api-tool', () => {
   const project = setupProjectTest();
 
   const $vf_api_tool: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'api-tool', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'api-tool', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const httpMethod = 'get';

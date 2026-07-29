@@ -5,6 +5,13 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@assemblyscript/loader@npm:0.19.22":
+  version: 0.19.22
+  resolution: "@assemblyscript/loader@npm:0.19.22"
+  checksum: 248f933fe4b4745b9ac735e4d2cac9966404041960aa56bcbb3d9ebf60af76b2739d476d705e97b60f6657e460475527a635709396be07ebde417612454838e9
+  languageName: node
+  linkType: hard
+
 "@babel/helper-string-parser@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/helper-string-parser@npm:7.29.7"
@@ -738,6 +745,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/crypto-js@npm:4.1.0":
+  version: 4.1.0
+  resolution: "@types/crypto-js@npm:4.1.0"
+  checksum: ae95a6c0c3fb38925d5c574d46122eeafc1fe5a2ac2920f6d86cb41d1f53fb5cb247238952d5089bee16e2eb54eca8805ba153e3fd8756bacf8e15c8441c876d
+  languageName: node
+  linkType: hard
+
 "@types/deep-eql@npm:*":
   version: 4.0.2
   resolution: "@types/deep-eql@npm:4.0.2"
@@ -758,6 +772,13 @@ __metadata:
   dependencies:
     undici-types: ~8.3.0
   checksum: c6727bd4761280b389a2706cc55cbb3511f37f3e2aa609dda65590e1aec5690ce3b14a865edd070c97c5ae4f566dbbae1a811c1b61f69efaee4226015205f304
+  languageName: node
+  linkType: hard
+
+"@types/shallowequal@npm:1.1.1":
+  version: 1.1.1
+  resolution: "@types/shallowequal@npm:1.1.1"
+  checksum: ed724c42d61b42e52306dfeb8c1af913a97f616a2098831a3f0801db3d391f00470dfe47f76fb213a087e4277dbf80857098aa2e56acb700f156befe06f6431f
   languageName: node
   linkType: hard
 
@@ -1026,6 +1047,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@voiceflow/common@npm:8.11.1":
+  version: 8.11.1
+  resolution: "@voiceflow/common@npm:8.11.1"
+  dependencies:
+    "@types/crypto-js": 4.1.0
+    "@types/shallowequal": 1.1.1
+    bson-objectid: 2.0.2
+    crypto-js: 4.2.0
+    cuid: 2.1.8
+    dayjs: 1.10.7
+    lodash: 4.17.21
+    murmurhash-wasm: 1.3.0
+    number-to-words: 1.2.4
+    shallowequal: 1.1.0
+    typescript-fsa: 3.0.0
+  peerDependencies:
+    zod: ^4
+  peerDependenciesMeta:
+    zod:
+      optional: true
+  checksum: d223cf495d234d6ba79941bc076daf21899458815b0acb636715a47a22feb48d365a8ab8cee7a05d91211ec9309fcb216398a5031d193d64e0dd50148b34377f
+  languageName: node
+  linkType: hard
+
 "@voiceflow/oxfmt-config@npm:1.1.0":
   version: 1.1.0
   resolution: "@voiceflow/oxfmt-config@npm:1.1.0"
@@ -1098,12 +1143,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base64-js@npm:^1.3.1":
+  version: 1.5.1
+  resolution: "base64-js@npm:1.5.1"
+  checksum: 669632eb3745404c2f822a18fc3a0122d2f9a7a13f7fb8b5823ee19d1d2ff9ee5b52c53367176ea4ad093c332fd5ab4bd0ebae5a8e27917a4105a4cfc86b1005
+  languageName: node
+  linkType: hard
+
 "brace-expansion@npm:^5.0.5":
   version: 5.0.8
   resolution: "brace-expansion@npm:5.0.8"
   dependencies:
     balanced-match: ^4.0.2
   checksum: acaa9420f52f63c340f405f70e78017a54383696a1138374db4008ea02bef12b6ba5e527b15513147bc474694d81e63c70be992a5efea60d14475219e04fac8d
+  languageName: node
+  linkType: hard
+
+"bson-objectid@npm:2.0.2":
+  version: 2.0.2
+  resolution: "bson-objectid@npm:2.0.2"
+  checksum: 7274aeff6195d20fe283dea673fd36680e878f1a59d31fc38e71a1220cabce24e2f33baa6ad9bda92865dd1ef42eff5a226c32eaf1f23f3a27986e364d2716f7
+  languageName: node
+  linkType: hard
+
+"buffer@npm:6.0.3":
+  version: 6.0.3
+  resolution: "buffer@npm:6.0.3"
+  dependencies:
+    base64-js: ^1.3.1
+    ieee754: ^1.2.1
+  checksum: 5ad23293d9a731e4318e420025800b42bf0d264004c0286c8cc010af7a270c7a0f6522e84f54b9ad65cbd6db20b8badbfd8d2ebf4f80fa03dab093b89e68c3f9
   languageName: node
   linkType: hard
 
@@ -1153,10 +1222,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"crypto-js@npm:4.2.0":
+  version: 4.2.0
+  resolution: "crypto-js@npm:4.2.0"
+  checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
+  languageName: node
+  linkType: hard
+
+"cuid@npm:2.1.8":
+  version: 2.1.8
+  resolution: "cuid@npm:2.1.8"
+  checksum: 12b85b3f5150a6f0b9e4f345c8d98299d74647419151751fa1132f6702fe2b5388ceceb1c9b49bad7cab1b3ac033c7cedea8ffc034930f90005b8a4345025288
+  languageName: node
+  linkType: hard
+
 "date-fns@npm:4.4.0":
   version: 4.4.0
   resolution: "date-fns@npm:4.4.0"
   checksum: 9a25020573f1aeaddfa0a41bb32411e8e1e8c81ddb870865a005c37f741778c737833baee350a90f275ae806dcd227e41bc4f26337dda189ebca796ce760ba11
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:1.10.7":
+  version: 1.10.7
+  resolution: "dayjs@npm:1.10.7"
+  checksum: a0a4ca95abaa03d0702161dc2c35d16121188e342f5052b9c61cdf784dab68af766f477c04f87f71c6af666fd4d13db9b9853b87265850d6093b7b04e1bb1cd7
   languageName: node
   linkType: hard
 
@@ -1473,6 +1563,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ieee754@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "ieee754@npm:1.2.1"
+  checksum: 5144c0c9815e54ada181d80a0b810221a253562422e7c6c3a60b1901154184f49326ec239d618c416c1c5945a2e197107aee8d986a3dd836b53dffefd99b5e7e
+  languageName: node
+  linkType: hard
+
 "ignore@npm:^5.0.5":
   version: 5.3.2
   resolution: "ignore@npm:5.3.2"
@@ -1684,6 +1781,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash@npm:4.17.21":
+  version: 4.17.21
+  resolution: "lodash@npm:4.17.21"
+  checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^0.30.21":
   version: 0.30.21
   resolution: "magic-string@npm:0.30.21"
@@ -1745,6 +1849,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"murmurhash-wasm@npm:1.3.0":
+  version: 1.3.0
+  resolution: "murmurhash-wasm@npm:1.3.0"
+  dependencies:
+    "@assemblyscript/loader": 0.19.22
+    buffer: 6.0.3
+  checksum: d882bca086ccc4510c63a0c37015386d1df58f6893e2ff482750b451fc2ad62878204f6731a339f24790022f3b23595d01deee6ef3fdabcac0bb3ea2326cde8a
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:^3.3.16":
   version: 3.3.16
   resolution: "nanoid@npm:3.3.16"
@@ -1792,6 +1906,13 @@ __metadata:
     path-key: ^4.0.0
     unicorn-magic: ^0.3.0
   checksum: 1a1b50aba6e6af7fd34a860ba2e252e245c4a59b316571a990356417c0cdf0414cabf735f7f52d9c330899cb56f0ab804a8e21fb12a66d53d7843e39ada4a3b6
+  languageName: node
+  linkType: hard
+
+"number-to-words@npm:1.2.4":
+  version: 1.2.4
+  resolution: "number-to-words@npm:1.2.4"
+  checksum: 468f4d745b18f961c7a6f933d3beb3f3b8b434f3daa2b3d891a43f5f43c6eeddea9f08bbc25d46a8221adaf2b31d5acc801ef6ece270190267ae79c6ac27857d
   languageName: node
   linkType: hard
 
@@ -2113,6 +2234,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@types/node": 26.1.1
+    "@voiceflow/common": 8.11.1
     "@voiceflow/oxfmt-config": 1.1.0
     "@voiceflow/oxlint-config": 1.2.0
     "@voiceflow/tsconfig": 1.17.0
@@ -2147,6 +2269,13 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 0c580f17e88e2b45806dc5cf3d824f719c946999d3554bf30307c2b68b3300ab3c8bfcd84d8f489b93b4cbb5362f5fc8de4d2858954f18d834253c4450fc9f6b
+  languageName: node
+  linkType: hard
+
+"shallowequal@npm:1.1.0":
+  version: 1.1.0
+  resolution: "shallowequal@npm:1.1.0"
+  checksum: f4c1de0837f106d2dbbfd5d0720a5d059d1c66b42b580965c8f06bb1db684be8783538b684092648c981294bf817869f743a066538771dbecb293df78f765e00
   languageName: node
   linkType: hard
 
@@ -2317,6 +2446,13 @@ __metadata:
   bin:
     tsx: dist/cli.mjs
   checksum: f9a1921a7ee05f590339fe491f58a01e7f3ff4a5b991ee9a4184f4f5526480df783c2e02c9ad356a26ae44e68bfe504101e5fd8e51802ba8e79a90f2552a67f8
+  languageName: node
+  linkType: hard
+
+"typescript-fsa@npm:3.0.0":
+  version: 3.0.0
+  resolution: "typescript-fsa@npm:3.0.0"
+  checksum: 5c84a6cf1c8a4b87f5623854b21819355139686ec45e191da3c5d89bb40fee3d949dde49a58ed396f98f709b8f0c878e4920bbc572cc45c71ca7d9e0deab4930
   languageName: node
   linkType: hard
 

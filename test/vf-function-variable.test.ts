@@ -13,7 +13,7 @@ describe('vf function variable', () => {
   const project = setupProjectTest();
 
   const $vf_function_variable: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'function', 'variable', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'function', 'variable', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const type = 'input';
@@ -26,7 +26,7 @@ describe('vf function variable', () => {
     beforeAll(async () => {
       ({ function: function_ } = await $vf([
         `--project-id=${project().id}`,
-        `--environment-alias=main`,
+        '--environment-alias=main',
         'function',
         'create',
         `--name=shared function`,

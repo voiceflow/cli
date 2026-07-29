@@ -13,7 +13,7 @@ describe('vf api-tool variable', () => {
   const project = setupProjectTest();
 
   const $vf_api_tool_variable: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'api-tool', 'variable', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'api-tool', 'variable', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const it = sequential();
@@ -25,7 +25,7 @@ describe('vf api-tool variable', () => {
     beforeAll(async () => {
       ({ apiTool } = await $vf([
         `--project-id=${project().id}`,
-        `--environment-alias=main`,
+        '--environment-alias=main',
         'api-tool',
         'create',
         `--name=shared api tool`,

@@ -16,10 +16,9 @@ describe('vf mcp-tool', () => {
   const project = setupProjectTest();
 
   const $vf_mcp_tool: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'mcp-tool', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'mcp-tool', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
-    const url = ['https://learn.microsoft.com/api/mcp'];
     const it = sequential();
     let mcpServer: any;
     let mcpTool: any;
@@ -27,11 +26,11 @@ describe('vf mcp-tool', () => {
     beforeAll(async () => {
       ({ mcpServer } = await $vf([
         `--project-id=${project().id}`,
-        `--environment-alias=main`,
+        '--environment-alias=main',
         'mcp-server',
         'create',
         `--name=shared server ${randomUUID()}`,
-        `--url=${JSON.stringify(url)}`,
+        `--url=${JSON.stringify(['https://learn.microsoft.com/api/mcp'])}`,
       ]));
     });
 

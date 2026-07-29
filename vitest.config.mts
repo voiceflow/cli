@@ -5,5 +5,6 @@ export default mergeConfig<ViteUserConfig, ViteUserConfig>(baseConfig, {
   test: {
     include: ['test/**/*.test.ts'],
     setupFiles: ['test/setup.ts'],
+    testTimeout: 10000,
   },
 });

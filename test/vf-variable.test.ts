@@ -15,7 +15,7 @@ describe('vf variable', () => {
   const project = setupProjectTest();
 
   const $vf_variable: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'variable', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'variable', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const color = '#defa13';

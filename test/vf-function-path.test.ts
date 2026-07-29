@@ -13,7 +13,7 @@ describe('vf function path', () => {
   const project = setupProjectTest();
 
   const $vf_function_path: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'function', 'path', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'function', 'path', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const it = sequential();
@@ -25,7 +25,7 @@ describe('vf function path', () => {
     beforeAll(async () => {
       ({ function: function_ } = await $vf([
         `--project-id=${project().id}`,
-        `--environment-alias=main`,
+        '--environment-alias=main',
         'function',
         'create',
         `--name=shared function`,

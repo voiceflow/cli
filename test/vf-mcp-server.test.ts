@@ -17,7 +17,7 @@ describe('vf mcp-server', () => {
   const project = setupProjectTest();
 
   const $vf_mcp_server: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'mcp-server', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'mcp-server', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const url = ['https://learn.microsoft.com/api/mcp'];

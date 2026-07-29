@@ -18,7 +18,7 @@ describe('vf document', () => {
   const project = setupProjectTest();
 
   const $vf_document: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'document', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'document', ...args], options);
 
   const waitUntilProcessed = (documentID: string) =>
     vi.waitUntil(

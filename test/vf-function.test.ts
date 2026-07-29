@@ -16,7 +16,7 @@ describe('vf function', () => {
   const project = setupProjectTest();
 
   const $vf_function: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'function', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'function', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const code = 'var foo = 123;';

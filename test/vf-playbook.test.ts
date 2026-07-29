@@ -24,7 +24,7 @@ describe('vf playbook', () => {
   const project = setupProjectTest();
 
   const $vf_playbook: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'playbook', ...args], options);
+    $vf([`--project-id=${project().id}`, '--environment-alias=main', 'playbook', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const it = sequential();
