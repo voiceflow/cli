@@ -27,3 +27,5 @@ node_modules
 .yarn/cache
 .yarn/versions
 
+# Reports
+*.report.xml
