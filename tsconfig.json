@@ -1,0 +1,9 @@
+{
+  "extends": "@voiceflow/tsconfig",
+  "compilerOptions": {
+    "rootDir": ".",
+    "types": [
+      "node"
+    ],
+  }
+}
