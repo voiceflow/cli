@@ -796,6 +796,74 @@ func (u StableDocumentControllerCreateTextLlmPrependContextUnion) MarshalJSON() 
 	return nil, errors.New("could not marshal union type StableDocumentControllerCreateTextLlmPrependContextUnion: all fields are null")
 }
 
+type File struct {
+	FileName string `multipartForm:"name=fileName"`
+	Content  []byte `multipartForm:"content"`
+}
+
+func (f *File) GetFileName() string {
+	if f == nil {
+		return ""
+	}
+	return f.FileName
+}
+
+func (f *File) GetContent() []byte {
+	if f == nil {
+		return []byte{}
+	}
+	return f.Content
+}
+
+type StableDocumentControllerCreateTextRequestBody struct {
+	// An optional source URL to associate with the uploaded document.
+	URL *string `multipartForm:"name=url"`
+	// If true, the document content can be edited in the Creator after upload.
+	CanEdit *bool `default:"false" multipartForm:"name=canEdit"`
+	// A JSON-encoded array of `{ key, values }` metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
+	Metadata *string `multipartForm:"name=metadata"`
+	File     File    `multipartForm:"file,name=file"`
+}
+
+func (s StableDocumentControllerCreateTextRequestBody) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableDocumentControllerCreateTextRequestBody) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableDocumentControllerCreateTextRequestBody) GetURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.URL
+}
+
+func (s *StableDocumentControllerCreateTextRequestBody) GetCanEdit() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.CanEdit
+}
+
+func (s *StableDocumentControllerCreateTextRequestBody) GetMetadata() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Metadata
+}
+
+func (s *StableDocumentControllerCreateTextRequestBody) GetFile() File {
+	if s == nil {
+		return File{}
+	}
+	return s.File
+}
+
 type StableDocumentControllerCreateTextRequest struct {
 	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
 	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
@@ -812,7 +880,7 @@ type StableDocumentControllerCreateTextRequest struct {
 	LlmContentSummarization *StableDocumentControllerCreateTextLlmContentSummarizationUnion `queryParam:"style=form,explode=true,name=llmContentSummarization"`
 	// When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 	LlmPrependContext *StableDocumentControllerCreateTextLlmPrependContextUnion `queryParam:"style=form,explode=true,name=llmPrependContext"`
-	Body              components.StableDocumentCreateTextRequest                `request:"mediaType=multipart/form-data"`
+	Body              StableDocumentControllerCreateTextRequestBody             `request:"mediaType=multipart/form-data"`
 }
 
 func (s *StableDocumentControllerCreateTextRequest) GetProjectID() string {
@@ -878,9 +946,9 @@ func (s *StableDocumentControllerCreateTextRequest) GetLlmPrependContext() *Stab
 	return s.LlmPrependContext
 }
 
-func (s *StableDocumentControllerCreateTextRequest) GetBody() components.StableDocumentCreateTextRequest {
+func (s *StableDocumentControllerCreateTextRequest) GetBody() StableDocumentControllerCreateTextRequestBody {
 	if s == nil {
-		return components.StableDocumentCreateTextRequest{}
+		return StableDocumentControllerCreateTextRequestBody{}
 	}
 	return s.Body
 }

@@ -12,7 +12,7 @@ type Schema struct {
 	// Per-row metadata, returned with results. NOT consulted by the default system tool's filter UI.
 	MetadataFields []string `json:"metadataFields,omitzero"`
 	// Full-text indexed; what semantic search matches against.
-	SearchableFields []string `json:"searchableFields,omitzero"`
+	SearchableFields []string `json:"searchableFields"`
 }
 
 func (s Schema) MarshalJSON() ([]byte, error) {
@@ -35,7 +35,7 @@ func (s *Schema) GetMetadataFields() []string {
 
 func (s *Schema) GetSearchableFields() []string {
 	if s == nil {
-		return nil
+		return []string{}
 	}
 	return s.SearchableFields
 }
@@ -68,7 +68,7 @@ type StableDocumentCreateTableRequest struct {
 	// The table rows to ingest; each row is a flat object and becomes its own chunk.
 	Items []map[string]any `json:"items"`
 	// Declares which top-level keys of each row are full-text searchable versus row-level metadata.
-	Schema *Schema `json:"schema,omitzero"`
+	Schema Schema `json:"schema"`
 	// Properties that can be filtered on at runtime (static or dynamic from a variable). Put your most common filter dimensions here.
 	Metadata []StableDocumentCreateTableRequestMetadatum `json:"metadata,omitzero"`
 }
@@ -105,9 +105,9 @@ func (s *StableDocumentCreateTableRequest) GetItems() []map[string]any {
 	return s.Items
 }
 
-func (s *StableDocumentCreateTableRequest) GetSchema() *Schema {
+func (s *StableDocumentCreateTableRequest) GetSchema() Schema {
 	if s == nil {
-		return nil
+		return Schema{}
 	}
 	return s.Schema
 }
