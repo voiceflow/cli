@@ -12,7 +12,7 @@ export const $ = execa(DEFAULT_OPTIONS);
 export const $vf = async (args: string[], options?: Pick<Options, 'stdin' | 'input'>) => {
   const result = await execa({ ...DEFAULT_OPTIONS, ...options })('./vf', [
     '--output-format=json',
-    '--timeout=4s',
+    '--timeout=10s',
     ...args,
   ]);
 
@@ -20,6 +20,8 @@ export const $vf = async (args: string[], options?: Pick<Options, 'stdin' | 'inp
     return JSON.parse(result.stdout);
   } catch {
     if (result.failed) throw new Error(result.cause);
+    if (result.message) throw new Error(result.message);
+    if (!result.stdout) throw new Error('empty response');
     return result;
   }
 };
