@@ -13,7 +13,7 @@ vf document create-table [flags]
 ### Examples
 
 ```
-  vf document create-table --project-id <id> --environment-alias <value> --name <value> --items '[{"key":"<value>"},{},{}]'
+  vf document create-table --project-id <id> --environment-alias <value> --name <value> --items '[{"key":"<value>"},{},{}]' --schema '{"searchableFields":["<value 1>","<value 2>","<value 3>"]}'
 ```
 
 ### Options
@@ -33,7 +33,7 @@ vf document create-table [flags]
   -n, --name string                        [required]
       --overwrite string                   JSON value (one of: boolean | StableDocumentController_createTable_overwrite_enum)
   -p, --project-id string                  [required]
-  -s, --schema string                      Declares which top-level keys of each row are full-text searchable versus row-level metadata.
+  -s, --schema string                      Declares which top-level keys of each row are full-text searchable versus row-level metadata. [required]
   -u, --url string                         An optional source URL to associate with the table document.
 ```
 

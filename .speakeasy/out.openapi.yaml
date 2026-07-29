@@ -3394,7 +3394,25 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/StableDocumentCreateTextRequest'
+              type: object
+              properties:
+                url:
+                  description: An optional source URL to associate with the uploaded document.
+                  type: string
+                canEdit:
+                  default: false
+                  description: If true, the document content can be edited in the Creator after upload.
+                  type: boolean
+                metadata:
+                  description: A JSON-encoded array of `{ key, values }` metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
+                  type: string
+                file:
+                  type: string
+                  format: binary
+                  contentEncoding: binary
+              required:
+                - file
+              additionalProperties: false
       responses:
         "201":
           description: ""
@@ -5701,18 +5719,6 @@ components:
       bearerFormat: JWT
       type: http
       description: Voiceflow bearer token
-    oauth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          scopes: {}
-          tokenUrl: https://auth-api.voiceflow.com/v1alpha1/oauth2/token
-          authorizationUrl: https://auth-api.voiceflow.com/v1alpha1/oauth2/authorize
-        clientCredentials:
-          scopes: {}
-          tokenUrl: https://auth-api.voiceflow.com/v1alpha1/oauth2/token
-          authorizationUrl: https://auth-api.voiceflow.com/v1alpha1/oauth2/authorize
-      description: Voiceflow OAuth access token
   schemas:
     AnyTrace:
       oneOf:
@@ -13492,20 +13498,6 @@ components:
       required:
         - url
       additionalProperties: false
-    StableDocumentCreateTextRequest:
-      type: object
-      properties:
-        url:
-          description: An optional source URL to associate with the uploaded document.
-          type: string
-        canEdit:
-          default: false
-          description: If true, the document content can be edited in the Creator after upload.
-          type: boolean
-        metadata:
-          description: A JSON-encoded array of `{ key, values }` metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
-          type: string
-      additionalProperties: false
     StableDocumentCreateTableRequest:
       type: object
       properties:
@@ -13521,7 +13513,6 @@ components:
             additionalProperties: {}
           description: The table rows to ingest; each row is a flat object and becomes its own chunk.
         schema:
-          description: Declares which top-level keys of each row are full-text searchable versus row-level metadata.
           type: object
           properties:
             metadataFields:
@@ -13531,11 +13522,14 @@ components:
               items:
                 type: string
             searchableFields:
-              default: []
-              description: Full-text indexed; what semantic search matches against.
+              minItems: 1
               type: array
               items:
                 type: string
+              description: Full-text indexed; what semantic search matches against.
+          required:
+            - searchableFields
+          description: Declares which top-level keys of each row are full-text searchable versus row-level metadata.
         metadata:
           default: []
           description: Properties that can be filtered on at runtime (static or dynamic from a variable). Put your most common filter dimensions here.
@@ -13557,6 +13551,7 @@ components:
       required:
         - name
         - items
+        - schema
       additionalProperties: false
     StableDocumentDetails:
       type: object

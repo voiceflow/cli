@@ -21,6 +21,7 @@ vf document create-text [flags]
 ```
   -c, --can-edit                           If true, the document content can be edited in the Creator after upload.
   -e, --environment-alias string           [required]
+  -f, --file string                        Path to file to upload [required]
   -h, --help                               help for create-text
       --llm-based-chunks string            JSON value (one of: boolean | StableDocumentController_createText_llmBasedChunks_enum)
       --llm-content-summarization string   JSON value (one of: boolean | StableDocumentController_createText_llmContentSummarization_enum)

@@ -28,7 +28,7 @@ var createTableCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindString, Optional: true, Description: "An optional source URL to associate with the table document."},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "items", Shorthand: "i", FieldPath: "Body.Items", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"items"`, Description: "The table rows to ingest; each row is a flat object and becomes its own chunk. [required]"},
-	{FlagName: "schema", Shorthand: "s", FieldPath: "Body.Schema", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"schema,omitempty"`, Description: "Declares which top-level keys of each row are full-text searchable versus row-level metadata."},
+	{FlagName: "schema", Shorthand: "s", FieldPath: "Body.Schema", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"schema"`, Description: "Declares which top-level keys of each row are full-text searchable versus row-level metadata. [required]"},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Properties that can be filtered on at runtime (static or dynamic from a variable). Put your most common filter dimensions here."},
 }
 
@@ -38,7 +38,7 @@ func initCreateTableCmd(parent *cobra.Command) error {
 		Use:     "create-table",
 		Short:   "Create table document",
 		Long:    "Create a new document from structured data.",
-		Example: "  vf document create-table --project-id <id> --environment-alias <value> --name <value> --items '[{\"key\":\"<value>\"},{},{}]'",
+		Example: "  vf document create-table --project-id <id> --environment-alias <value> --name <value> --items '[{\"key\":\"<value>\"},{},{}]' --schema '{\"searchableFields\":[\"<value 1>\",\"<value 2>\",\"<value 3>\"]}'",
 		RunE:    runCreateTableCmd,
 		Aliases: []string{"ct"},
 	}

@@ -28,6 +28,7 @@ var createTextCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindString, Optional: true, Description: "An optional source URL to associate with the uploaded document."},
 	{FlagName: "can-edit", Shorthand: "c", FieldPath: "Body.CanEdit", Kind: flagutil.FlagKindBool, Optional: true, HasDefault: true, Description: "If true, the document content can be edited in the Creator after upload."},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindString, Optional: true, Description: "A JSON-encoded array of `{ key, values }` metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
+	{FlagName: "file", Shorthand: "f", FieldPath: "Body.File", Kind: flagutil.FlagKindFile, Required: true, Description: "Path to file to upload [required]"},
 }
 
 // initCreateTextCmd initializes the create-text command.
