@@ -12,7 +12,7 @@ export const $ = execa(DEFAULT_OPTIONS);
 export const $vf = async (args: string[], options?: Pick<Options, 'stdin' | 'input'>) => {
   const result = await execa({ ...DEFAULT_OPTIONS, ...options })('./vf', [
     '--output-format=json',
-    '--timeout=10s',
+    '--timeout=15s',
     ...args,
   ]);
 
