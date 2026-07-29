@@ -229,6 +229,9 @@ describe('vf document', () => {
         documents: expect.arrayContaining([
           expect.objectContaining({ id: urlDocument2.id }),
           expect.objectContaining({ id: urlDocument3.id }),
+          expect.objectContaining({ id: tableDocument1.id }),
+          expect.objectContaining({ id: tableDocument2.id }),
+          expect.objectContaining({ id: tableDocument3.id }),
         ]),
       });
     });
