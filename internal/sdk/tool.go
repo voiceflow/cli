@@ -484,8 +484,8 @@ func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerG
 
 }
 
-// Update function
-// Update a function by ID.
+// Update tool
+// Update a tool by ID.
 func (s *Tool) Update(ctx context.Context, request operations.StableToolControllerUpdateRequest, opts ...operations.Option) (*operations.StableToolControllerUpdateResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
