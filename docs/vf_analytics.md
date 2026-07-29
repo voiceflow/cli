@@ -38,28 +38,4 @@ vf analytics [flags]
 ### SEE ALSO
 
 * [vf](vf.md)	 - Realtime: Realtime gateway API service
-* [vf analytics query-api-tool-usage](vf_analytics_query-api-tool-usage.md)	 - Query API tool usage
-* [vf analytics query-call-count](vf_analytics_query-call-count.md)	 - Query call count
-* [vf analytics query-call-duration](vf_analytics_query-call-duration.md)	 - Query call duration
-* [vf analytics query-category-token-usage](vf_analytics_query-category-token-usage.md)	 - Query category token usage
-* [vf analytics query-daily-token-usage](vf_analytics_query-daily-token-usage.md)	 - Query daily token usage
-* [vf analytics query-entity-token-usage](vf_analytics_query-entity-token-usage.md)	 - Query entity token usage
-* [vf analytics query-function-usage](vf_analytics_query-function-usage.md)	 - Query function usage
-* [vf analytics query-hourly-organization-token-usage](vf_analytics_query-hourly-organization-token-usage.md)	 - Query hourly organization token usage
-* [vf analytics query-hourly-project-token-usage](vf_analytics_query-hourly-project-token-usage.md)	 - Query hourly project token usage
-* [vf analytics query-integration-usage](vf_analytics_query-integration-usage.md)	 - Query integration usage
-* [vf analytics query-intent-usage](vf_analytics_query-intent-usage.md)	 - Query intent usage
-* [vf analytics query-knowledge-base-document-usage](vf_analytics_query-knowledge-base-document-usage.md)	 - Query knowledge base document usage
-* [vf analytics query-mcp-tool-usage](vf_analytics_query-mcp-tool-usage.md)	 - Query MCP tool usage
-* [vf analytics query-organization-token-usage](vf_analytics_query-organization-token-usage.md)	 - Query organization token usage
-* [vf analytics query-playbook-usage](vf_analytics_query-playbook-usage.md)	 - Query playbook usage
-* [vf analytics query-project-interaction-count](vf_analytics_query-project-interaction-count.md)	 - Query project interaction count
-* [vf analytics query-project-token-usage](vf_analytics_query-project-token-usage.md)	 - Query project token usage
-* [vf analytics query-project-transcript-cost](vf_analytics_query-project-transcript-cost.md)	 - Query transcript cost
-* [vf analytics query-project-transcript-count](vf_analytics_query-project-transcript-count.md)	 - Query project transcript count
-* [vf analytics query-prompt-usage](vf_analytics_query-prompt-usage.md)	 - Query prompt usage
-* [vf analytics query-unique-user-count](vf_analytics_query-unique-user-count.md)	 - Query unique user count
-* [vf analytics query-workflow-usage](vf_analytics_query-workflow-usage.md)	 - Query workflow usage
-* [vf analytics query-workspace-interaction-count](vf_analytics_query-workspace-interaction-count.md)	 - Query workspace interaction count
-* [vf analytics query-workspace-token-usage](vf_analytics_query-workspace-token-usage.md)	 - Query workspace token usage
-* [vf analytics query-workspace-transcript-count](vf_analytics_query-workspace-transcript-count.md)	 - Query workspace transcript count
+* [vf analytics query](vf_analytics_query.md)	 - Operations for query

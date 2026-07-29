@@ -42,4 +42,6 @@ vf function [flags]
 * [vf function delete](vf_function_delete.md)	 - Delete function
 * [vf function get](vf_function_get.md)	 - Get function
 * [vf function list](vf_function_list.md)	 - List functions
+* [vf function path](vf_function_path.md)	 - Operations for path
 * [vf function update](vf_function_update.md)	 - Update function
+* [vf function variable](vf_function_variable.md)	 - Operations for function-variable

@@ -1,16 +1,35 @@
-## vf
+## vf analytics query organization-token-usage
 
-Realtime: Realtime gateway API service
+Query organization token usage
 
 ### Synopsis
 
-Realtime: Realtime gateway API service
+Query token usage for an organization.
 
 ```
-vf [flags]
+vf analytics query organization-token-usage [flags]
+```
+
+### Examples
+
+```
+  vf query organization-token-usage --organization-id <id> --end-date <value> --start-date <value>
 ```
 
 ### Options
+
+```
+      --body string                 Request body as JSON (alternative to individual flags). Can also be provided via stdin.
+  -e, --end-date string             [required]
+  -h, --help                        help for organization-token-usage
+      --organization-id string      [required]
+  -p, --project-ids stringArray     The IDs of the projects to filter results by. Defaults to all projects in the workspace.
+  -s, --start-date string           [required]
+  -t, --timezone string             string value
+  -w, --workspace-ids stringArray   list of values
+```
+
+### Options inherited from parent commands
 
 ```
       --agent-mode             Enable structured errors and default TOON output for AI coding agents. Automatically enabled when a known agent environment is detected (CLAUDE_CODE, CURSOR_AGENT, etc.). Use --agent-mode=false to disable.
@@ -18,7 +37,6 @@ vf [flags]
   -d, --debug                  Log request and response diagnostics to stderr
       --dry-run                Preview the request that would be sent without executing it (output to stderr)
   -H, --header stringArray     Set a custom HTTP request header (format: "Key: Value"). Can be specified multiple times.
-  -h, --help                   help for vf
       --include-headers        Include HTTP response headers in the output
   -q, --jq string              Filter and transform output using a jq expression (e.g., '.name', '.items[] | .id')
       --no-interactive         Disable all interactive features (auto-prompting, explorer auto-launch, TUI forms)
@@ -32,25 +50,4 @@ vf [flags]
 
 ### SEE ALSO
 
-* [vf agent](vf_agent.md)	 - Operations for agent
-* [vf analytics](vf_analytics.md)	 - Operations for analytics
-* [vf api-tool](vf_api-tool.md)	 - Operations for api-tool
-* [vf auth](vf_auth.md)	 - Manage authentication credentials
-* [vf configure](vf_configure.md)	 - Configure authentication credentials and preferences
-* [vf conversation](vf_conversation.md)	 - Operations for conversation
-* [vf document](vf_document.md)	 - Operations for document
-* [vf environment](vf_environment.md)	 - Operations for environment
-* [vf evaluation](vf_evaluation.md)	 - Operations for evaluation
-* [vf explore](vf_explore.md)	 - Interactively browse and run commands
-* [vf function](vf_function.md)	 - Operations for function
-* [vf knowledge-base](vf_knowledge-base.md)	 - Operations for knowledge-base
-* [vf mcp-server](vf_mcp-server.md)	 - Operations for mcp-server
-* [vf mcp-tool](vf_mcp-tool.md)	 - Operations for mcp-tool
-* [vf playbook](vf_playbook.md)	 - Operations for playbook
-* [vf project](vf_project.md)	 - Operations for project
-* [vf tool](vf_tool.md)	 - Operations for tool
-* [vf transcript](vf_transcript.md)	 - Operations for transcript
-* [vf variable](vf_variable.md)	 - Operations for variable
-* [vf version](vf_version.md)	 - Print the CLI version
-* [vf whoami](vf_whoami.md)	 - Display current authentication configuration
-* [vf workspace](vf_workspace.md)	 - Operations for workspace
+* [vf analytics query](vf_analytics_query.md)	 - Operations for query

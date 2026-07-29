@@ -39,3 +39,4 @@ vf conversation [flags]
 
 * [vf](vf.md)	 - Realtime: Realtime gateway API service
 * [vf conversation send](vf_conversation_send.md)	 - Send
+* [vf conversation state](vf_conversation_state.md)	 - Operations for state

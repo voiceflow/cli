@@ -43,3 +43,4 @@ vf api-tool [flags]
 * [vf api-tool get](vf_api-tool_get.md)	 - Get API tool
 * [vf api-tool list](vf_api-tool_list.md)	 - List API tools
 * [vf api-tool update](vf_api-tool_update.md)	 - Update API tool
+* [vf api-tool variable](vf_api-tool_variable.md)	 - Operations for api-tool-variable

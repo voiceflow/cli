@@ -39,4 +39,5 @@ vf transcript [flags]
 
 * [vf](vf.md)	 - Realtime: Realtime gateway API service
 * [vf transcript get](vf_transcript_get.md)	 - Get transcript
+* [vf transcript property](vf_transcript_property.md)	 - Operations for property
 * [vf transcript search](vf_transcript_search.md)	 - Search transcripts
