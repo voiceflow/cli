@@ -35,6 +35,9 @@ describe('vf document', () => {
     let urlDocument1: any;
     let urlDocument2: any;
     let urlDocument3: any;
+    let tableDocument1: any;
+    let tableDocument2: any;
+    let tableDocument3: any;
 
     itSeq('create url document with args', async () => {
       const url = 'https://example.com/from-args';
@@ -87,19 +90,84 @@ describe('vf document', () => {
       });
     });
 
-    itSeq('document processed', async () => {
-      await waitUntilProcessed(urlDocument1.id);
-    });
-
     // TODO: fix openapi schema (missing formdata body)
     it('create text document with args');
     it('create text document with body');
     it('create text document with stdin');
 
-    // TODO: fix openapi schema (missing searchable & metadata fields)
-    it('create table document with args');
-    it('create table document with body');
-    it('create table document with stdin');
+    itSeq('create table document with args', async () => {
+      const name = 'table document from args';
+
+      ({ document: tableDocument1 } = await $vf_document([
+        'create-table',
+        `--name=${name}`,
+        `--items=${JSON.stringify([{ title: 'Starter' }, { title: 'Business' }, { title: 'Enterprise' }])}`,
+        `--schema=${JSON.stringify({ searchableFields: ['title'] })}`,
+      ]));
+
+      expect(tableDocument1).toEqual({
+        ...DOCUMENT_DEFAULTS,
+        data: {
+          url: null,
+          name,
+          type: 'table',
+          rowsCount: 3,
+        },
+        smartChunking: null,
+      });
+    });
+
+    itSeq('create table document with body', async () => {
+      const name = 'table document from body';
+
+      ({ document: tableDocument2 } = await $vf_document([
+        'create-table',
+        `--body=${JSON.stringify({
+          name,
+          items: [{ name: 'Captain Hook' }, { name: 'Peter Pan' }],
+          schema: { searchableFields: ['name'] },
+        })}`,
+      ]));
+
+      expect(tableDocument2).toEqual({
+        ...DOCUMENT_DEFAULTS,
+        data: {
+          url: null,
+          name,
+          type: 'table',
+          rowsCount: 2,
+        },
+        smartChunking: null,
+      });
+    });
+
+    itSeq('create table document with stdin', async () => {
+      const name = 'table document from stdin';
+
+      ({ document: tableDocument3 } = await $vf_document([
+        'create-table',
+        `--body=${JSON.stringify({
+          name,
+          items: [{ author: 'Tolkein' }, { author: 'Sanderson' }],
+          schema: { searchableFields: ['author'] },
+        })}`,
+      ]));
+
+      expect(tableDocument3).toEqual({
+        ...DOCUMENT_DEFAULTS,
+        data: {
+          url: null,
+          name,
+          type: 'table',
+          rowsCount: 2,
+        },
+        smartChunking: null,
+      });
+    });
+
+    itSeq('document processed', async () => {
+      await waitUntilProcessed(urlDocument1.id);
+    });
 
     itSeq('update with args', async () => {
       const result = await $vf_document([
