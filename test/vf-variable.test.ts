@@ -1,7 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const VARIABLE_DEFAULTS = {
   id: expect.any(String),
@@ -13,8 +12,10 @@ const VARIABLE_DEFAULTS = {
 };
 
 describe('vf variable', () => {
+  const project = setupProjectTest();
+
   const $vf_variable: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'variable', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'variable', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const color = '#defa13';
@@ -25,6 +26,7 @@ describe('vf variable', () => {
 
     it('create with args', async () => {
       const name = 'variable from args';
+
       ({ variable: variable1 } = await $vf_variable(['create', `--name=${name}`, `--color-param=${color}`]));
 
       expect(variable1).toEqual({ ...VARIABLE_DEFAULTS, name, color });
@@ -32,6 +34,7 @@ describe('vf variable', () => {
 
     it('create with body', async () => {
       const name = 'variable from body';
+
       ({ variable: variable2 } = await $vf_variable(['create', `--body=${JSON.stringify({ name, color })}`]));
 
       expect(variable2).toEqual({ ...VARIABLE_DEFAULTS, name, color });
@@ -39,6 +42,7 @@ describe('vf variable', () => {
 
     it('create with stdin', async () => {
       const name = 'variable from stdin';
+
       ({ variable: variable3 } = await $vf_variable(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name, color }),

@@ -31,6 +31,7 @@ describe('vf workspace', () => {
 
     it('create with args', async () => {
       const name = 'workspace from args';
+
       ({ workspace: workspace1 } = await $vf_workspace([
         'create',
         `--name=${name}`,
@@ -42,6 +43,7 @@ describe('vf workspace', () => {
 
     it('create with body', async () => {
       const name = 'workspace from body';
+
       ({ workspace: workspace2 } = await $vf_workspace([
         'create',
         `--organization-id=${ORGANIZATION_ID}`,
@@ -53,6 +55,7 @@ describe('vf workspace', () => {
 
     it('create with stdin', async () => {
       const name = 'workspace from stdin';
+
       ({ workspace: workspace3 } = await $vf_workspace(['create', `--organization-id=${ORGANIZATION_ID}`], {
         stdin: 'pipe',
         input: JSON.stringify({ name }),

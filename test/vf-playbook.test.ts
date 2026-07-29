@@ -1,7 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const PLAYBOOK_DEFAULTS = {
   id: expect.any(String),
@@ -22,8 +21,10 @@ const PLAYBOOK_DEFAULTS = {
 };
 
 describe('vf playbook', () => {
+  const project = setupProjectTest();
+
   const $vf_playbook: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'playbook', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'playbook', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const it = sequential();
@@ -33,6 +34,7 @@ describe('vf playbook', () => {
 
     it('create with args', async () => {
       const name = 'playbook from args';
+
       ({ playbook: playbook1 } = await $vf_playbook(['create', `--name=${name}`]));
 
       expect(playbook1).toEqual({ ...PLAYBOOK_DEFAULTS, name });
@@ -40,6 +42,7 @@ describe('vf playbook', () => {
 
     it('create with body', async () => {
       const name = 'playbook from body';
+
       ({ playbook: playbook2 } = await $vf_playbook(['create', `--body=${JSON.stringify({ name })}`]));
 
       expect(playbook2).toEqual({ ...PLAYBOOK_DEFAULTS, name });
@@ -47,6 +50,7 @@ describe('vf playbook', () => {
 
     it('create with stdin', async () => {
       const name = 'playbook from stdin';
+
       ({ playbook: playbook3 } = await $vf_playbook(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name }),

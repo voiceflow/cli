@@ -1,7 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const FUNCTION_DEFAULTS = {
   id: expect.any(String),
@@ -14,8 +13,10 @@ const FUNCTION_DEFAULTS = {
 };
 
 describe('vf function', () => {
+  const project = setupProjectTest();
+
   const $vf_function: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'function', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'function', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const code = 'var foo = 123;';
@@ -26,6 +27,7 @@ describe('vf function', () => {
 
     it('create with args', async () => {
       const name = 'function from args';
+
       ({ function: function1 } = await $vf_function(['create', `--name=${name}`, `--code=${code}`]));
 
       expect(function1).toEqual({ ...FUNCTION_DEFAULTS, name, code });
@@ -33,6 +35,7 @@ describe('vf function', () => {
 
     it('create with body', async () => {
       const name = 'function from body';
+
       ({ function: function2 } = await $vf_function(['create', `--body=${JSON.stringify({ name, code })}`]));
 
       expect(function2).toEqual({ ...FUNCTION_DEFAULTS, name, code });
@@ -40,6 +43,7 @@ describe('vf function', () => {
 
     it('create with stdin', async () => {
       const name = 'function from stdin';
+
       ({ function: function3 } = await $vf_function(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name, code }),

@@ -1,18 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
-import { afterAll, beforeAll, describe, expect } from 'vitest';
+import { beforeAll, describe, expect } from 'vitest';
 
-import { createProject } from './fixtures';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
-const SERVER_DEFAULTS = {
-  id: expect.any(String),
-  image: null,
-  description: null,
-  specification: '2025-06-18',
-  createdAt: expect.toSatisfy(isDateString),
-  updatedAt: expect.toSatisfy(isDateString),
-};
 const TOOL_DEFAULTS = {
   id: expect.any(String),
   description: expect.any(String),
@@ -22,18 +13,10 @@ const TOOL_DEFAULTS = {
 };
 
 describe('vf mcp-tool', () => {
-  let project: any;
+  const project = setupProjectTest();
 
   const $vf_mcp_tool: typeof $vf = (args, options) =>
-    $vf([`--project-id=${project.id}`, `--environment-alias=main`, 'mcp-tool', ...args], options);
-
-  beforeAll(async () => {
-    ({ project } = await createProject());
-  });
-
-  afterAll(async () => {
-    await $vf(['project', 'delete', `--project-id=${project.id}`]);
-  });
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'mcp-tool', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const url = ['https://learn.microsoft.com/api/mcp'];
@@ -42,9 +25,8 @@ describe('vf mcp-tool', () => {
     let mcpTool: any;
 
     beforeAll(async () => {
-      ({ project } = await createProject());
       ({ mcpServer } = await $vf([
-        `--project-id=${project.id}`,
+        `--project-id=${project().id}`,
         `--environment-alias=main`,
         'mcp-server',
         'create',

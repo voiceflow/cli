@@ -1,7 +1,6 @@
 import { describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const API_TOOL_DEFAULTS = {
   id: expect.any(String),
@@ -17,8 +16,10 @@ const API_TOOL_DEFAULTS = {
 };
 
 describe('vf api-tool', () => {
+  const project = setupProjectTest();
+
   const $vf_api_tool: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'api-tool', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'api-tool', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const httpMethod = 'get';
@@ -29,6 +30,7 @@ describe('vf api-tool', () => {
 
     it('create with args', async () => {
       const name = 'api-tool from args';
+
       ({ apiTool: apiTool1 } = await $vf_api_tool(['create', `--name=${name}`, `--http-method=${httpMethod}`]));
 
       expect(apiTool1).toEqual({ ...API_TOOL_DEFAULTS, name, httpMethod });
@@ -36,6 +38,7 @@ describe('vf api-tool', () => {
 
     it('create with body', async () => {
       const name = 'api-tool from body';
+
       ({ apiTool: apiTool2 } = await $vf_api_tool(['create', `--body=${JSON.stringify({ name, httpMethod })}`]));
 
       expect(apiTool2).toEqual({ ...API_TOOL_DEFAULTS, name, httpMethod });
@@ -43,6 +46,7 @@ describe('vf api-tool', () => {
 
     it('create with stdin', async () => {
       const name = 'api-tool from stdin';
+
       ({ apiTool: apiTool3 } = await $vf_api_tool(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name, httpMethod }),

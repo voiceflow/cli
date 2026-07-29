@@ -2,8 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const SERVER_DEFAULTS = {
   id: expect.any(String),
@@ -15,8 +14,10 @@ const SERVER_DEFAULTS = {
 };
 
 describe('vf mcp-server', () => {
+  const project = setupProjectTest();
+
   const $vf_mcp_server: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'mcp-server', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'mcp-server', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const url = ['https://learn.microsoft.com/api/mcp'];
@@ -27,6 +28,7 @@ describe('vf mcp-server', () => {
 
     it('create with args', async () => {
       const name = `server from args ${randomUUID()}`;
+
       ({ mcpServer: server1 } = await $vf_mcp_server(['create', `--name=${name}`, `--url=${JSON.stringify(url)}`]));
 
       expect(server1).toEqual({ ...SERVER_DEFAULTS, name, url });
@@ -34,6 +36,7 @@ describe('vf mcp-server', () => {
 
     it('create with body', async () => {
       const name = `server from body ${randomUUID()}`;
+
       ({ mcpServer: server2 } = await $vf_mcp_server(['create', `--body=${JSON.stringify({ name, url })}`]));
 
       expect(server2).toEqual({ ...SERVER_DEFAULTS, name, url });
@@ -41,6 +44,7 @@ describe('vf mcp-server', () => {
 
     it('create with stdin', async () => {
       const name = `server from stdin ${randomUUID()}`;
+
       ({ mcpServer: server3 } = await $vf_mcp_server(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name, url }),

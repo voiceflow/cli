@@ -1,7 +1,6 @@
 import { beforeAll, describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const PATH_DEFAULTS = {
   id: expect.any(String),
@@ -11,8 +10,10 @@ const PATH_DEFAULTS = {
 };
 
 describe('vf function path', () => {
+  const project = setupProjectTest();
+
   const $vf_function_path: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'function', 'path', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'function', 'path', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const it = sequential();
@@ -23,7 +24,7 @@ describe('vf function path', () => {
 
     beforeAll(async () => {
       ({ function: function_ } = await $vf([
-        `--project-id=${PROJECT_ID}`,
+        `--project-id=${project().id}`,
         `--environment-alias=main`,
         'function',
         'create',
@@ -34,6 +35,7 @@ describe('vf function path', () => {
 
     it('create with args', async () => {
       const name = 'path from args';
+
       ({ path: path1 } = await $vf_function_path(['create', `--name=${name}`, `--function-id=${function_.id}`]));
 
       expect(path1).toEqual({ ...PATH_DEFAULTS, name, functionID: function_.id });
@@ -41,6 +43,7 @@ describe('vf function path', () => {
 
     it('create with body', async () => {
       const name = 'path from body';
+
       ({ path: path2 } = await $vf_function_path([
         'create',
         `--body=${JSON.stringify({ name, functionID: function_.id })}`,
@@ -51,6 +54,7 @@ describe('vf function path', () => {
 
     it('create with stdin', async () => {
       const name = 'path from stdin';
+
       ({ path: path3 } = await $vf_function_path(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name, functionID: function_.id }),

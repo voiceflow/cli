@@ -1,7 +1,6 @@
 import { beforeAll, describe, expect } from 'vitest';
 
-import { PROJECT_ID } from './config';
-import { $vf, isDateString, sequential } from './utils';
+import { $vf, isDateString, sequential, setupProjectTest } from './utils';
 
 const VARIABLE_DEFAULTS = {
   id: expect.any(String),
@@ -11,8 +10,10 @@ const VARIABLE_DEFAULTS = {
 };
 
 describe('vf api-tool variable', () => {
+  const project = setupProjectTest();
+
   const $vf_api_tool_variable: typeof $vf = (args, options) =>
-    $vf([`--project-id=${PROJECT_ID}`, `--environment-alias=main`, 'api-tool', 'variable', ...args], options);
+    $vf([`--project-id=${project().id}`, `--environment-alias=main`, 'api-tool', 'variable', ...args], options);
 
   describe('CRUD', { concurrent: false }, () => {
     const it = sequential();
@@ -23,7 +24,7 @@ describe('vf api-tool variable', () => {
 
     beforeAll(async () => {
       ({ apiTool } = await $vf([
-        `--project-id=${PROJECT_ID}`,
+        `--project-id=${project().id}`,
         `--environment-alias=main`,
         'api-tool',
         'create',
@@ -34,6 +35,7 @@ describe('vf api-tool variable', () => {
 
     it('create with args', async () => {
       const name = 'variable from args';
+
       ({ variable: variable1 } = await $vf_api_tool_variable([
         'create',
         `--name=${name}`,
@@ -45,6 +47,7 @@ describe('vf api-tool variable', () => {
 
     it('create with body', async () => {
       const name = 'variable from body';
+
       ({ variable: variable2 } = await $vf_api_tool_variable([
         'create',
         `--body=${JSON.stringify({ name, apiToolID: apiTool.id })}`,
@@ -55,6 +58,7 @@ describe('vf api-tool variable', () => {
 
     it('create with stdin', async () => {
       const name = 'variable from stdin';
+
       ({ variable: variable3 } = await $vf_api_tool_variable(['create'], {
         stdin: 'pipe',
         input: JSON.stringify({ name, apiToolID: apiTool.id }),
