@@ -328,8 +328,8 @@ func (s *Workspace) Create(ctx context.Context, request components.StableWorkspa
 
 }
 
-// Get workspace
-// Get a single workspace by ID.
+// Get project
+// Get a project by ID.
 func (s *Workspace) Get(ctx context.Context, request operations.StableWorkspaceControllerGetRequest, opts ...operations.Option) (*operations.StableWorkspaceControllerGetResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
