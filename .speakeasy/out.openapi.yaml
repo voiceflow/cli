@@ -7364,10 +7364,8 @@ components:
                   allOf:
                     - $ref: '#/components/schemas/LiveAgentHandoffProvider'
                 config:
-                  type: object
-                  properties:
-                    returnToAI:
-                      type: boolean
+                  allOf:
+                    - $ref: '#/components/schemas/LiveAgentHandoffWidgetConfig'
               required:
                 - conversationID
                 - message
@@ -7535,6 +7533,13 @@ components:
         - GENESYS
         - KUSTOMER
         - DIXA
+    LiveAgentHandoffWidgetConfig:
+      type: object
+      properties:
+        returnToAI:
+          type: boolean
+        disableFileUpload:
+          type: boolean
     ToolCallTrace:
       type: object
       properties:
