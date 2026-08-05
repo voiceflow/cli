@@ -95,7 +95,7 @@ func (e *StableTestTurnUpdateRequestTypeAgent) UnmarshalJSON(data []byte) error 
 }
 
 type StableTestTurnUpdateRequestPayload struct {
-	CheckOrderMatters bool `json:"checkOrderMatters"`
+	Sequential bool `json:"sequential"`
 }
 
 func (s StableTestTurnUpdateRequestPayload) MarshalJSON() ([]byte, error) {
@@ -109,11 +109,11 @@ func (s *StableTestTurnUpdateRequestPayload) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableTestTurnUpdateRequestPayload) GetCheckOrderMatters() bool {
+func (s *StableTestTurnUpdateRequestPayload) GetSequential() bool {
 	if s == nil {
 		return false
 	}
-	return s.CheckOrderMatters
+	return s.Sequential
 }
 
 type StableTestTurnUpdateRequestAgent struct {
