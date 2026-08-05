@@ -5,12 +5,12 @@ management:
   docVersion: 1.0.0
   speakeasyVersion: 1.791.4
   generationVersion: 2.926.8
-  releaseVersion: 0.2.54
-  configChecksum: 5ded1bb26a18cd10201de9d3d08a4f98
+  releaseVersion: 0.2.55
+  configChecksum: 01f4ec81f4cc71166e98e08b03b0536d
 persistentEdits:
-  generation_id: 4baafc1f-c67a-436e-a062-4740398527dd
-  pristine_commit_hash: 8c0f4669082fe7312609523735165bd500e6a1ae
-  pristine_tree_hash: a38a0684c997164f8e8fd5b906df60928e5933da
+  generation_id: e07aa1d9-08da-43eb-8f82-4681364c3ab5
+  pristine_commit_hash: 9cad5a83d83c83d807aa10b4c60dc1eabde5bf20
+  pristine_tree_hash: 633940f70b7f0e4953120b74866a37c0a4782f73
 features:
   cli:
     additionalProperties: 0.0.1
@@ -622,8 +622,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:575dd79d3ecc6cf8c6944acc2faac8aacd952230
-    pristine_git_object: 7c487a8f4583bbf72950a954c4c738f3bfffea10
+    last_write_checksum: sha1:b0fce55cf93c2316d634c959a4ed71f51d0c29f5
+    pristine_git_object: d1ffe077512882265cf60aeec7013dc8bf8a1dd5
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -726,8 +726,8 @@ trackedFiles:
     pristine_git_object: 93381dedddc443327c511dba1150479797ec8713
   internal/sdk/analytics.go:
     id: a1bd379d6569
-    last_write_checksum: sha1:46dd9d26944c5e341246668ff4a389449eadc664
-    pristine_git_object: 39e326f2655e6fc880d3ada949ec912f84aec71b
+    last_write_checksum: sha1:7c315711fb017fb4875e9e244f38a764af6f9b9f
+    pristine_git_object: 355d719491d98375542c46676b24fff4b370979e
   internal/sdk/apitool.go:
     id: af707a2ebec6
     last_write_checksum: sha1:9b6b6de7c7282c3d4545c386fcb42a5aa7c2b857
@@ -2690,8 +2690,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:386a180a20af759dd72fcee82fd9b7d0888973b5
-    pristine_git_object: c1d14ebf4a05e68e4c7fe273b4ee86f01def46fc
+    last_write_checksum: sha1:a359a7ae5ca7d759cec1758f91c5db4d29085d05
+    pristine_git_object: 76f71e6bc27fd4ccdb28d8f402a75aedff20ddf0
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:4aa247cd0b0e8742ff553a6d50f060a05b77ae75
