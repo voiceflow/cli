@@ -942,37 +942,15 @@ func (e *EventChatStarted) UnmarshalJSON(data []byte) error {
 	}
 }
 
-type Config struct {
-	ReturnToAI *bool `json:"returnToAI,omitzero"`
-}
-
-func (c Config) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(c, "", false)
-}
-
-func (c *Config) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Config) GetReturnToAI() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.ReturnToAI
-}
-
 type PayloadChatStarted struct {
-	ConversationID    string                    `json:"conversationID"`
-	Message           string                    `json:"message"`
-	TranslationKey    *string                   `json:"translationKey,omitzero"`
-	TranslationParams map[string]string         `json:"translationParams,omitzero"`
-	Agent             *Agent1                   `json:"agent,omitzero"`
-	Event             EventChatStarted          `json:"event"`
-	Provider          *LiveAgentHandoffProvider `json:"provider,omitzero"`
-	Config            *Config                   `json:"config,omitzero"`
+	ConversationID    string                        `json:"conversationID"`
+	Message           string                        `json:"message"`
+	TranslationKey    *string                       `json:"translationKey,omitzero"`
+	TranslationParams map[string]string             `json:"translationParams,omitzero"`
+	Agent             *Agent1                       `json:"agent,omitzero"`
+	Event             EventChatStarted              `json:"event"`
+	Provider          *LiveAgentHandoffProvider     `json:"provider,omitzero"`
+	Config            *LiveAgentHandoffWidgetConfig `json:"config,omitzero"`
 }
 
 func (p PayloadChatStarted) MarshalJSON() ([]byte, error) {
@@ -1035,7 +1013,7 @@ func (p *PayloadChatStarted) GetProvider() *LiveAgentHandoffProvider {
 	return p.Provider
 }
 
-func (p *PayloadChatStarted) GetConfig() *Config {
+func (p *PayloadChatStarted) GetConfig() *LiveAgentHandoffWidgetConfig {
 	if p == nil {
 		return nil
 	}

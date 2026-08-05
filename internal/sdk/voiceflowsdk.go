@@ -3,7 +3,7 @@
 
 package sdk
 
-// Generated from OpenAPI doc version 1.0.0 and generator version 2.924.0
+// Generated from OpenAPI doc version 1.0.0 and generator version 2.926.8
 
 import (
 	"context"
@@ -68,6 +68,7 @@ type VoiceflowSDK struct {
 	KnowledgeBase *KnowledgeBase
 	Conversation  *Conversation
 	Analytics     *Analytics
+	Test          *Test
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -145,7 +146,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk := &VoiceflowSDK{
 		SDKVersion: "0.0.1",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:  "speakeasy-sdk/go 0.0.1 2.924.0 1.0.0 github.com/voiceflow/cli/internal/sdk",
+			UserAgent:  "speakeasy-sdk/go 0.0.1 2.926.8 1.0.0 github.com/voiceflow/cli/internal/sdk",
 			ServerList: ServerList,
 		},
 		hooks: hooks.New(),
@@ -178,6 +179,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.KnowledgeBase = newKnowledgeBase(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Conversation = newConversation(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Analytics = newAnalytics(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Test = newTest(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }
