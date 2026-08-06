@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 74e54e8261135b2ad0fbc3bb87241a56
+  docChecksum: f456b423d8972f12ddb8f135ef223102
   docVersion: 1.0.0
   speakeasyVersion: 1.791.4
   generationVersion: 2.926.8
-  releaseVersion: 0.2.72
-  configChecksum: 2fdcd2c9fa8d9c0f39f9ee6efde87270
+  releaseVersion: 0.2.73
+  configChecksum: 4bd430bf39897da2aaa3000afee30fa2
 persistentEdits:
-  generation_id: 15a98190-efa9-4b1c-8cee-5f81bc7bc0de
-  pristine_commit_hash: 0d7685c7da4549ca6e46d09a6309d44e73502727
-  pristine_tree_hash: 46aae245f36715c402812fe7ca6416ccf2b53342
+  generation_id: 37d20e58-e5b8-4544-ad3c-0258db12b037
+  pristine_commit_hash: 4751ebe7dc4112b95872d33468091164ff955913
+  pristine_tree_hash: c2d86448195b367b4340ab01be50ba7329259dd1
 features:
   cli:
     additionalProperties: 0.0.1
@@ -622,8 +622,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:b44d4456818a7ffade27fa6be9ed7f499f94b65c
-    pristine_git_object: dcef2e7794a89c9fffd653e94db2906bf7542651
+    last_write_checksum: sha1:b6c9725cb0c003f091374c64904cf2bd055a4117
+    pristine_git_object: f727bb0e7af6069cdb090ea32724d97fa4c617de
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -2690,8 +2690,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:efbc17d04f1c6bd8abc4a2c0fb20560f94a4af89
-    pristine_git_object: 05f175c1cbde4852778e8f19d71f952157be7f31
+    last_write_checksum: sha1:92aca32f0e2efbb16d114a54805cce48078bac1c
+    pristine_git_object: d43df4da4fd1df40e027a1347381239dda3d6ba7
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:4aa247cd0b0e8742ff553a6d50f060a05b77ae75

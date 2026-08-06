@@ -15,6 +15,8 @@ paths:
             WHAT — List all Workspaces the authenticated user belongs to.
             USE WHEN — Starting a new session and you don't yet know which Workspace the user wants to work in, or enumerating Workspaces for selection.
             AFTER — voiceflow_project.list once you have the target workspaceID.
+        cli:
+          command: workspace list
       x-speakeasy-group: workspace
       x-speakeasy-name-override: list
       summary: List workspaces
@@ -47,6 +49,8 @@ paths:
             BEFORE — voiceflow_workspace.list to confirm the user isn't accidentally duplicating an existing Workspace.
             AFTER — voiceflow_project.create to add the first Project to the new Workspace.
             DO NOT — Create a Workspace without explicit user intent — most users work within a single existing Workspace.
+        cli:
+          command: workspace create
       x-speakeasy-group: workspace
       x-speakeasy-name-override: create
       summary: Create workspace
@@ -84,6 +88,8 @@ paths:
             WHAT — Fetch a single Workspace by ID.
             USE WHEN — Confirming a Workspace exists before creating a Project in it, or retrieving current metadata before an update.
             AFTER — voiceflow_project.list or voiceflow_project.create.
+        cli:
+          command: workspace get
       x-speakeasy-group: workspace
       x-speakeasy-name-override: get
       summary: Get workspace
@@ -120,6 +126,8 @@ paths:
             USE WHEN — User wants to rename their Workspace.
             BEFORE — voiceflow_workspace.get to see current name.
             DO NOT — Use this to manage Projects, members, or roles — those are managed outside the MCP tools.
+        cli:
+          command: workspace update
       x-speakeasy-group: workspace
       x-speakeasy-name-override: update
       summary: Update workspace
@@ -161,6 +169,8 @@ paths:
           operationDescription: |-
             WHAT — Remove a workspace.
             DO NOT — Delete without explicit user confirmation — all projects and their content inside the workspace are permanently lost with no undo.
+        cli:
+          command: workspace delete
       x-speakeasy-group: workspace
       x-speakeasy-name-override: delete
       summary: Delete workspace
@@ -198,6 +208,8 @@ paths:
             USE WHEN — User says "work on my X project," you need to pick a Project from a Workspace, or orienting yourself in a fresh session.
             BEFORE — voiceflow_workspace.list if you don't yet have a workspaceID.
             AFTER — voiceflow_project.get to load full detail on the one the user picked.
+        cli:
+          command: project list
       x-speakeasy-group: project
       x-speakeasy-name-override: list
       summary: List projects
@@ -235,6 +247,8 @@ paths:
             USE WHEN — User asks to build a new agent from scratch.
             BEFORE — voiceflow_workspace.list if you don't yet have a workspaceID; voiceflow_project.list to make sure the user isn't accidentally duplicating an existing Project.
             AFTER — voiceflow_playbook.create (add task Playbooks), then voiceflow_agent.update (set identity and make playbooks reachable).
+        cli:
+          command: project create
       x-speakeasy-group: project
       x-speakeasy-name-override: create
       summary: Create project
@@ -273,6 +287,8 @@ paths:
             USE WHEN — Confirming a Project exists before editing.
             BEFORE — voiceflow_workspace.list → voiceflow_project.list if you don't yet have the projectID.
             AFTER — Most other tools need projectID + environmentAlias; some downstream calls may also require playbookID.
+        cli:
+          command: project get
       x-speakeasy-group: project
       x-speakeasy-name-override: get
       summary: Get project
@@ -309,6 +325,8 @@ paths:
             USE WHEN — Renaming a Project or updating org-level metadata.
             BEFORE — voiceflow_project.get to see current metadata.
             DO NOT — Use this to edit Playbook content, behavior, or the Global Prompt. Those have their own tools — voiceflow_playbook.update, voiceflow_agent.update.
+        cli:
+          command: project update
       x-speakeasy-group: project
       x-speakeasy-name-override: update
       summary: Update project
@@ -350,6 +368,8 @@ paths:
           operationDescription: |-
             WHAT — Remove a project.
             DO NOT — Delete without explicit user confirmation — cascades to all environments, versions, and knowledge base content with no undo.
+        cli:
+          command: project delete
       x-speakeasy-group: project
       x-speakeasy-name-override: delete
       summary: Delete project
@@ -386,6 +406,8 @@ paths:
             WHAT — List every environment on a Project.
             USE WHEN — Orienting yourself on a Project for the first time, before deciding which environment to edit or test against.
             AFTER — voiceflow_environment.get to load full detail on the one you want to work in.
+        cli:
+          command: environment list
       x-speakeasy-group: environment
       x-speakeasy-name-override: list
       summary: List environments
@@ -424,6 +446,8 @@ paths:
             USE WHEN — A non-Main environment has been validated and you want to roll its changes into Main for all traffic.
             BEFORE — voiceflow_environment.publish on the source environment so its live version reflects current draft state.
             DO NOT — Merge if Main has live changes since you cloned the source — you'll lose them. Clone a fresh env from Main, port changes to it, then merge.
+        cli:
+          command: environment merge
       x-speakeasy-group: environment
       x-speakeasy-name-override: merge
       summary: Merge environments
@@ -467,6 +491,8 @@ paths:
             WHAT — Configure what percentage of live traffic goes to each environment. Values must sum to 100. No body returned.
             USE WHEN — Rolling out a new environment gradually, A/B testing two agent versions, or shifting traffic during a deploy.
             DO NOT — Set 100% on a non-Main environment without explicit user intent. Traffic split is sticky per user across sessions, so flipping it mid-deploy changes who sees what.
+        cli:
+          command: environment update-traffic-split
       x-speakeasy-group: environment
       x-speakeasy-name-override: update-traffic-split
       summary: Update traffic split
@@ -509,6 +535,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch a single environment by ID.
             USE WHEN — You need to confirm an environment's current live version, check its alias, or inspect its draft before publishing.
+        cli:
+          command: environment get
       x-speakeasy-group: environment
       x-speakeasy-name-override: get
       summary: Get environment
@@ -549,6 +577,8 @@ paths:
           operationDescription: |-
             WHAT — Rename an environment.
             USE WHEN — Cleaning up environment names after cloning, or rebranding an environment (e.g. "experimental" → "staging").
+        cli:
+          command: environment update
       x-speakeasy-group: environment
       x-speakeasy-name-override: update
       summary: Update environment
@@ -597,6 +627,8 @@ paths:
             WHAT — Remove an environment. Rejected for the main environment or the last environment on a project.
             BEFORE — voiceflow_environment.update_traffic_split to route any live traffic away first.
             DO NOT — Delete an environment that's still receiving live traffic.
+        cli:
+          command: environment delete
       x-speakeasy-group: environment
       x-speakeasy-name-override: delete
       summary: Delete environment
@@ -640,6 +672,8 @@ paths:
             USE WHEN — After any non-trivial edit (Function creation, tool attachment, agent_routing change, prompt update) and before a test conversation against this environment.
             AFTER — voiceflow_conversation.send once compile completes.
             DO NOT — Skip compile after edits. Without it, the test conversation runs against the last-compiled version and changes won't be reflected — easy to spend 20 minutes "debugging" a fix that never took effect.
+        cli:
+          command: environment compile
       x-speakeasy-group: environment
       x-speakeasy-name-override: compile
       summary: Compile environment
@@ -683,6 +717,8 @@ paths:
             USE WHEN — User wants a staging environment, A/B test branch, or a sandbox to try changes without touching live traffic.
             AFTER — voiceflow_environment.update_traffic_split if you want to send some live traffic to the new environment.
             DO NOT — Clone Main when Main has unpublished draft changes you don't want carried over. Publish Main first or work off the live version.
+        cli:
+          command: environment clone
       x-speakeasy-group: environment
       x-speakeasy-name-override: clone
       summary: Clone environment
@@ -733,6 +769,8 @@ paths:
             BEFORE — voiceflow_conversation to run a smoke test against the draft, voiceflow_evaluation.run on recent transcripts if you have evals defined.
             AFTER — If this isn't Main, consider voiceflow_environment.merge once you're confident.
             DO NOT — Publish to Main on every change — publish to a non-Main environment first, traffic-split a slice of users to it, then merge to Main once confident.
+        cli:
+          command: environment publish
       x-speakeasy-group: environment
       x-speakeasy-name-override: publish
       summary: Publish environment
@@ -781,6 +819,8 @@ paths:
           operationDescription: |-
             WHAT — List all project variables.
             USE WHEN — Discovering what state slots exist, before creating new ones (avoid duplicates), or auditing wiring.
+        cli:
+          command: variable list
       x-speakeasy-group: variable
       x-speakeasy-name-override: list
       summary: List variables
@@ -824,6 +864,8 @@ paths:
             WHAT — Create a new project variable with a name and default value.
             USE WHEN — A function output needs to land somewhere via captureResponse, a prompt needs to reference state, or a tool's input needs a default.
             DO NOT — Forget to set an explicit default value. Unset variables resolve to 0 (the literal number zero, not empty string) at runtime — this breaks every naive "if {var} is set" prompt logic. If the prompt needs to check "is this set," explicitly initialize the variable to "" (empty string) at creation, or pre-resolve in a function.
+        cli:
+          command: variable create
       x-speakeasy-group: variable
       x-speakeasy-name-override: create
       summary: Create variable
@@ -873,6 +915,8 @@ paths:
           operationDescription: |-
             WHAT — Create multiple variables in one call.
             USE WHEN — Scaffolding a project where many variables are needed at once (customer_name, customer_phone, customer_postal_code, etc.).
+        cli:
+          command: variable create-many
       x-speakeasy-group: variable
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -923,6 +967,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one variable's full detail including current default.
               USE WHEN — Before update.
+        cli:
+          command: variable get
       x-speakeasy-group: variable
       x-speakeasy-name-override: get
       summary: Get variable
@@ -970,6 +1016,8 @@ paths:
           operationDescription: |-
             WHAT — Patch variable metadata.
               DO NOT — Rename a variable referenced by a voiceflow_tool attachment's captureResponse or inputVariables map, a function's args.inputVars destructuring, or a prompt's {var_name} substitution — the variableID stays stable but every human-readable reference breaks.
+        cli:
+          command: variable update
       x-speakeasy-group: variable
       x-speakeasy-name-override: update
       summary: Update variable
@@ -1024,6 +1072,8 @@ paths:
           operationDescription: |-
             WHAT — Remove a variable.
               DO NOT — Delete a variable referenced by any captureResponse map, defaultValue, or prompt substitution — runtime calls will start silently defaulting to 0 wherever the variable was used.
+        cli:
+          command: variable delete
       x-speakeasy-group: variable
       x-speakeasy-name-override: delete
       summary: Delete variable
@@ -1075,6 +1125,8 @@ paths:
           operationDescription: |-
             WHAT — List all playbooks in the project.
             USE WHEN — Discovering what playbooks exist, or finding a playbookID to edit.
+        cli:
+          command: playbook list
       x-speakeasy-group: playbook
       x-speakeasy-name-override: list
       summary: List playbooks
@@ -1129,6 +1181,8 @@ paths:
             USE WHEN — User wants to add a new multi-step task the agent can handle (booking, escalation, FAQ + tool use).
             AFTER — voiceflow_agent.update (make it reachable), voiceflow_tool.create (give it capabilities), then voiceflow_conversation.
             DO NOT — Write the description as a one-liner that only says what the playbook does. The Main Agent uses this text to route — it must also describe WHEN to route here (the user signals, intents, or topics that should trigger this playbook). Also: don't put identity, tone, or guardrails in the playbook's instructions — those inherit from the Global Prompt. And: if a playbook's only tool is the Knowledge Base, it shouldn't be a playbook — the Main Agent handles Knowledge Base Q&A directly.
+        cli:
+          command: playbook create
       x-speakeasy-group: playbook
       x-speakeasy-name-override: create
       summary: Create playbook
@@ -1181,6 +1235,8 @@ paths:
           operationDescription: |-
             WHAT — Create multiple playbooks in one call.
             USE WHEN — Scaffolding a new agent with several task playbooks at once (e.g. Schedule + Cancel + FAQ on first build).
+        cli:
+          command: playbook create-many
       x-speakeasy-group: playbook
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -1234,6 +1290,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch full details for one playbook.
             USE WHEN — Before editing (to merge), or when debugging a playbook's behavior — the instructions field is often the first place to look when a playbook misbehaves.
+        cli:
+          command: playbook get
       x-speakeasy-group: playbook
       x-speakeasy-name-override: get
       summary: Get playbook
@@ -1287,6 +1345,8 @@ paths:
             BEFORE — voiceflow_playbook.get to see current state and merge changes against it.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
             DO NOT — Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first.
+        cli:
+          command: playbook update
       x-speakeasy-group: playbook
       x-speakeasy-name-override: update
       summary: Update playbook
@@ -1345,6 +1405,8 @@ paths:
             WHAT — Remove a playbook.
             USE WHEN — Retiring a playbook that's no longer needed.
             BEFORE — voiceflow_agent.get to confirm the playbook isn't currently a routing target; if it is, voiceflow_agent.update first.
+        cli:
+          command: playbook delete
       x-speakeasy-group: playbook
       x-speakeasy-name-override: delete
       summary: Delete playbook
@@ -1393,6 +1455,8 @@ paths:
           operationDescription: |-
             WHAT — List all API tools in the project.
             USE WHEN — Discovering existing API tools or finding a toolID to edit.
+        cli:
+          command: api-tool list
       x-speakeasy-group: api-tool
       x-speakeasy-name-override: list
       summary: List API tools
@@ -1436,6 +1500,8 @@ paths:
             WHAT — Create a new API tool with name, description (WHAT/WHEN format — LLM-routing field), method, URL, headers, body, and declared input variables.
             USE WHEN — User gives a REST endpoint to call.
             DO NOT — Write the description as pure WHAT. The LLM uses this text to decide whether to call the API — it must include WHEN (the user signals or data conditions that should trigger the call). Also: don't embed auth tokens in URL or headers literally — declare them as input variables (filled at call time or auto-filled from a project variable).
+        cli:
+          command: api-tool create
       x-speakeasy-group: api-tool
       x-speakeasy-name-override: create
       summary: Create API tool
@@ -1485,6 +1551,8 @@ paths:
           operationDescription: |-
             WHAT — Create multiple API tools in one call.
             USE WHEN — Mass-importing endpoints from a service spec.
+        cli:
+          command: api-tool create-many
       x-speakeasy-group: api-tool
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -1535,6 +1603,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one API tool's full config: method, URL, headers, body, declared input variables.
             USE WHEN — Before editing or wiring.
+        cli:
+          command: api-tool get
       x-speakeasy-group: api-tool
       x-speakeasy-name-override: get
       summary: Get API tool
@@ -1583,6 +1653,8 @@ paths:
             WHAT — Patch an API tool's config. Partial PATCH.
             BEFORE — voiceflow_api_tool.get to see current config.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
+        cli:
+          command: api-tool update
       x-speakeasy-group: api-tool
       x-speakeasy-name-override: update
       summary: Update API tool
@@ -1637,6 +1709,8 @@ paths:
           operationDescription: |-
             WHAT — Remove an API tool.
             BEFORE — voiceflow_tool.list to confirm nothing currently attaches it.
+        cli:
+          command: api-tool delete
       x-speakeasy-group: api-tool
       x-speakeasy-name-override: delete
       summary: Delete API tool
@@ -1683,6 +1757,8 @@ paths:
             Successor: attach the API tool at agent level, then run a test conversation.
           operation: list_variables
           operationDescription: WHAT — List the input variables declared on an API tool (path params, query params, body fields, auth headers as placeholders).
+        cli:
+          command: api-tool variable list
       x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: list
       summary: List variables
@@ -1731,6 +1807,8 @@ paths:
           operationDescription: |-
             WHAT — Declare a new input variable on an API tool.
             USE WHEN — The API needs a new placeholder — path param, query param, body field, header value.
+        cli:
+          command: api-tool variable create
       x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: create
       summary: Create variable
@@ -1778,6 +1856,8 @@ paths:
             Successor: attach the API tool at agent level, then run a test conversation.
           operation: create_many_variables
           operationDescription: WHAT — Declare multiple input variables in one call.
+        cli:
+          command: api-tool variable create-many
       x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -1826,6 +1906,8 @@ paths:
             Successor: attach the API tool at agent level, then run a test conversation.
           operation: get_variable
           operationDescription: WHAT — Fetch a single input variable's detail.
+        cli:
+          command: api-tool variable get
       x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: get
       summary: Get variable
@@ -1871,6 +1953,8 @@ paths:
             Successor: attach the API tool at agent level, then run a test conversation.
           operation: update_variable
           operationDescription: WHAT — Modify an input variable's name or description.
+        cli:
+          command: api-tool variable update
       x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: update
       summary: Update variable
@@ -1925,6 +2009,8 @@ paths:
           operationDescription: |-
             WHAT — Remove an input variable.
             DO NOT — Delete a variable referenced by a voiceflow_tool attachment without cleaning the binding up first.
+        cli:
+          command: api-tool variable delete
       x-speakeasy-group: api-tool.variable
       x-speakeasy-name-override: delete
       summary: Delete variable
@@ -1972,6 +2058,8 @@ paths:
           operationDescription: |-
             WHAT — Search transcripts by date range, tags, property values, or evaluation results.
             USE WHEN — Finding transcripts to investigate or evaluate — "all transcripts from yesterday where the Schedule playbook was active and CSAT was poor."
+        cli:
+          command: transcript search
       x-speakeasy-group: transcript
       x-speakeasy-name-override: search
       summary: Search transcripts
@@ -2015,6 +2103,8 @@ paths:
             WHAT — Fetch a single transcript in the requested format. summary is short, formatted is the workhorse for debug, raw is the deep dive.
             USE WHEN — Diving into a specific failing conversation.
             DO NOT — Request raw format unless you actually need the full trace stream. raw is 200KB+ and mostly chunk/resource debug noise around the actual conversation. Use formatted (includes `prompt.system` on the first ai result per agent — fastest debug path) for single-transcript debug, and summary for bulk triage.
+        cli:
+          command: transcript get
       x-speakeasy-group: transcript
       x-speakeasy-name-override: get
       summary: Get transcript
@@ -2056,6 +2146,8 @@ paths:
           operationDescription: |-
             WHAT — List all transcript property definitions in the project.
             USE WHEN — Before creating new properties (avoid duplicates), or finding a property to set values on.
+        cli:
+          command: transcript property list
       x-speakeasy-group: transcript.property
       x-speakeasy-name-override: list
       summary: List properties
@@ -2092,6 +2184,8 @@ paths:
             WHAT — Define a new transcript property with name and type (boolean | number | string).
             USE WHEN — Adding a new dimension to tag transcripts by — root_cause, escalation_reason, csat_self_report, etc.
             DO NOT — Use a property as a runtime variable. Properties are post-hoc tags only; the agent cannot read them mid-conversation. Use voiceflow_variable for runtime state.
+        cli:
+          command: transcript property create
       x-speakeasy-group: transcript.property
       x-speakeasy-name-override: create
       summary: Create property
@@ -2134,6 +2228,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one property by ID.
             USE WHEN — Confirming a property's type before calling voiceflow_transcript_property.set_value, or checking whether it's a default property before attempting update/delete.
+        cli:
+          command: transcript property get
       x-speakeasy-group: transcript.property
       x-speakeasy-name-override: get
       summary: Get property
@@ -2174,6 +2270,8 @@ paths:
           operationDescription: |-
             WHAT — Rename a property.
             DO NOT — Attempt this on a default property — it will fail. Default properties (created by Voiceflow, not the user) are read-only; check the default flag via voiceflow_transcript_property.get first.
+        cli:
+          command: transcript property update
       x-speakeasy-group: transcript.property
       x-speakeasy-name-override: update
       summary: Update property
@@ -2221,6 +2319,8 @@ paths:
           operationDescription: |-
             WHAT — Permanently remove a property definition and its recorded values across all transcripts.
             DO NOT — Attempt this on a default property — it will fail. Default properties (created by Voiceflow, not the user) are read-only; check the default flag via voiceflow_transcript_property.get first.
+        cli:
+          command: transcript property delete
       x-speakeasy-group: transcript.property
       x-speakeasy-name-override: delete
       summary: Delete property
@@ -2263,6 +2363,8 @@ paths:
             WHAT — Set a property value on a specific transcript.
             USE WHEN — Tagging a transcript with a diagnosis (e.g. root_cause = "missing captureResponse") so future filtered searches can find it; or recording user-reported metrics post-hoc.
             DO NOT — Expect the agent to read the value back mid-conversation — properties are read-only to the runtime.
+        cli:
+          command: transcript property set-value
       x-speakeasy-group: transcript.property
       x-speakeasy-name-override: set-value
       summary: Set property value
@@ -2311,6 +2413,8 @@ paths:
           operationDescription: |-
             WHAT — List all functions in the project.
             USE WHEN — Discovering existing functions or finding a functionID to edit.
+        cli:
+          command: function list
       x-speakeasy-group: function
       x-speakeasy-name-override: list
       summary: List functions
@@ -2376,6 +2480,8 @@ paths:
             USE WHEN — User needs custom logic the agent can call: transforms, parsing, computation, chained API calls, conditional branching on a response.
             AFTER — voiceflow_tool.create (target=global,type=function) to attach at agent level, then voiceflow_environment.compile.
             DO NOT — Write the description as pure WHAT (just what the function does). The LLM uses this text to decide whether to call the function — it must include WHEN (the user signals or data conditions that should trigger the call). Also: don't hardcode auth keys in function code — declare them as input variables (filled at call time by the LLM or auto-filled from a project variable). And: outputVars only accepts string/number/boolean — null, undefined, objects, arrays all fail silently. Stringify objects if you need structured outputs.
+        cli:
+          command: function create
       x-speakeasy-group: function
       x-speakeasy-name-override: create
       summary: Create function
@@ -2425,6 +2531,8 @@ paths:
           operationDescription: |-
             WHAT — Create multiple functions in one call.
             USE WHEN — Mass-creating during a build (importing a service catalog, scaffolding multiple lookups in one shot).
+        cli:
+          command: function create-many
       x-speakeasy-group: function
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -2475,6 +2583,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one function's full detail: code, declared input/output variables, exit paths.
             USE WHEN — Before editing (to merge changes against current state), or inspecting how a function is wired.
+        cli:
+          command: function get
       x-speakeasy-group: function
       x-speakeasy-name-override: get
       summary: Get function
@@ -2525,6 +2635,8 @@ paths:
             BEFORE — voiceflow_function.get to see current code.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
             DO NOT — Write `response.json()` as a method call — Voiceflow's fetch exposes `.json` as a property, not a method. Every cold-start LLM writes `response.json()` and breaks; use `response.json` instead.
+        cli:
+          command: function update
       x-speakeasy-group: function
       x-speakeasy-name-override: update
       summary: Update function
@@ -2580,6 +2692,8 @@ paths:
             WHAT — Remove a function.
             USE WHEN — Retiring a function that's no longer needed.
             BEFORE — voiceflow_tool.list to confirm nothing currently attaches this function; runtime calls to a deleted function will fail.
+        cli:
+          command: function delete
       x-speakeasy-group: function
       x-speakeasy-name-override: delete
       summary: Delete function
@@ -2628,6 +2742,8 @@ paths:
           operationDescription: |-
             WHAT — List the function's declared input and output variables, each with name and type.
             USE WHEN — Understanding what the function expects/returns before wiring it.
+        cli:
+          command: function variable list
       x-speakeasy-group: function.variable
       x-speakeasy-name-override: list
       summary: List variables
@@ -2677,6 +2793,8 @@ paths:
             WHAT — Declare a new input or output variable on a function. Type is direction (input | output), not data type — data types are inferred from value shape at runtime.
             USE WHEN — The function needs a new input (auth token, postal code) or returns a new output downstream tools will use.
             DO NOT — Return object or array values in outputVars — only string / number / boolean are supported; everything else fails silently. Stringify arrays/objects (`JSON.stringify(...)`) if downstream tools need structured data. Booleans are commonly returned as the strings "true"/"false" because Voiceflow's downstream comparisons (in prompts and conditions) are stringly-typed — match the form the next tool will consume.
+        cli:
+          command: function variable create
       x-speakeasy-group: function.variable
       x-speakeasy-name-override: create
       summary: Create variable
@@ -2726,6 +2844,8 @@ paths:
           operationDescription: |-
             WHAT — Create multiple function variables in one call.
             USE WHEN — Scaffolding a function with many inputs/outputs at once.
+        cli:
+          command: function variable create-many
       x-speakeasy-group: function.variable
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -2776,6 +2896,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch a single function variable's detail.
             USE WHEN — Before editing it.
+        cli:
+          command: function variable get
       x-speakeasy-group: function.variable
       x-speakeasy-name-override: get
       summary: Get variable
@@ -2823,6 +2945,8 @@ paths:
           operationDescription: |-
             WHAT — Modify a function variable's name or description.
             DO NOT — Rename a variable that's already referenced by a voiceflow_tool attachment's captureResponse or inputVariables map — the binding will silently fail. Update the attachment first.
+        cli:
+          command: function variable update
       x-speakeasy-group: function.variable
       x-speakeasy-name-override: update
       summary: Update variable
@@ -2877,6 +3001,8 @@ paths:
           operationDescription: |-
             WHAT — Remove a function variable.
             DO NOT — Delete a variable referenced by any voiceflow_tool attachment without cleaning those bindings up first.
+        cli:
+          command: function variable delete
       x-speakeasy-group: function.variable
       x-speakeasy-name-override: delete
       summary: Delete variable
@@ -2925,6 +3051,8 @@ paths:
           operationDescription: |-
             WHAT — List the named exit paths on a function (success, error, custom branches).
             USE WHEN — Verifying the function returns the expected branches.
+        cli:
+          command: function path list
       x-speakeasy-group: function.path
       x-speakeasy-name-override: list
       summary: List paths
@@ -2973,6 +3101,8 @@ paths:
           operationDescription: |-
             WHAT — Add a new exit path to a function (e.g. not_found, retry_needed, partial_match).
             USE WHEN — The function needs a new branch the playbook can route on. Functions commonly have 3+ paths beyond success/error — `not_found` for empty-result API calls, `retry_needed` for transient failures, `partial_match` for ambiguous lookups. Branch downstream wiring (playbook instructions or canvas-step routing) on the specific path that fires, not just success vs. error.
+        cli:
+          command: function path create
       x-speakeasy-group: function.path
       x-speakeasy-name-override: create
       summary: Create path
@@ -3022,6 +3152,8 @@ paths:
           operationDescription: |-
             WHAT — Add multiple exit paths in one call.
             USE WHEN — Scaffolding a function with several branches at once.
+        cli:
+          command: function path create-many
       x-speakeasy-group: function.path
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -3072,6 +3204,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch a single exit path's detail.
             USE WHEN — Before editing it.
+        cli:
+          command: function path get
       x-speakeasy-group: function.path
       x-speakeasy-name-override: get
       summary: Get path
@@ -3117,6 +3251,8 @@ paths:
             Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
           operation: update_path
           operationDescription: WHAT — Modify an existing path's name or label.
+        cli:
+          command: function path update
       x-speakeasy-group: function.path
       x-speakeasy-name-override: update
       summary: Update path
@@ -3171,6 +3307,8 @@ paths:
           operationDescription: |-
             WHAT — Remove a path from a function.
             DO NOT — Delete a path that's referenced by a playbook's exit conditions or canvas-step wiring — runtime breaks when the path is gone.
+        cli:
+          command: function path delete
       x-speakeasy-group: function.path
       x-speakeasy-name-override: delete
       summary: Delete path
@@ -3218,6 +3356,8 @@ paths:
           operationDescription: |-
             WHAT — List all evaluations defined for the project.
             USE WHEN — Auditing eval coverage or finding an evaluationID to run/edit.
+        cli:
+          command: evaluation list
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: list
       summary: List evaluations
@@ -3254,6 +3394,8 @@ paths:
             WHAT — Define a new evaluation.
             USE WHEN — You spotted a failure pattern in transcripts that's worth tracking across future traffic.
             DO NOT — Trust a new evaluation before calibrating it. Run it on 5-10 representative transcripts, compare scores to human judgment, fix false positives/negatives in the criteria text, re-run, iterate until aligned. An uncalibrated eval drives downstream optimization toward bogus changes.
+        cli:
+          command: evaluation create
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: create
       summary: Create evaluation
@@ -3296,6 +3438,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one evaluation's full config.
             USE WHEN — Before update.
+        cli:
+          command: evaluation get
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: get
       summary: Get evaluation
@@ -3336,6 +3480,8 @@ paths:
           operationDescription: |-
             WHAT — Patch evaluation config.
             BEFORE — voiceflow_evaluation.get to see current config.
+        cli:
+          command: evaluation update
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: update
       summary: Update evaluation
@@ -3382,6 +3528,8 @@ paths:
           operationDescription: |-
             WHAT — Remove an evaluation.
             DO NOT — Try to delete a built-in default (CSAT, Deflection, Resolution). They can be disabled via update but not deleted.
+        cli:
+          command: evaluation delete
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: delete
       summary: Delete evaluation
@@ -3423,6 +3571,8 @@ paths:
           operationDescription: |-
             WHAT — Run a single evaluation against a transcript.
             USE WHEN — Smoke-testing a calibration tweak on a transcript before doing a wider batch_run.
+        cli:
+          command: evaluation run
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: run
       summary: Run evaluation
@@ -3471,6 +3621,8 @@ paths:
           operationDescription: |-
             WHAT — List all documents currently in the Knowledge Base.
             USE WHEN — Auditing Knowledge Base contents or finding a documentID to update via voiceflow_document.
+        cli:
+          command: document list
       x-speakeasy-group: document
       x-speakeasy-name-override: list
       summary: List documents
@@ -3515,6 +3667,8 @@ paths:
             WHAT — Add a web URL as a Knowledge Base source. System crawls the page (or follows the sitemap).
             USE WHEN — Content that lives on the customer's public site and stays in sync via scheduled refresh.
             DO NOT — Re-upload the same URL via create_url to refresh content — it makes a duplicate document. To refresh an existing URL document, use the source's refresh mechanism instead of re-creating.
+        cli:
+          command: document create-url
       x-speakeasy-group: document
       x-speakeasy-name-override: create-url
       summary: Create URL document
@@ -3656,6 +3810,8 @@ paths:
             WHAT — Add a plain-text document to the Knowledge Base.
             USE WHEN — Short policies, FAQ entries, or content that doesn't have a source URL.
             DO NOT — Dump CSV/tabular data here. Parse it into rows and use create_table instead so each row becomes a chunk with filterable row-level metadata.
+        cli:
+          command: document create-text
       x-speakeasy-group: document
       x-speakeasy-name-override: create-text
       summary: Create text document
@@ -3816,6 +3972,8 @@ paths:
             USE WHEN — Service catalogues, product lists, region/plan-tagged content — anywhere the agent should filter retrieval by structured attributes.
             DO NOT — Nest items as `{ metadata: {...}, content: "..." }`. API rejects it. Items must be flat objects; `schema` declares which keys are searchable vs metadata. Also: filterable attributes belong in `documentMetadata` (or `metadataFields` if you'll filter via a custom function).
             ESCAPE HATCH — For filtering the system tool can't express (per-row by `metadataFields`, multi-field logic, fallback chains), scaffold a Function that POSTs to https://general-runtime.voiceflow.com/knowledge-base/query with { question, filters, chunkLimit, synthesis: false }. Mongo-style filter syntax (`$eq`, `$in`, `$ne`). Attach via voiceflow_tool. See public Voiceflow Knowledge Base query API docs for the full request/response shape and the function authoring conventions (`args.inputVars`, `response.json` as property).
+        cli:
+          command: document create-table
       x-speakeasy-group: document
       x-speakeasy-name-override: create-table
       summary: Create table document
@@ -3956,6 +4114,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one document's metadata plus content (or chunk preview for large docs).
             USE WHEN — Before update, or inspecting what's actually stored for a specific document.
+        cli:
+          command: document get
       x-speakeasy-group: document
       x-speakeasy-name-override: get
       summary: Get document
@@ -4003,6 +4163,8 @@ paths:
           operationDescription: |-
             WHAT — Patch a document metadata.
             USE WHEN — Renaming, replacing content, or adjusting chunking settings.
+        cli:
+          command: document update
       x-speakeasy-group: document
       x-speakeasy-name-override: update
       summary: Update document
@@ -4057,6 +4219,8 @@ paths:
           operationDescription: |-
             WHAT — Remove a document from the Knowledge Base.
             DO NOT — Delete without first checking which playbooks rely on Knowledge Base retrieval for the content this document covers. The agent's answers will silently degrade if the topic disappears.
+        cli:
+          command: document delete
       x-speakeasy-group: document
       x-speakeasy-name-override: delete
       summary: Delete document
@@ -4111,6 +4275,8 @@ paths:
             WHAT — Read the full agent configuration in one call.
             USE WHEN — Before editing any part of the agent (merge target for update), auditing the agent's full capability surface, or diagnosing an identity, tone, routing, or tool problem that could originate in any of these layers.
             DO NOT — Assume an empty prompt or instructions field means "never set" — on a freshly imported .vf agent these may not have materialized yet. Treat empty as unset and proceed with update.
+        cli:
+          command: agent get
       x-speakeasy-group: agent
       x-speakeasy-name-override: get
       summary: Get agent
@@ -4161,6 +4327,8 @@ paths:
             BEFORE — voiceflow_agent.get to see current state and merge changes against it — each playbookID/workflowID in playbooks/workflows must already exist.
             AFTER — voiceflow_environment.compile, then voiceflow_test_conversation to verify the change — include at least one adversarial probe for tone or guardrail edits.
             DO NOT — Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project.
+        cli:
+          command: agent update
       x-speakeasy-group: agent
       x-speakeasy-name-override: update
       summary: Update agent
@@ -4210,6 +4378,8 @@ paths:
           operationDescription: |-
             WHAT — List MCP servers currently connected to this project.
             USE WHEN — Discovering which upstream services are wired in.
+        cli:
+          command: mcp-server list
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: list
       summary: List MCP servers
@@ -4253,6 +4423,8 @@ paths:
             USE WHEN — Connecting a new upstream MCP service.
             AFTER — voiceflow_mcp_server.sync to pull the server's tool catalog.
             DO NOT — Hardcode bearer tokens in headers. Configure them as header values that can be edited via voiceflow_mcp_server.update when they need rotating.
+        cli:
+          command: mcp-server create
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: create
       summary: Create MCP server
@@ -4301,6 +4473,8 @@ paths:
           operationDescription: |-
             WHAT — Fetch one MCP server's full config (URL, headers, custom instructions). Secrets are redacted.
             USE WHEN — Before editing the server config.
+        cli:
+          command: mcp-server get
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: get
       summary: Get MCP server
@@ -4345,6 +4519,8 @@ paths:
             Successor: list the server's MCP tools to discover what's available.
           operation: update
           operationDescription: WHAT — Patch an MCP server's config. Partial PATCH.
+        cli:
+          command: mcp-server update
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: update
       summary: Update MCP server
@@ -4398,6 +4574,8 @@ paths:
           operationDescription: |-
             WHAT — Unregister an MCP server.
             BEFORE — Check whether any voiceflow_tool or playbook attachments reference tools from this server — references break at runtime when the server is gone.
+        cli:
+          command: mcp-server delete
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: delete
       summary: Delete MCP server
@@ -4445,6 +4623,8 @@ paths:
           operationDescription: |-
             WHAT — Refetch the upstream MCP server's tool catalog and update the cached list of available tools.
             USE WHEN — The server has added or removed tools since last sync, or you suspect the local catalog is stale.
+        cli:
+          command: mcp-server sync
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: sync
       summary: Sync MCP server
@@ -4492,6 +4672,8 @@ paths:
           operationDescription: |-
             WHAT — List configured MCP tools across all servers in this project.
             USE WHEN — Auditing all agent-callable MCP tools regardless of which server they come from.
+        cli:
+          command: mcp-tool list
       x-speakeasy-group: mcp-tool
       x-speakeasy-name-override: list
       summary: List MCP tools
@@ -4538,6 +4720,8 @@ paths:
             Successor: attach the MCP tool at agent level, then run a test conversation.
           operation: get
           operationDescription: WHAT — Fetch a single configured MCP tool.
+        cli:
+          command: mcp-tool get
       x-speakeasy-group: mcp-tool
       x-speakeasy-name-override: get
       summary: Get MCP tool
@@ -4587,6 +4771,8 @@ paths:
             WHAT — List all tool attachments on a target (the agent or a specific playbook).
             USE WHEN — Auditing which tools are wired to a target before adding or removing; or reading current inputVariables / captureResponse config before a patch.
             BEFORE — voiceflow_project.get for projectID and voiceflow_environment.list for environmentAlias; voiceflow_playbook.list if you need a playbookID.
+        cli:
+          command: tool list
       x-speakeasy-group: tool
       x-speakeasy-name-override: list
       summary: List tools
@@ -4658,6 +4844,8 @@ paths:
             BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first.
             AFTER — Set captureResponse so tool output lands in project variables; omitting it means the response is silently discarded. Then voiceflow_environment.compile + voiceflow_conversation.
             DO NOT — Attach the same tool twice to the same target without allowDuplicate: true (function type only) — the second attach will fail.
+        cli:
+          command: tool create
       x-speakeasy-group: tool
       x-speakeasy-name-override: create
       summary: Create tool
@@ -4709,6 +4897,8 @@ paths:
             USE WHEN — Bulk-wiring a set of functions, API tools, or MCP tools to a playbook or the global agent (e.g. migrating all tools from one playbook to another via sourcePlaybookID, or seeding a new agent from a template).
             BEFORE — All referenced functionIDs / apiToolIDs / mcpToolIDs must already exist.
             AFTER — Verify captureResponse is set on each record — bulk creates are the most common place it gets omitted.
+        cli:
+          command: tool create-many
       x-speakeasy-group: tool
       x-speakeasy-name-override: create-many
       x-speakeasy-ignore: true
@@ -4760,6 +4950,8 @@ paths:
             WHAT — Fetch the full attachment for one tool.
             USE WHEN — Inspecting a single wiring before patching it, or debugging why inputs aren't resolving or outputs aren't captured.
             BEFORE — voiceflow_tool.list to obtain the toolID.
+        cli:
+          command: tool get
       x-speakeasy-group: tool
       x-speakeasy-name-override: get
       summary: Get tool
@@ -4823,6 +5015,8 @@ paths:
             USE WHEN — Changing how a tool's inputs are resolved (switch from LLM-filled to variable-sourced), adding or correcting captureResponse mappings, or toggling asyncExecution on a function tool.
             BEFORE — voiceflow_tool.get to read current config; use its values as base to avoid accidentally clearing fields.
             AFTER — voiceflow_environment.compile + voiceflow_conversation to confirm the new wiring behaves correctly.
+        cli:
+          command: tool update
       x-speakeasy-group: tool
       x-speakeasy-name-override: update
       summary: Update tool
@@ -4877,6 +5071,8 @@ paths:
             WHAT — Detach a tool from its target (agent level or playbook). The underlying tool definition stays — only the attachment is removed.
             USE WHEN — The tool is no longer relevant at this scope, or you're moving it to per-playbook scope.
             BEFORE — Confirm which playbooks rely on this tool. Removing an agent-level attachment also removes it from every playbook (unless individually re-attached).
+        cli:
+          command: tool delete
       x-speakeasy-group: tool
       x-speakeasy-name-override: delete
       summary: Delete tool
@@ -4940,6 +5136,8 @@ paths:
             WHAT — Run a natural-language query against the Knowledge Base and return top-K chunks. Accepts metadata filters (see `voiceflow_document.create_table` for the metadata model). Toggle `synthesis: true` for a synthesized answer string; `synthesis: false` returns raw chunks.
             USE WHEN — Build-time verification — testing whether the Knowledge Base returns the expected chunks for representative queries, or debugging "the bot can't find X in the docs."
             DO NOT — Use this as a runtime path. The agent calls the Knowledge Base via the system tool at runtime, not via this MCP op. This is build-time diagnostic only. Flag any chunk with a relevance score < 0.6 as a Knowledge Base gap.
+        cli:
+          command: knowledge-base query
       x-speakeasy-group: knowledge-base
       x-speakeasy-name-override: query
       summary: Query knowledge base
@@ -4990,6 +5188,8 @@ paths:
             USE WHEN — Driving a multi-turn conversation, simulating a user message.
             AFTER — Inspect the returned trace array carefully: right trace type for the channel (text on chat, speak/audio on voice); tool called when expected and with the right args; error paths handled; no information leakage ("I checked the knowledge base..."); no re-greeting; variables not showing as literal "0" because they weren't pre-resolved.
             DO NOT — Conclude success based on the visible agent reply alone. The reply often looks fine while a tool silently failed or returned empty — you'll only catch it by reading the trace.
+        cli:
+          command: conversation send
       x-speakeasy-group: conversation
       x-speakeasy-name-override: send
       summary: Send
@@ -5043,6 +5243,8 @@ paths:
           operationDescription: |-
             WHAT — Read the session's current state — stack, variables, storage.
             USE WHEN — Mid-conversation debugging — what does the agent think the customer's name is right now? Which variables actually populated after the last tool call?
+        cli:
+          command: conversation state get
       x-speakeasy-group: conversation.state
       x-speakeasy-name-override: get
       summary: Get state
@@ -5100,6 +5302,8 @@ paths:
           operationDescription: |-
             WHAT — Patch session state directly (stack / variables / storage).
             USE WHEN — Simulating a state that would take many turns to reach organically — jumping mid-flow for testing.
+        cli:
+          command: conversation state update
       x-speakeasy-group: conversation.state
       x-speakeasy-name-override: update
       summary: Update state
@@ -5163,6 +5367,8 @@ paths:
           operationDescription: |-
             WHAT — Reset session state. Stack and storage cleared; variables persist.
             USE WHEN — Fresh test after poking around — returns the session to a clean starting point without losing pre-seeded variables.
+        cli:
+          command: conversation state delete
       x-speakeasy-group: conversation.state
       x-speakeasy-name-override: delete
       summary: Delete state
@@ -5221,6 +5427,8 @@ paths:
           operationDescription: |-
             WHAT — Patch session variables only — no stack/storage changes.
             USE WHEN — Pre-seeding caller info for a test scenario (e.g. caller_number = "+15555550100") before driving the conversation.
+        cli:
+          command: conversation state update-variables
       x-speakeasy-group: conversation.state
       x-speakeasy-name-override: update-variables
       summary: Update variables
@@ -5286,6 +5494,8 @@ paths:
             WHAT — Query call volume for a project, bucketed by interval (hour | day | week | month).
             USE WHEN — Charting call volume trends or comparing period-over-period call load.
             DO NOT — Treat the returned duration as talk time — it's total call duration including hold/silence. Use voiceflow_analytics.query_call_duration for actual talk time.
+        cli:
+          command: analytics query call-count
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: call-count
       summary: Query call count
@@ -5327,6 +5537,8 @@ paths:
           operationDescription: |-
             WHAT — Query real call duration (talk time only, excluding hold/silence) for a project, bucketed by interval.
             USE WHEN — Measuring how long callers are actually engaged, as distinct from total call length from voiceflow_analytics.query_call_count.
+        cli:
+          command: analytics query call-duration
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: call-duration
       summary: Query call duration
@@ -5368,6 +5580,8 @@ paths:
           operationDescription: |-
             WHAT — Transcript counts across a workspace, broken down per environment.
             USE WHEN — Comparing transcript volume across projects/environments in a workspace, before drilling into one via voiceflow_analytics.query_project_transcript_count.
+        cli:
+          command: analytics query workspace-transcript-count
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: workspace-transcript-count
       summary: Query workspace transcript count
@@ -5410,6 +5624,8 @@ paths:
             WHAT — Transcript counts for a single project, bucketed by interval.
             USE WHEN — Tracking conversation volume trends for one project over a date range.
             AFTER — voiceflow_transcript.search to pull the actual transcripts behind a spike or drop.
+        cli:
+          command: analytics query project-transcript-count
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: project-transcript-count
       summary: Query project transcript count
@@ -5451,6 +5667,8 @@ paths:
           operationDescription: |-
             WHAT — Per-interval cost and transcript count for a project.
             USE WHEN — Estimating spend trends or cost-per-transcript for a project over a date range.
+        cli:
+          command: analytics query project-transcript-cost
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: project-transcript-cost
       summary: Query transcript cost
@@ -5492,6 +5710,8 @@ paths:
           operationDescription: |-
             WHAT — Interaction counts across a workspace, grouped by interaction type.
             USE WHEN — Seeing which interaction types (text, intent, event, launch) dominate usage across a workspace's projects.
+        cli:
+          command: analytics query workspace-interaction-count
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: workspace-interaction-count
       summary: Query workspace interaction count
@@ -5533,6 +5753,8 @@ paths:
           operationDescription: |-
             WHAT — Interaction counts and average latency for a single project, bucketed by interval.
             USE WHEN — Tracking a project's response volume and latency trend over a date range.
+        cli:
+          command: analytics query project-interaction-count
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: project-interaction-count
       summary: Query project interaction count
@@ -5574,6 +5796,8 @@ paths:
           operationDescription: |-
             WHAT — Token totals for an organization, grouped by model. Not time-bucketed — totals across the requested date range.
             USE WHEN — Comparing model mix or overall token spend across an entire organization.
+        cli:
+          command: analytics query organization-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: organization-token-usage
       summary: Query organization token usage
@@ -5615,6 +5839,8 @@ paths:
           operationDescription: |-
             WHAT — Token totals for a workspace, grouped by model. Not time-bucketed.
             USE WHEN — Comparing model mix or token spend across the projects in one workspace.
+        cli:
+          command: analytics query workspace-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: workspace-token-usage
       summary: Query workspace token usage
@@ -5656,6 +5882,8 @@ paths:
           operationDescription: |-
             WHAT — Token usage for a project, grouped by model and bucketed by interval.
             USE WHEN — Tracking a project's token spend trend, or seeing which model is driving usage over time.
+        cli:
+          command: analytics query project-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: project-token-usage
       summary: Query project token usage
@@ -5698,6 +5926,8 @@ paths:
             WHAT — Aggregate token totals for an organization over an hourly window, with optional workspace/project filters. Returns a total-vs-filtered summary, not a per-hour breakdown.
             USE WHEN — Checking overall vs. filtered token volume for a short recent window without needing a time series.
             DO NOT — Expect a per-hour breakdown despite the name — this returns a single summary. Use voiceflow_analytics.query_hourly_project_token_usage or voiceflow_analytics.query_daily_token_usage for an actual time series.
+        cli:
+          command: analytics query hourly-organization-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: hourly-organization-token-usage
       summary: Query hourly organization token usage
@@ -5739,6 +5969,8 @@ paths:
           operationDescription: |-
             WHAT — Timezone-aware hourly token usage for a project, grouped by model and usage category.
             USE WHEN — Diagnosing a token spend spike within a single day, or seeing which usage category (playbook, function, Knowledge Base, etc.) drove it.
+        cli:
+          command: analytics query hourly-project-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: hourly-project-token-usage
       summary: Query hourly project token usage
@@ -5781,6 +6013,8 @@ paths:
             WHAT — Daily breakdown of organization token usage grouped by usage class, category, and model within a date range.
             USE WHEN — Building a multi-day token trend view, or auditing spend by class/category across an organization.
             DO NOT — Ignore rows flagged as misclassified when reconciling totals — they represent usage the classifier couldn't confidently attribute to a category.
+        cli:
+          command: analytics query daily-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: daily-token-usage
       summary: Query daily token usage
@@ -5822,6 +6056,8 @@ paths:
           operationDescription: |-
             WHAT — Token totals for an organization, aggregated (not time-bucketed) per project and per workspace.
             USE WHEN — Finding which projects or workspaces are the biggest token consumers in an organization, before drilling into one with voiceflow_analytics.query_project_token_usage.
+        cli:
+          command: analytics query entity-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: entity-token-usage
       summary: Query entity token usage
@@ -5863,6 +6099,8 @@ paths:
           operationDescription: |-
             WHAT — Timezone-aware token usage for a project, grouped by usage category and bucketed by interval.
             USE WHEN — Seeing which category of work (playbook reasoning, function calls, Knowledge Base retrieval, etc.) is driving a project's token spend over time.
+        cli:
+          command: analytics query category-token-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: category-token-usage
       summary: Query category token usage
@@ -5905,6 +6143,8 @@ paths:
             WHAT — Per-playbook usage for a project, including success rate and average latency.
             USE WHEN — Finding which playbooks get triggered most, or spotting one with a low success rate worth investigating.
             AFTER — voiceflow_transcript.search to find failing transcripts for a specific playbook.
+        cli:
+          command: analytics query playbook-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: playbook-usage
       summary: Query playbook usage
@@ -5946,6 +6186,8 @@ paths:
           operationDescription: |-
             WHAT — Per-workflow usage for a project.
             USE WHEN — Finding which workflows get triggered most, e.g. confirming a new workflow is actually being reached.
+        cli:
+          command: analytics query workflow-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: workflow-usage
       summary: Query workflow usage
@@ -5987,6 +6229,8 @@ paths:
           operationDescription: |-
             WHAT — Per-prompt usage for a project, including success rate and average latency.
             USE WHEN — Finding which prompts run most often, or spotting one with unusually high latency or a low success rate.
+        cli:
+          command: analytics query prompt-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: prompt-usage
       summary: Query prompt usage
@@ -6028,6 +6272,8 @@ paths:
           operationDescription: |-
             WHAT — Per-intent usage for a project.
             USE WHEN — Seeing which intents get matched most, e.g. to prioritize which intents need more training utterances.
+        cli:
+          command: analytics query intent-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: intent-usage
       summary: Query intent usage
@@ -6069,6 +6315,8 @@ paths:
           operationDescription: |-
             WHAT — Per-function usage for a project, including success rate and average latency.
             USE WHEN — Finding which functions run most, or spotting one with a low success rate (frequent throws/errors) worth debugging.
+        cli:
+          command: analytics query function-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: function-usage
       summary: Query function usage
@@ -6110,6 +6358,8 @@ paths:
           operationDescription: |-
             WHAT — Per-API-tool usage for a project, including success rate and average latency.
             USE WHEN — Finding which API tools get called most, or spotting one with a low success rate (failing calls, bad auth, timeouts).
+        cli:
+          command: analytics query api-tool-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: api-tool-usage
       summary: Query API tool usage
@@ -6151,6 +6401,8 @@ paths:
           operationDescription: |-
             WHAT — Per-MCP-tool usage for a project, keyed by tool name rather than ID, including success rate and average latency.
             USE WHEN — Finding which upstream MCP tools get called most, or spotting one with a low success rate.
+        cli:
+          command: analytics query mcp-tool-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: mcp-tool-usage
       summary: Query MCP tool usage
@@ -6192,6 +6444,8 @@ paths:
           operationDescription: |-
             WHAT — Per-document retrieval counts for a project's Knowledge Base.
             USE WHEN — Finding which documents actually get retrieved, or spotting zero-hit documents that may be safe to prune.
+        cli:
+          command: analytics query knowledge-base-document-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: knowledge-base-document-usage
       summary: Query knowledge base document usage
@@ -6233,6 +6487,8 @@ paths:
           operationDescription: |-
             WHAT — Per-integration usage for a project (Gmail, Salesforce, Zendesk, etc. — distinct from MCP tools), including success rate and average latency.
             USE WHEN — Finding which built-in integrations get called most, or spotting one with a low success rate.
+        cli:
+          command: analytics query integration-usage
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: integration-usage
       summary: Query integration usage
@@ -6274,6 +6530,8 @@ paths:
           operationDescription: |-
             WHAT — Unique user counts for a project, bucketed by interval.
             USE WHEN — Tracking distinct-user trends over a date range, separate from raw interaction/transcript volume.
+        cli:
+          command: analytics query unique-user-count
       x-speakeasy-group: analytics.query
       x-speakeasy-name-override: unique-user-count
       summary: Query unique user count
