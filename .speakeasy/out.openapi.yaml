@@ -6559,6 +6559,1135 @@ paths:
         - Analytics
       security:
         - token: []
+  /v1/stable/test:
+    get:
+      operationId: StableTestController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: list
+          operationDescription: |-
+            WHAT — List all tests in the project.
+            USE WHEN — Discovering what tests exist, or finding a testID to inspect or extend.
+        cli:
+          command: test list
+      x-speakeasy-group: test
+      x-speakeasy-name-override: list
+      summary: List tests
+      description: List all tests by project ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestListResponse'
+      tags:
+        - Test
+      security:
+        - token: []
+    post:
+      operationId: StableTestController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create
+          operationDescription: |-
+            WHAT — Create a new test. Turns are added separately.
+            USE WHEN — Starting a new regression scenario for a flow you want to protect against future breakage.
+            AFTER — voiceflow_test.create_turn to add the turns that make up the scenario.
+        cli:
+          command: test create
+      x-speakeasy-group: test
+      x-speakeasy-name-override: create
+      summary: Create test
+      description: Create a new test.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestResponse'
+      tags:
+        - Test
+      security:
+        - token: []
+  /v1/stable/test/batch:
+    post:
+      operationId: StableTestController_createMany
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_many
+          operationDescription: |-
+            WHAT — Create multiple tests in one call.
+            USE WHEN — Scaffolding several regression scenarios at once (e.g. one test per playbook when standing up a new agent's test suite).
+        cli:
+          command: test create-many
+      x-speakeasy-group: test
+      x-speakeasy-name-override: create-many
+      x-speakeasy-ignore: true
+      summary: Create many tests
+      description: Create multiple new tests.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestCreateManyRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestListResponse'
+      tags:
+        - Test
+      security:
+        - token: []
+  /v1/stable/test/{testID}:
+    get:
+      operationId: StableTestController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: get
+          operationDescription: |-
+            WHAT — Fetch a single test by ID.
+            USE WHEN — Before editing it.
+            AFTER — voiceflow_test.list_turns to see its turns.
+        cli:
+          command: test get
+      x-speakeasy-group: test
+      x-speakeasy-name-override: get
+      summary: Get test
+      description: Get a test by ID.
+      parameters:
+        - name: testID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestResponse'
+      tags:
+        - Test
+      security:
+        - token: []
+    patch:
+      operationId: StableTestController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: update
+          operationDescription: |-
+            WHAT — Update a test.
+            USE WHEN — Renaming a test, adjusting its defaults, or reordering its turns.
+            DO NOT — Try to add or remove a turn through this endpoint — turn membership is managed via voiceflow_test.create_turn and voiceflow_test.delete_turn; this endpoint only reorders turns that already exist.
+        cli:
+          command: test update
+      x-speakeasy-group: test
+      x-speakeasy-name-override: update
+      summary: Update test
+      description: Update a test by ID.
+      parameters:
+        - name: testID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableTestUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Test
+      security:
+        - token: []
+    delete:
+      operationId: StableTestController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: delete
+          operationDescription: |-
+            WHAT — Remove a test, along with all of its turns and checks.
+            USE WHEN — Retiring a regression scenario that's no longer relevant.
+        cli:
+          command: test delete
+      x-speakeasy-group: test
+      x-speakeasy-name-override: delete
+      summary: Delete test
+      description: Delete a test by ID.
+      parameters:
+        - name: testID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Test
+      security:
+        - token: []
+  /v1/stable/test-turn:
+    get:
+      operationId: StableTestTurnController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: list_turns
+          operationDescription: |-
+            WHAT — List all turns by test ID.
+            USE WHEN — Reading a test's full script, or finding a turnID to inspect, patch, or attach checks to.
+        cli:
+          command: test turn list
+      x-speakeasy-group: test.turn
+      x-speakeasy-name-override: list
+      summary: List turns
+      description: List all turns by test ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: testID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the test whose turns to list.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestTurnListResponse'
+      tags:
+        - Test Turn
+      security:
+        - token: []
+    post:
+      operationId: StableTestTurnController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_turn
+          operationDescription: |-
+            WHAT — Add a new turn to a test.
+            USE WHEN — Building out a test's script one step at a time.
+            AFTER — For an agent turn, attach checks via voiceflow_test.create_check — an agent turn with no checks asserts nothing.
+        cli:
+          command: test turn create
+      x-speakeasy-group: test.turn
+      x-speakeasy-name-override: create
+      summary: Create turn
+      description: Create a new turn.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestTurnCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestTurnResponse'
+      tags:
+        - Test Turn
+      security:
+        - token: []
+  /v1/stable/test-turn/batch:
+    post:
+      operationId: StableTestTurnController_createMany
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_many_turns
+          operationDescription: |-
+            WHAT — Add multiple turns to the same test in one call, in the order given.
+            USE WHEN — Scaffolding a whole test script at once instead of one create call per turn.
+        cli:
+          command: test turn create-many
+      x-speakeasy-group: test.turn
+      x-speakeasy-name-override: create-many
+      x-speakeasy-ignore: true
+      summary: Create many turns
+      description: Create multiple new turns.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestTurnCreateManyRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestTurnListResponse'
+      tags:
+        - Test Turn
+      security:
+        - token: []
+  /v1/stable/test-turn/{turnID}:
+    get:
+      operationId: StableTestTurnController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: get_turn
+          operationDescription: |-
+            WHAT — Fetch a single turn by ID.
+            USE WHEN — Before editing it.
+        cli:
+          command: test turn get
+      x-speakeasy-group: test.turn
+      x-speakeasy-name-override: get
+      summary: Get turn
+      description: Get a turn by ID.
+      parameters:
+        - name: turnID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestTurnResponse'
+      tags:
+        - Test Turn
+      security:
+        - token: []
+    patch:
+      operationId: StableTestTurnController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: update_turn
+          operationDescription: |-
+            WHAT — Update a turn.
+            USE WHEN — Editing a turn's content, or reordering its checks.
+            DO NOT — Try to change what kind of turn this is through an update — the request is rejected if the new data doesn't match the turn's existing kind. Delete it and create a new turn instead.
+        cli:
+          command: test turn update
+      x-speakeasy-group: test.turn
+      x-speakeasy-name-override: update
+      summary: Update turn
+      description: Update a turn by ID.
+      parameters:
+        - name: turnID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestTurnUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Test Turn
+      security:
+        - token: []
+    delete:
+      operationId: StableTestTurnController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: delete_turn
+          operationDescription: |-
+            WHAT — Remove a turn from its test, along with any checks attached to it.
+            USE WHEN — Cutting a step out of a test's script.
+        cli:
+          command: test turn delete
+      x-speakeasy-group: test.turn
+      x-speakeasy-name-override: delete
+      summary: Delete turn
+      description: Delete a turn by ID.
+      parameters:
+        - name: turnID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Test Turn
+      security:
+        - token: []
+  /v1/stable/test-check:
+    get:
+      operationId: StableTestCheckController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: list_checks
+          operationDescription: |-
+            WHAT — List all checks by turn ID.
+            USE WHEN — Reading what an agent turn currently asserts, or finding a checkID to edit.
+        cli:
+          command: test check list
+      x-speakeasy-group: test.check
+      x-speakeasy-name-override: list
+      summary: List checks
+      description: List all checks by turn ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: turnID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the turn whose checks to list.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestCheckListResponse'
+      tags:
+        - Test Check
+      security:
+        - token: []
+    post:
+      operationId: StableTestCheckController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_check
+          operationDescription: |-
+            WHAT — Attach a new check to a turn.
+            USE WHEN — Adding an assertion to an agent turn so the test actually verifies something.
+            DO NOT — Attach a check to a user or simulation turn — checks only make sense on agent turns.
+        cli:
+          command: test check create
+      x-speakeasy-group: test.check
+      x-speakeasy-name-override: create
+      summary: Create check
+      description: Create a new check.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestCheckCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestCheckResponse'
+      tags:
+        - Test Check
+      security:
+        - token: []
+  /v1/stable/test-check/batch:
+    post:
+      operationId: StableTestCheckController_createMany
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_many_checks
+          operationDescription: |-
+            WHAT — Attach multiple checks to the same turn in one call, in the order given.
+            USE WHEN — An agent turn needs several assertions at once (e.g. checking both the response text and that a tool fired).
+        cli:
+          command: test check create-many
+      x-speakeasy-group: test.check
+      x-speakeasy-name-override: create-many
+      x-speakeasy-ignore: true
+      summary: Create many checks
+      description: Create multiple new checks.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestCheckCreateManyRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestCheckListResponse'
+      tags:
+        - Test Check
+      security:
+        - token: []
+  /v1/stable/test-check/{checkID}:
+    get:
+      operationId: StableTestCheckController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: get_check
+          operationDescription: |-
+            WHAT — Fetch a single check's detail.
+            USE WHEN — Before editing it.
+        cli:
+          command: test check get
+      x-speakeasy-group: test.check
+      x-speakeasy-name-override: get
+      summary: Get check
+      description: Get a check by ID.
+      parameters:
+        - name: checkID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestCheckResponse'
+      tags:
+        - Test Check
+      security:
+        - token: []
+    patch:
+      operationId: StableTestCheckController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: update_check
+          operationDescription: |-
+            WHAT — Update a check.
+            USE WHEN — Correcting what a check asserts.
+            DO NOT — Try to change what kind of check this is through an update — the request is rejected if the new data doesn't match the check's existing kind. Delete it and create a new check instead.
+        cli:
+          command: test check update
+      x-speakeasy-group: test.check
+      x-speakeasy-name-override: update
+      summary: Update check
+      description: Update a check by ID.
+      parameters:
+        - name: checkID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestCheckUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Test Check
+      security:
+        - token: []
+    delete:
+      operationId: StableTestCheckController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: delete_check
+          operationDescription: |-
+            WHAT — Remove a check from its turn.
+            USE WHEN — The assertion is no longer relevant, or being replaced by a differently-typed check.
+        cli:
+          command: test check delete
+      x-speakeasy-group: test.check
+      x-speakeasy-name-override: delete
+      summary: Delete check
+      description: Delete a check by ID.
+      parameters:
+        - name: checkID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Test Check
+      security:
+        - token: []
+  /v1/stable/test-run/search:
+    post:
+      operationId: StableTestRunController_search
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: search_runs
+          operationDescription: |-
+            WHAT — Search runs in the project, optionally scoped to a single test.
+            USE WHEN — Reviewing run history, checking whether a test's most recent run passed, or finding a runID to inspect further.
+        cli:
+          command: test run search
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: search
+      summary: Search runs
+      description: Search runs by project ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunSearchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunListResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
+  /v1/stable/test-run:
+    post:
+      operationId: StableTestRunController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_run
+          operationDescription: |-
+            WHAT — Trigger a new run of a test. Execution is asynchronous — the run starts queued and moves through its lifecycle in the background.
+            USE WHEN — Verifying a test after building or editing its turns and checks, or confirming a fix actually resolved a prior failure.
+            AFTER — voiceflow_test.get_run to poll for the outcome.
+        cli:
+          command: test run create
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: create
+      summary: Create run
+      description: Create a new run.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
+  /v1/stable/test-run/batch:
+    post:
+      operationId: StableTestRunController_createMany
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: create_many_runs
+          operationDescription: |-
+            WHAT — Trigger a run for each of several tests in one call.
+            USE WHEN — Running a full regression suite at once (e.g. before publishing) instead of triggering each test individually.
+            AFTER — voiceflow_test.get_run on the returned runs to track their progress.
+        cli:
+          command: test run create-many
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: create-many
+      x-speakeasy-ignore: true
+      summary: Create many runs
+      description: Create multiple new runs.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunCreateManyRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunCreateManyResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
+  /v1/stable/test-run/{runID}:
+    get:
+      operationId: StableTestRunController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: get_run
+          operationDescription: |-
+            WHAT — Fetch a single run by ID.
+            USE WHEN — Polling for a run's outcome, or inspecting what happened during execution after a test fails.
+        cli:
+          command: test run get
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: get
+      summary: Get run
+      description: Get a run by ID.
+      parameters:
+        - name: runID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
 info:
   title: Realtime
   description: Realtime gateway API service
@@ -11761,6 +12890,283 @@ components:
           additionalProperties: {}
       required:
         - text
+    SimulationSettings:
+      type: object
+      properties:
+        launchEvent:
+          nullable: true
+          type: string
+        variableStates:
+          default: []
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/PersonaItem'
+      required:
+        - launchEvent
+    PersonaItem:
+      type: object
+      properties:
+        id:
+          type: string
+        variableID:
+          nullable: true
+          type: string
+        value:
+          nullable: true
+          type: string
+      required:
+        - id
+        - variableID
+        - value
+    ToolSimulationTurnTestPayload:
+      type: object
+      properties:
+        tool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/ToolSimulationTurnTestPayloadTool'
+        shouldCall:
+          type: boolean
+      required:
+        - tool
+        - shouldCall
+    ToolSimulationTurnTestPayloadTool:
+      oneOf:
+        - $ref: '#/components/schemas/NativeToolSimulationTurnTestPayload'
+        - $ref: '#/components/schemas/ApiCallToolSimulationTurnTestPayload'
+        - $ref: '#/components/schemas/FunctionToolSimulationTurnTestPayload'
+        - $ref: '#/components/schemas/IntegrationToolSimulationTurnTestPayload'
+        - $ref: '#/components/schemas/McpIntegrationToolSimulationTurnTestPayload'
+    NativeToolSimulationTurnTestPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - native
+          x-enumNames:
+            - NATIVE
+        kind:
+          $ref: '#/components/schemas/SimulationTurnTestToolNativeKind'
+      required:
+        - type
+        - kind
+    SimulationTurnTestToolNativeKind:
+      type: string
+      enum:
+        - end
+        - card
+        - button
+        - carousel
+        - skip-turn
+        - web-search
+        - call-forward
+        - knowledge-base
+      x-enumNames:
+        - END
+        - CARD
+        - BUTTON
+        - CAROUSEL
+        - SKIP_TURN
+        - WEB_SEARCH
+        - CALL_FORWARD
+        - KNOWLEDGE_BASE
+    ApiCallToolSimulationTurnTestPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - api-call
+          x-enumNames:
+            - API_CALL
+        toolID:
+          type: string
+      required:
+        - type
+        - toolID
+    FunctionToolSimulationTurnTestPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - function
+          x-enumNames:
+            - FUNCTION
+        toolID:
+          type: string
+      required:
+        - type
+        - toolID
+    IntegrationToolSimulationTurnTestPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - integration
+          x-enumNames:
+            - INTEGRATION
+        toolID:
+          type: string
+      required:
+        - type
+        - toolID
+    McpIntegrationToolSimulationTurnTestPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - mcp-integration
+          x-enumNames:
+            - MCP_INTEGRATION
+        toolID:
+          type: string
+      required:
+        - type
+        - toolID
+    ResponseSimulationTurnTestPayload:
+      oneOf:
+        - $ref: '#/components/schemas/SimulationTurnTestJudgeEqual'
+        - $ref: '#/components/schemas/SimulationTurnTestJudgeLLMEval'
+    SimulationTurnTestJudgeEqual:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - equal
+          x-enumNames:
+            - EQUAL
+        value:
+          type: string
+      required:
+        - type
+        - value
+    SimulationTurnTestJudgeLLMEval:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - llm_eval
+          x-enumNames:
+            - LLM_EVAL
+        prompt:
+          type: string
+      required:
+        - type
+        - prompt
+    SimulationRunLog:
+      oneOf:
+        - $ref: '#/components/schemas/SimulationRunEndLog'
+        - $ref: '#/components/schemas/SimulationRunTraceLog'
+        - $ref: '#/components/schemas/SimulationRunActionLog'
+    SimulationRunEndLog:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - end
+          x-enumNames:
+            - END
+        payload:
+          type: object
+          properties:
+            reason:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - type
+        - payload
+        - createdAt
+    SimulationRunTraceLog:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - trace
+          x-enumNames:
+            - TRACE
+        payload:
+          type: object
+          properties:
+            type:
+              type: string
+            paths:
+              type: array
+              items:
+                $ref: '#/components/schemas/TracePath'
+            defaultPath:
+              type: number
+            time:
+              type: number
+            turnID:
+              type: string
+            handleID:
+              type: string
+          required:
+            - type
+          additionalProperties: {}
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - type
+        - payload
+        - createdAt
+    SimulationRunActionLog:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - action
+          x-enumNames:
+            - ACTION
+        payload:
+          type: object
+          properties:
+            type:
+              type: string
+            payload: {}
+            diagramID:
+              type: string
+            time:
+              type: number
+            metadata:
+              type: object
+              additionalProperties: {}
+          required:
+            - type
+          additionalProperties: {}
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - type
+        - payload
+        - createdAt
     StableAgent:
       type: object
       properties:
@@ -16971,6 +18377,1047 @@ components:
         name:
           type: string
       additionalProperties: false
+    StableTestCheck:
+      oneOf:
+        - type: object
+          properties:
+            id:
+              type: string
+            turnID:
+              type: string
+              description: The ID of the turn this check belongs to.
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            type:
+              type: string
+              enum:
+                - response
+              description: Identifies a check that judges the agent's response text against expected criteria.
+              x-enumNames:
+                - RESPONSE
+            payload:
+              $ref: '#/components/schemas/ResponseSimulationTurnTestPayload'
+          required:
+            - id
+            - turnID
+            - createdAt
+            - updatedAt
+            - type
+            - payload
+        - type: object
+          properties:
+            id:
+              type: string
+            turnID:
+              type: string
+              description: The ID of the turn this check belongs to.
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            type:
+              type: string
+              enum:
+                - routing
+              description: Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
+              x-enumNames:
+                - ROUTING
+            payload:
+              type: object
+              properties:
+                routeTo:
+                  nullable: true
+                  description: The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
+                  type: object
+                  properties:
+                    resourceID:
+                      type: string
+                      description: The ID of the playbook or workflow the check routes against.
+                    resourceType:
+                      type: string
+                      enum:
+                        - playbook
+                        - workflow
+                      description: Whether resourceID is a playbook or a workflow.
+                      x-enumNames:
+                        - PLAYBOOK
+                        - WORKFLOW
+                  required:
+                    - resourceID
+                    - resourceType
+                shouldRoute:
+                  type: boolean
+              required:
+                - routeTo
+                - shouldRoute
+          required:
+            - id
+            - turnID
+            - createdAt
+            - updatedAt
+            - type
+            - payload
+        - type: object
+          properties:
+            id:
+              type: string
+            turnID:
+              type: string
+              description: The ID of the turn this check belongs to.
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            type:
+              type: string
+              enum:
+                - tool
+              description: Identifies a check that verifies whether the agent called a specific tool.
+              x-enumNames:
+                - TOOL
+            payload:
+              $ref: '#/components/schemas/ToolSimulationTurnTestPayload'
+          required:
+            - id
+            - turnID
+            - createdAt
+            - updatedAt
+            - type
+            - payload
+    StableTestCheckListResponse:
+      type: object
+      properties:
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestCheck'
+      required:
+        - checks
+    StableTestCheckResponse:
+      type: object
+      properties:
+        check:
+          $ref: '#/components/schemas/StableTestCheck'
+      required:
+        - check
+    StableTestCheckCreateRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - response
+              description: Identifies a check that judges the agent's response text against expected criteria.
+              x-enumNames:
+                - RESPONSE
+            turnID:
+              type: string
+              description: The ID of the turn this check belongs to.
+            payload:
+              $ref: '#/components/schemas/ResponseSimulationTurnTestPayload'
+          required:
+            - type
+            - turnID
+            - payload
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - routing
+              description: Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
+              x-enumNames:
+                - ROUTING
+            turnID:
+              type: string
+              description: The ID of the turn this check belongs to.
+            payload:
+              type: object
+              properties:
+                routeTo:
+                  nullable: true
+                  description: The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
+                  type: object
+                  properties:
+                    resourceID:
+                      type: string
+                      description: The ID of the playbook or workflow the check routes against.
+                    resourceType:
+                      type: string
+                      enum:
+                        - playbook
+                        - workflow
+                      description: Whether resourceID is a playbook or a workflow.
+                      x-enumNames:
+                        - PLAYBOOK
+                        - WORKFLOW
+                  required:
+                    - resourceID
+                    - resourceType
+                shouldRoute:
+                  type: boolean
+              required:
+                - routeTo
+                - shouldRoute
+          required:
+            - type
+            - turnID
+            - payload
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - tool
+              description: Identifies a check that verifies whether the agent called a specific tool.
+              x-enumNames:
+                - TOOL
+            turnID:
+              type: string
+              description: The ID of the turn this check belongs to.
+            payload:
+              $ref: '#/components/schemas/ToolSimulationTurnTestPayload'
+          required:
+            - type
+            - turnID
+            - payload
+          additionalProperties: false
+    StableTestCheckCreateManyRequest:
+      type: object
+      properties:
+        turnID:
+          type: string
+          description: The ID of the turn to attach these checks to.
+        checks:
+          type: array
+          items:
+            oneOf:
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - response
+                    description: Identifies a check that judges the agent's response text against expected criteria.
+                    x-enumNames:
+                      - RESPONSE
+                  payload:
+                    $ref: '#/components/schemas/ResponseSimulationTurnTestPayload'
+                required:
+                  - type
+                  - payload
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - routing
+                    description: Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
+                    x-enumNames:
+                      - ROUTING
+                  payload:
+                    type: object
+                    properties:
+                      routeTo:
+                        nullable: true
+                        description: The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
+                        type: object
+                        properties:
+                          resourceID:
+                            type: string
+                            description: The ID of the playbook or workflow the check routes against.
+                          resourceType:
+                            type: string
+                            enum:
+                              - playbook
+                              - workflow
+                            description: Whether resourceID is a playbook or a workflow.
+                            x-enumNames:
+                              - PLAYBOOK
+                              - WORKFLOW
+                        required:
+                          - resourceID
+                          - resourceType
+                      shouldRoute:
+                        type: boolean
+                    required:
+                      - routeTo
+                      - shouldRoute
+                required:
+                  - type
+                  - payload
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - tool
+                    description: Identifies a check that verifies whether the agent called a specific tool.
+                    x-enumNames:
+                      - TOOL
+                  payload:
+                    $ref: '#/components/schemas/ToolSimulationTurnTestPayload'
+                required:
+                  - type
+                  - payload
+                additionalProperties: false
+      required:
+        - turnID
+        - checks
+    StableTestCheckUpdateRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - response
+              description: Identifies a check that judges the agent's response text against expected criteria.
+              x-enumNames:
+                - RESPONSE
+            payload:
+              allOf:
+                - $ref: '#/components/schemas/ResponseSimulationTurnTestPayload'
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - routing
+              description: Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
+              x-enumNames:
+                - ROUTING
+            payload:
+              type: object
+              properties:
+                routeTo:
+                  nullable: true
+                  description: The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
+                  type: object
+                  properties:
+                    resourceID:
+                      type: string
+                      description: The ID of the playbook or workflow the check routes against.
+                    resourceType:
+                      type: string
+                      enum:
+                        - playbook
+                        - workflow
+                      description: Whether resourceID is a playbook or a workflow.
+                      x-enumNames:
+                        - PLAYBOOK
+                        - WORKFLOW
+                  required:
+                    - resourceID
+                    - resourceType
+                shouldRoute:
+                  type: boolean
+              required:
+                - routeTo
+                - shouldRoute
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - tool
+              description: Identifies a check that verifies whether the agent called a specific tool.
+              x-enumNames:
+                - TOOL
+            payload:
+              allOf:
+                - $ref: '#/components/schemas/ToolSimulationTurnTestPayload'
+          required:
+            - type
+          additionalProperties: false
+    StableTestRun:
+      type: object
+      properties:
+        id:
+          type: string
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimulationRunLog'
+          description: The trace, tool-call, and end events recorded as the run executed.
+        status:
+          type: string
+          enum:
+            - idle
+            - pending
+            - running
+            - failed
+            - passed
+            - canceled
+          description: Where the run is in its lifecycle, from queued through to a finished outcome.
+          x-enumNames:
+            - IDLE
+            - PENDING
+            - RUNNING
+            - FAILED
+            - PASSED
+            - CANCELED
+        testID:
+          type: string
+          description: The ID of the test this run belongs to.
+        failReason:
+          nullable: true
+          description: Why the run failed. Null unless the run finished in a failed state.
+          type: string
+        totalChecks:
+          type: number
+          description: The number of checks across the test's turns that this run evaluated.
+        passedChecks:
+          nullable: true
+          description: How many of those checks passed. Null until the run reaches a finished state.
+          type: number
+        totalCredits:
+          type: number
+          description: The LLM credits consumed by this run.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        startedAt:
+          nullable: true
+          description: When execution actually began. Null while still queued.
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        finishedAt:
+          nullable: true
+          description: When the run reached a finished state. Null while in progress.
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - logs
+        - status
+        - testID
+        - failReason
+        - totalChecks
+        - passedChecks
+        - totalCredits
+        - createdAt
+        - startedAt
+        - finishedAt
+    StableTestRunListResponse:
+      type: object
+      properties:
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestRun'
+      required:
+        - runs
+    StableTestRunSearchRequest:
+      type: object
+      properties:
+        take:
+          default: 20
+          description: The maximum number of results to return, used for pagination.
+          type: number
+          minimum: 1
+          maximum: 100
+        skip:
+          default: 0
+          description: The number of results to skip, used for pagination.
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+        testID:
+          description: Restrict results to runs of this test. Omit to search across all tests.
+          type: string
+      additionalProperties: false
+    StableTestRunResponse:
+      type: object
+      properties:
+        run:
+          $ref: '#/components/schemas/StableTestRun'
+      required:
+        - run
+    StableTestRunCreateRequest:
+      type: object
+      properties:
+        testID:
+          type: string
+          description: The ID of the test to run.
+      required:
+        - testID
+      additionalProperties: false
+    StableTestRunCreateManyResponse:
+      type: object
+      properties:
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestRun'
+        bulkID:
+          type: string
+          description: Groups the runs created by this call so they can be searched or tracked together.
+      required:
+        - runs
+        - bulkID
+    StableTestRunCreateManyRequest:
+      type: object
+      properties:
+        testIDs:
+          minItems: 1
+          maxItems: 20
+          type: array
+          items:
+            type: string
+          description: The IDs of the tests to run, one run created per test.
+      required:
+        - testIDs
+      additionalProperties: false
+    StableTest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/SimulationSettings'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        turnOrder:
+          type: array
+          items:
+            type: string
+          description: The IDs of the test's turns, in execution order.
+      required:
+        - id
+        - name
+        - settings
+        - createdAt
+        - updatedAt
+        - turnOrder
+    StableTestListResponse:
+      type: object
+      properties:
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTest'
+      required:
+        - tests
+    StableTestResponse:
+      type: object
+      properties:
+        test:
+          $ref: '#/components/schemas/StableTest'
+      required:
+        - test
+    StableTestCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        settings:
+          default:
+            launchEvent: null
+            variableStates: []
+          allOf:
+            - $ref: '#/components/schemas/SimulationSettings'
+      required:
+        - name
+      additionalProperties: false
+    StableTestCreateManyRequest:
+      type: object
+      properties:
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestCreateRequest'
+      required:
+        - tests
+    StableTestUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        settings:
+          allOf:
+            - $ref: '#/components/schemas/SimulationSettings'
+        turnOrder:
+          type: array
+          items:
+            type: string
+          description: The IDs of the test's turns, in execution order.
+      additionalProperties: false
+    StableTestTurn:
+      oneOf:
+        - type: object
+          properties:
+            id:
+              type: string
+            testID:
+              type: string
+              description: The ID of the test this turn belongs to.
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            type:
+              type: string
+              enum:
+                - user
+              description: Identifies a turn that sends a scripted user message.
+              x-enumNames:
+                - USER
+            payload:
+              type: object
+              properties:
+                response:
+                  type: string
+                variableStates:
+                  anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/PersonaItem'
+              required:
+                - response
+                - variableStates
+              additionalProperties: false
+          required:
+            - id
+            - testID
+            - createdAt
+            - updatedAt
+            - type
+            - payload
+        - type: object
+          properties:
+            id:
+              type: string
+            testID:
+              type: string
+              description: The ID of the test this turn belongs to.
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            type:
+              type: string
+              enum:
+                - agent
+              description: Identifies a turn that asserts on the agent's behavior via its attached checks.
+              x-enumNames:
+                - AGENT
+            payload:
+              type: object
+              properties:
+                sequential:
+                  type: boolean
+                  description: Whether the checks must pass in checkOrder rather than in any order.
+              required:
+                - sequential
+              additionalProperties: false
+            checkOrder:
+              type: array
+              items:
+                type: string
+              description: The IDs of the turn's checks, in evaluation order.
+          required:
+            - id
+            - testID
+            - createdAt
+            - updatedAt
+            - type
+            - payload
+            - checkOrder
+        - type: object
+          properties:
+            id:
+              type: string
+            testID:
+              type: string
+              description: The ID of the test this turn belongs to.
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            type:
+              type: string
+              enum:
+                - simulation
+              description: Identifies a turn that hands off to an LLM-driven persona conversation.
+              x-enumNames:
+                - SIMULATION
+            payload:
+              type: object
+              properties:
+                scenario:
+                  type: string
+                maxTurns:
+                  type: number
+                variableStates:
+                  anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/PersonaItem'
+                successCriteria:
+                  type: string
+              required:
+                - scenario
+                - maxTurns
+                - variableStates
+                - successCriteria
+              additionalProperties: false
+          required:
+            - id
+            - testID
+            - createdAt
+            - updatedAt
+            - type
+            - payload
+    StableTestTurnListResponse:
+      type: object
+      properties:
+        turns:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestTurn'
+      required:
+        - turns
+    StableTestTurnResponse:
+      type: object
+      properties:
+        turn:
+          $ref: '#/components/schemas/StableTestTurn'
+      required:
+        - turn
+    StableTestTurnCreateRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - user
+              description: Identifies a turn that sends a scripted user message.
+              x-enumNames:
+                - USER
+            testID:
+              type: string
+              description: The ID of the test this turn belongs to.
+            payload:
+              type: object
+              properties:
+                response:
+                  type: string
+                variableStates:
+                  anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/PersonaItem'
+              required:
+                - response
+                - variableStates
+              additionalProperties: false
+          required:
+            - type
+            - testID
+            - payload
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - agent
+              description: Identifies a turn that asserts on the agent's behavior via its attached checks.
+              x-enumNames:
+                - AGENT
+            testID:
+              type: string
+              description: The ID of the test this turn belongs to.
+            payload:
+              type: object
+              properties:
+                sequential:
+                  type: boolean
+                  description: Whether the checks must pass in checkOrder rather than in any order.
+              required:
+                - sequential
+              additionalProperties: false
+          required:
+            - type
+            - testID
+            - payload
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - simulation
+              description: Identifies a turn that hands off to an LLM-driven persona conversation.
+              x-enumNames:
+                - SIMULATION
+            testID:
+              type: string
+              description: The ID of the test this turn belongs to.
+            payload:
+              type: object
+              properties:
+                scenario:
+                  type: string
+                maxTurns:
+                  type: number
+                variableStates:
+                  anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/PersonaItem'
+                successCriteria:
+                  type: string
+              required:
+                - scenario
+                - maxTurns
+                - variableStates
+                - successCriteria
+              additionalProperties: false
+          required:
+            - type
+            - testID
+            - payload
+          additionalProperties: false
+    StableTestTurnCreateManyRequest:
+      type: object
+      properties:
+        testID:
+          type: string
+          description: The ID of the test to attach these turns to.
+        turns:
+          type: array
+          items:
+            oneOf:
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - user
+                    description: Identifies a turn that sends a scripted user message.
+                    x-enumNames:
+                      - USER
+                  payload:
+                    type: object
+                    properties:
+                      response:
+                        type: string
+                      variableStates:
+                        anyOf:
+                          - type: string
+                          - type: array
+                            items:
+                              $ref: '#/components/schemas/PersonaItem'
+                    required:
+                      - response
+                      - variableStates
+                    additionalProperties: false
+                required:
+                  - type
+                  - payload
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - agent
+                    description: Identifies a turn that asserts on the agent's behavior via its attached checks.
+                    x-enumNames:
+                      - AGENT
+                  payload:
+                    type: object
+                    properties:
+                      sequential:
+                        type: boolean
+                        description: Whether the checks must pass in checkOrder rather than in any order.
+                    required:
+                      - sequential
+                    additionalProperties: false
+                required:
+                  - type
+                  - payload
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - simulation
+                    description: Identifies a turn that hands off to an LLM-driven persona conversation.
+                    x-enumNames:
+                      - SIMULATION
+                  payload:
+                    type: object
+                    properties:
+                      scenario:
+                        type: string
+                      maxTurns:
+                        type: number
+                      variableStates:
+                        anyOf:
+                          - type: string
+                          - type: array
+                            items:
+                              $ref: '#/components/schemas/PersonaItem'
+                      successCriteria:
+                        type: string
+                    required:
+                      - scenario
+                      - maxTurns
+                      - variableStates
+                      - successCriteria
+                    additionalProperties: false
+                required:
+                  - type
+                  - payload
+                additionalProperties: false
+      required:
+        - testID
+        - turns
+    StableTestTurnUpdateRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - user
+              description: Identifies a turn that sends a scripted user message.
+              x-enumNames:
+                - USER
+            payload:
+              type: object
+              properties:
+                response:
+                  type: string
+                variableStates:
+                  anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/PersonaItem'
+              required:
+                - response
+                - variableStates
+              additionalProperties: false
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - agent
+              description: Identifies a turn that asserts on the agent's behavior via its attached checks.
+              x-enumNames:
+                - AGENT
+            payload:
+              type: object
+              properties:
+                sequential:
+                  type: boolean
+                  description: Whether the checks must pass in checkOrder rather than in any order.
+              required:
+                - sequential
+              additionalProperties: false
+            checkOrder:
+              type: array
+              items:
+                type: string
+              description: The IDs of the turn's checks, in evaluation order.
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - simulation
+              description: Identifies a turn that hands off to an LLM-driven persona conversation.
+              x-enumNames:
+                - SIMULATION
+            payload:
+              type: object
+              properties:
+                scenario:
+                  type: string
+                maxTurns:
+                  type: number
+                variableStates:
+                  anyOf:
+                    - type: string
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/PersonaItem'
+                successCriteria:
+                  type: string
+              required:
+                - scenario
+                - maxTurns
+                - variableStates
+                - successCriteria
+              additionalProperties: false
+          required:
+            - type
+          additionalProperties: false
     StableTool:
       oneOf:
         - type: object

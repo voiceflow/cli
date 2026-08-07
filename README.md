@@ -358,6 +358,36 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`integration-usage`](docs/vf_analytics_query_integration-usage.md) - Query integration usage
 * [`unique-user-count`](docs/vf_analytics_query_unique-user-count.md) - Query unique user count
 
+### [test](docs/vf_test.md)
+
+* [`list`](docs/vf_test_list.md) - List tests
+* [`create`](docs/vf_test_create.md) - Create test
+* [`get`](docs/vf_test_get.md) - Get test
+* [`update`](docs/vf_test_update.md) - Update test
+* [`delete`](docs/vf_test_delete.md) - Delete test
+
+#### [turn](docs/vf_test_turn.md)
+
+* [`list`](docs/vf_test_turn_list.md) - List turns
+* [`create`](docs/vf_test_turn_create.md) - Create turn
+* [`get`](docs/vf_test_turn_get.md) - Get turn
+* [`update`](docs/vf_test_turn_update.md) - Update turn
+* [`delete`](docs/vf_test_turn_delete.md) - Delete turn
+
+#### [check](docs/vf_test_check.md)
+
+* [`list`](docs/vf_test_check_list.md) - List checks
+* [`create`](docs/vf_test_check_create.md) - Create check
+* [`get`](docs/vf_test_check_get.md) - Get check
+* [`update`](docs/vf_test_check_update.md) - Update check
+* [`delete`](docs/vf_test_check_delete.md) - Delete check
+
+#### [run](docs/vf_test_run.md)
+
+* [`search`](docs/vf_test_run_search.md) - Search runs
+* [`create`](docs/vf_test_run_create.md) - Create run
+* [`get`](docs/vf_test_run_get.md) - Get run
+
 </details>
 <!-- End Available Commands [operations] -->
 
