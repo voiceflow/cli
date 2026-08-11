@@ -16,8 +16,6 @@ import (
 	"net/http"
 )
 
-// Query knowledge base
-// Execute a query against documents in the knowledge base.
 type Query struct {
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
