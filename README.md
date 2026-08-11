@@ -36,19 +36,29 @@ Realtime: Realtime gateway API service
 
 <!-- End Table of Contents [toc] -->
 
-<!-- Start CLI Installation [installation] -->
+<!--
+  This section is intentionally NOT Speakeasy-managed.
+
+  Speakeasy hardcodes the install URL branch as `main` (it is not derived from the
+  repository's default branch, and no gen.yaml/workflow.yaml key overrides it). This
+  repository's default branch is `master`, so the generated URLs 404. The `No ... [tag]`
+  marker below takes this section out of generator management so the correction survives
+  `yarn codegen`. Do not restore the `Start`/`End` markers without also fixing the branch
+  upstream — doing so silently reverts these URLs to a 404.
+-->
+<!-- No CLI Installation [installation] -->
 ## CLI Installation
 
 ### Quick Install (Linux/macOS)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.sh | bash
 ```
 
 ### Quick Install (Windows PowerShell)
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/voiceflow/cli/main/scripts/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.ps1 | iex
 ```
 
 ### Go Install
@@ -62,7 +72,6 @@ go install github.com/voiceflow/cli/cmd/vf@latest
 ### Manual Download
 
 Download pre-built binaries for your platform from the [releases page](https://github.com/voiceflow/cli/releases).
-<!-- End CLI Installation [installation] -->
 
 <!-- Start Shell Completion [completion] -->
 ## Shell Completion

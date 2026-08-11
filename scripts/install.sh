@@ -5,9 +5,9 @@
 # for Linux and macOS systems.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.sh | bash
 #   or
-#   wget -qO- https://raw.githubusercontent.com/voiceflow/cli/main/scripts/install.sh | bash
+#   wget -qO- https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.sh | bash
 #
 # Options:
 #   VF_INSTALL_DIR - Installation directory (default: /usr/local/bin)
