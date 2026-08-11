@@ -17,6 +17,8 @@ import (
 	"net/url"
 )
 
+// Run evaluation
+// Run an evaluation.
 type Run struct {
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
