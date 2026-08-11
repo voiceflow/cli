@@ -3,9 +3,9 @@
 # This script downloads and installs the latest version of the vf CLI
 #
 # Usage:
-#   iwr -useb https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.ps1 | iex
+#   iwr -useb https://raw.githubusercontent.com/voiceflow/cli/HEAD/scripts/install.ps1 | iex
 #   or
-#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.ps1 -UseBasicParsing | Invoke-Expression
+#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/voiceflow/cli/HEAD/scripts/install.ps1 -UseBasicParsing | Invoke-Expression
 #
 # Options:
 #   $env:VF_INSTALL_DIR - Installation directory (default: $env:LOCALAPPDATA\Programs\vf)
