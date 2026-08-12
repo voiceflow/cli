@@ -10753,6 +10753,7 @@ components:
         - voiceflow-core-4.0
         - voiceflow-core-4.1
         - voiceflow-flash-4.1
+        - kimi-k3
         - gemini-2.5-pro
         - gemini-2.5-flash
         - gemini-live-2.5-flash
@@ -10821,6 +10822,7 @@ components:
         - VOICEFLOW_CORE_4_0
         - VOICEFLOW_CORE_4_1
         - VOICEFLOW_FLASH_4_1
+        - KIMI_K_3
         - GEMINI_2_5_PRO
         - GEMINI_2_5_FLASH
         - GEMINI_LIVE_2_5_FLASH
@@ -17504,6 +17506,7 @@ components:
                 - voiceflow-core-4.0
                 - voiceflow-core-4.1
                 - voiceflow-flash-4.1
+                - kimi-k3
                 - gemini-2.5-pro
                 - gemini-2.5-flash
                 - gemini-live-2.5-flash
@@ -17573,6 +17576,7 @@ components:
                 - VOICEFLOW_CORE_4_0
                 - VOICEFLOW_CORE_4_1
                 - VOICEFLOW_FLASH_4_1
+                - KIMI_K_3
                 - GEMINI_2_5_PRO
                 - GEMINI_2_5_FLASH
                 - GEMINI_LIVE_2_5_FLASH
@@ -17770,6 +17774,7 @@ components:
             - voiceflow-core-4.0
             - voiceflow-core-4.1
             - voiceflow-flash-4.1
+            - kimi-k3
             - gemini-2.5-pro
             - gemini-2.5-flash
             - gemini-live-2.5-flash
@@ -17838,6 +17843,7 @@ components:
             - VOICEFLOW_CORE_4_0
             - VOICEFLOW_CORE_4_1
             - VOICEFLOW_FLASH_4_1
+            - KIMI_K_3
             - GEMINI_2_5_PRO
             - GEMINI_2_5_FLASH
             - GEMINI_LIVE_2_5_FLASH
