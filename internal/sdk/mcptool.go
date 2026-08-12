@@ -31,8 +31,8 @@ func newMcpTool(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks 
 	}
 }
 
-// List tools
-// List all tools for the agent or a specific playbook.
+// List MCP tools
+// List all MCP tools by project ID.
 func (s *McpTool) List(ctx context.Context, request operations.StableMCPToolControllerListRequest, opts ...operations.Option) (*operations.StableMCPToolControllerListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
