@@ -20,9 +20,7 @@ import (
 type Test struct {
 	Turn  *Turn
 	Check *Check
-	// Run evaluation
-	// Run an evaluation.
-	Run *Run
+	Run   *Run
 
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
