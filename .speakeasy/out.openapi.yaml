@@ -9517,11 +9517,13 @@ components:
         - genesys
         - kustomer
         - dixa
+        - sunshine
       x-enumNames:
         - UJET
         - GENESYS
         - KUSTOMER
         - DIXA
+        - SUNSHINE
     LiveAgentHandoffWidgetConfig:
       type: object
       properties:
