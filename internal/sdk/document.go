@@ -648,8 +648,8 @@ func (s *Document) CreateTable(ctx context.Context, request operations.StableDoc
 
 }
 
-// Get document
-// Get a document by ID.
+// Get MCP tool
+// Get an MCP tool by ID.
 func (s *Document) Get(ctx context.Context, request operations.StableDocumentControllerGetRequest, opts ...operations.Option) (*operations.StableDocumentControllerGetResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
