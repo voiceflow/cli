@@ -641,8 +641,8 @@ func (s *Variable) Update(ctx context.Context, request operations.StableVariable
 
 }
 
-// Delete tool
-// Delete a tool by ID.
+// Delete variable
+// Delete a variable by ID.
 func (s *Variable) Delete(ctx context.Context, request operations.StableVariableControllerDeleteRequest, opts ...operations.Option) (*operations.StableVariableControllerDeleteResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
