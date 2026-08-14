@@ -12474,6 +12474,8 @@ components:
           type: number
           minimum: -1
           maximum: 1
+        keyterms:
+          type: string
         languages:
           type: array
           items:
