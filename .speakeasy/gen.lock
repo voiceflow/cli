@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 9e9b1a5cab6366faff31d3a67b5d1ef6
+  docChecksum: c3480e75303024929d4d5d70c53dd0cb
   docVersion: 1.0.0
   speakeasyVersion: 1.794.1
   generationVersion: 2.931.0
-  releaseVersion: 0.2.177
-  configChecksum: 4975b41a5a8d1e6152bd77ad242b3a0e
+  releaseVersion: 0.2.178
+  configChecksum: 92ca63fc3dd5764b425283b6fbc4f4b7
 persistentEdits:
-  generation_id: 46cd6fc7-6f0e-422d-9b8a-53e2347bfd88
-  pristine_commit_hash: 21a00ef9c5521ec6c2d7acb30ce794fb6afb26c4
-  pristine_tree_hash: 3875288c1ecc1ab885dbe92ac308a9af31df3300
+  generation_id: 259e5603-e275-41c4-b9e1-6e4755fb3299
+  pristine_commit_hash: 6f2ff7ca01db55e2932b157f768f76c327741730
+  pristine_tree_hash: ed89d299fe1c8c9100aa5828b06ebbc0ca1eb777
 features:
   cli:
     additionalProperties: 0.0.1
@@ -710,8 +710,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:4a94dd8f9f16355d3b24f006ed58c969dfbdc75d
-    pristine_git_object: 07be42a485210e90756932625cd0008565ebb52f
+    last_write_checksum: sha1:3d35c99f6b1f0d853f41cdd64022ee89228a8c67
+    pristine_git_object: d5c3ea5fa1a99f3d772a0819b5e2de2caaeb7867
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -1302,8 +1302,8 @@ trackedFiles:
     pristine_git_object: 6376d8763c46e06ee657616393e90e1872eefa4f
   internal/sdk/models/components/liveagenthandofftrace.go:
     id: 142cbdfd3573
-    last_write_checksum: sha1:540088a592c2a4abe76ee5f2054fab897497eda1
-    pristine_git_object: 76934c5811bc6758dd494504c7b3e75ab31469de
+    last_write_checksum: sha1:7c382fc2ad447a39689dd7d4f409448155926e81
+    pristine_git_object: 08734f13350f8394454ff0c507352ac0fc4b4e48
   internal/sdk/models/components/liveagenthandoffwidgetconfig.go:
     id: cbaffa27d20c
     last_write_checksum: sha1:a65bca48662418a4c79b9cb0b45e247f009e2d17
@@ -2990,8 +2990,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:7c77b27f7b7f4cb60d152be08a5ab9ff7251ae7d
-    pristine_git_object: 62583c5fd6e9d3c03afb46756af6f6f9fe5030c5
+    last_write_checksum: sha1:41e7e812909669a41f3ec32db8cd3fc137ab4c92
+    pristine_git_object: 9bb0b43e58fc7869f7e194e6c3683276a35a85a6
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:4aa247cd0b0e8742ff553a6d50f060a05b77ae75

@@ -9503,6 +9503,11 @@ components:
                         - chat_dismissal_warning
                       x-enumNames:
                         - CHAT_DISMISSAL_WARNING
+                    - type: string
+                      enum:
+                        - agent_typing
+                      x-enumNames:
+                        - AGENT_TYPING
               required:
                 - conversationID
                 - message
