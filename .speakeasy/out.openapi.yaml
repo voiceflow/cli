@@ -16170,6 +16170,20 @@ components:
           nullable: true
           description: The URL of the call recording for voice conversations.
           type: string
+        version:
+          nullable: true
+          description: Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
+          type: string
+          enum:
+            - draft
+            - published
+          x-enumNames:
+            - DRAFT
+            - PUBLISHED
+        environmentAlias:
+          nullable: true
+          description: The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
+          type: string
       required:
         - id
         - userID
@@ -16182,6 +16196,8 @@ components:
         - properties
         - evaluations
         - recordingURL
+        - version
+        - environmentAlias
     StableTranscriptPropertyWithValue:
       type: object
       properties:
@@ -16517,7 +16533,7 @@ components:
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         version:
-          description: When provided, only transcripts from draft or published conversations are returned.
+          description: When provided, only transcripts from the draft or published version of the environment are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted.
           type: string
           enum:
             - draft
@@ -16587,6 +16603,20 @@ components:
               nullable: true
               description: The URL of the call recording for voice conversations.
               type: string
+            version:
+              nullable: true
+              description: Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
+              type: string
+              enum:
+                - draft
+                - published
+              x-enumNames:
+                - DRAFT
+                - PUBLISHED
+            environmentAlias:
+              nullable: true
+              description: The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
+              type: string
             logs:
               type: array
               items:
@@ -16637,6 +16667,8 @@ components:
             - properties
             - evaluations
             - recordingURL
+            - version
+            - environmentAlias
             - logs
       required:
         - transcript
