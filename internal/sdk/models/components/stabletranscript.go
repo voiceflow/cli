@@ -8,6 +8,29 @@ import (
 	"time"
 )
 
+// StableTranscriptVersion - Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
+type StableTranscriptVersion string
+
+const (
+	StableTranscriptVersionDraft     StableTranscriptVersion = "draft"
+	StableTranscriptVersionPublished StableTranscriptVersion = "published"
+)
+
+func (e StableTranscriptVersion) ToPointer() *StableTranscriptVersion {
+	return &e
+}
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *StableTranscriptVersion) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "draft", "published":
+			return true
+		}
+	}
+	return false
+}
+
 type StableTranscript struct {
 	ID string `json:"id"`
 	// The ID of the end user who had the conversation.
@@ -24,6 +47,10 @@ type StableTranscript struct {
 	Evaluations []StableEvaluationWithResult        `json:"evaluations"`
 	// The URL of the call recording for voice conversations.
 	RecordingURL *string `json:"recordingURL"`
+	// Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
+	Version *StableTranscriptVersion `json:"version"`
+	// The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
+	EnvironmentAlias *string `json:"environmentAlias"`
 }
 
 func (s StableTranscript) MarshalJSON() ([]byte, error) {
@@ -112,4 +139,18 @@ func (s *StableTranscript) GetRecordingURL() *string {
 		return nil
 	}
 	return s.RecordingURL
+}
+
+func (s *StableTranscript) GetVersion() *StableTranscriptVersion {
+	if s == nil {
+		return nil
+	}
+	return s.Version
+}
+
+func (s *StableTranscript) GetEnvironmentAlias() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EnvironmentAlias
 }
