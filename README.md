@@ -36,19 +36,18 @@ Realtime: Realtime gateway API service
 
 <!-- End Table of Contents [toc] -->
 
-<!-- Start CLI Installation [installation] -->
 ## CLI Installation
 
 ### Quick Install (Linux/macOS)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.sh | bash
 ```
 
 ### Quick Install (Windows PowerShell)
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/voiceflow/cli/main/scripts/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.ps1 | iex
 ```
 
 ### Go Install
@@ -62,7 +61,7 @@ go install github.com/voiceflow/cli/cmd/vf@latest
 ### Manual Download
 
 Download pre-built binaries for your platform from the [releases page](https://github.com/voiceflow/cli/releases).
-<!-- End CLI Installation [installation] -->
+<!-- No CLI Installation [installation] -->
 
 <!-- Start Shell Completion [completion] -->
 ## Shell Completion
