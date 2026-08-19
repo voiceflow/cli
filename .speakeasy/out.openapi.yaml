@@ -2100,9 +2100,8 @@ paths:
             Successor: run evaluations on the selected transcripts; or head back to the build surfaces (playbooks, functions, and so on) once root cause is identified.
           operation: get
           operationDescription: |-
-            WHAT — Fetch a single transcript in the requested format. summary is short, formatted is the workhorse for debug, raw is the deep dive.
+            WHAT — Fetch a single transcript.
             USE WHEN — Diving into a specific failing conversation.
-            DO NOT — Request raw format unless you actually need the full trace stream. raw is 200KB+ and mostly chunk/resource debug noise around the actual conversation. Use formatted (includes `prompt.system` on the first ai result per agent — fastest debug path) for single-transcript debug, and summary for bulk triage.
         cli:
           command: transcript get
       x-speakeasy-group: transcript
@@ -3527,7 +3526,7 @@ paths:
           operation: delete
           operationDescription: |-
             WHAT — Remove an evaluation.
-            DO NOT — Try to delete a built-in default (CSAT, Deflection, Resolution). They can be disabled via update but not deleted.
+            DO NOT — Try to delete a built-in default (CSAT, Deflection, Resolution) because they are used to drive analytics. Instead they can be disabled via update.
         cli:
           command: evaluation delete
       x-speakeasy-group: evaluation
@@ -3970,7 +3969,7 @@ paths:
           operationDescription: |-
             WHAT — Add structured rows as a Knowledge Base document. Each row becomes its own chunk. Items are FLAT objects — the `schema` block declares which top-level keys are full-text indexed (`searchableFields`) vs metadata (`metadataFields`).
             USE WHEN — Service catalogues, product lists, region/plan-tagged content — anywhere the agent should filter retrieval by structured attributes.
-            DO NOT — Nest items as `{ metadata: {...}, content: "..." }`. API rejects it. Items must be flat objects; `schema` declares which keys are searchable vs metadata. Also: filterable attributes belong in `documentMetadata` (or `metadataFields` if you'll filter via a custom function).
+            DO NOT — Nest items as `{ metadata: {...}, content: "..." }`. API rejects it. Items must be flat objects; `schema` declares which keys are searchable vs metadata.
             ESCAPE HATCH — For filtering the system tool can't express (per-row by `metadataFields`, multi-field logic, fallback chains), scaffold a Function that POSTs to https://general-runtime.voiceflow.com/knowledge-base/query with { question, filters, chunkLimit, synthesis: false }. Mongo-style filter syntax (`$eq`, `$in`, `$ne`). Attach via voiceflow_tool. See public Voiceflow Knowledge Base query API docs for the full request/response shape and the function authoring conventions (`args.inputVars`, `response.json` as property).
         cli:
           command: document create-table
@@ -15805,7 +15804,7 @@ components:
           properties:
             metadataFields:
               default: []
-              description: Per-row metadata, returned with results. NOT consulted by the default system tool's filter UI.
+              description: Per-row metadata, returned with results.
               type: array
               items:
                 type: string
@@ -15820,7 +15819,7 @@ components:
           description: Declares which top-level keys of each row are full-text searchable versus row-level metadata.
         metadata:
           default: []
-          description: Properties that can be filtered on at runtime (static or dynamic from a variable). Put your most common filter dimensions here.
+          description: Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
           type: array
           items:
             type: object
@@ -17988,6 +17987,23 @@ components:
           nullable: true
           description: The URL of the MCP server icon image.
           type: string
+        headers:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                nullable: true
+                type: string
+              value:
+                type: string
+                enum:
+                  - '[redacted]'
+                x-enumNames:
+                  - REDACTED
+            required:
+              - key
+              - value
         createdAt:
           type: string
           format: date-time
@@ -18007,6 +18023,7 @@ components:
         - url
         - name
         - image
+        - headers
         - createdAt
         - updatedAt
         - description

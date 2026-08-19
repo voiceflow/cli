@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 8b89242b8855848be7a3f6d98970fdb9
+  docChecksum: 401c36fa7ad154041d84b0da9d299980
   docVersion: 1.0.0
   speakeasyVersion: 1.795.0
   generationVersion: 2.931.0
-  releaseVersion: 0.2.225
-  configChecksum: 2af9ebe1bcc78bf0e95a363c97f78d13
+  releaseVersion: 0.2.226
+  configChecksum: e9b028ff4a61be822051084e1c02e91f
 persistentEdits:
-  generation_id: a873abfb-6cf8-46e8-9099-914974a272cc
-  pristine_commit_hash: c9fd0d29646f48f8f2e20bdd6e3a0d4032253ff5
-  pristine_tree_hash: 7a36d2af1bd5e25dbb0d39321686715fe84c55a9
+  generation_id: 11eedda7-23bf-466b-ba01-5df9effd5215
+  pristine_commit_hash: 57ac68deb5cd9f49b9275f378f700a4c58c9c3ff
+  pristine_tree_hash: 0e7a35f8ad19f9600057d32c52e26aec276bf38e
 features:
   cli:
     additionalProperties: 0.0.1
@@ -258,8 +258,8 @@ trackedFiles:
     pristine_git_object: 4d7cd9e17b6c2b323470e05fb3e3c0ba2e29427c
   internal/cli/document/createtable.go:
     id: f6601bc1c138
-    last_write_checksum: sha1:988a7f771f7165a277cec10a9b4a515e681acb4d
-    pristine_git_object: 18fe9d968a231d14e315d026355ea8438cb19401
+    last_write_checksum: sha1:043b73c80269399d7c43ed4910da4ade9043b4a3
+    pristine_git_object: 97128af2bbed07eea341e569a7f95f3f772fd37c
   internal/cli/document/createtext.go:
     id: e4c9d9e9fe6a
     last_write_checksum: sha1:81df098ca2d357c69dc3f8f4356bc66b4494e973
@@ -710,8 +710,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:f0eb35f03070c99724f26248e340dd6d37bece59
-    pristine_git_object: 7f07a702d9d64eba662de4e19da42eda7d4d2bb0
+    last_write_checksum: sha1:a984a8980f2612cd730b56417c85f90389378e55
+    pristine_git_object: a813fe6c9c6ddf8018e8acf25a816868ee9ff581
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -1742,8 +1742,8 @@ trackedFiles:
     pristine_git_object: 4c997d29e55b5257c76da44a4cccf8c7aedb8ce4
   internal/sdk/models/components/stabledocumentcreatetablerequest.go:
     id: 4446b2d123bc
-    last_write_checksum: sha1:9de92ea6042f565d0a57fe921cb6e4988e953f1e
-    pristine_git_object: e27362a1738818aec23ddfe67b049d9f35eda109
+    last_write_checksum: sha1:daa3f216232bf33490b5a6e220bde602496db37c
+    pristine_git_object: dd6241aa19282d7ed0f2ab5a6d55408a27e2cbf3
   internal/sdk/models/components/stabledocumentcreateurlrequest.go:
     id: bd851958b184
     last_write_checksum: sha1:56565759304c1b6b8a2bf5db4b5bd89b07492ef4
@@ -1922,8 +1922,8 @@ trackedFiles:
     pristine_git_object: e7b4f1b05365bfcb9bb4ab4093e3ee7d6248eb3a
   internal/sdk/models/components/stablemcpserver.go:
     id: ad26ac6495b7
-    last_write_checksum: sha1:cd5d02acf1da9043feac5c0112f929f77732e07c
-    pristine_git_object: 3923a940b9648bf2bf931023f25d4d48993271b2
+    last_write_checksum: sha1:167f993f301a6c2e249a6a9b573e0e94269f39d2
+    pristine_git_object: abbcdbb99cc9f157505da2cb3827ac4def489628
   internal/sdk/models/components/stablemcpservercreaterequest.go:
     id: 822ae6ca7056
     last_write_checksum: sha1:108fb1eaae8e377d7f9ff309c88af49e4de3dc15
@@ -2990,8 +2990,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:04f8608ab50bac288f5d36b725bd24c2beb0276f
-    pristine_git_object: 751717d228513e736a1eb9c49876a18013af9c66
+    last_write_checksum: sha1:0fb2bbfaf71e8d89994d6ba59bb7df1be8477af6
+    pristine_git_object: 0a665301a62e6fe8f3d6c73c8c1797381247d9c3
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:4aa247cd0b0e8742ff553a6d50f060a05b77ae75
@@ -3899,7 +3899,7 @@ examples:
         application/json: {"name": "<value>", "description": null, "url": [], "specification": "2025-06-18"}
       responses:
         "201":
-          application/json: {"mcpServer": {"id": "<id>", "url": [{"resourceID": "<id>", "referenceType": "integration"}], "name": "<value>", "image": "https://loremflickr.com/1215/3828?lock=4678415159531248", "createdAt": "2025-10-31T05:12:23.153Z", "updatedAt": "2025-09-30T14:58:45.799Z", "description": "abnegate and near finally vivacious exotic sham times glass outside", "specification": "2025-03-26"}}
+          application/json: {"mcpServer": {"id": "<id>", "url": [{"resourceID": "<id>", "referenceType": "integration"}], "name": "<value>", "image": "https://loremflickr.com/1215/3828?lock=4678415159531248", "headers": [], "createdAt": "2025-10-31T05:12:23.153Z", "updatedAt": "2025-09-30T14:58:45.799Z", "description": "abnegate and near finally vivacious exotic sham times glass outside", "specification": "2025-03-26"}}
   StableMCPServerController_get:
     speakeasy-default-stable-MCP-server-controller-get:
       parameters:
@@ -3910,7 +3910,7 @@ examples:
           environmentAlias: "<value>"
       responses:
         "200":
-          application/json: {"mcpServer": {"id": "<id>", "url": [{"text": [{"entityID": "<id>"}]}], "name": "<value>", "image": "https://loremflickr.com/3278/1897?lock=3091499501958253", "createdAt": "2024-01-11T10:42:19.977Z", "updatedAt": "2024-03-30T23:43:15.896Z", "description": "absolve verbally really cleave bicycle which outnumber frantically fraternise quit", "specification": "2025-06-18"}}
+          application/json: {"mcpServer": {"id": "<id>", "url": [{"text": [{"entityID": "<id>"}]}], "name": "<value>", "image": "https://loremflickr.com/3278/1897?lock=3091499501958253", "headers": [{"key": "<key>", "value": "[redacted]"}], "createdAt": "2024-01-11T10:42:19.977Z", "updatedAt": "2024-03-30T23:43:15.896Z", "description": "absolve verbally really cleave bicycle which outnumber frantically fraternise quit", "specification": "2025-06-18"}}
   StableMCPServerController_update:
     speakeasy-default-stable-MCP-server-controller-update:
       parameters:
