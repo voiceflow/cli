@@ -9,7 +9,7 @@ import (
 
 // Schema - Declares which top-level keys of each row are full-text searchable versus row-level metadata.
 type Schema struct {
-	// Per-row metadata, returned with results.
+	// Per-row metadata, returned with results. NOT consulted by the default system tool's filter UI.
 	MetadataFields []string `json:"metadataFields,omitzero"`
 	// Full-text indexed; what semantic search matches against.
 	SearchableFields []string `json:"searchableFields"`
@@ -69,7 +69,7 @@ type StableDocumentCreateTableRequest struct {
 	Items []map[string]any `json:"items"`
 	// Declares which top-level keys of each row are full-text searchable versus row-level metadata.
 	Schema Schema `json:"schema"`
-	// Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
+	// Properties that can be filtered on at runtime (static or dynamic from a variable). Put your most common filter dimensions here.
 	Metadata []StableDocumentCreateTableRequestMetadatum `json:"metadata,omitzero"`
 }
 

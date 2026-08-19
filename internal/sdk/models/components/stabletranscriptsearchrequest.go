@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// StableTranscriptSearchRequestVersion - When provided, only transcripts from the draft or published version of the environment are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted.
+// StableTranscriptSearchRequestVersion - When provided, only transcripts from draft or published conversations are returned.
 type StableTranscriptSearchRequestVersion string
 
 const (
@@ -44,7 +44,7 @@ type StableTranscriptSearchRequest struct {
 	Skip *int64 `default:"0" json:"skip"`
 	// When provided, only transcripts created at or before this ISO 8601 timestamp are returned.
 	EndDate *time.Time `json:"endDate,omitzero"`
-	// When provided, only transcripts from the draft or published version of the environment are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted.
+	// When provided, only transcripts from draft or published conversations are returned.
 	Version *StableTranscriptSearchRequestVersion `json:"version,omitzero"`
 	Filters []TranscriptFilterUnion               `json:"filters,omitzero"`
 	// When provided, only transcripts from this conversation session are returned.

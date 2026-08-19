@@ -37,7 +37,6 @@ type SonioxSTTSettings struct {
 	Model               SonioxSTTModel            `json:"model"`
 	MaxEndpointDelayMS  *int64                    `json:"maxEndpointDelayMS,omitzero"`
 	EndpointSensitivity *float64                  `json:"endpointSensitivity,omitzero"`
-	Keyterms            *string                   `json:"keyterms,omitzero"`
 	Languages           []SonioxSTTLanguage       `json:"languages"`
 }
 
@@ -78,13 +77,6 @@ func (s *SonioxSTTSettings) GetEndpointSensitivity() *float64 {
 		return nil
 	}
 	return s.EndpointSensitivity
-}
-
-func (s *SonioxSTTSettings) GetKeyterms() *string {
-	if s == nil {
-		return nil
-	}
-	return s.Keyterms
 }
 
 func (s *SonioxSTTSettings) GetLanguages() []SonioxSTTLanguage {

@@ -10,7 +10,6 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-// StableTestCheckUpdateRequestTypeTool - Identifies a check that verifies whether the agent called a specific tool.
 type StableTestCheckUpdateRequestTypeTool string
 
 const (
@@ -35,7 +34,6 @@ func (e *StableTestCheckUpdateRequestTypeTool) UnmarshalJSON(data []byte) error 
 }
 
 type StableTestCheckUpdateRequestTool struct {
-	// Identifies a check that verifies whether the agent called a specific tool.
 	Type    StableTestCheckUpdateRequestTypeTool `json:"type"`
 	Payload *ToolSimulationTurnTestPayload       `json:"payload,omitzero"`
 }
@@ -65,7 +63,6 @@ func (s *StableTestCheckUpdateRequestTool) GetPayload() *ToolSimulationTurnTestP
 	return s.Payload
 }
 
-// StableTestCheckUpdateRequestTypeRouting - Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
 type StableTestCheckUpdateRequestTypeRouting string
 
 const (
@@ -89,101 +86,9 @@ func (e *StableTestCheckUpdateRequestTypeRouting) UnmarshalJSON(data []byte) err
 	}
 }
 
-// StableTestCheckUpdateRequestResourceType - Whether resourceID is a playbook or a workflow.
-type StableTestCheckUpdateRequestResourceType string
-
-const (
-	StableTestCheckUpdateRequestResourceTypePlaybook StableTestCheckUpdateRequestResourceType = "playbook"
-	StableTestCheckUpdateRequestResourceTypeWorkflow StableTestCheckUpdateRequestResourceType = "workflow"
-)
-
-func (e StableTestCheckUpdateRequestResourceType) ToPointer() *StableTestCheckUpdateRequestResourceType {
-	return &e
-}
-func (e *StableTestCheckUpdateRequestResourceType) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "playbook":
-		fallthrough
-	case "workflow":
-		*e = StableTestCheckUpdateRequestResourceType(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for StableTestCheckUpdateRequestResourceType: %v", v)
-	}
-}
-
-// StableTestCheckUpdateRequestRouteTo - The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
-type StableTestCheckUpdateRequestRouteTo struct {
-	// The ID of the playbook or workflow the check routes against.
-	ResourceID string `json:"resourceID"`
-	// Whether resourceID is a playbook or a workflow.
-	ResourceType StableTestCheckUpdateRequestResourceType `json:"resourceType"`
-}
-
-func (s StableTestCheckUpdateRequestRouteTo) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableTestCheckUpdateRequestRouteTo) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableTestCheckUpdateRequestRouteTo) GetResourceID() string {
-	if s == nil {
-		return ""
-	}
-	return s.ResourceID
-}
-
-func (s *StableTestCheckUpdateRequestRouteTo) GetResourceType() StableTestCheckUpdateRequestResourceType {
-	if s == nil {
-		return StableTestCheckUpdateRequestResourceType("")
-	}
-	return s.ResourceType
-}
-
-type StableTestCheckUpdateRequestPayload struct {
-	// The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
-	RouteTo     *StableTestCheckUpdateRequestRouteTo `json:"routeTo"`
-	ShouldRoute bool                                 `json:"shouldRoute"`
-}
-
-func (s StableTestCheckUpdateRequestPayload) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableTestCheckUpdateRequestPayload) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableTestCheckUpdateRequestPayload) GetRouteTo() *StableTestCheckUpdateRequestRouteTo {
-	if s == nil {
-		return nil
-	}
-	return s.RouteTo
-}
-
-func (s *StableTestCheckUpdateRequestPayload) GetShouldRoute() bool {
-	if s == nil {
-		return false
-	}
-	return s.ShouldRoute
-}
-
 type StableTestCheckUpdateRequestRouting struct {
-	// Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
 	Type    StableTestCheckUpdateRequestTypeRouting `json:"type"`
-	Payload *StableTestCheckUpdateRequestPayload    `json:"payload,omitzero"`
+	Payload *RoutingSimulationTurnTestPayload       `json:"payload,omitzero"`
 }
 
 func (s StableTestCheckUpdateRequestRouting) MarshalJSON() ([]byte, error) {
@@ -204,14 +109,13 @@ func (s *StableTestCheckUpdateRequestRouting) GetType() StableTestCheckUpdateReq
 	return s.Type
 }
 
-func (s *StableTestCheckUpdateRequestRouting) GetPayload() *StableTestCheckUpdateRequestPayload {
+func (s *StableTestCheckUpdateRequestRouting) GetPayload() *RoutingSimulationTurnTestPayload {
 	if s == nil {
 		return nil
 	}
 	return s.Payload
 }
 
-// StableTestCheckUpdateRequestTypeResponse - Identifies a check that judges the agent's response text against expected criteria.
 type StableTestCheckUpdateRequestTypeResponse string
 
 const (
@@ -236,7 +140,6 @@ func (e *StableTestCheckUpdateRequestTypeResponse) UnmarshalJSON(data []byte) er
 }
 
 type StableTestCheckUpdateRequestResponse struct {
-	// Identifies a check that judges the agent's response text against expected criteria.
 	Type    StableTestCheckUpdateRequestTypeResponse `json:"type"`
 	Payload *ResponseSimulationTurnTestPayload       `json:"payload,omitzero"`
 }

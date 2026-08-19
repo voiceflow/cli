@@ -6,7 +6,6 @@ package test
 import (
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/cli/test/check"
-	"github.com/voiceflow/cli/internal/cli/test/run"
 	"github.com/voiceflow/cli/internal/cli/test/turn"
 	"github.com/voiceflow/cli/internal/usage"
 )
@@ -28,9 +27,6 @@ func InitTestRoot(parent *cobra.Command) error {
 		return err
 	}
 	if err := check.InitCheckRoot(TestCmd); err != nil {
-		return err
-	}
-	if err := run.InitRunRoot(TestCmd); err != nil {
 		return err
 	}
 

@@ -32,17 +32,17 @@ func (e *LiveAgentHandoffFileUploadPayloadType) UnmarshalJSON(data []byte) error
 	}
 }
 
-type LiveAgentHandoffFileUploadPayloadStatus string
+type Status string
 
 const (
-	LiveAgentHandoffFileUploadPayloadStatusUploaded LiveAgentHandoffFileUploadPayloadStatus = "uploaded"
-	LiveAgentHandoffFileUploadPayloadStatusFailed   LiveAgentHandoffFileUploadPayloadStatus = "failed"
+	StatusUploaded Status = "uploaded"
+	StatusFailed   Status = "failed"
 )
 
-func (e LiveAgentHandoffFileUploadPayloadStatus) ToPointer() *LiveAgentHandoffFileUploadPayloadStatus {
+func (e Status) ToPointer() *Status {
 	return &e
 }
-func (e *LiveAgentHandoffFileUploadPayloadStatus) UnmarshalJSON(data []byte) error {
+func (e *Status) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -51,20 +51,20 @@ func (e *LiveAgentHandoffFileUploadPayloadStatus) UnmarshalJSON(data []byte) err
 	case "uploaded":
 		fallthrough
 	case "failed":
-		*e = LiveAgentHandoffFileUploadPayloadStatus(v)
+		*e = Status(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for LiveAgentHandoffFileUploadPayloadStatus: %v", v)
+		return fmt.Errorf("invalid value for Status: %v", v)
 	}
 }
 
 type LiveAgentHandoffFileUploadPayloadFile struct {
-	ID       string                                   `json:"id"`
-	Name     string                                   `json:"name"`
-	Size     float64                                  `json:"size"`
-	Type     string                                   `json:"type"`
-	Status   *LiveAgentHandoffFileUploadPayloadStatus `json:"status,omitzero"`
-	Metadata map[string]any                           `json:"metadata,omitzero"`
+	ID       string         `json:"id"`
+	Name     string         `json:"name"`
+	Size     float64        `json:"size"`
+	Type     string         `json:"type"`
+	Status   *Status        `json:"status,omitzero"`
+	Metadata map[string]any `json:"metadata,omitzero"`
 }
 
 func (l LiveAgentHandoffFileUploadPayloadFile) MarshalJSON() ([]byte, error) {
@@ -106,7 +106,7 @@ func (l *LiveAgentHandoffFileUploadPayloadFile) GetType() string {
 	return l.Type
 }
 
-func (l *LiveAgentHandoffFileUploadPayloadFile) GetStatus() *LiveAgentHandoffFileUploadPayloadStatus {
+func (l *LiveAgentHandoffFileUploadPayloadFile) GetStatus() *Status {
 	if l == nil {
 		return nil
 	}

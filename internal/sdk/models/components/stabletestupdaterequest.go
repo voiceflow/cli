@@ -8,10 +8,9 @@ import (
 )
 
 type StableTestUpdateRequest struct {
-	Name     *string             `json:"name,omitzero"`
-	Settings *SimulationSettings `json:"settings,omitzero"`
-	// The IDs of the test's turns, in execution order.
-	TurnOrder []string `json:"turnOrder,omitzero"`
+	Name      *string             `json:"name,omitzero"`
+	Settings  *SimulationSettings `json:"settings,omitzero"`
+	TurnOrder []string            `json:"turnOrder,omitzero"`
 }
 
 func (s StableTestUpdateRequest) MarshalJSON() ([]byte, error) {

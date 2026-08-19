@@ -11,29 +11,6 @@ import (
 	"time"
 )
 
-// StableTranscriptWithLogsResponseVersion - Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
-type StableTranscriptWithLogsResponseVersion string
-
-const (
-	StableTranscriptWithLogsResponseVersionDraft     StableTranscriptWithLogsResponseVersion = "draft"
-	StableTranscriptWithLogsResponseVersionPublished StableTranscriptWithLogsResponseVersion = "published"
-)
-
-func (e StableTranscriptWithLogsResponseVersion) ToPointer() *StableTranscriptWithLogsResponseVersion {
-	return &e
-}
-
-// IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *StableTranscriptWithLogsResponseVersion) IsExact() bool {
-	if e != nil {
-		switch *e {
-		case "draft", "published":
-			return true
-		}
-	}
-	return false
-}
-
 type StableTranscriptWithLogsResponseType string
 
 const (
@@ -401,11 +378,7 @@ type Transcript struct {
 	Evaluations []StableEvaluationWithResult        `json:"evaluations"`
 	// The URL of the call recording for voice conversations.
 	RecordingURL *string `json:"recordingURL"`
-	// Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
-	Version *StableTranscriptWithLogsResponseVersion `json:"version"`
-	// The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
-	EnvironmentAlias *string `json:"environmentAlias"`
-	Logs             []Log   `json:"logs"`
+	Logs         []Log   `json:"logs"`
 }
 
 func (t Transcript) MarshalJSON() ([]byte, error) {
@@ -494,20 +467,6 @@ func (t *Transcript) GetRecordingURL() *string {
 		return nil
 	}
 	return t.RecordingURL
-}
-
-func (t *Transcript) GetVersion() *StableTranscriptWithLogsResponseVersion {
-	if t == nil {
-		return nil
-	}
-	return t.Version
-}
-
-func (t *Transcript) GetEnvironmentAlias() *string {
-	if t == nil {
-		return nil
-	}
-	return t.EnvironmentAlias
 }
 
 func (t *Transcript) GetLogs() []Log {

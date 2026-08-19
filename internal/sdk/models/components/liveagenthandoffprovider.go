@@ -10,7 +10,6 @@ const (
 	LiveAgentHandoffProviderGenesys  LiveAgentHandoffProvider = "genesys"
 	LiveAgentHandoffProviderKustomer LiveAgentHandoffProvider = "kustomer"
 	LiveAgentHandoffProviderDixa     LiveAgentHandoffProvider = "dixa"
-	LiveAgentHandoffProviderSunshine LiveAgentHandoffProvider = "sunshine"
 )
 
 func (e LiveAgentHandoffProvider) ToPointer() *LiveAgentHandoffProvider {
@@ -21,7 +20,7 @@ func (e LiveAgentHandoffProvider) ToPointer() *LiveAgentHandoffProvider {
 func (e *LiveAgentHandoffProvider) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "ujet", "genesys", "kustomer", "dixa", "sunshine":
+		case "ujet", "genesys", "kustomer", "dixa":
 			return true
 		}
 	}

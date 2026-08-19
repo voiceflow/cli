@@ -10,7 +10,6 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-// StableTestTurnUpdateRequestTypeSimulation - Identifies a turn that hands off to an LLM-driven persona conversation.
 type StableTestTurnUpdateRequestTypeSimulation string
 
 const (
@@ -34,148 +33,10 @@ func (e *StableTestTurnUpdateRequestTypeSimulation) UnmarshalJSON(data []byte) e
 	}
 }
 
-type StableTestTurnUpdateRequestVariableStates2Type string
-
-const (
-	StableTestTurnUpdateRequestVariableStates2TypeStr                StableTestTurnUpdateRequestVariableStates2Type = "str"
-	StableTestTurnUpdateRequestVariableStates2TypeArrayOfPersonaItem StableTestTurnUpdateRequestVariableStates2Type = "arrayOfPersonaItem"
-)
-
-type StableTestTurnUpdateRequestVariableStates2 struct {
-	Str                *string       `queryParam:"inline" union:"member"`
-	ArrayOfPersonaItem []PersonaItem `queryParam:"inline" union:"member"`
-
-	Type StableTestTurnUpdateRequestVariableStates2Type
-}
-
-func CreateStableTestTurnUpdateRequestVariableStates2Str(str string) StableTestTurnUpdateRequestVariableStates2 {
-	typ := StableTestTurnUpdateRequestVariableStates2TypeStr
-
-	return StableTestTurnUpdateRequestVariableStates2{
-		Str:  &str,
-		Type: typ,
-	}
-}
-
-func CreateStableTestTurnUpdateRequestVariableStates2ArrayOfPersonaItem(arrayOfPersonaItem []PersonaItem) StableTestTurnUpdateRequestVariableStates2 {
-	typ := StableTestTurnUpdateRequestVariableStates2TypeArrayOfPersonaItem
-
-	return StableTestTurnUpdateRequestVariableStates2{
-		ArrayOfPersonaItem: arrayOfPersonaItem,
-		Type:               typ,
-	}
-}
-
-func (u *StableTestTurnUpdateRequestVariableStates2) UnmarshalJSON(data []byte) error {
-
-	var candidates []utils.UnionCandidate
-
-	// Collect all valid candidates
-	var str string = ""
-	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableTestTurnUpdateRequestVariableStates2TypeStr,
-			Value: &str,
-		})
-	}
-
-	var arrayOfPersonaItem []PersonaItem = []PersonaItem{}
-	if err := utils.UnmarshalJSON(data, &arrayOfPersonaItem, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableTestTurnUpdateRequestVariableStates2TypeArrayOfPersonaItem,
-			Value: arrayOfPersonaItem,
-		})
-	}
-
-	if len(candidates) == 0 {
-		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableTestTurnUpdateRequestVariableStates2", string(data))
-	}
-
-	// Pick the best candidate using multi-stage filtering
-	best := utils.PickBestUnionCandidate(candidates, data)
-	if best == nil {
-		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableTestTurnUpdateRequestVariableStates2", string(data))
-	}
-
-	// Set the union type and value based on the best candidate
-	u.Type = best.Type.(StableTestTurnUpdateRequestVariableStates2Type)
-	switch best.Type {
-	case StableTestTurnUpdateRequestVariableStates2TypeStr:
-		u.Str = best.Value.(*string)
-		return nil
-	case StableTestTurnUpdateRequestVariableStates2TypeArrayOfPersonaItem:
-		u.ArrayOfPersonaItem = best.Value.([]PersonaItem)
-		return nil
-	}
-
-	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableTestTurnUpdateRequestVariableStates2", string(data))
-}
-
-func (u StableTestTurnUpdateRequestVariableStates2) MarshalJSON() ([]byte, error) {
-	if u.Str != nil {
-		return utils.MarshalJSON(u.Str, "", true)
-	}
-
-	if u.ArrayOfPersonaItem != nil {
-		return utils.MarshalJSON(u.ArrayOfPersonaItem, "", true)
-	}
-
-	return nil, errors.New("could not marshal union type StableTestTurnUpdateRequestVariableStates2: all fields are null")
-}
-
-type StableTestTurnUpdateRequestPayload3 struct {
-	Scenario        string                                     `json:"scenario"`
-	MaxTurns        float64                                    `json:"maxTurns"`
-	VariableStates  StableTestTurnUpdateRequestVariableStates2 `json:"variableStates"`
-	SuccessCriteria string                                     `json:"successCriteria"`
-}
-
-func (s StableTestTurnUpdateRequestPayload3) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableTestTurnUpdateRequestPayload3) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableTestTurnUpdateRequestPayload3) GetScenario() string {
-	if s == nil {
-		return ""
-	}
-	return s.Scenario
-}
-
-func (s *StableTestTurnUpdateRequestPayload3) GetMaxTurns() float64 {
-	if s == nil {
-		return 0.0
-	}
-	return s.MaxTurns
-}
-
-func (s *StableTestTurnUpdateRequestPayload3) GetVariableStates() StableTestTurnUpdateRequestVariableStates2 {
-	if s == nil {
-		return StableTestTurnUpdateRequestVariableStates2{}
-	}
-	return s.VariableStates
-}
-
-func (s *StableTestTurnUpdateRequestPayload3) GetSuccessCriteria() string {
-	if s == nil {
-		return ""
-	}
-	return s.SuccessCriteria
-}
-
-// #region class-body-stabletestturnupdaterequestpayload3
-// #endregion class-body-stabletestturnupdaterequestpayload3
-
 type StableTestTurnUpdateRequestSimulation struct {
-	// Identifies a turn that hands off to an LLM-driven persona conversation.
-	Type    StableTestTurnUpdateRequestTypeSimulation `json:"type"`
-	Payload *StableTestTurnUpdateRequestPayload3      `json:"payload,omitzero"`
+	CheckOrder []string                                  `json:"checkOrder,omitzero"`
+	Type       StableTestTurnUpdateRequestTypeSimulation `json:"type"`
+	Payload    *SimulationSimulationTurnPayload          `json:"payload,omitzero"`
 }
 
 func (s StableTestTurnUpdateRequestSimulation) MarshalJSON() ([]byte, error) {
@@ -189,6 +50,13 @@ func (s *StableTestTurnUpdateRequestSimulation) UnmarshalJSON(data []byte) error
 	return nil
 }
 
+func (s *StableTestTurnUpdateRequestSimulation) GetCheckOrder() []string {
+	if s == nil {
+		return nil
+	}
+	return s.CheckOrder
+}
+
 func (s *StableTestTurnUpdateRequestSimulation) GetType() StableTestTurnUpdateRequestTypeSimulation {
 	if s == nil {
 		return StableTestTurnUpdateRequestTypeSimulation("")
@@ -196,14 +64,13 @@ func (s *StableTestTurnUpdateRequestSimulation) GetType() StableTestTurnUpdateRe
 	return s.Type
 }
 
-func (s *StableTestTurnUpdateRequestSimulation) GetPayload() *StableTestTurnUpdateRequestPayload3 {
+func (s *StableTestTurnUpdateRequestSimulation) GetPayload() *SimulationSimulationTurnPayload {
 	if s == nil {
 		return nil
 	}
 	return s.Payload
 }
 
-// StableTestTurnUpdateRequestTypeAgent - Identifies a turn that asserts on the agent's behavior via its attached checks.
 type StableTestTurnUpdateRequestTypeAgent string
 
 const (
@@ -227,38 +94,32 @@ func (e *StableTestTurnUpdateRequestTypeAgent) UnmarshalJSON(data []byte) error 
 	}
 }
 
-type StableTestTurnUpdateRequestPayload2 struct {
-	// Whether the checks must pass in checkOrder rather than in any order.
+type StableTestTurnUpdateRequestPayload struct {
 	Sequential bool `json:"sequential"`
 }
 
-func (s StableTestTurnUpdateRequestPayload2) MarshalJSON() ([]byte, error) {
+func (s StableTestTurnUpdateRequestPayload) MarshalJSON() ([]byte, error) {
 	return utils.MarshalJSON(s, "", false)
 }
 
-func (s *StableTestTurnUpdateRequestPayload2) UnmarshalJSON(data []byte) error {
+func (s *StableTestTurnUpdateRequestPayload) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *StableTestTurnUpdateRequestPayload2) GetSequential() bool {
+func (s *StableTestTurnUpdateRequestPayload) GetSequential() bool {
 	if s == nil {
 		return false
 	}
 	return s.Sequential
 }
 
-// #region class-body-stabletestturnupdaterequestpayload2
-// #endregion class-body-stabletestturnupdaterequestpayload2
-
 type StableTestTurnUpdateRequestAgent struct {
-	// Identifies a turn that asserts on the agent's behavior via its attached checks.
-	Type    StableTestTurnUpdateRequestTypeAgent `json:"type"`
-	Payload *StableTestTurnUpdateRequestPayload2 `json:"payload,omitzero"`
-	// The IDs of the turn's checks, in evaluation order.
-	CheckOrder []string `json:"checkOrder,omitzero"`
+	CheckOrder []string                             `json:"checkOrder,omitzero"`
+	Type       StableTestTurnUpdateRequestTypeAgent `json:"type"`
+	Payload    *StableTestTurnUpdateRequestPayload  `json:"payload,omitzero"`
 }
 
 func (s StableTestTurnUpdateRequestAgent) MarshalJSON() ([]byte, error) {
@@ -272,20 +133,6 @@ func (s *StableTestTurnUpdateRequestAgent) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableTestTurnUpdateRequestAgent) GetType() StableTestTurnUpdateRequestTypeAgent {
-	if s == nil {
-		return StableTestTurnUpdateRequestTypeAgent("")
-	}
-	return s.Type
-}
-
-func (s *StableTestTurnUpdateRequestAgent) GetPayload() *StableTestTurnUpdateRequestPayload2 {
-	if s == nil {
-		return nil
-	}
-	return s.Payload
-}
-
 func (s *StableTestTurnUpdateRequestAgent) GetCheckOrder() []string {
 	if s == nil {
 		return nil
@@ -293,7 +140,20 @@ func (s *StableTestTurnUpdateRequestAgent) GetCheckOrder() []string {
 	return s.CheckOrder
 }
 
-// StableTestTurnUpdateRequestTypeUser - Identifies a turn that sends a scripted user message.
+func (s *StableTestTurnUpdateRequestAgent) GetType() StableTestTurnUpdateRequestTypeAgent {
+	if s == nil {
+		return StableTestTurnUpdateRequestTypeAgent("")
+	}
+	return s.Type
+}
+
+func (s *StableTestTurnUpdateRequestAgent) GetPayload() *StableTestTurnUpdateRequestPayload {
+	if s == nil {
+		return nil
+	}
+	return s.Payload
+}
+
 type StableTestTurnUpdateRequestTypeUser string
 
 const (
@@ -317,132 +177,10 @@ func (e *StableTestTurnUpdateRequestTypeUser) UnmarshalJSON(data []byte) error {
 	}
 }
 
-type StableTestTurnUpdateRequestVariableStates1Type string
-
-const (
-	StableTestTurnUpdateRequestVariableStates1TypeStr                StableTestTurnUpdateRequestVariableStates1Type = "str"
-	StableTestTurnUpdateRequestVariableStates1TypeArrayOfPersonaItem StableTestTurnUpdateRequestVariableStates1Type = "arrayOfPersonaItem"
-)
-
-type StableTestTurnUpdateRequestVariableStates1 struct {
-	Str                *string       `queryParam:"inline" union:"member"`
-	ArrayOfPersonaItem []PersonaItem `queryParam:"inline" union:"member"`
-
-	Type StableTestTurnUpdateRequestVariableStates1Type
-}
-
-func CreateStableTestTurnUpdateRequestVariableStates1Str(str string) StableTestTurnUpdateRequestVariableStates1 {
-	typ := StableTestTurnUpdateRequestVariableStates1TypeStr
-
-	return StableTestTurnUpdateRequestVariableStates1{
-		Str:  &str,
-		Type: typ,
-	}
-}
-
-func CreateStableTestTurnUpdateRequestVariableStates1ArrayOfPersonaItem(arrayOfPersonaItem []PersonaItem) StableTestTurnUpdateRequestVariableStates1 {
-	typ := StableTestTurnUpdateRequestVariableStates1TypeArrayOfPersonaItem
-
-	return StableTestTurnUpdateRequestVariableStates1{
-		ArrayOfPersonaItem: arrayOfPersonaItem,
-		Type:               typ,
-	}
-}
-
-func (u *StableTestTurnUpdateRequestVariableStates1) UnmarshalJSON(data []byte) error {
-
-	var candidates []utils.UnionCandidate
-
-	// Collect all valid candidates
-	var str string = ""
-	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableTestTurnUpdateRequestVariableStates1TypeStr,
-			Value: &str,
-		})
-	}
-
-	var arrayOfPersonaItem []PersonaItem = []PersonaItem{}
-	if err := utils.UnmarshalJSON(data, &arrayOfPersonaItem, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableTestTurnUpdateRequestVariableStates1TypeArrayOfPersonaItem,
-			Value: arrayOfPersonaItem,
-		})
-	}
-
-	if len(candidates) == 0 {
-		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableTestTurnUpdateRequestVariableStates1", string(data))
-	}
-
-	// Pick the best candidate using multi-stage filtering
-	best := utils.PickBestUnionCandidate(candidates, data)
-	if best == nil {
-		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableTestTurnUpdateRequestVariableStates1", string(data))
-	}
-
-	// Set the union type and value based on the best candidate
-	u.Type = best.Type.(StableTestTurnUpdateRequestVariableStates1Type)
-	switch best.Type {
-	case StableTestTurnUpdateRequestVariableStates1TypeStr:
-		u.Str = best.Value.(*string)
-		return nil
-	case StableTestTurnUpdateRequestVariableStates1TypeArrayOfPersonaItem:
-		u.ArrayOfPersonaItem = best.Value.([]PersonaItem)
-		return nil
-	}
-
-	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableTestTurnUpdateRequestVariableStates1", string(data))
-}
-
-func (u StableTestTurnUpdateRequestVariableStates1) MarshalJSON() ([]byte, error) {
-	if u.Str != nil {
-		return utils.MarshalJSON(u.Str, "", true)
-	}
-
-	if u.ArrayOfPersonaItem != nil {
-		return utils.MarshalJSON(u.ArrayOfPersonaItem, "", true)
-	}
-
-	return nil, errors.New("could not marshal union type StableTestTurnUpdateRequestVariableStates1: all fields are null")
-}
-
-type StableTestTurnUpdateRequestPayload1 struct {
-	Response       string                                     `json:"response"`
-	VariableStates StableTestTurnUpdateRequestVariableStates1 `json:"variableStates"`
-}
-
-func (s StableTestTurnUpdateRequestPayload1) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableTestTurnUpdateRequestPayload1) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableTestTurnUpdateRequestPayload1) GetResponse() string {
-	if s == nil {
-		return ""
-	}
-	return s.Response
-}
-
-func (s *StableTestTurnUpdateRequestPayload1) GetVariableStates() StableTestTurnUpdateRequestVariableStates1 {
-	if s == nil {
-		return StableTestTurnUpdateRequestVariableStates1{}
-	}
-	return s.VariableStates
-}
-
-// #region class-body-stabletestturnupdaterequestpayload1
-// #endregion class-body-stabletestturnupdaterequestpayload1
-
 type StableTestTurnUpdateRequestUser struct {
-	// Identifies a turn that sends a scripted user message.
-	Type    StableTestTurnUpdateRequestTypeUser  `json:"type"`
-	Payload *StableTestTurnUpdateRequestPayload1 `json:"payload,omitzero"`
+	CheckOrder []string                            `json:"checkOrder,omitzero"`
+	Type       StableTestTurnUpdateRequestTypeUser `json:"type"`
+	Payload    *UserSimulationTurnPayload          `json:"payload,omitzero"`
 }
 
 func (s StableTestTurnUpdateRequestUser) MarshalJSON() ([]byte, error) {
@@ -456,6 +194,13 @@ func (s *StableTestTurnUpdateRequestUser) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (s *StableTestTurnUpdateRequestUser) GetCheckOrder() []string {
+	if s == nil {
+		return nil
+	}
+	return s.CheckOrder
+}
+
 func (s *StableTestTurnUpdateRequestUser) GetType() StableTestTurnUpdateRequestTypeUser {
 	if s == nil {
 		return StableTestTurnUpdateRequestTypeUser("")
@@ -463,7 +208,7 @@ func (s *StableTestTurnUpdateRequestUser) GetType() StableTestTurnUpdateRequestT
 	return s.Type
 }
 
-func (s *StableTestTurnUpdateRequestUser) GetPayload() *StableTestTurnUpdateRequestPayload1 {
+func (s *StableTestTurnUpdateRequestUser) GetPayload() *UserSimulationTurnPayload {
 	if s == nil {
 		return nil
 	}

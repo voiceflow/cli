@@ -66,29 +66,6 @@ func (a *Agent4) GetImageURL() *string {
 // #region class-body-agent4
 // #endregion class-body-agent4
 
-type EventAgentTyping string
-
-const (
-	EventAgentTypingAgentTyping EventAgentTyping = "agent_typing"
-)
-
-func (e EventAgentTyping) ToPointer() *EventAgentTyping {
-	return &e
-}
-func (e *EventAgentTyping) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "agent_typing":
-		*e = EventAgentTyping(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for EventAgentTyping: %v", v)
-	}
-}
-
 type EventChatDismissalWarning string
 
 const (
@@ -212,7 +189,6 @@ const (
 	EventUnion2TypeEventEnum                 EventUnion2Type = "event_enum"
 	EventUnion2TypeEventWaitTime             EventUnion2Type = "event_WaitTime"
 	EventUnion2TypeEventChatDismissalWarning EventUnion2Type = "event_ChatDismissalWarning"
-	EventUnion2TypeEventAgentTyping          EventUnion2Type = "event_AgentTyping"
 	EventUnion2TypeUnknown                   EventUnion2Type = "Unknown"
 )
 
@@ -222,7 +198,6 @@ type EventUnion2 struct {
 	EventEnum                 *EventEnum                 `queryParam:"inline" union:"member"`
 	EventWaitTime             *EventWaitTime             `queryParam:"inline" union:"member"`
 	EventChatDismissalWarning *EventChatDismissalWarning `queryParam:"inline" union:"member"`
-	EventAgentTyping          *EventAgentTyping          `queryParam:"inline" union:"member"`
 	UnknownRaw                json.RawMessage            `json:"-" union:"unknown"`
 
 	Type EventUnion2Type
@@ -270,15 +245,6 @@ func CreateEventUnion2EventChatDismissalWarning(eventChatDismissalWarning EventC
 	return EventUnion2{
 		EventChatDismissalWarning: &eventChatDismissalWarning,
 		Type:                      typ,
-	}
-}
-
-func CreateEventUnion2EventAgentTyping(eventAgentTyping EventAgentTyping) EventUnion2 {
-	typ := EventUnion2TypeEventAgentTyping
-
-	return EventUnion2{
-		EventAgentTyping: &eventAgentTyping,
-		Type:             typ,
 	}
 }
 
@@ -342,14 +308,6 @@ func (u *EventUnion2) UnmarshalJSON(data []byte) error {
 		})
 	}
 
-	var eventAgentTyping EventAgentTyping = EventAgentTyping("")
-	if err := utils.UnmarshalJSON(data, &eventAgentTyping, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  EventUnion2TypeEventAgentTyping,
-			Value: &eventAgentTyping,
-		})
-	}
-
 	if len(candidates) == 0 {
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = EventUnion2TypeUnknown
@@ -382,9 +340,6 @@ func (u *EventUnion2) UnmarshalJSON(data []byte) error {
 	case EventUnion2TypeEventChatDismissalWarning:
 		u.EventChatDismissalWarning = best.Value.(*EventChatDismissalWarning)
 		return nil
-	case EventUnion2TypeEventAgentTyping:
-		u.EventAgentTyping = best.Value.(*EventAgentTyping)
-		return nil
 	}
 
 	u.UnknownRaw = json.RawMessage(data)
@@ -411,10 +366,6 @@ func (u EventUnion2) MarshalJSON() ([]byte, error) {
 
 	if u.EventChatDismissalWarning != nil {
 		return utils.MarshalJSON(u.EventChatDismissalWarning, "", true)
-	}
-
-	if u.EventAgentTyping != nil {
-		return utils.MarshalJSON(u.EventAgentTyping, "", true)
 	}
 
 	if u.UnknownRaw != nil {

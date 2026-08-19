@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-// StableTestCheckTypeTool - Identifies a check that verifies whether the agent called a specific tool.
 type StableTestCheckTypeTool string
 
 const (
@@ -36,14 +35,12 @@ func (e *StableTestCheckTypeTool) UnmarshalJSON(data []byte) error {
 }
 
 type StableTestCheckTool struct {
-	ID string `json:"id"`
-	// The ID of the turn this check belongs to.
-	TurnID    string    `json:"turnID"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	// Identifies a check that verifies whether the agent called a specific tool.
-	Type    StableTestCheckTypeTool       `json:"type"`
-	Payload ToolSimulationTurnTestPayload `json:"payload"`
+	ID        string                        `json:"id"`
+	TurnID    string                        `json:"turnID"`
+	CreatedAt time.Time                     `json:"createdAt"`
+	UpdatedAt time.Time                     `json:"updatedAt"`
+	Type      StableTestCheckTypeTool       `json:"type"`
+	Payload   ToolSimulationTurnTestPayload `json:"payload"`
 }
 
 func (s StableTestCheckTool) MarshalJSON() ([]byte, error) {
@@ -99,7 +96,6 @@ func (s *StableTestCheckTool) GetPayload() ToolSimulationTurnTestPayload {
 	return s.Payload
 }
 
-// StableTestCheckTypeRouting - Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
 type StableTestCheckTypeRouting string
 
 const (
@@ -123,102 +119,13 @@ func (e *StableTestCheckTypeRouting) UnmarshalJSON(data []byte) error {
 	}
 }
 
-// StableTestCheckResourceType - Whether resourceID is a playbook or a workflow.
-type StableTestCheckResourceType string
-
-const (
-	StableTestCheckResourceTypePlaybook StableTestCheckResourceType = "playbook"
-	StableTestCheckResourceTypeWorkflow StableTestCheckResourceType = "workflow"
-)
-
-func (e StableTestCheckResourceType) ToPointer() *StableTestCheckResourceType {
-	return &e
-}
-
-// IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *StableTestCheckResourceType) IsExact() bool {
-	if e != nil {
-		switch *e {
-		case "playbook", "workflow":
-			return true
-		}
-	}
-	return false
-}
-
-// StableTestCheckRouteTo - The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
-type StableTestCheckRouteTo struct {
-	// The ID of the playbook or workflow the check routes against.
-	ResourceID string `json:"resourceID"`
-	// Whether resourceID is a playbook or a workflow.
-	ResourceType StableTestCheckResourceType `json:"resourceType"`
-}
-
-func (s StableTestCheckRouteTo) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableTestCheckRouteTo) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableTestCheckRouteTo) GetResourceID() string {
-	if s == nil {
-		return ""
-	}
-	return s.ResourceID
-}
-
-func (s *StableTestCheckRouteTo) GetResourceType() StableTestCheckResourceType {
-	if s == nil {
-		return StableTestCheckResourceType("")
-	}
-	return s.ResourceType
-}
-
-type StableTestCheckPayload struct {
-	// The routing target to check against, paired with shouldRoute. Null when asserting no routing at all.
-	RouteTo     *StableTestCheckRouteTo `json:"routeTo"`
-	ShouldRoute bool                    `json:"shouldRoute"`
-}
-
-func (s StableTestCheckPayload) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableTestCheckPayload) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableTestCheckPayload) GetRouteTo() *StableTestCheckRouteTo {
-	if s == nil {
-		return nil
-	}
-	return s.RouteTo
-}
-
-func (s *StableTestCheckPayload) GetShouldRoute() bool {
-	if s == nil {
-		return false
-	}
-	return s.ShouldRoute
-}
-
 type StableTestCheckRouting struct {
-	ID string `json:"id"`
-	// The ID of the turn this check belongs to.
-	TurnID    string    `json:"turnID"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	// Identifies a check that verifies whether the agent routed to a specific playbook or workflow.
-	Type    StableTestCheckTypeRouting `json:"type"`
-	Payload StableTestCheckPayload     `json:"payload"`
+	ID        string                           `json:"id"`
+	TurnID    string                           `json:"turnID"`
+	CreatedAt time.Time                        `json:"createdAt"`
+	UpdatedAt time.Time                        `json:"updatedAt"`
+	Type      StableTestCheckTypeRouting       `json:"type"`
+	Payload   RoutingSimulationTurnTestPayload `json:"payload"`
 }
 
 func (s StableTestCheckRouting) MarshalJSON() ([]byte, error) {
@@ -267,14 +174,13 @@ func (s *StableTestCheckRouting) GetType() StableTestCheckTypeRouting {
 	return s.Type
 }
 
-func (s *StableTestCheckRouting) GetPayload() StableTestCheckPayload {
+func (s *StableTestCheckRouting) GetPayload() RoutingSimulationTurnTestPayload {
 	if s == nil {
-		return StableTestCheckPayload{}
+		return RoutingSimulationTurnTestPayload{}
 	}
 	return s.Payload
 }
 
-// StableTestCheckTypeResponse - Identifies a check that judges the agent's response text against expected criteria.
 type StableTestCheckTypeResponse string
 
 const (
@@ -299,14 +205,12 @@ func (e *StableTestCheckTypeResponse) UnmarshalJSON(data []byte) error {
 }
 
 type StableTestCheckResponse1 struct {
-	ID string `json:"id"`
-	// The ID of the turn this check belongs to.
-	TurnID    string    `json:"turnID"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	// Identifies a check that judges the agent's response text against expected criteria.
-	Type    StableTestCheckTypeResponse       `json:"type"`
-	Payload ResponseSimulationTurnTestPayload `json:"payload"`
+	ID        string                            `json:"id"`
+	TurnID    string                            `json:"turnID"`
+	CreatedAt time.Time                         `json:"createdAt"`
+	UpdatedAt time.Time                         `json:"updatedAt"`
+	Type      StableTestCheckTypeResponse       `json:"type"`
+	Payload   ResponseSimulationTurnTestPayload `json:"payload"`
 }
 
 func (s StableTestCheckResponse1) MarshalJSON() ([]byte, error) {

@@ -21,7 +21,7 @@ var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: user: { type: string, testID: string, payload: object }, agent: { type: string, testID: string, payload: object }, simulation: { type: string, testID: string, payload: object })", Variants: []flagutil.UnionVariantMeta{
 		{DiscriminatorValue: "user", FlagName: "body-param.user", FieldName: "StableTestTurnCreateRequestUser", CanExpand: false, Description: "StableTestTurnCreateRequest_User variant as JSON"},
 		{DiscriminatorValue: "agent", FlagName: "body-param.agent", FieldName: "StableTestTurnCreateRequestAgent", CanExpand: true, Description: "StableTestTurnCreateRequest_Agent variant as JSON", Fields: []flagutil.FlagMeta{
-			{FlagName: "body-param.agent.test-id", FieldPath: "TestID", Kind: flagutil.FlagKindString, Required: true, Description: "The ID of the test this turn belongs to. [required]"},
+			{FlagName: "body-param.agent.test-id", FieldPath: "TestID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 			{FlagName: "body-param.agent.payload", FieldPath: "Payload", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 		}},
 		{DiscriminatorValue: "simulation", FlagName: "body-param.simulation", FieldName: "StableTestTurnCreateRequestSimulation", CanExpand: false, Description: "StableTestTurnCreateRequest_Simulation variant as JSON"},

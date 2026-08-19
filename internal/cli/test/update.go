@@ -21,7 +21,7 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "settings", Shorthand: "s", FieldPath: "Body.Settings", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"settings,omitempty"`, Description: "JSON object"},
-	{FlagName: "turn-order", FieldPath: "Body.TurnOrder", Kind: flagutil.FlagKindStringArray, Optional: true, Description: "The IDs of the test's turns, in execution order."},
+	{FlagName: "turn-order", FieldPath: "Body.TurnOrder", Kind: flagutil.FlagKindStringArray, Optional: true, Description: "list of values"},
 }
 
 // initUpdateCmd initializes the update command.

@@ -14,8 +14,7 @@ type StableTest struct {
 	Settings  SimulationSettings `json:"settings"`
 	CreatedAt time.Time          `json:"createdAt"`
 	UpdatedAt time.Time          `json:"updatedAt"`
-	// The IDs of the test's turns, in execution order.
-	TurnOrder []string `json:"turnOrder"`
+	TurnOrder []string           `json:"turnOrder"`
 }
 
 func (s StableTest) MarshalJSON() ([]byte, error) {
