@@ -6,7 +6,6 @@ package components
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 	"time"
 )
@@ -230,57 +229,14 @@ func (u StableMCPServerURL) MarshalJSON() ([]byte, error) {
 	return nil, errors.New("could not marshal union type StableMCPServerURL: all fields are null")
 }
 
-type ValueEnum string
-
-const (
-	ValueEnumRedacted ValueEnum = "[redacted]"
-)
-
-func (e ValueEnum) ToPointer() *ValueEnum {
-	return &e
-}
-func (e *ValueEnum) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "[redacted]":
-		*e = ValueEnum(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for ValueEnum: %v", v)
-	}
-}
-
-type StableMCPServerHeader struct {
-	Key   *string   `json:"key"`
-	Value ValueEnum `json:"value"`
-}
-
-func (s *StableMCPServerHeader) GetKey() *string {
-	if s == nil {
-		return nil
-	}
-	return s.Key
-}
-
-func (s *StableMCPServerHeader) GetValue() ValueEnum {
-	if s == nil {
-		return ValueEnum("")
-	}
-	return s.Value
-}
-
 type StableMCPServer struct {
 	ID   string               `json:"id"`
 	URL  []StableMCPServerURL `json:"url"`
 	Name string               `json:"name"`
 	// The URL of the MCP server icon image.
-	Image     *string                 `json:"image"`
-	Headers   []StableMCPServerHeader `json:"headers"`
-	CreatedAt time.Time               `json:"createdAt"`
-	UpdatedAt time.Time               `json:"updatedAt"`
+	Image     *string   `json:"image"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 	// A human-readable description of what the MCP server provides.
 	Description   *string                `json:"description"`
 	Specification McpServerSpecification `json:"specification"`
@@ -323,13 +279,6 @@ func (s *StableMCPServer) GetImage() *string {
 		return nil
 	}
 	return s.Image
-}
-
-func (s *StableMCPServer) GetHeaders() []StableMCPServerHeader {
-	if s == nil {
-		return []StableMCPServerHeader{}
-	}
-	return s.Headers
 }
 
 func (s *StableMCPServer) GetCreatedAt() time.Time {
