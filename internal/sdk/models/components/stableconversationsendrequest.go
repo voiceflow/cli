@@ -6,6 +6,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
 // StableConversationSendRequestVersion - Whether to run the conversation against the draft or published version of the environment.
@@ -41,6 +42,19 @@ type StableConversationSendRequest struct {
 	Version StableConversationSendRequestVersion `json:"version"`
 	// The unique ID of the conversation session to continue.
 	SessionID *string `json:"sessionID,omitzero"`
+	// Options controlling how the response is shaped.
+	Config *StableConversationSendConfig `json:"config,omitzero"`
+}
+
+func (s StableConversationSendRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableConversationSendRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StableConversationSendRequest) GetAction() AnyRequest {
@@ -62,4 +76,11 @@ func (s *StableConversationSendRequest) GetSessionID() *string {
 		return nil
 	}
 	return s.SessionID
+}
+
+func (s *StableConversationSendRequest) GetConfig() *StableConversationSendConfig {
+	if s == nil {
+		return nil
+	}
+	return s.Config
 }
