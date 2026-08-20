@@ -10162,6 +10162,72 @@ components:
         - payload
       additionalProperties: {}
       description: The legacy intent request type that `general-runtime` expects from its clients.
+    StableConversationSendConfig:
+      type: object
+      properties:
+        excludeTypes:
+          description: Trace types to drop from the response. Opt-in — when omitted, every trace is returned.
+          type: array
+          items:
+            $ref: '#/components/schemas/TraceType'
+    TraceType:
+      type: string
+      enum:
+        - log
+        - end
+        - text
+        - path
+        - flow
+        - goto
+        - speak
+        - block
+        - debug
+        - choice
+        - stream
+        - visual
+        - cardV2
+        - carousel
+        - no-reply
+        - reasoning
+        - completion
+        - audio
+        - call-forward
+        - live-agent-handoff
+        - entity-filling
+        - channel-action
+        - knowledgeBase
+        - realtime-agent
+        - dtmf
+        - tool-call
+        - simulation-test-result
+      x-enumNames:
+        - LOG
+        - END
+        - TEXT
+        - PATH
+        - FLOW
+        - GOTO
+        - SPEAK
+        - BLOCK
+        - DEBUG
+        - CHOICE
+        - STREAM
+        - VISUAL
+        - CARD_V_2
+        - CAROUSEL
+        - NO_REPLY
+        - REASONING
+        - COMPLETION
+        - AUDIO
+        - CALL_FORWARD
+        - LIVE_AGENT_HANDOFF
+        - ENTITY_FILLING
+        - CHANNEL_ACTION
+        - KNOWLEDGE_BASE
+        - REALTIME_AGENT
+        - DTMF
+        - TOOL_CALL
+        - SIMULATION_TEST_RESULT
     StableConversationSendRequest:
       type: object
       properties:
@@ -10179,6 +10245,10 @@ components:
         sessionID:
           description: The unique ID of the conversation session to continue.
           type: string
+        config:
+          description: Options controlling how the response is shaped.
+          allOf:
+            - $ref: '#/components/schemas/StableConversationSendConfig'
       required:
         - action
         - version
