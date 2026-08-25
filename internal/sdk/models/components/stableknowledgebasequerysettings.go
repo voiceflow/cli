@@ -65,6 +65,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelLlama31Instant            StableKnowledgeBaseQuerySettingsModel = "llama-3.1-instant"
 	StableKnowledgeBaseQuerySettingsModelLlama33Versatile          StableKnowledgeBaseQuerySettingsModel = "llama-3.3-versatile"
 	StableKnowledgeBaseQuerySettingsModelQwen3627b                 StableKnowledgeBaseQuerySettingsModel = "qwen3.6-27b"
+	StableKnowledgeBaseQuerySettingsModelGrok46                    StableKnowledgeBaseQuerySettingsModel = "grok-4.6"
 	StableKnowledgeBaseQuerySettingsModelGeminiFlash2              StableKnowledgeBaseQuerySettingsModel = "gemini-flash-2"
 	StableKnowledgeBaseQuerySettingsModelGpt4Turbo                 StableKnowledgeBaseQuerySettingsModel = "gpt-4-turbo"
 	StableKnowledgeBaseQuerySettingsModelClaude35Haiku             StableKnowledgeBaseQuerySettingsModel = "claude-3.5-haiku"
@@ -196,6 +197,8 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "llama-3.3-versatile":
 		fallthrough
 	case "qwen3.6-27b":
+		fallthrough
+	case "grok-4.6":
 		fallthrough
 	case "gemini-flash-2":
 		fallthrough
