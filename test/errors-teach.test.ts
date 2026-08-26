@@ -85,6 +85,27 @@ describe('malformed-token warnings', () => {
   });
 });
 
+describe('required-flag preflight', () => {
+  it('fails locally with the exact flag name when a required path param is missing', async () => {
+    // Unroutable server: proves the request never leaves the machine.
+    const result = await $vf(['project', 'get', '--token', 'vfp_x', '--server-url', 'http://127.0.0.1:1']);
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('missing required flag: --project-id');
+    expect(result.stderr).not.toContain('statusCode'); // no server round-trip happened
+  });
+
+  it('still accepts whole-body input in place of individual required flags', async () => {
+    const result = await $vf([
+      'project', 'create',
+      '--body', '{"name":"x","workspaceID":"w","type":"webchat"}',
+      '--token', 'vfp_x', '--server-url', mockURL,
+    ]);
+    // The mock replies 401 — reaching it proves the body path was not blocked locally.
+    const envelope = parseEnvelope(result.stderr);
+    expect(envelope.statusCode).toBe(401);
+  });
+});
+
 describe('error hint injection', () => {
   it('injects a list-command hint and docs_url on 404', async () => {
     const result = await $vf(['project', 'get', '--project-id', 'missing', '--token', 'vfp_x', '--server-url', mockURL]);

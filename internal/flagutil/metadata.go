@@ -282,7 +282,12 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 	// provided via --body/stdin, check if any individual flags were changed.
 	// If not, the user didn't attempt to provide a body at all — relax required
 	// checks so nullable/optional bodies work without erroring on inner required fields.
-	if !bodyPrePopulated && bodyFieldPath == "" {
+	// Only when the command actually has a body flag (bodyFlagName != ""): a
+	// params-only command (get/delete — no --body registered) has no body to
+	// relax for, and relaxing would let requests leave with required path or
+	// query params empty, failing server-side with field paths no CLI user
+	// can map back to a flag.
+	if !bodyPrePopulated && bodyFieldPath == "" && bodyFlagName != "" {
 		anyChanged := false
 		for _, m := range meta {
 			if FlagChanged(cmd, m.FlagName) {
