@@ -112,7 +112,10 @@ func (h *teachHook) AfterError(hookCtx AfterErrorContext, res *http.Response, er
 		res.Header.Set("Content-Length", strconv.Itoa(len(body)))
 	}
 	if readErr != nil {
-		restore(nil)
+		// io.ReadAll can return bytes alongside an error. Restore whatever
+		// arrived rather than blanking the body — a truncated error message
+		// still tells the user more than an empty one.
+		restore(raw)
 		return res, err
 	}
 
@@ -181,9 +184,9 @@ func hintsForStatus(statusCode int, headers http.Header, operationID string) []s
 		hints := []string{
 			"Your token carries your own account's access — this resource belongs to a workspace or organization your account cannot act on",
 		}
-		if hasListCommand(commandGroupForOperation(operationID)) {
-			hints = append(hints, "List what your account can reach: vf workspace list")
-		}
+		// Always name a command that exists: workspace list is the widest thing
+		// any account can run, and it is what reveals the reachable scope.
+		hints = append(hints, "List what your account can reach: vf workspace list")
 		return hints
 	case 404:
 		hints := []string{"Verify the resource identifier — it may be from another workspace or environment"}
