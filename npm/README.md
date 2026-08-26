@@ -11,11 +11,16 @@ Speakeasy-generated.
   Its `bin/vf.js` shim resolves `@voiceflow/cli-<os>-<cpu>` (installed via
   `optionalDependencies` with `os`/`cpu` fields, so npm downloads only the
   matching platform) and execs the Go binary.
-- `scripts/prepare.ts` stages all seven packages into `dist/npm/` from
-  goreleaser's `dist/artifacts.json`, stamping the release version everywhere.
-- `scripts/publish.ts` publishes idempotently: platform packages first, a
+- `scripts/prepare.mjs` stages all seven packages into `dist/npm/` from
+  goreleaser's `dist/artifacts.json`, stamping the release version everywhere
+  and embedding the repo's LICENSE in each package.
+- `scripts/publish.mjs` publishes idempotently: platform packages first, a
   registry-visibility gate, wrapper last. Re-running after a partial failure
   skips what already went out.
+- Both scripts are dependency-free ESM run by bare `node`. That is deliberate:
+  the publish step holds `NPM_TOKEN`, and a TypeScript runner would have npm
+  resolve its transitive dependency tree from the registry at run time — with
+  no lockfile — inside the token-bearing step. Keep them on node builtins.
 - The `npm-publish` job in `.github/workflows/release.yaml` runs both after
   goreleaser on every `v*` tag. Versions are in lockstep with git tags by
   construction (`GITHUB_REF_NAME`).
@@ -37,14 +42,23 @@ Speakeasy-generated.
 6. **Never republish or unpublish a version.** Recovery is always: fix, bump
    patch, tag again. A bad release gets `npm deprecate`, not `npm unpublish`.
 7. **Prerelease versions (containing `-`) publish under the `next` dist-tag**
-   so `latest` never resolves an rc. goreleaser marks them prereleases too.
+   so `latest` never resolves an rc.
+8. **`latest` only moves forward.** Before tagging, `publish.mjs` reads the
+   registry's current `latest`; a version that is not newer publishes under
+   the `previous` tag instead. Without this, a recovery re-run of an older
+   version would silently downgrade what `npx @voiceflow/cli` installs.
+9. **A publish without a LICENSE file is impossible.** Every package.json
+   declares Apache-2.0, so `prepare.mjs` exits 1 when the repo root has no
+   LICENSE rather than shipping a license claim with no license text — a
+   mislabeled version cannot be taken back. goreleaser marks them prereleases too.
 
 ## Failure recovery
 
 - **Partial publish** (some packages live, job died): re-run the
   `npm-publish` job from the Actions UI. Existence checks make it a no-op
   for published packages; the wrapper only goes out after all six platforms
-  are visible.
+  are visible. Safe even if a newer version shipped in the meantime —
+  invariant 8 keeps the recovered older version off the `latest` tag.
 - **Artifact expired** (>30 days): do not rebuild-and-republish the same
   version — rebuilt binaries would not match the GitHub release. Bump patch,
   tag again.

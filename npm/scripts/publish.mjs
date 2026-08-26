@@ -7,10 +7,14 @@
 // wrapper publishes — so no user can ever install a wrapper whose exact-pinned
 // optionalDependencies do not resolve.
 //
-// Prerelease versions (anything containing "-") publish under the "next"
-// dist-tag so `npx @voiceflow/cli` (implicit latest) never resolves an rc.
+// The `latest` dist-tag is only moved forward: a re-run recovering an older
+// version never demotes `latest` below what the registry already serves.
+// Prerelease versions (containing "-") always publish under "next".
 //
-// Usage: tsx npm/scripts/publish.ts --version 0.229.0 --out dist/npm [--dry-run]
+// Dependency-free ESM run by bare `node` — no tsx, no transitive packages, so
+// nothing from the registry executes in this token-bearing step. Node >= 18.
+//
+// Usage: node npm/scripts/publish.mjs --version 0.229.0 --out dist/npm [--dry-run]
 
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -31,9 +35,9 @@ if (!version || !/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) {
   console.error(`Invalid or missing --version (got: ${JSON.stringify(version)}).`);
   process.exit(1);
 }
-const outDir = path.resolve(args.out!);
-const isDryRun = args['dry-run']!;
-const distTag = version.includes('-') ? 'next' : 'latest';
+const outDir = path.resolve(args.out);
+const isDryRun = args['dry-run'];
+const isPrerelease = version.includes('-');
 
 const PLATFORM_SUFFIXES = ['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64', 'win32-arm64', 'win32-x64'];
 const platformPackages = PLATFORM_SUFFIXES.map((suffix) => ({
@@ -44,25 +48,52 @@ const wrapperPackage = { name: '@voiceflow/cli', dir: path.join(outDir, 'cli') }
 
 for (const pkg of [...platformPackages, wrapperPackage]) {
   if (!existsSync(path.join(pkg.dir, 'package.json'))) {
-    console.error(`Missing staged package at ${pkg.dir} — run npm/scripts/prepare.ts first.`);
+    console.error(`Missing staged package at ${pkg.dir} — run npm/scripts/prepare.mjs first.`);
     process.exit(1);
   }
 }
 
-function isPublished(name: string): boolean {
+function npmView(specifier, field) {
   try {
-    execFileSync('npm', ['view', `${name}@${version}`, 'version'], { stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 });
-    return true;
+    return execFileSync('npm', ['view', specifier, field], { stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 })
+      .toString()
+      .trim();
   } catch {
-    return false;
+    return null; // not published / no packument / field absent
   }
 }
 
-function publish(pkg: { name: string; dir: string }): void {
+function isPublished(name) {
+  return npmView(`${name}@${version}`, 'version') === version;
+}
+
+// Compare two semver core versions (ignoring prerelease/build): is `a` strictly
+// greater than `b`? Used only to decide whether `latest` may move to `version`.
+function coreIsGreater(a, b) {
+  const core = (v) => v.split('-')[0].split('.').map(Number);
+  const [a1, a2, a3] = core(a);
+  const [b1, b2, b3] = core(b);
+  if (a1 !== b1) return a1 > b1;
+  if (a2 !== b2) return a2 > b2;
+  return a3 > b3;
+}
+
+// A stable release tags `latest` only when it is newer than the registry's
+// current latest; otherwise it publishes under a non-floating "previous" tag so
+// a recovery re-run of an older version never demotes what users install.
+function distTagFor(pkgName) {
+  if (isPrerelease) return 'next';
+  const currentLatest = npmView(`${pkgName}@latest`, 'version');
+  if (currentLatest && !coreIsGreater(version, currentLatest)) return 'previous';
+  return 'latest';
+}
+
+function publish(pkg) {
   if (isPublished(pkg.name)) {
     console.log(`${pkg.name}@${version} already published — skipping.`);
     return;
   }
+  const distTag = distTagFor(pkg.name);
   const publishArgs = ['publish', pkg.dir, '--access', 'public', '--provenance', '--tag', distTag];
   if (isDryRun) {
     console.log(`[dry-run] npm ${publishArgs.join(' ')}`);
@@ -72,7 +103,7 @@ function publish(pkg: { name: string; dir: string }): void {
   execFileSync('npm', publishArgs, { stdio: 'inherit', timeout: 300_000 });
 }
 
-async function waitUntilVisible(name: string): Promise<void> {
+async function waitUntilVisible(name) {
   const deadline = Date.now() + 90_000;
   while (Date.now() < deadline) {
     if (isPublished(name)) return;
@@ -91,4 +122,4 @@ if (!isDryRun) {
 
 publish(wrapperPackage);
 
-console.log(isDryRun ? 'Dry run complete.' : `Published @voiceflow/cli@${version} and 6 platform packages (tag: ${distTag}).`);
+console.log(isDryRun ? 'Dry run complete.' : `Published @voiceflow/cli@${version} and 6 platform packages.`);

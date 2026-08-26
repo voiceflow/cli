@@ -7,32 +7,20 @@
 //   <out>/cli/              the wrapper package, copied from npm/cli/
 //
 // with every package.json stamped to the release version. Publishing is a
-// separate, side-effectful step: npm/scripts/publish.ts.
+// separate, side-effectful step: npm/scripts/publish.mjs.
 //
-// Usage: tsx npm/scripts/prepare.ts --version 0.229.0 --dist dist --out dist/npm
+// Dependency-free ESM run by bare `node` — no tsx, no transitive packages, so
+// nothing from the registry executes in the release job. Node >= 18.
+//
+// Usage: node npm/scripts/prepare.mjs --version 0.229.0 --dist dist --out dist/npm
 
 import { chmodSync, copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-interface GoreleaserArtifact {
-  name: string;
-  path: string;
-  type: string;
-  goos?: string;
-  goarch?: string;
-}
-
-interface PlatformTarget {
-  goos: string;
-  goarch: string;
-  npmOs: string;
-  npmCpu: string;
-  executableName: string;
-}
-
-const PLATFORM_TARGETS: PlatformTarget[] = [
+const PLATFORM_TARGETS = [
   { goos: 'darwin', goarch: 'arm64', npmOs: 'darwin', npmCpu: 'arm64', executableName: 'vf' },
   { goos: 'darwin', goarch: 'amd64', npmOs: 'darwin', npmCpu: 'x64', executableName: 'vf' },
   { goos: 'linux', goarch: 'arm64', npmOs: 'linux', npmCpu: 'arm64', executableName: 'vf' },
@@ -54,9 +42,9 @@ if (!version || !/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) {
   console.error(`Invalid or missing --version (got: ${JSON.stringify(version)}). Expected e.g. 0.229.0 or 0.229.0-rc.1.`);
   process.exit(1);
 }
-const distDir = path.resolve(args.dist!);
-const outDir = path.resolve(args.out!);
-const repoRoot = path.resolve(import.meta.dirname, '..', '..');
+const distDir = path.resolve(args.dist);
+const outDir = path.resolve(args.out);
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const wrapperSourceDir = path.join(repoRoot, 'npm', 'cli');
 const licensePath = path.join(repoRoot, 'LICENSE');
 
@@ -65,20 +53,19 @@ if (!existsSync(artifactsPath)) {
   console.error(`Missing ${artifactsPath} — run goreleaser first (or pass --dist).`);
   process.exit(1);
 }
-const artifacts: GoreleaserArtifact[] = JSON.parse(readFileSync(artifactsPath, 'utf8'));
+const artifacts = JSON.parse(readFileSync(artifactsPath, 'utf8'));
 const binaries = artifacts.filter((artifact) => artifact.type === 'Binary');
 
-function findBinary(target: PlatformTarget): string {
+function findBinary(target) {
   const match = binaries.find((binary) => binary.goos === target.goos && binary.goarch === target.goarch);
   if (!match) {
     console.error(`No built binary found for ${target.goos}/${target.goarch} in ${artifactsPath}.`);
     console.error(`Binaries present: ${binaries.map((binary) => `${binary.goos}/${binary.goarch}`).join(', ') || 'none'}`);
     process.exit(1);
   }
-  const binaryPath = path.isAbsolute(match.path) ? match.path : path.join(distDir, '..', match.path);
   // goreleaser records paths relative to the working directory (dist/...);
-  // resolve against cwd first, then distDir's parent as a fallback.
-  const candidates = [path.resolve(match.path), binaryPath];
+  // resolve against cwd first, then against distDir's parent as a fallback.
+  const candidates = [path.resolve(match.path), path.join(distDir, '..', match.path)];
   const found = candidates.find((candidate) => existsSync(candidate));
   if (!found) {
     console.error(`Binary listed in artifacts.json does not exist on disk: ${match.path}`);
@@ -87,7 +74,18 @@ function findBinary(target: PlatformTarget): string {
   return found;
 }
 
-function writePlatformPackage(target: PlatformTarget): string {
+function requireLicense() {
+  // A public publish whose package.json claims Apache-2.0 must ship the grant
+  // text. Fail hard rather than warn — a mislabeled version cannot be unpublished.
+  if (!existsSync(licensePath)) {
+    console.error('No LICENSE file at repo root, but every package.json declares "license": "Apache-2.0".');
+    console.error('Refusing to stage packages that would publish a license claim without the license text.');
+    console.error('Merge the Apache-2.0 LICENSE PR (braden/add-apache-2-license/COR-0) first.');
+    process.exit(1);
+  }
+}
+
+function writePlatformPackage(target) {
   const packageName = `@voiceflow/cli-${target.npmOs}-${target.npmCpu}`;
   const packageDir = path.join(outDir, `cli-${target.npmOs}-${target.npmCpu}`);
   const binDir = path.join(packageDir, 'bin');
@@ -122,11 +120,11 @@ function writePlatformPackage(target: PlatformTarget): string {
     path.join(packageDir, 'README.md'),
     `# ${packageName}\n\nPrebuilt Voiceflow CLI binary for ${target.npmOs} ${target.npmCpu}. Install [@voiceflow/cli](https://www.npmjs.com/package/@voiceflow/cli) instead of depending on this package directly.\n`,
   );
-  copyLicenseInto(packageDir);
+  copyFileSync(licensePath, path.join(packageDir, 'LICENSE'));
   return packageDir;
 }
 
-function writeWrapperPackage(): string {
+function writeWrapperPackage() {
   const packageDir = path.join(outDir, 'cli');
   cpSync(wrapperSourceDir, packageDir, { recursive: true });
 
@@ -146,18 +144,11 @@ function writeWrapperPackage(): string {
   }
 
   writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
-  copyLicenseInto(packageDir);
+  copyFileSync(licensePath, path.join(packageDir, 'LICENSE'));
   return packageDir;
 }
 
-function copyLicenseInto(packageDir: string): void {
-  if (existsSync(licensePath)) {
-    copyFileSync(licensePath, path.join(packageDir, 'LICENSE'));
-  } else {
-    console.warn('Warning: no LICENSE file at repo root — published packages will not embed one.');
-  }
-}
-
+requireLicense();
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 
