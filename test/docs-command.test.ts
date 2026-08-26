@@ -54,4 +54,34 @@ describe('vf docs get', () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('voiceflow.com/docs');
   });
+
+  it('blocks every host-spoofing / SSRF vector (validates parsed components, not substrings)', async () => {
+    const hostile = [
+      'http://127.0.0.1:8799/voiceflow.com/docs',            // marker in path
+      'http://127.0.0.1:8799/x?ref=voiceflow.com/docs',      // marker in query
+      'http://127.0.0.1:8799/secret#voiceflow.com/docs',     // marker in fragment (never on the wire)
+      'https://evil.com/voiceflow.com/docs/x',               // marker in path, hostile host
+      'https://www.voiceflow.com.evil.com/docs/x',           // look-alike host
+      'https://user@www.voiceflow.com/docs/x',               // userinfo trick
+      'http://www.voiceflow.com/docs/x',                     // http downgrade
+    ];
+    for (const url of hostile) {
+      const result = await $vf(['docs', 'get', url]);
+      expect(result.exitCode, `must block: ${url}`).toBe(1);
+      expect(result.stderr, `must not fetch: ${url}`).not.toContain('GOTCHA');
+    }
+  });
+
+  it('fetches the .md rendition of a full URL carrying a #fragment', async () => {
+    const result = await $vf(['docs', 'get', 'https://www.voiceflow.com/docs/api-reference/authentication#create-a-token']);
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stdout).toContain('# Personal access tokens'); // markdown, not the ~400KB HTML page
+    expect(result.stdout).not.toContain('<!DOCTYPE html>');
+  });
+
+  it('neutralizes path traversal in a bare page path', async () => {
+    const result = await $vf(['docs', 'get', '../../../etc/passwd']);
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).not.toContain('root:');
+  });
 });

@@ -14,11 +14,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/voiceflow/cli/internal/flagutil"
+	"github.com/voiceflow/cli/internal/output"
 )
 
 const (
@@ -119,7 +121,7 @@ func runDocsSearchCmd(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if format, _ := flagutil.GetStringFlag(cmd, "output-format"); format == "json" {
+	if output.WantsRawJSON(cmd) {
 		results := make([]docsSearchResult, 0, len(blocks))
 		for _, block := range blocks {
 			results = append(results, parseDocsSearchBlock(block))
@@ -164,7 +166,9 @@ func runDocsGetCmd(cmd *cobra.Command, args []string) error {
 }
 
 // docsPageURL normalizes a page argument (path or full URL) to its markdown
-// rendition URL.
+// rendition URL. Full URLs are validated by their PARSED components — scheme,
+// host, and path — never by substring matching, and the returned URL is
+// rebuilt from those components so nothing unvalidated reaches the wire.
 func docsPageURL(page string) (string, error) {
 	page = strings.TrimSpace(page)
 	if page == "" {
@@ -172,21 +176,37 @@ func docsPageURL(page string) (string, error) {
 	}
 
 	if strings.HasPrefix(page, "http://") || strings.HasPrefix(page, "https://") {
-		if !strings.Contains(page, "voiceflow.com/docs") {
-			return "", fmt.Errorf("only voiceflow.com/docs URLs are supported (got %s)", page)
+		parsed, err := url.Parse(page)
+		if err != nil {
+			return "", fmt.Errorf("invalid URL %q: %w", page, err)
 		}
-		if !strings.HasSuffix(page, ".md") {
-			page += ".md"
+		hostname := strings.ToLower(parsed.Hostname())
+		if parsed.Scheme != "https" || parsed.User != nil ||
+			(hostname != "www.voiceflow.com" && hostname != "voiceflow.com") {
+			return "", fmt.Errorf("only https://www.voiceflow.com/docs URLs are supported (got %s)", page)
 		}
-		return page, nil
+		cleanPath := path.Clean("/" + parsed.EscapedPath())
+		if cleanPath != "/docs" && !strings.HasPrefix(cleanPath, "/docs/") {
+			return "", fmt.Errorf("only https://www.voiceflow.com/docs URLs are supported (got %s)", page)
+		}
+		if !strings.HasSuffix(cleanPath, ".md") {
+			cleanPath += ".md"
+		}
+		// Query and fragment carry nothing for a docs page; drop them so the
+		// .md suffix always lands on the path.
+		return "https://www.voiceflow.com" + cleanPath, nil
 	}
 
 	page = strings.Trim(page, "/")
 	page = strings.TrimPrefix(page, "docs/")
-	if !strings.HasSuffix(page, ".md") {
-		page += ".md"
+	cleanPath := path.Clean("/" + page)
+	if cleanPath == "/" || strings.HasPrefix(cleanPath, "/..") {
+		return "", fmt.Errorf("invalid page path %q — pass a path like api-reference/authentication", page)
 	}
-	return docsBaseURL + "/" + page, nil
+	if !strings.HasSuffix(cleanPath, ".md") {
+		cleanPath += ".md"
+	}
+	return docsBaseURL + cleanPath, nil
 }
 
 // doDocsRequest performs an HTTP request against the docs site with a bounded
