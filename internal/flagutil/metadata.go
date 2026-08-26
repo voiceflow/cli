@@ -247,8 +247,11 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 		}
 	}
 
-	// Priority 2: stdin
-	if !bodyPrePopulated && HasStdinInput(cmd) {
+	// Priority 2: stdin. Params-only commands (no body field and no --body
+	// flag) have no body for stdin to fill — consuming piped JSON there would
+	// both surprise pipelines and re-relax required path/query params via the
+	// bodyPrePopulated relaxation below.
+	if !bodyPrePopulated && (bodyFieldPath != "" || bodyFlagName != "") && HasStdinInput(cmd) {
 		stdinData, err := io.ReadAll(cmd.InOrStdin())
 		if err != nil {
 			return nil, fmt.Errorf("failed to read stdin: %w", err)

@@ -63,11 +63,21 @@ describe('no-token preflight', () => {
     expect(JSON.stringify(envelope.hints)).toContain('export VF_TOKEN=vfp_');
   });
 
-  it('does not block --dry-run', async () => {
-    const result = await $vf(['workspace', 'list', '--dry-run']);
-    expect(result.exitCode).toBe(0);
-    expect(result.stderr).toContain('[DRY-RUN]');
-    expect(result.stderr).toContain('Network call skipped');
+  it('does not block --dry-run, in every bool spelling cobra accepts', async () => {
+    for (const spelling of ['--dry-run', '--dry-run=true', '--dry-run=True', '--dry-run=T', '--dry-run=1']) {
+      const result = await $vf(['workspace', 'list', spelling]);
+      expect(result.exitCode, `${spelling}: ${result.stderr}`).toBe(0);
+      expect(result.stderr).toContain('[DRY-RUN]');
+    }
+  });
+
+  it('fires under the env var Claude Code actually sets (CLAUDECODE, no underscore)', async () => {
+    const result = await execa({ reject: false, env: { CLAUDECODE: '1', CLAUDE_CODE: '', VF_TOKEN: '' }, stdin: 'ignore' })(
+      VF, ['workspace', 'list', '--server-url', 'http://127.0.0.1:1'],
+    );
+    expect(result.exitCode).toBe(1);
+    const envelope = parseEnvelope(result.stderr); // agent-mode structured envelope, not pretty output
+    expect(envelope.error_type).toBe('authentication_error');
   });
 });
 
@@ -92,6 +102,15 @@ describe('required-flag preflight', () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('missing required flag: --project-id');
     expect(result.stderr).not.toContain('statusCode'); // no server round-trip happened
+  });
+
+  it('is not bypassed by piped stdin on params-only commands', async () => {
+    const result = await execa({ reject: false, env: { ...AGENT_ENV }, input: '{}' })(
+      VF, ['project', 'get', '--token', 'vfp_x', '--server-url', 'http://127.0.0.1:1'],
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('missing required flag: --project-id');
+    expect(result.stderr).not.toContain('statusCode');
   });
 
   it('still accepts whole-body input in place of individual required flags', async () => {
@@ -120,7 +139,7 @@ describe('error hint injection', () => {
   it('surfaces Retry-After on 429', async () => {
     const result = await $vf(['workspace', 'list', '--token', 'vfp_x', '--server-url', mockURL]);
     const envelope = parseEnvelope(result.stderr);
-    expect(JSON.stringify(envelope.hints)).toContain('17 seconds');
+    expect(JSON.stringify(envelope.hints)).toContain('Retry-After: 17');
   });
 
   it('teaches token expiry and renewal on 401', async () => {

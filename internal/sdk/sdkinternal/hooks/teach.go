@@ -153,8 +153,14 @@ func (h *teachHook) AfterError(hookCtx AfterErrorContext, res *http.Response, er
 // source), so the process arguments are its single source of truth.
 func dryRunRequested() bool {
 	for _, arg := range os.Args[1:] {
-		if arg == "--dry-run" || arg == "--dry-run=true" || arg == "--dry-run=1" {
+		if arg == "--dry-run" {
 			return true
+		}
+		if value, found := strings.CutPrefix(arg, "--dry-run="); found {
+			// Accept every spelling cobra's bool parsing accepts (True, T, 1, ...).
+			if parsed, err := strconv.ParseBool(value); err == nil {
+				return parsed
+			}
 		}
 	}
 	return false
@@ -187,7 +193,8 @@ func hintsForStatus(statusCode int, headers http.Header, operationID string) []s
 		return hints
 	case 429:
 		if retryAfter := headers.Get("Retry-After"); retryAfter != "" {
-			return []string{fmt.Sprintf("Rate limited — retry after %s seconds", retryAfter)}
+			// Retry-After may be delta-seconds or an HTTP-date; echo it verbatim.
+			return []string{fmt.Sprintf("Rate limited — Retry-After: %s", retryAfter)}
 		}
 		return []string{"Rate limited — retry after a short delay"}
 	case 400, 422:

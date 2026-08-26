@@ -22,6 +22,10 @@ var (
 
 // agentEnvVars lists environment variables set by known AI coding agents.
 var agentEnvVars = []string{
+	// Claude Code actually sets CLAUDECODE=1 (no underscore) — verified in a
+	// live session. CLAUDE_CODE is kept for compatibility with the generated
+	// list, but without CLAUDECODE the flagship agent never triggers agent mode.
+	"CLAUDECODE",
 	"CLAUDE_CODE",
 	"CURSOR_AGENT",
 	"CODEX",
