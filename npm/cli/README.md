@@ -6,7 +6,7 @@
 
 ```bash
 # Run without installing
-npx @voiceflow/cli --help
+npx -y @voiceflow/cli --help
 
 # Or install globally (provides both `vf` and `voiceflow`)
 npm install -g @voiceflow/cli
