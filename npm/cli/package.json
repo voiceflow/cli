@@ -1,0 +1,46 @@
+{
+  "name": "@voiceflow/cli",
+  "version": "0.0.0",
+  "description": "Voiceflow CLI (vf) — command line for Voiceflow, the AI agent platform for customer experience automation. Manage agents, knowledge bases, workflows, tests, and transcripts from your terminal or CI.",
+  "keywords": [
+    "voiceflow",
+    "vf",
+    "cli",
+    "ai",
+    "ai-agents",
+    "agents",
+    "chatbot",
+    "voice",
+    "conversational-ai",
+    "customer-experience",
+    "automation",
+    "llm"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://www.voiceflow.com/docs/cli/overview",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voiceflow/cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/voiceflow/cli/issues"
+  },
+  "bin": {
+    "vf": "bin/vf.js",
+    "voiceflow": "bin/vf.js"
+  },
+  "files": [
+    "bin/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {
+    "@voiceflow/cli-darwin-arm64": "0.0.0",
+    "@voiceflow/cli-darwin-x64": "0.0.0",
+    "@voiceflow/cli-linux-arm64": "0.0.0",
+    "@voiceflow/cli-linux-x64": "0.0.0",
+    "@voiceflow/cli-win32-arm64": "0.0.0",
+    "@voiceflow/cli-win32-x64": "0.0.0"
+  }
+}
