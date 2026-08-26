@@ -39,7 +39,7 @@ Realtime: Realtime gateway API service
 
 ```bash
 # Run without installing
-npx @voiceflow/cli --help
+npx -y @voiceflow/cli --help
 
 # Or install globally (provides both `vf` and `voiceflow`)
 npm install -g @voiceflow/cli
@@ -74,7 +74,7 @@ Download pre-built binaries for your platform from the [releases page](https://g
 
 ## Quickstart: zero to a talking agent
 
-Runnable end to end with nothing but an access token — by a person or by a coding agent. Create a **personal access token** in Voiceflow under **Settings → Access tokens** (tokens start with `vfp_`; they expire, default 30 days), then:
+Runnable end to end by a person or by a coding agent. You need an access token and [`jq`](https://jqlang.org) (used only to pull IDs out of the JSON responses). Create a **personal access token** in Voiceflow under **Settings → Access tokens** (tokens start with `vfp_`; they expire, default 30 days), then:
 
 ```bash
 export VF_TOKEN=vfp_...   # every command also accepts --token
