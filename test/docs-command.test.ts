@@ -23,6 +23,9 @@ describe('vf docs search', () => {
     expect(result.exitCode, result.stderr).toBe(0);
     const results = JSON.parse(result.stdout);
     expect(Array.isArray(results)).toBe(true);
+    // Assert on shape only if the live corpus returned something: an empty
+    // result set is a docs-content change, not a CLI regression.
+    expect(results.length, 'search returned no results for a staple query').toBeGreaterThan(0);
     expect(results[0]).toMatchObject({
       title: expect.any(String),
       link: expect.stringContaining('voiceflow.com/docs'),
@@ -36,7 +39,10 @@ describe('vf docs get', () => {
   it('prints a page as markdown, by path or full URL', async () => {
     const byPath = await $vf(['docs', 'get', 'api-reference/authentication']);
     expect(byPath.exitCode, byPath.stderr).toBe(0);
-    expect(byPath.stdout).toContain('# Personal access tokens');
+    // Assert the rendition is markdown, not the page's exact prose: the
+    // heading is docs content and may be reworded at any time.
+    expect(byPath.stdout).toMatch(/^#{1,2} \S/m);
+    expect(byPath.stdout).not.toContain('<!DOCTYPE html>');
 
     const byURL = await $vf(['docs', 'get', 'https://www.voiceflow.com/docs/cli/overview']);
     expect(byURL.exitCode, byURL.stderr).toBe(0);
@@ -75,8 +81,9 @@ describe('vf docs get', () => {
   it('fetches the .md rendition of a full URL carrying a #fragment', async () => {
     const result = await $vf(['docs', 'get', 'https://www.voiceflow.com/docs/api-reference/authentication#create-a-token']);
     expect(result.exitCode, result.stderr).toBe(0);
-    expect(result.stdout).toContain('# Personal access tokens'); // markdown, not the ~400KB HTML page
+    expect(result.stdout).toMatch(/^#{1,2} \S/m); // markdown, not the ~400KB HTML page
     expect(result.stdout).not.toContain('<!DOCTYPE html>');
+    expect(result.stdout.length).toBeLessThan(100_000);
   });
 
   it('neutralizes path traversal in a bare page path', async () => {
