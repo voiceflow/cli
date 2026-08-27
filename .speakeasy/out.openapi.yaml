@@ -10828,7 +10828,6 @@ components:
         - bedrock-claude-4.8-opus
         - voiceflow-core-4.0
         - voiceflow-core-4.1
-        - voiceflow-flash-4.1
         - kimi-k3
         - gemini-2.5-pro
         - gemini-2.5-flash
@@ -10843,6 +10842,7 @@ components:
         - llama-3.3-versatile
         - qwen3.6-27b
         - grok-4.6
+        - voiceflow-flash-4.1
         - gemini-flash-2
         - gpt-4-turbo
         - claude-3.5-haiku
@@ -10898,7 +10898,6 @@ components:
         - BEDROCK_CLAUDE_4_8_OPUS
         - VOICEFLOW_CORE_4_0
         - VOICEFLOW_CORE_4_1
-        - VOICEFLOW_FLASH_4_1
         - KIMI_K_3
         - GEMINI_2_5_PRO
         - GEMINI_2_5_FLASH
@@ -10913,6 +10912,7 @@ components:
         - LLAMA_3_3_VERSATILE
         - QWEN_3_6_27_B
         - GROK_4_6
+        - VOICEFLOW_FLASH_4_1
         - GEMINI_FLASH_2
         - GPT_4_TURBO
         - CLAUDE_3_5_HAIKU
@@ -17617,7 +17617,6 @@ components:
                 - bedrock-claude-4.8-opus
                 - voiceflow-core-4.0
                 - voiceflow-core-4.1
-                - voiceflow-flash-4.1
                 - kimi-k3
                 - gemini-2.5-pro
                 - gemini-2.5-flash
@@ -17632,6 +17631,7 @@ components:
                 - llama-3.3-versatile
                 - qwen3.6-27b
                 - grok-4.6
+                - voiceflow-flash-4.1
                 - gemini-flash-2
                 - gpt-4-turbo
                 - claude-3.5-haiku
@@ -17688,7 +17688,6 @@ components:
                 - BEDROCK_CLAUDE_4_8_OPUS
                 - VOICEFLOW_CORE_4_0
                 - VOICEFLOW_CORE_4_1
-                - VOICEFLOW_FLASH_4_1
                 - KIMI_K_3
                 - GEMINI_2_5_PRO
                 - GEMINI_2_5_FLASH
@@ -17703,6 +17702,7 @@ components:
                 - LLAMA_3_3_VERSATILE
                 - QWEN_3_6_27_B
                 - GROK_4_6
+                - VOICEFLOW_FLASH_4_1
                 - GEMINI_FLASH_2
                 - GPT_4_TURBO
                 - CLAUDE_3_5_HAIKU
@@ -17887,7 +17887,6 @@ components:
             - bedrock-claude-4.8-opus
             - voiceflow-core-4.0
             - voiceflow-core-4.1
-            - voiceflow-flash-4.1
             - kimi-k3
             - gemini-2.5-pro
             - gemini-2.5-flash
@@ -17902,6 +17901,7 @@ components:
             - llama-3.3-versatile
             - qwen3.6-27b
             - grok-4.6
+            - voiceflow-flash-4.1
             - gemini-flash-2
             - gpt-4-turbo
             - claude-3.5-haiku
@@ -17957,7 +17957,6 @@ components:
             - BEDROCK_CLAUDE_4_8_OPUS
             - VOICEFLOW_CORE_4_0
             - VOICEFLOW_CORE_4_1
-            - VOICEFLOW_FLASH_4_1
             - KIMI_K_3
             - GEMINI_2_5_PRO
             - GEMINI_2_5_FLASH
@@ -17972,6 +17971,7 @@ components:
             - LLAMA_3_3_VERSATILE
             - QWEN_3_6_27_B
             - GROK_4_6
+            - VOICEFLOW_FLASH_4_1
             - GEMINI_FLASH_2
             - GPT_4_TURBO
             - CLAUDE_3_5_HAIKU

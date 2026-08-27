@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: ee7a2049fda5eb93cf02c81260331d5f
+  docChecksum: ede283612d2f352ca2b63c43455637c3
   docVersion: 1.0.0
-  speakeasyVersion: 1.795.3
-  generationVersion: 2.932.9
-  releaseVersion: 0.2.233
-  configChecksum: 0985ba5e4aeba7007cf8904ed3ac973c
+  speakeasyVersion: 1.796.0
+  generationVersion: 2.932.15
+  releaseVersion: 0.2.234
+  configChecksum: f6b1cecd49f1cd5a2a4b97efb9228e9a
 persistentEdits:
-  generation_id: a05b072a-e4f9-43ae-b205-99c8532e08d3
-  pristine_commit_hash: 04fc57001e90dc52eb62dd6deead456f18bd6c79
-  pristine_tree_hash: 4c12ae0f970c4d3079edb63319bf81214698ee66
+  generation_id: 56556d07-cdd7-44c4-9796-3ca54a238514
+  pristine_commit_hash: d72b18bb6002c3822dd86f3e8e2c4c5c2f6bc489
+  pristine_tree_hash: f18dc98ac08b9d71277d7f771592b360477162ee
 features:
   cli:
     additionalProperties: 0.0.1
@@ -710,8 +710,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:2f1f763c467a140e80844614a5c4cac3e83f80fb
-    pristine_git_object: 6d474ace959f3580f3d141c30f558ee70bbc08de
+    last_write_checksum: sha1:ef6b6495c865cc8b15a640c6bbccaa27ccfff426
+    pristine_git_object: 6b2d589ca07a4fa9ef971998e7c88fb2c04357b9
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -886,8 +886,8 @@ trackedFiles:
     pristine_git_object: 13362be649a86fe1eb795170c8814ee36cf6bc79
   internal/sdk/models/components/aimodel.go:
     id: 02d6acd0097d
-    last_write_checksum: sha1:3f185330bc32c4c7ead1a7dc7caf91eb9798b20b
-    pristine_git_object: f01ee067dcecd1cd22914d0f2eea8d877514faa0
+    last_write_checksum: sha1:d31cf11ec3dbfa1a8707d912685ce33c3cd64d78
+    pristine_git_object: a83e85a7d59b53c1d4a2e83d7e250aa4efc00556
   internal/sdk/models/components/alexaintentrequest.go:
     id: f8bf59841221
     last_write_checksum: sha1:61e72c8b7dfb62b8e2842d6526ceae1f3c706950
@@ -1918,12 +1918,12 @@ trackedFiles:
     pristine_git_object: 1bb263d5257f67230f5a611c6430458900df7b05
   internal/sdk/models/components/stableknowledgebasequeryresponse.go:
     id: d2731b87835d
-    last_write_checksum: sha1:4db9cc3fa26bdac3932836a36de4bdcceb98976d
-    pristine_git_object: 86b09acfe77a8e0a72157a1a0e7de66f8a1c244d
+    last_write_checksum: sha1:fcebe34d2545d62848ce921e4cdedef061df723f
+    pristine_git_object: 6def3f0ac2fb9ad2971f3600815bea66ae7fe5bd
   internal/sdk/models/components/stableknowledgebasequerysettings.go:
     id: 2834642351bc
-    last_write_checksum: sha1:aee359b0023777097263f30bab013de4c17a88da
-    pristine_git_object: f8b4ed44844890aeab7cc9092e591c3c2e70cc32
+    last_write_checksum: sha1:e479e6b5ad06245b04eca45decd19a5c90423848
+    pristine_git_object: afd51528b68fced3c3e1491d66b75ca11a7d993c
   internal/sdk/models/components/stablemcpserver.go:
     id: ad26ac6495b7
     last_write_checksum: sha1:167f993f301a6c2e249a6a9b573e0e94269f39d2
@@ -2986,8 +2986,8 @@ trackedFiles:
     pristine_git_object: d63f5348a3d19b525bb0cdf02730138a4a6150da
   internal/sdk/voiceflowsdk.go:
     id: f474e5d69d13
-    last_write_checksum: sha1:94136bf52fef7eb0cb5fcbaa847c38fac4fe7427
-    pristine_git_object: 73397f4de47eadf8518401f19d27f6954fffee77
+    last_write_checksum: sha1:f1d89966cc7bd581d2c1cc3c3b234d2425097fab
+    pristine_git_object: 8c6f69c9a911cca98b86383ee98859790fa73d6e
   internal/sdk/workspace.go:
     id: a32d896cbbd4
     last_write_checksum: sha1:4742b893bae82b3bcf36b8db3b1b8af26e2a25d3
@@ -2998,8 +2998,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:93addb18a8de5cb1dbc19bbc312b8c47c902b83c
-    pristine_git_object: d1d2b53436adb80b222f66dd28ec6bdbffe70a27
+    last_write_checksum: sha1:974fea6f72c2eda300c71742afb96e595e6269d7
+    pristine_git_object: 96e2968211aede86ddf6410031063233706724c1
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:4aa247cd0b0e8742ff553a6d50f060a05b77ae75
