@@ -51,6 +51,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude48Opus       StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.8-opus"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore40           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.0"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore41           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.1"
+	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash42          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.2"
 	StableKnowledgeBaseQuerySettingsModelKimiK3                    StableKnowledgeBaseQuerySettingsModel = "kimi-k3"
 	StableKnowledgeBaseQuerySettingsModelGemini25Pro               StableKnowledgeBaseQuerySettingsModel = "gemini-2.5-pro"
 	StableKnowledgeBaseQuerySettingsModelGemini25Flash             StableKnowledgeBaseQuerySettingsModel = "gemini-2.5-flash"
@@ -169,6 +170,8 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "voiceflow-core-4.0":
 		fallthrough
 	case "voiceflow-core-4.1":
+		fallthrough
+	case "voiceflow-flash-4.2":
 		fallthrough
 	case "kimi-k3":
 		fallthrough
