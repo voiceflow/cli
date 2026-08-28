@@ -5,6 +5,8 @@ package components
 
 type StablePlaybookResponse struct {
 	Playbook StablePlaybook `json:"playbook"`
+	// Advisory naming any references in the submitted markdown that did not resolve.
+	UnresolvedReferences *string `json:"unresolvedReferences,omitzero"`
 }
 
 func (s *StablePlaybookResponse) GetPlaybook() StablePlaybook {
@@ -12,4 +14,11 @@ func (s *StablePlaybookResponse) GetPlaybook() StablePlaybook {
 		return StablePlaybook{}
 	}
 	return s.Playbook
+}
+
+func (s *StablePlaybookResponse) GetUnresolvedReferences() *string {
+	if s == nil {
+		return nil
+	}
+	return s.UnresolvedReferences
 }

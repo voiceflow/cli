@@ -20,7 +20,7 @@ var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "environment-alias", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A human-readable description of what the playbook does."},
-	{FlagName: "instructions", Shorthand: "i", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "list of values"},
+	{FlagName: "instructions", Shorthand: "i", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response."},
 	{FlagName: "end-tool", FieldPath: "Body.EndTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"endTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "card-tool", FieldPath: "Body.CardTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"cardTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "button-tool", Shorthand: "b", FieldPath: "Body.ButtonTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"buttonTool,omitempty"`, Description: "JSON object"},
