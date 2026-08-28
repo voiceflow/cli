@@ -63,7 +63,7 @@ Speakeasy-generated.
     caches a 404 for the exact specifier being published; without forcing a
     revalidation, the post-publish poll keeps reading that cached miss and
     never observes the package it just pushed. This was the root cause of
-    the v0.233.0 failure. goreleaser marks them prereleases too.
+    the v0.233.0 failure.
 
 ## Failure recovery
 
