@@ -29,7 +29,7 @@ var createTableCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "items", Shorthand: "i", FieldPath: "Body.Items", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"items"`, Description: "The table rows to ingest; each row is a flat object and becomes its own chunk. [required]"},
 	{FlagName: "schema", Shorthand: "s", FieldPath: "Body.Schema", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"schema"`, Description: "Declares which top-level keys of each row are full-text searchable versus row-level metadata. [required]"},
-	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Properties that can be filtered on at runtime (static or dynamic from a variable). Put your most common filter dimensions here."},
+	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
 }
 
 // initCreateTableCmd initializes the create-table command.
