@@ -50,13 +50,13 @@ Installs a prebuilt binary for your platform (macOS, Linux, Windows — arm64 an
 ### Quick Install (Linux/macOS)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/HEAD/scripts/install.sh | bash
 ```
 
 ### Quick Install (Windows PowerShell)
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/voiceflow/cli/HEAD/scripts/install.ps1 | iex
 ```
 
 ### Go Install
@@ -102,7 +102,7 @@ The agent's replies arrive as `text` traces in the response. From here: edit the
 Worth knowing before you script against the CLI:
 
 - **Use `--version-param draft`** — a fresh project has no published release yet.
-- **Pass `--output-format json` explicitly when piping.** Inside AI coding agents (`CLAUDE_CODE`, `CURSOR_AGENT`, …) the default output is TOON, not JSON.
+- **Pass `--output-format json` explicitly when piping.** Inside AI coding agents (`CLAUDECODE`, `CURSOR_AGENT`, …) the default output is TOON, not JSON.
 - **Capture values with `--output-format json | jq -r`** — the built-in `--jq` flag emits JSON, so strings keep their quotes.
 - **`vf whoami` is offline** — it shows which credential source is configured but does not validate the token. `vf workspace list` is the real check.
 - **Look things up in-band**: `vf docs search "publish an environment"` and `vf docs get <page>` bring the documentation to the terminal — no browser, no auth.
