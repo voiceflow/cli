@@ -10252,117 +10252,6 @@ components:
       required:
         - action
         - version
-    StableTranscriptProperty:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        default:
-          type: boolean
-          description: Whether this is a built-in property, which cannot be updated, deleted or have its value set.
-        type:
-          type: string
-          enum:
-            - boolean
-            - number
-            - string
-          description: The type of value the property holds.
-          x-enumNames:
-            - BOOLEAN
-            - NUMBER
-            - STRING
-        projectID:
-          type: string
-          description: The ID of the project the property belongs to.
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - id
-        - name
-        - default
-        - type
-        - projectID
-        - createdAt
-        - updatedAt
-    StableTranscriptPropertyListResponse:
-      type: object
-      properties:
-        properties:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableTranscriptProperty'
-      required:
-        - properties
-    StableTranscriptPropertyResponse:
-      type: object
-      properties:
-        property:
-          $ref: '#/components/schemas/StableTranscriptProperty'
-      required:
-        - property
-    StableTranscriptPropertyCreateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum:
-            - boolean
-            - number
-            - string
-          description: The type of value the property holds.
-          x-enumNames:
-            - BOOLEAN
-            - NUMBER
-            - STRING
-      required:
-        - name
-        - type
-      additionalProperties: false
-    StableUpdateResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: A human-readable message confirming the update.
-      required:
-        - message
-    StableTranscriptPropertyUpdateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-      additionalProperties: false
-    StableDeleteResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: A human-readable message confirming the deletion.
-      required:
-        - message
-    StableTranscriptPropertySetValueRequest:
-      type: object
-      properties:
-        value:
-          type: string
-          description: The value to set for the property on the transcript.
-        transcriptID:
-          type: string
-          description: The ID of the transcript to set the property value on.
-      required:
-        - value
-        - transcriptID
-      additionalProperties: false
     Markup:
       type: array
       items:
@@ -13390,6 +13279,14 @@ components:
           $ref: '#/components/schemas/StableAgent'
       required:
         - agent
+    StableUpdateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message confirming the update.
+      required:
+        - message
     StableAgentUpdateRequest:
       type: object
       properties:
@@ -15478,6 +15375,14 @@ components:
           items:
             $ref: '#/components/schemas/StableAPIQueryParameter'
       additionalProperties: false
+    StableDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message confirming the deletion.
+      required:
+        - message
     StableAPIToolVariable:
       type: object
       properties:
@@ -20457,6 +20362,101 @@ components:
           required:
             - type
           additionalProperties: false
+    StableTranscriptProperty:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        default:
+          type: boolean
+          description: Whether this is a built-in property, which cannot be updated, deleted or have its value set.
+        type:
+          type: string
+          enum:
+            - boolean
+            - number
+            - string
+          description: The type of value the property holds.
+          x-enumNames:
+            - BOOLEAN
+            - NUMBER
+            - STRING
+        projectID:
+          type: string
+          description: The ID of the project the property belongs to.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - name
+        - default
+        - type
+        - projectID
+        - createdAt
+        - updatedAt
+    StableTranscriptPropertyListResponse:
+      type: object
+      properties:
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTranscriptProperty'
+      required:
+        - properties
+    StableTranscriptPropertyResponse:
+      type: object
+      properties:
+        property:
+          $ref: '#/components/schemas/StableTranscriptProperty'
+      required:
+        - property
+    StableTranscriptPropertyCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - boolean
+            - number
+            - string
+          description: The type of value the property holds.
+          x-enumNames:
+            - BOOLEAN
+            - NUMBER
+            - STRING
+      required:
+        - name
+        - type
+      additionalProperties: false
+    StableTranscriptPropertyUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      additionalProperties: false
+    StableTranscriptPropertySetValueRequest:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The value to set for the property on the transcript.
+        transcriptID:
+          type: string
+          description: The ID of the transcript to set the property value on.
+      required:
+        - value
+        - transcriptID
+      additionalProperties: false
     StableVariable:
       type: object
       properties:

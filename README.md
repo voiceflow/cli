@@ -18,6 +18,7 @@ Realtime: Realtime gateway API service
 <!-- $toc-max-depth=2 -->
 * [vf](#vf)
   * [CLI Installation](#cli-installation)
+  * [Quickstart: zero to a talking agent](#quickstart-zero-to-a-talking-agent)
   * [Shell Completion](#shell-completion)
   * [CLI Example Usage](#cli-example-usage)
   * [Authentication](#authentication)
