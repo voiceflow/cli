@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: e3ae93712c9b3f5c94672f7f6f60a2f3
+  docChecksum: e883a24b2bff74ffbc48d43c22604592
   docVersion: 1.0.0
-  speakeasyVersion: 1.796.1
+  speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.235
-  configChecksum: f2f1492a36ff0f0c3c2c2088ed88d1a2
+  releaseVersion: 0.2.236
+  configChecksum: dcf58f8ed115c811dacf4f02a82bba0f
 persistentEdits:
-  generation_id: 14f8d535-e9ac-4419-89ba-04a75a588d4b
-  pristine_commit_hash: eeb7fdc17c43f6ff4db5083813624d213ec93b7c
-  pristine_tree_hash: e2b48ae3a1dc7a3efbdfe7df937621ecd0e74d31
+  generation_id: 7dacdf4c-f209-4a3f-9498-5ab04f8bb859
+  pristine_commit_hash: 3f97e5281a9a392131c886f705d2f91c57298f3b
+  pristine_tree_hash: e15a3fe8d17bfd86e46ae5713fa21e931796c2ed
 features:
   cli:
     additionalProperties: 0.0.1
@@ -62,8 +62,8 @@ trackedFiles:
     pristine_git_object: dba7d803273354407a90573bd216feb1f31ca232
   internal/cli/agent/update.go:
     id: 4eb4b25f3158
-    last_write_checksum: sha1:80333531d69014d6f6a70afa416011f3b4adca7c
-    pristine_git_object: e4f8b2de84e37a87f9e3f780627a264946e60945
+    last_write_checksum: sha1:10313802ee1f114794816495c8354167e3e00627
+    pristine_git_object: d6355aefa26178c525f9534ef3e6f9f4797ddaf3
   internal/cli/analytics/query/apitoolusage.go:
     id: e341ebedde21
     last_write_checksum: sha1:e6ca51f33c02a06b093e9b43173edc1f213378de
@@ -482,8 +482,8 @@ trackedFiles:
     pristine_git_object: 7b7eb2e131e44dcca477cd31114eaf8e09dee71c
   internal/cli/playbook/create.go:
     id: d1c98efa6441
-    last_write_checksum: sha1:4e632037976181024dfe331a4ec5253a3e410f92
-    pristine_git_object: 84c3d72462efac06b2be9b2a8d93ac28a3ed485d
+    last_write_checksum: sha1:3db314052e9a44babc4584590d25dec55629b804
+    pristine_git_object: e47e0be3804c8123542c6a1a72b2a17822540f0a
   internal/cli/playbook/delete.go:
     id: cf6239745b49
     last_write_checksum: sha1:b06c63aa8a984d39c9d3dbadabec79f1db2314f9
@@ -502,8 +502,8 @@ trackedFiles:
     pristine_git_object: ee655ea215c4f94777e99f3c899829e58c94fd25
   internal/cli/playbook/update.go:
     id: 06135ea5f683
-    last_write_checksum: sha1:bfef8774cd6bd4d01f6dcc4f7d0fff9d71d52db9
-    pristine_git_object: ab932228342610413ddc1edc4183de3462e2cf56
+    last_write_checksum: sha1:ac5eec474c7eccfbfbe892983261bf28d198ac10
+    pristine_git_object: 7b39a34da800ed04344256d2b3b1abbb4310f41c
   internal/cli/project/create.go:
     id: 59fda2adb131
     last_write_checksum: sha1:f8f4340adeb69303ff8d8c138d0a524ff3af81d2
@@ -710,8 +710,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:b2f4a0b19f17911820f4c61aa61b215042504ffd
-    pristine_git_object: b70a3c9cb7f7e50fc50cc9ea2a13dfbc333cca2d
+    last_write_checksum: sha1:68a09f1ebbc7d6bf61ebdbcf949f3bac67200b9a
+    pristine_git_object: a197db94e52b315643e36884f7336183a23a9bfb
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -1450,16 +1450,16 @@ trackedFiles:
     pristine_git_object: e0cf3247b2b0e0fc8e52ad9973514040e9c3e2f5
   internal/sdk/models/components/stableagent.go:
     id: 8ba7662bbcfd
-    last_write_checksum: sha1:a5d3aa4d5528d7282d89d36472b3c3828fb061a4
-    pristine_git_object: e45c2de76d7fdf221ee084ed5130ede729ecba68
+    last_write_checksum: sha1:72da347bda3456261eb7742412fa77d964bf4d57
+    pristine_git_object: 9ad28a781642819765b4a0d727ae31803e35170b
   internal/sdk/models/components/stableagentresponse.go:
     id: f56fc3049b96
     last_write_checksum: sha1:c1a8e555e6edab564d3ac229c2074d3f10e2869b
     pristine_git_object: db644f974178599f9be2db2fe845381490256b54
   internal/sdk/models/components/stableagentupdaterequest.go:
     id: 0c3e00c95e61
-    last_write_checksum: sha1:052f562b41df701fb2e93b70b704ac7d4258ff5f
-    pristine_git_object: 942dca8c3f74386c02323a5b07514102c9ecc3b9
+    last_write_checksum: sha1:7b019f2ca96c72ca12e60e99ba84b8d46b97c63c
+    pristine_git_object: 9941ced3e41f2a36de1816bdeabd7c99539f90b7
   internal/sdk/models/components/stableanalyticsqueryapitoolusagerequest.go:
     id: 1b75c01b994a
     last_write_checksum: sha1:b59e81cadde7c967c217171fdc4a8a3f9f493e3d
@@ -1958,24 +1958,24 @@ trackedFiles:
     pristine_git_object: 5ac7f707841938f74543bfe3f94aeb2d06e64179
   internal/sdk/models/components/stableplaybook.go:
     id: 0dfee93794bf
-    last_write_checksum: sha1:9343fe16f86e8933b3391d757eddec201018116d
-    pristine_git_object: f305ddfb974bce393779d2607c0c11d97b4754bb
+    last_write_checksum: sha1:d9dfcf751b47ba37fa26fdcc2b94878dd1fdee7d
+    pristine_git_object: f2c4f33d3cf2fa630dacd1bfe5a96430692a7656
   internal/sdk/models/components/stableplaybookcreaterequest.go:
     id: 3aabff349e87
-    last_write_checksum: sha1:586dc7fe0e68fbc1bc11012336ce695390fcf5a2
-    pristine_git_object: b91dece843c5c40a25ce3e4707e1637914df0a77
+    last_write_checksum: sha1:43722c34e781e65856f0c8a75c470ee0b1a354a5
+    pristine_git_object: e56237ca5d7db70fabd96da3664c18e3e3a52f0c
   internal/sdk/models/components/stableplaybooklistresponse.go:
     id: 9e358429fcf4
-    last_write_checksum: sha1:ecaeeef29662b53376d8fa6c46113455e7101bad
-    pristine_git_object: 3d3031c17713981379cb249b19af6f8fca676e76
+    last_write_checksum: sha1:8531a53d37f910bcf56f5fd4068e24ad9dd12449
+    pristine_git_object: afb0da61eebf7aebcb383e6f65faf4910e9ab8f4
   internal/sdk/models/components/stableplaybookresponse.go:
     id: 9a0bf083f324
-    last_write_checksum: sha1:329de9380780bd77cce6d1768416c45302cba77b
-    pristine_git_object: 0b7be80165514372999bc2d036dcab45865cc441
+    last_write_checksum: sha1:6477c45bcb9d64ddbc58091d1a8f444ca477eba2
+    pristine_git_object: 39209593cc032a7916fdb211038fc3a2793ff1d5
   internal/sdk/models/components/stableplaybookupdaterequest.go:
     id: 872b50043e0d
-    last_write_checksum: sha1:43c9bd117e8a74759c4de528ecaa8a92e4922561
-    pristine_git_object: 0404c48292a06f925e8a0f3e728ec0875a98d05e
+    last_write_checksum: sha1:c2aa6316f6a9522d1e38e9e187471864a3f98369
+    pristine_git_object: d634cbe7817af52b950d3f2c29c494635ed0ea3e
   internal/sdk/models/components/stableproject.go:
     id: 284be60b2ca0
     last_write_checksum: sha1:8a84d9e950bfb3518e9d60a41bfc3426eea9c509
@@ -2998,8 +2998,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:ab473fd59ac50505a077b164e15d7b09470a2096
-    pristine_git_object: 9f2d46ea603e31e016783d36a7a1c7143cb1b7ba
+    last_write_checksum: sha1:e3e77f48f2bbda58244b72c75f36e4917ab85cdd
+    pristine_git_object: b5542f1b5d152771de839846460ccb9768ef611d
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:4aa247cd0b0e8742ff553a6d50f060a05b77ae75
@@ -3256,7 +3256,7 @@ examples:
           environmentAlias: "<value>"
       responses:
         "200":
-          application/json: {"playbooks": [{"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2024-07-06T13:10:28.343Z", "updatedAt": "2026-06-11T04:30:14.931Z", "description": "uh-huh whose whoever happily whenever", "instructions": [], "pathToolOrder": [], "endTool": null, "cardTool": {"enabled": false, "description": "aha discontinue gah drat draft generally cornet sense sans"}, "buttonTool": {"enabled": true, "description": "immense executor winged consequently coin inspect given"}, "carouselTool": {"enabled": true, "description": "compassionate of mmm underneath joyfully deduction"}, "skipTurnTool": {"enabled": false, "description": "unless present quinoa duh wherever uh-huh"}, "webSearchTool": {"enabled": false}, "callForwardTool": {"enabled": true, "address": [], "description": "majestically hm tangible square since crystallize meanwhile pleasing ouch", "addressType": "phone"}, "knowledgeBaseTool": {"enabled": false, "description": "meal during while pension yuck"}}]}
+          application/json: {"playbooks": [{"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2024-07-06T13:10:28.343Z", "updatedAt": "2026-06-11T04:30:14.931Z", "description": "uh-huh whose whoever happily whenever", "instructions": "[]", "pathToolOrder": [], "endTool": null, "cardTool": {"enabled": false, "description": "aha discontinue gah drat draft generally cornet sense sans"}, "buttonTool": {"enabled": true, "description": "immense executor winged consequently coin inspect given"}, "carouselTool": {"enabled": true, "description": "compassionate of mmm underneath joyfully deduction"}, "skipTurnTool": {"enabled": false, "description": "unless present quinoa duh wherever uh-huh"}, "webSearchTool": {"enabled": false}, "callForwardTool": {"enabled": true, "address": [], "description": "majestically hm tangible square since crystallize meanwhile pleasing ouch", "addressType": "phone"}, "knowledgeBaseTool": {"enabled": false, "description": "meal during while pension yuck"}}]}
   StablePlaybookController_create:
     speakeasy-default-stable-playbook-controller-create:
       parameters:
@@ -3289,7 +3289,7 @@ examples:
           environmentAlias: "<value>"
       responses:
         "200":
-          application/json: {"playbook": {"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2026-04-13T16:42:55.048Z", "updatedAt": "2026-01-30T04:16:52.389Z", "description": "brr inquisitively faithfully secret", "instructions": [], "pathToolOrder": ["<value 1>", "<value 2>"], "endTool": null, "cardTool": {"enabled": true, "description": "sleepily woot yum authorized about pneumonia geez"}, "buttonTool": {"enabled": true, "description": "questionable scratch whereas"}, "carouselTool": {"enabled": true, "description": "instead uneven whoa vulgarise"}, "skipTurnTool": {"enabled": false, "description": "mouser inventory resort witty"}, "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "ugh unfit furthermore whack lack delightfully huzzah", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "to dress aw pace yawningly representation times instead over"}}}
+          application/json: {"playbook": {"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2026-04-13T16:42:55.048Z", "updatedAt": "2026-01-30T04:16:52.389Z", "description": "brr inquisitively faithfully secret", "instructions": "[]", "pathToolOrder": ["<value 1>", "<value 2>"], "endTool": null, "cardTool": {"enabled": true, "description": "sleepily woot yum authorized about pneumonia geez"}, "buttonTool": {"enabled": true, "description": "questionable scratch whereas"}, "carouselTool": {"enabled": true, "description": "instead uneven whoa vulgarise"}, "skipTurnTool": {"enabled": false, "description": "mouser inventory resort witty"}, "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "ugh unfit furthermore whack lack delightfully huzzah", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "to dress aw pace yawningly representation times instead over"}}}
   StablePlaybookController_update:
     speakeasy-default-stable-playbook-controller-update:
       parameters:
@@ -3876,7 +3876,7 @@ examples:
           environmentAlias: "<value>"
       responses:
         "200":
-          application/json: {"agent": {"llm": {}, "prompt": [{"variableID": "<id>"}], "includeGuidelines": true, "playbooks": [{"description": null, "playbookID": "<id>"}], "workflows": [{"description": "about aboard upside-down dispose tattered since", "workflowID": "<id>"}], "endTool": {"enabled": false, "description": "solidly kissingly whoa gaseous wherever boggle wherever interestingly anaesthetise eek"}, "cardTool": {"enabled": true, "description": "knottily furthermore lox geez psst blue proud"}, "buttonTool": {"enabled": true, "description": "far mill outfit functional humor absent during forenenst mmm"}, "instructions": [{"variableID": "<id>"}], "carouselTool": {"enabled": true, "description": "chime incidentally override"}, "skipTurnTool": {"enabled": false, "description": "deeply who overreact from worth likewise abnegate"}, "pathToolOrder": ["<value 1>"], "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "sniff taro solvency story wordy oh although", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "pinstripe glittering wonderfully slow contravene wire hungry account until hence"}}}
+          application/json: {"agent": {"llm": {}, "prompt": "[{\"variableID\":\"<id>\"}]", "includeGuidelines": true, "playbooks": [{"description": null, "playbookID": "<id>"}], "workflows": [{"description": "about aboard upside-down dispose tattered since", "workflowID": "<id>"}], "endTool": {"enabled": false, "description": "solidly kissingly whoa gaseous wherever boggle wherever interestingly anaesthetise eek"}, "cardTool": {"enabled": true, "description": "knottily furthermore lox geez psst blue proud"}, "buttonTool": {"enabled": true, "description": "far mill outfit functional humor absent during forenenst mmm"}, "instructions": "[{\"variableID\":\"<id>\"}]", "carouselTool": {"enabled": true, "description": "chime incidentally override"}, "skipTurnTool": {"enabled": false, "description": "deeply who overreact from worth likewise abnegate"}, "pathToolOrder": ["<value 1>"], "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "sniff taro solvency story wordy oh although", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "pinstripe glittering wonderfully slow contravene wire hungry account until hence"}}}
   StableAgentController_update:
     speakeasy-default-stable-agent-controller-update:
       parameters:

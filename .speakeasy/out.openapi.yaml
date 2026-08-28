@@ -201,7 +201,7 @@ paths:
           toolDescription: |-
             Create, list, and manage Voiceflow Projects — the dashboard-level container. Every Project owns its Playbooks, Workflows, Tools, Variables, and Knowledge Base, and lives inside a Workspace.
             Predecessor: select the workspace first.
-            Successor: set the agent's global prompt (Role/Goal/Tone/Guardrails), then add task-scoped Playbooks.
+            Successor: set the agent's global prompt (identity, tone, and cross-cutting guardrails), then add task-scoped Playbooks.
           operation: list
           operationDescription: |-
             WHAT — Lists all Projects in a Workspace.
@@ -240,7 +240,7 @@ paths:
           toolDescription: |-
             Create, list, and manage Voiceflow Projects — the dashboard-level container. Every Project owns its Playbooks, Workflows, Tools, Variables, and Knowledge Base, and lives inside a Workspace.
             Predecessor: select the workspace first.
-            Successor: set the agent's global prompt (Role/Goal/Tone/Guardrails), then add task-scoped Playbooks.
+            Successor: set the agent's global prompt (identity, tone, and cross-cutting guardrails), then add task-scoped Playbooks.
           operation: create
           operationDescription: |-
             WHAT — Creates a new Project.
@@ -280,7 +280,7 @@ paths:
           toolDescription: |-
             Create, list, and manage Voiceflow Projects — the dashboard-level container. Every Project owns its Playbooks, Workflows, Tools, Variables, and Knowledge Base, and lives inside a Workspace.
             Predecessor: select the workspace first.
-            Successor: set the agent's global prompt (Role/Goal/Tone/Guardrails), then add task-scoped Playbooks.
+            Successor: set the agent's global prompt (identity, tone, and cross-cutting guardrails), then add task-scoped Playbooks.
           operation: get
           operationDescription: |-
             WHAT — Fetches one Project by ID.
@@ -318,7 +318,7 @@ paths:
           toolDescription: |-
             Create, list, and manage Voiceflow Projects — the dashboard-level container. Every Project owns its Playbooks, Workflows, Tools, Variables, and Knowledge Base, and lives inside a Workspace.
             Predecessor: select the workspace first.
-            Successor: set the agent's global prompt (Role/Goal/Tone/Guardrails), then add task-scoped Playbooks.
+            Successor: set the agent's global prompt (identity, tone, and cross-cutting guardrails), then add task-scoped Playbooks.
           operation: update
           operationDescription: |-
             WHAT — Updates top-level Project metadata.
@@ -363,7 +363,7 @@ paths:
           toolDescription: |-
             Create, list, and manage Voiceflow Projects — the dashboard-level container. Every Project owns its Playbooks, Workflows, Tools, Variables, and Knowledge Base, and lives inside a Workspace.
             Predecessor: select the workspace first.
-            Successor: set the agent's global prompt (Role/Goal/Tone/Guardrails), then add task-scoped Playbooks.
+            Successor: set the agent's global prompt (identity, tone, and cross-cutting guardrails), then add task-scoped Playbooks.
           operation: delete
           operationDescription: |-
             WHAT — Remove a project.
@@ -1116,7 +1116,7 @@ paths:
           toolDescription: |-
             A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
             The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
-            Instructions use XML structure: <context> (what the playbook is for and what state it assumes), <flow> (the step-by-step the LLM should follow), <rules> (hard constraints specific to this playbook), <edge_cases> (handling for known off-happy-path situations), <exit> (when to hand control back to the Main Agent or trigger an exit condition).
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
             Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
             Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
             Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
@@ -1163,21 +1163,21 @@ paths:
           toolDescription: |-
             A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
             The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
-            Instructions use XML structure: <context> (what the playbook is for and what state it assumes), <flow> (the step-by-step the LLM should follow), <rules> (hard constraints specific to this playbook), <edge_cases> (handling for known off-happy-path situations), <exit> (when to hand control back to the Main Agent or trigger an exit condition).
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
             Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
             Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
             Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: create
           operationDescription: |-
-            WHAT — Create a new playbook with name, LLM description (drives routing — must be in WHAT/WHEN format), instructions (XML-structured behavior text), and optionally settings + attached system tools.
-            Instructions body shape (XML). The structure is fixed; content is playbook-specific:
-              <context>...</context>            — what this playbook handles, project vars it expects to be set on entry, assumed state at routing-in
-              <input_variables>...</input_variables> — list of project variables the playbook references (e.g. `- {customer_name}: caller's name if collected`). Any variable listed here can be referenced inline elsewhere in the prompt via {variable_name} syntax — the runtime substitutes the actual value. Built-in variables like {user_id}, {last_utterance}, {vf_now} can be referenced without declaring them. Unset variables resolve to the literal 0 (number), not empty string — guard branches in <flow> or <edge_cases> against that.
-              <flow>...</flow>                  — the step-by-step the LLM follows (numbered list, one action per step)
-              <rules>...</rules>                — hard constraints specific to this playbook (one question per turn, never invent values, etc.)
-              <edge_cases>...</edge_cases>      — handling for known off-happy-path situations (empty results, mid-flow cancellation, missing required state)
-              <exit>...</exit>                  — when to hand control back to the Main Agent or trigger an exit condition
+            WHAT — Create a new playbook with name, LLM description (drives routing — must be in WHAT/WHEN format), instructions (markdown-structured behavior text), and optionally settings + attached system tools.
+            Instructions body shape (markdown headings). The structure is fixed; content is playbook-specific:
+              ## Context    — what this playbook handles, project vars it expects to be set on entry, assumed state at routing-in
+              ## Flow       — the step-by-step the LLM follows (numbered list, one action per step)
+              ## Rules      — hard constraints specific to this playbook (one question per turn, never invent values, etc.), in > callouts
+              ## Edge cases — handling for known off-happy-path situations (empty results, mid-flow cancellation, missing required state)
+              ## Exit       — when to hand control back to the Main Agent or trigger an exit condition
+              ## Inputs     — list of project variables the playbook references (e.g. `- {customer_name}: caller's name if collected`). Any variable listed here can be referenced inline elsewhere in the prompt via {variable_name} syntax — the runtime substitutes the actual value. Built-in variables like {user_id}, {last_utterance}, {vf_now} can be referenced without declaring them. Unset variables resolve to the literal 0 (number), not empty string — guard branches in ## Flow or ## Edge cases against that.
             USE WHEN — User wants to add a new multi-step task the agent can handle (booking, escalation, FAQ + tool use).
             AFTER — voiceflow_agent.update (make it reachable), voiceflow_tool.create (give it capabilities), then voiceflow_conversation.
             DO NOT — Write the description as a one-liner that only says what the playbook does. The Main Agent uses this text to route — it must also describe WHEN to route here (the user signals, intents, or topics that should trigger this playbook). Also: don't put identity, tone, or guardrails in the playbook's instructions — those inherit from the Global Prompt. And: if a playbook's only tool is the Knowledge Base, it shouldn't be a playbook — the Main Agent handles Knowledge Base Q&A directly.
@@ -1226,7 +1226,7 @@ paths:
           toolDescription: |-
             A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
             The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
-            Instructions use XML structure: <context> (what the playbook is for and what state it assumes), <flow> (the step-by-step the LLM should follow), <rules> (hard constraints specific to this playbook), <edge_cases> (handling for known off-happy-path situations), <exit> (when to hand control back to the Main Agent or trigger an exit condition).
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
             Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
             Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
             Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
@@ -1281,7 +1281,7 @@ paths:
           toolDescription: |-
             A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
             The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
-            Instructions use XML structure: <context> (what the playbook is for and what state it assumes), <flow> (the step-by-step the LLM should follow), <rules> (hard constraints specific to this playbook), <edge_cases> (handling for known off-happy-path situations), <exit> (when to hand control back to the Main Agent or trigger an exit condition).
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
             Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
             Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
             Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
@@ -1333,14 +1333,14 @@ paths:
           toolDescription: |-
             A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
             The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
-            Instructions use XML structure: <context> (what the playbook is for and what state it assumes), <flow> (the step-by-step the LLM should follow), <rules> (hard constraints specific to this playbook), <edge_cases> (handling for known off-happy-path situations), <exit> (when to hand control back to the Main Agent or trigger an exit condition).
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
             Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
             Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
             Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: update
           operationDescription: |-
-            WHAT — Patch a playbook's fields. Partial PATCH — only fields you pass are changed; other fields stay put. This is how you edit the playbook's LLM description (the routing field), Instructions (XML behavior text), model override, and attached system tools.
+            WHAT — Patch a playbook's fields. Partial PATCH — only fields you pass are changed; other fields stay put. This is how you edit the playbook's LLM description (the routing field), Instructions (markdown behavior text), model override, and attached system tools.
             USE WHEN — Iterating on instructions based on transcript failures, fixing the LLM description because the Main Agent is mis-routing, adding/removing attached tools, swapping the model override.
             BEFORE — voiceflow_playbook.get to see current state and merge changes against it.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
@@ -1395,7 +1395,7 @@ paths:
           toolDescription: |-
             A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
             The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
-            Instructions use XML structure: <context> (what the playbook is for and what state it assumes), <flow> (the step-by-step the LLM should follow), <rules> (hard constraints specific to this playbook), <edge_cases> (handling for known off-happy-path situations), <exit> (when to hand control back to the Main Agent or trigger an exit condition).
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
             Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
             Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
             Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
@@ -4261,9 +4261,9 @@ paths:
           tool: voiceflow_agent
           toolDescription: |-
             The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
-            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Outer structure is four markdown sections Voiceflow scaffolds — # Role, # Goal, # Tone, # Guardrails — with XML tags inside for the LLM to attend to: <identity>, <goal>, <tone>, <formatting> for persona; <terminology>, <escalation>, <silent_execution>, <data_handling> for guidelines. The <tone> block MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
-            Instructions — XML-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: <routing> (overall strategy), <routing_table> (per-target decision rules), <clarification> (how to ask follow-ups when intent is ambiguous), <rules> (hard constraints like "never re-greet"). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
-            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching <routing_table> entry is reachable but never chosen.
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
             Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
             System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
             Modifications take effect only after the environment is recompiled.
@@ -4311,9 +4311,9 @@ paths:
           tool: voiceflow_agent
           toolDescription: |-
             The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
-            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Outer structure is four markdown sections Voiceflow scaffolds — # Role, # Goal, # Tone, # Guardrails — with XML tags inside for the LLM to attend to: <identity>, <goal>, <tone>, <formatting> for persona; <terminology>, <escalation>, <silent_execution>, <data_handling> for guidelines. The <tone> block MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
-            Instructions — XML-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: <routing> (overall strategy), <routing_table> (per-target decision rules), <clarification> (how to ask follow-ups when intent is ambiguous), <rules> (hard constraints like "never re-greet"). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
-            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching <routing_table> entry is reachable but never chosen.
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
             Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
             System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
             Modifications take effect only after the environment is recompiled.
@@ -4324,7 +4324,7 @@ paths:
             WHAT — Partial PATCH across every Agent config area in one call.
             USE WHEN — Changing the agent's identity, brand voice, tone, or cross-cutting guardrails; adding or removing routing targets; tuning model, voice, or timeout behavior; or enabling/configuring system tools.
             BEFORE — voiceflow_agent.get to see current state and merge changes against it — each playbookID/workflowID in playbooks/workflows must already exist.
-            AFTER — voiceflow_environment.compile, then voiceflow_test_conversation to verify the change — include at least one adversarial probe for tone or guardrail edits.
+            AFTER — voiceflow_environment.compile, then voiceflow_conversation.send to verify the change — include at least one adversarial probe for tone or guardrail edits.
             DO NOT — Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project.
         cli:
           command: agent update
@@ -13274,7 +13274,8 @@ components:
                   allOf:
                     - $ref: '#/components/schemas/AIReasoningEffort'
         prompt:
-          $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         includeGuidelines:
           type: boolean
           description: Whether to append the default prompting guidelines to the global prompt.
@@ -13339,8 +13340,8 @@ components:
             - $ref: '#/components/schemas/AgentButtonTool'
         instructions:
           nullable: true
-          allOf:
-            - $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         carouselTool:
           nullable: true
           allOf:
@@ -13393,8 +13394,8 @@ components:
       type: object
       properties:
         prompt:
-          allOf:
-            - $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         endTool:
           nullable: true
           allOf:
@@ -13457,8 +13458,8 @@ components:
             - $ref: '#/components/schemas/AgentCardTool'
         instructions:
           nullable: true
-          allOf:
-            - $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         skipTurnTool:
           nullable: true
           allOf:
@@ -18263,8 +18264,8 @@ components:
           type: string
         instructions:
           nullable: true
-          allOf:
-            - $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         pathToolOrder:
           type: array
           items:
@@ -18326,6 +18327,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StablePlaybook'
+        unresolvedReferences:
+          description: Advisory naming any references in the submitted markdown that did not resolve.
+          type: string
       required:
         - playbooks
     StablePlaybookResponse:
@@ -18333,6 +18337,9 @@ components:
       properties:
         playbook:
           $ref: '#/components/schemas/StablePlaybook'
+        unresolvedReferences:
+          description: Advisory naming any references in the submitted markdown that did not resolve.
+          type: string
       required:
         - playbook
     StablePlaybookCreateRequest:
@@ -18346,8 +18353,8 @@ components:
           type: string
         instructions:
           nullable: true
-          allOf:
-            - $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         endTool:
           nullable: true
           allOf:
@@ -18410,8 +18417,8 @@ components:
           type: string
         instructions:
           nullable: true
-          allOf:
-            - $ref: '#/components/schemas/Markup'
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
         endTool:
           nullable: true
           allOf:
