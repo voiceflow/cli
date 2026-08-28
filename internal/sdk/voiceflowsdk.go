@@ -3,7 +3,7 @@
 
 package sdk
 
-// Generated from OpenAPI doc version 1.0.0 and generator version 2.932.9
+// Generated from OpenAPI doc version 1.0.0 and generator version 2.933.0
 
 import (
 	"context"
@@ -146,7 +146,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk := &VoiceflowSDK{
 		SDKVersion: "0.0.1",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:  "speakeasy-sdk/go 0.0.1 2.932.9 1.0.0 github.com/voiceflow/cli/internal/sdk",
+			UserAgent:  "speakeasy-sdk/go 0.0.1 2.933.0 1.0.0 github.com/voiceflow/cli/internal/sdk",
 			ServerList: ServerList,
 		},
 		hooks: hooks.New(),

@@ -22,7 +22,6 @@ var sendCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "action", Shorthand: "a", FieldPath: "Body.Action", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, TypeDescription: "JSON value (one of: { type: string, payload: object, diagramID: string, time: number, ... } | { type: string, payload: string, diagramID: string, time: number, ... } | { type: string, diagramID: string, time: number, metadata: object, ... } | { type: string, payload: value, diagramID: string, time: number, ... })"}},
 	{FlagName: "version-param", Shorthand: "v", FieldPath: "Body.Version", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"draft", "published"}, Description: "Whether to run the conversation against the draft or published version of the environment. (options: draft, published) [required]"},
 	{FlagName: "session-id", Shorthand: "s", FieldPath: "Body.SessionID", Kind: flagutil.FlagKindString, Optional: true, Description: "The unique ID of the conversation session to continue."},
-	{FlagName: "config-param", Shorthand: "c", FieldPath: "Body.Config", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"config,omitempty"`, Description: "Options controlling how the response is shaped."},
 }
 
 // initSendCmd initializes the send command.
