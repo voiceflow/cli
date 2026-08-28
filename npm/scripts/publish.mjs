@@ -55,7 +55,11 @@ for (const pkg of [...platformPackages, wrapperPackage]) {
 
 function npmView(specifier, field) {
   try {
-    return execFileSync('npm', ['view', specifier, field], { stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 })
+    // --prefer-online is load-bearing: the pre-publish existence check caches a
+    // 404 for this exact specifier, and without it the post-publish visibility
+    // poll keeps reading that cached miss and never sees the package it just
+    // pushed.
+    return execFileSync('npm', ['view', specifier, field, '--prefer-online'], { stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 })
       .toString()
       .trim();
   } catch {
@@ -103,15 +107,23 @@ function publish(pkg) {
   execFileSync('npm', publishArgs, { stdio: 'inherit', timeout: 300_000 });
 }
 
+// How long to wait for a just-published package to become readable, and how
+// often to re-check. Overridable so the test suite can exercise the timeout
+// path without actually waiting it out.
+const VISIBILITY_TIMEOUT_MS = Number(process.env.VF_NPM_VISIBILITY_TIMEOUT_MS ?? 90_000);
+const VISIBILITY_POLL_MS = Number(process.env.VF_NPM_VISIBILITY_POLL_MS ?? 5_000);
+
 async function waitUntilVisible(name) {
-  const deadline = Date.now() + 90_000;
+  const deadline = Date.now() + VISIBILITY_TIMEOUT_MS;
   while (Date.now() < deadline) {
     if (isPublished(name)) return;
-    await new Promise((resolve) => setTimeout(resolve, 5_000));
+    await new Promise((resolve) => setTimeout(resolve, VISIBILITY_POLL_MS));
   }
-  console.error(`${name}@${version} still not visible on the registry after 90s — aborting before the wrapper publish.`);
-  console.error('Re-run this job once the registry catches up; already-published packages are skipped.');
-  process.exit(1);
+  // Deliberately non-fatal. `npm publish` already exited 0 for this package, so
+  // the write is committed and only the read is lagging. Aborting here would
+  // leave the worst possible state — platform packages published with no
+  // wrapper to install them — which is exactly what happened on v0.233.0.
+  console.warn(`Warning: ${name}@${version} not readable after ${VISIBILITY_TIMEOUT_MS}ms. Its publish succeeded, so continuing to the wrapper.`);
 }
 
 for (const pkg of platformPackages) publish(pkg);

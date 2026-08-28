@@ -16,7 +16,8 @@ Speakeasy-generated.
   and embedding the repo's LICENSE in each package.
 - `scripts/publish.mjs` publishes idempotently: platform packages first, a
   registry-visibility gate, wrapper last. Re-running after a partial failure
-  skips what already went out.
+  skips what already went out. The gate warns and continues rather than
+  aborting — see invariant 10.
 - Both scripts are dependency-free ESM run by bare `node`. That is deliberate:
   the publish step holds `NPM_TOKEN`, and a TypeScript runner would have npm
   resolve its transitive dependency tree from the registry at run time — with
@@ -50,7 +51,19 @@ Speakeasy-generated.
 9. **A publish without a LICENSE file is impossible.** Every package.json
    declares Apache-2.0, so `prepare.mjs` exits 1 when the repo root has no
    LICENSE rather than shipping a license claim with no license text — a
-   mislabeled version cannot be taken back. goreleaser marks them prereleases too.
+   mislabeled version cannot be taken back.
+10. **The visibility gate must never abort the wrapper publish.** Platform
+    packages published with no wrapper is a strictly worse outcome than a
+    wrapper published slightly ahead of registry read-propagation: the six
+    binary packages are unusable on their own, and the version cannot be
+    republished. `npm publish` exiting 0 means the write is committed, so a
+    lagging read is not a reason to stop. This is not hypothetical — it is
+    what broke v0.233.0.
+11. **Registry reads use `--prefer-online`.** The pre-publish existence check
+    caches a 404 for the exact specifier being published; without forcing a
+    revalidation, the post-publish poll keeps reading that cached miss and
+    never observes the package it just pushed. This was the root cause of
+    the v0.233.0 failure. goreleaser marks them prereleases too.
 
 ## Failure recovery
 

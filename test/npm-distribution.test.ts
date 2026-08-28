@@ -108,7 +108,12 @@ beforeAll(() => {
   writeFileSync(
     stub,
     `#!/usr/bin/env node
+const fs = require('node:fs');
 const [command, specifier] = process.argv.slice(2);
+if (command === 'publish' && process.env.FAKE_NPM_PUBLISH_LOG) {
+  fs.appendFileSync(process.env.FAKE_NPM_PUBLISH_LOG, specifier + '\\n');
+  process.exit(0);
+}
 if (command !== 'view') { console.error('stub npm: refusing ' + process.argv.slice(2).join(' ')); process.exit(90); }
 const at = specifier.lastIndexOf('@');
 const name = specifier.slice(0, at);
@@ -231,6 +236,36 @@ describe('publish.mjs dist-tags and ordering', () => {
     expect(result.stdout).toContain('@voiceflow/cli-darwin-arm64@0.229.0 already published — skipping.');
     expect(result.stdout).toContain('@voiceflow/cli-linux-x64@0.229.0 already published — skipping.');
     expect(result.stdout.split('\n').filter((line) => line.includes('[dry-run] npm publish'))).toHaveLength(5);
+  });
+
+  it('still publishes the wrapper when a platform package stays unreadable (regression: v0.233.0)', async () => {
+    // The real failure: the pre-publish existence check cached a 404, the
+    // post-publish visibility poll kept reading that cached miss, and the run
+    // aborted — leaving six platform packages published with no wrapper to
+    // install them. The wrapper must go out even if the read never catches up.
+    const root = makeStagingRoot('publish-invisible');
+    expect((await runPrepare(root)).exitCode).toBe(0);
+    const publishLog = path.join(root, 'published.txt');
+
+    const result = await execa({
+      reject: false,
+      cwd: root,
+      env: {
+        PATH: `${stubBinDir}:${process.env.PATH}`,
+        FAKE_NPM_PUBLISHED: '', // nothing ever becomes readable
+        FAKE_NPM_LATEST: '{}',
+        FAKE_NPM_PUBLISH_LOG: publishLog,
+        VF_NPM_VISIBILITY_TIMEOUT_MS: '150', // do not wait out the real 90s
+        VF_NPM_VISIBILITY_POLL_MS: '50',
+      },
+    })('node', [path.join(root, 'npm', 'scripts', 'publish.mjs'), '--version', '0.233.0', '--out', 'dist/npm']);
+
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stderr).toContain('not readable');
+
+    const published = readFileSync(publishLog, 'utf8').trim().split('\n');
+    expect(published).toHaveLength(7);
+    expect(published[published.length - 1], 'the wrapper must publish last, and must publish').toMatch(/[\\/]cli$/);
   });
 
   it('routes prerelease versions to the next dist-tag', async () => {
