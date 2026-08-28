@@ -132,6 +132,7 @@ func NewRootCommand() (*cobra.Command, error) {
 		return nil, fmt.Errorf("init auth: %w", err)
 	}
 	initExploreCmd(rootCmd)
+	initDocsCmd(rootCmd)
 
 	// Global output format flag
 	rootCmd.PersistentFlags().StringP("output-format", "o", "pretty", "Specify the output format. Options: pretty, json, yaml, table, toon.")
