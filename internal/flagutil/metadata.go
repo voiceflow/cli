@@ -247,8 +247,11 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 		}
 	}
 
-	// Priority 2: stdin
-	if !bodyPrePopulated && HasStdinInput(cmd) {
+	// Priority 2: stdin. Params-only commands (no body field and no --body
+	// flag) have no body for stdin to fill — consuming piped JSON there would
+	// both surprise pipelines and re-relax required path/query params via the
+	// bodyPrePopulated relaxation below.
+	if !bodyPrePopulated && (bodyFieldPath != "" || bodyFlagName != "") && HasStdinInput(cmd) {
 		stdinData, err := io.ReadAll(cmd.InOrStdin())
 		if err != nil {
 			return nil, fmt.Errorf("failed to read stdin: %w", err)
@@ -282,7 +285,12 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 	// provided via --body/stdin, check if any individual flags were changed.
 	// If not, the user didn't attempt to provide a body at all — relax required
 	// checks so nullable/optional bodies work without erroring on inner required fields.
-	if !bodyPrePopulated && bodyFieldPath == "" {
+	// Only when the command actually has a body flag (bodyFlagName != ""): a
+	// params-only command (get/delete — no --body registered) has no body to
+	// relax for, and relaxing would let requests leave with required path or
+	// query params empty, failing server-side with field paths no CLI user
+	// can map back to a flag.
+	if !bodyPrePopulated && bodyFieldPath == "" && bodyFlagName != "" {
 		anyChanged := false
 		for _, m := range meta {
 			if FlagChanged(cmd, m.FlagName) {

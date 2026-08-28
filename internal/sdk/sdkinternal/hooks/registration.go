@@ -4,4 +4,8 @@ package hooks
 // Speakeasy — add any additional hooks here.
 func initHooks(h *Hooks) {
 	h.registerBeforeRequestHook(&clientTypeHook{})
+
+	teach := &teachHook{}
+	h.registerBeforeRequestHook(teach)
+	h.registerAfterErrorHook(teach)
 }

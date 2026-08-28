@@ -1,14 +1,11 @@
 # vf
 
-Command-line interface for the *Realtime* API.
+The Voiceflow CLI. Build, test, and operate AI agents on [Voiceflow](https://www.voiceflow.com), the AI agent platform for customer experience automation — from your terminal, your CI, or your coding agent.
+
+`vf` covers the full agent lifecycle: workspaces, projects, environments, playbooks, functions, knowledge base documents, conversations, tests, evaluations, transcripts, and analytics. Every read command speaks JSON (and [TOON](https://github.com/toon-format/spec)); every failure names its own fix.
 
 [![Built by Speakeasy](https://img.shields.io/badge/Built_by-SPEAKEASY-374151?style=for-the-badge&labelColor=f3f4f6)](https://www.speakeasy.com/?utm_source=github-com/voiceflow/cli&utm_campaign=cli)
-[![License: MIT](https://img.shields.io/badge/LICENSE_//_MIT-3b5bdb?style=for-the-badge&labelColor=eff6ff)](https://opensource.org/licenses/MIT)
-
-
-<br /><br />
-> [!IMPORTANT]
-> This CLI is not yet ready for production use. To complete setup please follow the steps outlined in your [workspace](https://app.speakeasy.com/org/voiceflow/engineering). Delete this section before > publishing to a package manager.
+[![License: Apache-2.0](https://img.shields.io/badge/LICENSE_//_Apache--2.0-3b5bdb?style=for-the-badge&labelColor=eff6ff)](https://opensource.org/license/Apache-2.0)
 
 <!-- Start Summary [summary] -->
 ## Summary
@@ -38,16 +35,28 @@ Realtime: Realtime gateway API service
 
 ## CLI Installation
 
+### npm
+
+```bash
+# Run without installing
+npx -y @voiceflow/cli --help
+
+# Or install globally (provides both `vf` and `voiceflow`)
+npm install -g @voiceflow/cli
+```
+
+Installs a prebuilt binary for your platform (macOS, Linux, Windows — arm64 and x64) with no postinstall scripts and no compilation.
+
 ### Quick Install (Linux/macOS)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/voiceflow/cli/HEAD/scripts/install.sh | bash
 ```
 
 ### Quick Install (Windows PowerShell)
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/voiceflow/cli/master/scripts/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/voiceflow/cli/HEAD/scripts/install.ps1 | iex
 ```
 
 ### Go Install
@@ -62,6 +71,41 @@ go install github.com/voiceflow/cli/cmd/vf@latest
 
 Download pre-built binaries for your platform from the [releases page](https://github.com/voiceflow/cli/releases).
 <!-- No CLI Installation [installation] -->
+
+## Quickstart: zero to a talking agent
+
+Runnable end to end by a person or by a coding agent. You need an access token and [`jq`](https://jqlang.org) (used only to pull IDs out of the JSON responses). Create a **personal access token** in Voiceflow under **Settings → Access tokens** (tokens start with `vfp_`; they expire, default 30 days), then:
+
+```bash
+export VF_TOKEN=vfp_...   # every command also accepts --token
+
+# 1. Pick a workspace (also proves the token works)
+WORKSPACE_ID=$(vf workspace list --output-format json | jq -r '.workspaces[0].id')
+
+# 2. Create an agent project
+PROJECT_ID=$(vf project create --name "My Agent" --type webchat \
+  --workspace-id "$WORKSPACE_ID" --output-format json | jq -r '.project.id')
+
+# 3. Start a conversation (fresh projects have one environment, alias "main")
+vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
+  --environment-alias main --version-param draft \
+  --action '{"type":"launch"}' --output-format json
+
+# 4. Say something — same user-id continues the same conversation
+vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
+  --environment-alias main --version-param draft \
+  --action '{"type":"text","payload":"What can you help me with?"}' --output-format json
+```
+
+The agent's replies arrive as `text` traces in the response. From here: edit the agent's instructions (`vf agent update`), add knowledge (`vf document create-url`), run tests (`vf test run create`), and publish (`vf environment publish`).
+
+Worth knowing before you script against the CLI:
+
+- **Use `--version-param draft`** — a fresh project has no published release yet.
+- **Pass `--output-format json` explicitly when piping.** Inside AI coding agents (`CLAUDECODE`, `CURSOR_AGENT`, …) the default output is TOON, not JSON.
+- **Capture values with `--output-format json | jq -r`** — the built-in `--jq` flag emits JSON, so strings keep their quotes.
+- **`vf whoami` is offline** — it shows which credential source is configured but does not validate the token. `vf workspace list` is the real check.
+- **Look things up in-band**: `vf docs search "publish an environment"` and `vf docs get <page>` bring the documentation to the terminal — no browser, no auth.
 
 <!-- Start Shell Completion [completion] -->
 ## Shell Completion

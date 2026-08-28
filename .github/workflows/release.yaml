@@ -40,3 +40,36 @@ jobs:
             dist/
             !dist/*.txt
           retention-days: 30
+
+  npm-publish:
+    needs: goreleaser
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm --provenance (Sigstore via GitHub OIDC)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Download goreleaser dist
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: dist
+
+      - name: Assemble npm packages
+        run: node npm/scripts/prepare.mjs --version "${GITHUB_REF_NAME#v}" --dist dist --out dist/npm
+
+      - name: Smoke test staged linux-x64 binary
+        run: dist/npm/cli-linux-x64/bin/vf version
+
+      - name: Publish (idempotent)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: node npm/scripts/publish.mjs --version "${GITHUB_REF_NAME#v}" --out dist/npm
