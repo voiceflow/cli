@@ -98,11 +98,14 @@ vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
   --action '{"type":"text","payload":"What can you help me with?"}' --output-format json
 ```
 
-The agent's replies arrive as `text` traces in the response. From here: edit the agent's instructions (`vf agent update`), add knowledge (`vf document create-url`), run tests (`vf test run create`), and publish (`vf environment publish`).
+The agent's replies arrive as `text` traces in the response.
+
+A new project starts from a **template**, so it answers immediately but introduces itself as a placeholder brand ("Acme Corp support") and its instructions still contain fill-in-the-blank prompts. Getting to *your* agent is the next step, not the last one: edit the instructions (`vf agent update`), add knowledge (`vf document create-url`), run tests (`vf test run create`), and publish (`vf environment publish`).
 
 Worth knowing before you script against the CLI:
 
-- **Use `--version-param draft`** — a fresh project has no published release yet.
+- **`--version-param draft` runs what you are editing; `published` runs the live version.** A new project is created with a first release already in place, so either works immediately — you do not have to publish anything first.
+- **`--action '{"type":"launch"}'` is optional.** Sending a `text` action straight away works; the runtime starts the conversation itself. The launch step is shown because it makes the first turn explicit.
 - **Pass `--output-format json` explicitly when piping.** Inside AI coding agents (`CLAUDECODE`, `CURSOR_AGENT`, …) the default output is TOON, not JSON.
 - **Capture values with `--output-format json | jq -r`** — the built-in `--jq` flag emits JSON, so strings keep their quotes.
 - **`vf whoami` is offline** — it shows which credential source is configured but does not validate the token. `vf workspace list` is the real check.
