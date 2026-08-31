@@ -39,6 +39,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
@@ -76,16 +77,7 @@ func stringLikeJSONTarget(t reflect.Type) bool {
 // this replaces.
 func setJSONFieldAsRawText(field reflect.Value, fieldType reflect.Type, isPtr bool, val string, m FlagMeta, cause error) error {
 	if !stringLikeJSONTarget(field.Type()) {
-		return &FlagValueError{
-			Flag:     m.FlagName,
-			Value:    val,
-			Expected: "expected a JSON value",
-			Hints: []string{
-				`objects and arrays must be valid JSON, e.g. --` + m.FlagName + ` '{"key":"value"}'`,
-				"pass null to clear the field: --" + m.FlagName + " null",
-			},
-			Cause: cause,
-		}
+		return notJSONError(field.Type(), val, m, cause)
 	}
 
 	// json.Marshal of a string cannot fail, but handle it rather than ignore it.
@@ -128,4 +120,91 @@ func rawTextRetryFailed(m FlagMeta, val string, cause error) error {
 		Hints:    []string{"this is a bug in the CLI — please report it with the command you ran"},
 		Cause:    cause,
 	}
+}
+
+// notJSONError explains why a structured JSON flag rejected its value.
+//
+// Two distinct failures used to collapse into one message, and the merged
+// wording was actively false for the second:
+//
+//	--llm 'gpt-4'    not JSON at all
+//	--llm '[1,2]'    valid JSON, but this flag wants an object
+//
+// Telling someone whose input is well-formed JSON that it "must be valid JSON"
+// sends them to re-check syntax that was never wrong. So the shape mismatch is
+// named separately, and the unmarshal error — the only thing that knows which
+// Go type was expected — is surfaced instead of being swallowed.
+func notJSONError(t reflect.Type, val string, m FlagMeta, cause error) error {
+	hints := []string{}
+	expected := "expected a JSON value"
+
+	if json.Valid([]byte(val)) {
+		// Syntax is fine; the shape is not. Say that, rather than blaming syntax.
+		expected = "the value is valid JSON but not the shape this flag expects"
+	} else {
+		hints = append(hints, "the value is not valid JSON")
+	}
+
+	if example := jsonShapeExample(t); example != "" {
+		hints = append(hints, fmt.Sprintf("expected shape: --%s '%s'", m.FlagName, example))
+	}
+	if detail := unmarshalDetail(cause); detail != "" {
+		hints = append(hints, detail)
+	}
+	hints = append(hints, "pass null to clear the field: --"+m.FlagName+" null")
+
+	return &FlagValueError{Flag: m.FlagName, Value: val, Expected: expected, Hints: hints, Cause: cause}
+}
+
+// jsonShapeExample returns a value of the right shape for t, or "" when the
+// shape cannot be stated confidently.
+//
+// The example must be something the CLI would actually accept. The first
+// version of this hint hardcoded an object for every destination, so on the
+// array-valued flags it told the caller to pass a value the same binary
+// rejects — and a caller following the instruction exactly got back the
+// identical error, with nothing new to try. A wrong example is worse than no
+// example, so an unrecognized shape returns "" and the hint is omitted.
+func jsonShapeExample(t reflect.Type) string {
+	for t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	// OptionalNullable[T] == map[bool]*T — unwrap to the value it carries.
+	if t.Kind() == reflect.Map && t.Key().Kind() == reflect.Bool && t.Elem().Kind() == reflect.Ptr {
+		t = t.Elem().Elem()
+		for t.Kind() == reflect.Ptr {
+			t = t.Elem()
+		}
+	}
+
+	switch t.Kind() {
+	case reflect.Slice, reflect.Array:
+		return `[{"key":"value"}]`
+	case reflect.Map, reflect.Struct:
+		return `{"key":"value"}`
+	default:
+		return ""
+	}
+}
+
+// unmarshalDetail surfaces what the JSON decoder objected to, minus a prefix
+// that is wrong in this context.
+//
+// The SDK's unmarshaler labels every failure "error unmarshalling json response
+// body", but a flag value is a request the CLI has not sent yet — there is no
+// response. Left intact it sends the reader looking for a server problem that
+// does not exist. The remainder is worth keeping: it names the Go type that was
+// expected, which is the only place that information appears at all.
+func unmarshalDetail(cause error) string {
+	if cause == nil {
+		return ""
+	}
+	detail := cause.Error()
+	for _, prefix := range []string{"error unmarshalling json response body: ", "json: "} {
+		detail = strings.TrimPrefix(detail, prefix)
+	}
+	if detail == "" {
+		return ""
+	}
+	return "decoder reported: " + detail
 }

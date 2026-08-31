@@ -25,11 +25,14 @@ import (
 // envelope. Errors of any other kind are returned untouched, so this is safe to
 // wrap around the whole command execution.
 //
-// The message handed to AgentModeError is deliberately one line. cmd/vf/main.go
-// prints whatever Execute returns, so it echoes that message after the JSON —
-// the same double-print that configure and auth already produce today. Matching
-// that behavior keeps agent output uniform; passing the full multi-line form
-// would turn one trailing line into five.
+// The message handed to AgentModeError is deliberately one line: the detail
+// belongs in hints[], where a consumer can read it as structured data rather
+// than parsing it out of a sentence.
+//
+// The echoed value goes through DisplayValue, never the raw fve.Value. This
+// render path is the one that matters most for that: it feeds an agent's
+// context, and an unbounded echo of a malformed blob both floods that context
+// and can reproduce a secret that happened to be inside it.
 func renderFlagValueError(cmd *cobra.Command, err error) error {
 	var fve *flagutil.FlagValueError
 	if !errors.As(err, &fve) || !output.IsAgentMode() {
@@ -37,8 +40,8 @@ func renderFlagValueError(cmd *cobra.Command, err error) error {
 	}
 
 	hints := fve.Hints
-	if fve.Value != "" {
-		hints = append([]string{"you passed: " + fve.Value}, hints...)
+	if v := fve.DisplayValue(); v != "" {
+		hints = append([]string{"you passed: " + v}, hints...)
 	}
 
 	return output.AgentModeError(cmd, "invalid_flag_value",

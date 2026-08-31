@@ -116,3 +116,68 @@ describe('help shows the flag type, not a word from its description', () => {
     expect(r.stdout + r.stderr).toContain("Backticked 'Name' resolves to");
   });
 });
+
+describe('rejection messages are actionable, not circular', () => {
+  // The strongest form of this test: take the CLI's own suggestion and feed it
+  // back in. An earlier version hardcoded an object example for every JSON
+  // destination, so on array-valued flags it told the caller to pass a value the
+  // same binary rejects — following the instruction exactly reproduced the
+  // identical error, with nothing new to try. For an agent that is a loop.
+  const shaped: Array<[flag: string, extraArgs: string[]]> = [
+    ['playbooks', []], // slice-valued  -> must suggest an array
+    ['llm', []],       // map-valued    -> must suggest an object
+  ];
+
+  for (const [flag, extra] of shaped) {
+    it(`--${flag}: the suggested example is one the CLI accepts`, async () => {
+      const rejected = await run([...BASE, ...extra, `--${flag}`, 'not json at all']);
+      const suggestion = (rejected.stderr + rejected.stdout).match(
+        new RegExp(`expected shape: --${flag} '(.+)'`),
+      )?.[1];
+      expect(suggestion, `no shape hint offered for --${flag}`).toBeDefined();
+
+      // Do exactly what the CLI said to do. It must not fail the same way.
+      const retry = await run([...BASE, ...extra, `--${flag}`, suggestion!]);
+      expect(retry.stderr, `the CLI's own suggestion ${suggestion} was rejected`).not.toContain(
+        `invalid value for --${flag}`,
+      );
+    });
+  }
+
+  it('does not claim the input is invalid JSON when it is valid JSON', async () => {
+    // '[1,2]' parses fine; it is the wrong shape for a map-valued flag. Saying
+    // "not valid JSON" sends the reader to re-check syntax that was never wrong.
+    const r = await run([...BASE, '--llm', '[1,2]']);
+    expect(r.stderr).toContain('valid JSON but not the shape');
+    expect(r.stderr).not.toContain('the value is not valid JSON');
+  });
+
+  it('surfaces what the decoder objected to, without the misleading response-body prefix', async () => {
+    const r = await run([...BASE, '--llm', '[1,2]']);
+    expect(r.stderr).toContain('cannot unmarshal array');
+    // A flag value is a request that was never sent; there is no response body.
+    expect(r.stderr).not.toContain('response body');
+  });
+});
+
+describe('echoed values are bounded', () => {
+  const big = 'x'.repeat(5_000);
+
+  // The echo exists to reveal shell-quoting mistakes, so it stays — but an
+  // unbounded one floods an agent's context and reproduces whatever sat inside a
+  // malformed blob. Agent mode originally bypassed the cap entirely.
+  for (const mode of ['human', 'agent'] as const) {
+    it(`${mode} mode: a 5000-char value does not produce a 5000-char error`, async () => {
+      const r = await run([...BASE, '--llm', big], { agentMode: mode === 'agent' });
+      expect(r.stderr.length, `error grew with the input (${r.stderr.length} bytes)`).toBeLessThan(1_500);
+      expect(r.stderr).toContain('chars)'); // says how long it really was
+    });
+  }
+
+  it('counts and cuts in characters, not bytes', async () => {
+    // Byte-slicing splits a multi-byte rune and misreports the length.
+    const r = await run([...BASE, '--llm', 'あ'.repeat(200)]);
+    expect(r.stderr).toContain('(200 chars)');
+    expect(r.stderr).not.toContain('(600 chars)');
+  });
+});

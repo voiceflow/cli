@@ -49,14 +49,27 @@ func (e *FlagValueError) Error() string {
 
 func (e *FlagValueError) Unwrap() error { return e.Cause }
 
+// DisplayValue is the value as it should be shown to a reader: shortened, and
+// with newlines flattened. Exported because internal/cli renders these errors
+// too and must not echo the raw value — an unbounded echo would flood an agent's
+// context and can reproduce secrets that happened to sit inside a malformed
+// blob. Every render path must go through this, never through Value directly.
+func (e *FlagValueError) DisplayValue() string { return truncateForError(e.Value) }
+
 // truncateForError keeps a long value from burying the explanation. Instructions
 // and prompts are routinely thousands of characters; echoing one in full pushes
-// the hints off the reader's screen, which defeats the point of the hints.
+// the hints off the reader's screen, which defeats the point of the hints. It
+// also bounds what a malformed value can spill into a log or an agent's context.
+//
+// Counting and cutting are done in runes, not bytes. Slicing a byte index splits
+// multi-byte characters in half, which writes invalid UTF-8 to stderr and makes
+// the reported length wrong for any non-ASCII value.
 func truncateForError(s string) string {
 	const max = 120
 	s = strings.ReplaceAll(s, "\n", " ")
-	if len(s) <= max {
+	runes := []rune(s)
+	if len(runes) <= max {
 		return s
 	}
-	return s[:max] + "… (" + fmt.Sprint(len(s)) + " chars)"
+	return string(runes[:max]) + "… (" + fmt.Sprint(len(runes)) + " chars)"
 }
