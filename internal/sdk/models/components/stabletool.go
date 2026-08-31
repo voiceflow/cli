@@ -12,6 +12,521 @@ import (
 	"time"
 )
 
+type StableToolGenerative4 struct {
+	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *ToolMessageGenerative `json:"delay,omitzero"`
+	Completion *ToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StableToolGenerative4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolGenerative4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolGenerative4) GetExecution() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StableToolGenerative4) GetFailure() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StableToolGenerative4) GetDelay() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StableToolGenerative4) GetCompletion() *ToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
+// #region class-body-stabletoolgenerative4
+// #endregion class-body-stabletoolgenerative4
+
+type StableToolMessages4 struct {
+	DelayMessageID      *string                `json:"delayMessageID"`
+	FailureMessageID    *string                `json:"failureMessageID"`
+	ExecutionMessageID  *string                `json:"executionMessageID"`
+	CompletionMessageID *string                `json:"completionMessageID"`
+	DelayMessageSeconds *float64               `json:"delayMessageSeconds"`
+	Generative          *StableToolGenerative4 `json:"generative,omitzero"`
+}
+
+func (s StableToolMessages4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolMessages4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolMessages4) GetDelayMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.DelayMessageID
+}
+
+func (s *StableToolMessages4) GetFailureMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FailureMessageID
+}
+
+func (s *StableToolMessages4) GetExecutionMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ExecutionMessageID
+}
+
+func (s *StableToolMessages4) GetCompletionMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CompletionMessageID
+}
+
+func (s *StableToolMessages4) GetDelayMessageSeconds() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.DelayMessageSeconds
+}
+
+func (s *StableToolMessages4) GetGenerative() *StableToolGenerative4 {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
+}
+
+// #region class-body-stabletoolmessages4
+// #endregion class-body-stabletoolmessages4
+
+// StableToolTypeIntegration - Discriminator indicating this tool calls a connected first-party integration.
+type StableToolTypeIntegration string
+
+const (
+	StableToolTypeIntegrationIntegration StableToolTypeIntegration = "integration"
+)
+
+func (e StableToolTypeIntegration) ToPointer() *StableToolTypeIntegration {
+	return &e
+}
+func (e *StableToolTypeIntegration) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "integration":
+		*e = StableToolTypeIntegration(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableToolTypeIntegration: %v", v)
+	}
+}
+
+type StableToolDefaultValue4Type string
+
+const (
+	StableToolDefaultValue4TypeStr                     StableToolDefaultValue4Type = "str"
+	StableToolDefaultValue4TypeMarkupSpan1             StableToolDefaultValue4Type = "MarkupSpan_1"
+	StableToolDefaultValue4TypeMarkupToolReference     StableToolDefaultValue4Type = "MarkupToolReference"
+	StableToolDefaultValue4TypeMarkupSecretReference   StableToolDefaultValue4Type = "MarkupSecretReference"
+	StableToolDefaultValue4TypeMarkupEntityReference   StableToolDefaultValue4Type = "MarkupEntityReference"
+	StableToolDefaultValue4TypeMarkupVariableReference StableToolDefaultValue4Type = "MarkupVariableReference"
+	StableToolDefaultValue4TypeUnknown                 StableToolDefaultValue4Type = "Unknown"
+)
+
+type StableToolDefaultValue4 struct {
+	Str                     *string                  `queryParam:"inline" union:"member"`
+	MarkupSpan1             *MarkupSpan1             `queryParam:"inline" union:"member"`
+	MarkupToolReference     *MarkupToolReference     `queryParam:"inline" union:"member"`
+	MarkupSecretReference   *MarkupSecretReference   `queryParam:"inline" union:"member"`
+	MarkupEntityReference   *MarkupEntityReference   `queryParam:"inline" union:"member"`
+	MarkupVariableReference *MarkupVariableReference `queryParam:"inline" union:"member"`
+	UnknownRaw              json.RawMessage          `json:"-" union:"unknown"`
+
+	Type StableToolDefaultValue4Type
+}
+
+func CreateStableToolDefaultValue4Str(str string) StableToolDefaultValue4 {
+	typ := StableToolDefaultValue4TypeStr
+
+	return StableToolDefaultValue4{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func CreateStableToolDefaultValue4MarkupSpan1(markupSpan1 MarkupSpan1) StableToolDefaultValue4 {
+	typ := StableToolDefaultValue4TypeMarkupSpan1
+
+	return StableToolDefaultValue4{
+		MarkupSpan1: &markupSpan1,
+		Type:        typ,
+	}
+}
+
+func CreateStableToolDefaultValue4MarkupToolReference(markupToolReference MarkupToolReference) StableToolDefaultValue4 {
+	typ := StableToolDefaultValue4TypeMarkupToolReference
+
+	return StableToolDefaultValue4{
+		MarkupToolReference: &markupToolReference,
+		Type:                typ,
+	}
+}
+
+func CreateStableToolDefaultValue4MarkupSecretReference(markupSecretReference MarkupSecretReference) StableToolDefaultValue4 {
+	typ := StableToolDefaultValue4TypeMarkupSecretReference
+
+	return StableToolDefaultValue4{
+		MarkupSecretReference: &markupSecretReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStableToolDefaultValue4MarkupEntityReference(markupEntityReference MarkupEntityReference) StableToolDefaultValue4 {
+	typ := StableToolDefaultValue4TypeMarkupEntityReference
+
+	return StableToolDefaultValue4{
+		MarkupEntityReference: &markupEntityReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStableToolDefaultValue4MarkupVariableReference(markupVariableReference MarkupVariableReference) StableToolDefaultValue4 {
+	typ := StableToolDefaultValue4TypeMarkupVariableReference
+
+	return StableToolDefaultValue4{
+		MarkupVariableReference: &markupVariableReference,
+		Type:                    typ,
+	}
+}
+
+func CreateStableToolDefaultValue4Unknown(raw json.RawMessage) StableToolDefaultValue4 {
+	return StableToolDefaultValue4{
+		UnknownRaw: raw,
+		Type:       StableToolDefaultValue4TypeUnknown,
+	}
+}
+
+func (u StableToolDefaultValue4) GetUnknownRaw() json.RawMessage {
+	return u.UnknownRaw
+}
+
+func (u StableToolDefaultValue4) IsUnknown() bool {
+	return u.Type == StableToolDefaultValue4TypeUnknown
+}
+
+func (u *StableToolDefaultValue4) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableToolDefaultValue4TypeStr,
+			Value: &str,
+		})
+	}
+
+	var markupSpan1 MarkupSpan1 = MarkupSpan1{}
+	if err := utils.UnmarshalJSON(data, &markupSpan1, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableToolDefaultValue4TypeMarkupSpan1,
+			Value: &markupSpan1,
+		})
+	}
+
+	var markupToolReference MarkupToolReference = MarkupToolReference{}
+	if err := utils.UnmarshalJSON(data, &markupToolReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableToolDefaultValue4TypeMarkupToolReference,
+			Value: &markupToolReference,
+		})
+	}
+
+	var markupSecretReference MarkupSecretReference = MarkupSecretReference{}
+	if err := utils.UnmarshalJSON(data, &markupSecretReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableToolDefaultValue4TypeMarkupSecretReference,
+			Value: &markupSecretReference,
+		})
+	}
+
+	var markupEntityReference MarkupEntityReference = MarkupEntityReference{}
+	if err := utils.UnmarshalJSON(data, &markupEntityReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableToolDefaultValue4TypeMarkupEntityReference,
+			Value: &markupEntityReference,
+		})
+	}
+
+	var markupVariableReference MarkupVariableReference = MarkupVariableReference{}
+	if err := utils.UnmarshalJSON(data, &markupVariableReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableToolDefaultValue4TypeMarkupVariableReference,
+			Value: &markupVariableReference,
+		})
+	}
+
+	if len(candidates) == 0 {
+		u.UnknownRaw = json.RawMessage(data)
+		u.Type = StableToolDefaultValue4TypeUnknown
+		return nil
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		u.UnknownRaw = json.RawMessage(data)
+		u.Type = StableToolDefaultValue4TypeUnknown
+		return nil
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StableToolDefaultValue4Type)
+	switch best.Type {
+	case StableToolDefaultValue4TypeStr:
+		u.Str = best.Value.(*string)
+		return nil
+	case StableToolDefaultValue4TypeMarkupSpan1:
+		u.MarkupSpan1 = best.Value.(*MarkupSpan1)
+		return nil
+	case StableToolDefaultValue4TypeMarkupToolReference:
+		u.MarkupToolReference = best.Value.(*MarkupToolReference)
+		return nil
+	case StableToolDefaultValue4TypeMarkupSecretReference:
+		u.MarkupSecretReference = best.Value.(*MarkupSecretReference)
+		return nil
+	case StableToolDefaultValue4TypeMarkupEntityReference:
+		u.MarkupEntityReference = best.Value.(*MarkupEntityReference)
+		return nil
+	case StableToolDefaultValue4TypeMarkupVariableReference:
+		u.MarkupVariableReference = best.Value.(*MarkupVariableReference)
+		return nil
+	}
+
+	u.UnknownRaw = json.RawMessage(data)
+	u.Type = StableToolDefaultValue4TypeUnknown
+	return nil
+}
+
+func (u StableToolDefaultValue4) MarshalJSON() ([]byte, error) {
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	if u.MarkupSpan1 != nil {
+		return utils.MarshalJSON(u.MarkupSpan1, "", true)
+	}
+
+	if u.MarkupToolReference != nil {
+		return utils.MarshalJSON(u.MarkupToolReference, "", true)
+	}
+
+	if u.MarkupSecretReference != nil {
+		return utils.MarshalJSON(u.MarkupSecretReference, "", true)
+	}
+
+	if u.MarkupEntityReference != nil {
+		return utils.MarshalJSON(u.MarkupEntityReference, "", true)
+	}
+
+	if u.MarkupVariableReference != nil {
+		return utils.MarshalJSON(u.MarkupVariableReference, "", true)
+	}
+
+	if u.UnknownRaw != nil {
+		return json.RawMessage(u.UnknownRaw), nil
+	}
+	return nil, errors.New("could not marshal union type StableToolDefaultValue4: all fields are null")
+}
+
+type StableToolInputVariables4 struct {
+	Description                 optionalnullable.OptionalNullable[string]                    `default:"null" json:"description"`
+	DefaultValue                optionalnullable.OptionalNullable[[]StableToolDefaultValue4] `json:"defaultValue,omitzero"`
+	IntegrationToolVariableName string                                                       `json:"integrationToolVariableName"`
+	CaptureType                 *ToolNodeCaptureType                                         `json:"captureType,omitzero"`
+	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
+	Required bool `json:"required"`
+}
+
+func (s StableToolInputVariables4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolInputVariables4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolInputVariables4) GetDescription() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.Description
+}
+
+func (s *StableToolInputVariables4) GetDefaultValue() optionalnullable.OptionalNullable[[]StableToolDefaultValue4] {
+	if s == nil {
+		return nil
+	}
+	return s.DefaultValue
+}
+
+func (s *StableToolInputVariables4) GetIntegrationToolVariableName() string {
+	if s == nil {
+		return ""
+	}
+	return s.IntegrationToolVariableName
+}
+
+func (s *StableToolInputVariables4) GetCaptureType() *ToolNodeCaptureType {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureType
+}
+
+func (s *StableToolInputVariables4) GetRequired() bool {
+	if s == nil {
+		return false
+	}
+	return s.Required
+}
+
+// #region class-body-stabletoolinputvariables4
+// #endregion class-body-stabletoolinputvariables4
+
+type StableToolIntegration struct {
+	ID        string               `json:"id"`
+	CreatedAt time.Time            `json:"createdAt"`
+	UpdatedAt time.Time            `json:"updatedAt"`
+	Messages  *StableToolMessages4 `json:"messages"`
+	// A description of what the tool does, used by the agent to decide when to call it.
+	Description *string `json:"description"`
+	// A map of tool input names to the variables or entities whose values are captured into them.
+	CaptureInputVariables map[string]AgentToolCaptureInputVariable `json:"captureInputVariables"`
+	// Discriminator indicating this tool calls a connected first-party integration.
+	Type StableToolTypeIntegration `json:"type"`
+	// The ID of the integration tool resource this tool calls.
+	IntegrationToolID string `json:"integrationToolID"`
+	// A map of input names to the values the agent supplies when calling the tool.
+	InputVariables map[string]StableToolInputVariables4 `json:"inputVariables"`
+	// A map of variable names to the parts of the tool response captured into them.
+	CaptureResponse map[string]ToolNodeDataIntegrationCaptureResponse `json:"captureResponse"`
+}
+
+func (s StableToolIntegration) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolIntegration) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolIntegration) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *StableToolIntegration) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *StableToolIntegration) GetUpdatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.UpdatedAt
+}
+
+func (s *StableToolIntegration) GetMessages() *StableToolMessages4 {
+	if s == nil {
+		return nil
+	}
+	return s.Messages
+}
+
+func (s *StableToolIntegration) GetDescription() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Description
+}
+
+func (s *StableToolIntegration) GetCaptureInputVariables() map[string]AgentToolCaptureInputVariable {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureInputVariables
+}
+
+func (s *StableToolIntegration) GetType() StableToolTypeIntegration {
+	if s == nil {
+		return StableToolTypeIntegration("")
+	}
+	return s.Type
+}
+
+func (s *StableToolIntegration) GetIntegrationToolID() string {
+	if s == nil {
+		return ""
+	}
+	return s.IntegrationToolID
+}
+
+func (s *StableToolIntegration) GetInputVariables() map[string]StableToolInputVariables4 {
+	if s == nil {
+		return map[string]StableToolInputVariables4{}
+	}
+	return s.InputVariables
+}
+
+func (s *StableToolIntegration) GetCaptureResponse() map[string]ToolNodeDataIntegrationCaptureResponse {
+	if s == nil {
+		return map[string]ToolNodeDataIntegrationCaptureResponse{}
+	}
+	return s.CaptureResponse
+}
+
 type StableToolGenerative3 struct {
 	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
 	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
@@ -374,8 +889,8 @@ type StableToolInputVariables3 struct {
 	DefaultValue               optionalnullable.OptionalNullable[[]StableToolDefaultValue3] `json:"defaultValue,omitzero"`
 	McpIntegrationVariableName string                                                       `json:"mcpIntegrationVariableName"`
 	CaptureType                *ToolNodeCaptureType                                         `json:"captureType,omitzero"`
-	// Whether the agent must provide a value for this input.
-	Required *bool `default:"true" json:"required"`
+	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
+	Required bool `json:"required"`
 }
 
 func (s StableToolInputVariables3) MarshalJSON() ([]byte, error) {
@@ -417,9 +932,9 @@ func (s *StableToolInputVariables3) GetCaptureType() *ToolNodeCaptureType {
 	return s.CaptureType
 }
 
-func (s *StableToolInputVariables3) GetRequired() *bool {
+func (s *StableToolInputVariables3) GetRequired() bool {
 	if s == nil {
-		return nil
+		return false
 	}
 	return s.Required
 }
@@ -889,8 +1404,8 @@ type StableToolInputVariables2 struct {
 	DefaultValue            optionalnullable.OptionalNullable[[]StableToolDefaultValue2] `json:"defaultValue,omitzero"`
 	FunctionInputVariableID string                                                       `json:"functionInputVariableID"`
 	CaptureType             *ToolNodeCaptureType                                         `json:"captureType,omitzero"`
-	// Whether the agent must provide a value for this input.
-	Required *bool `default:"true" json:"required"`
+	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
+	Required bool `json:"required"`
 }
 
 func (s StableToolInputVariables2) MarshalJSON() ([]byte, error) {
@@ -932,9 +1447,9 @@ func (s *StableToolInputVariables2) GetCaptureType() *ToolNodeCaptureType {
 	return s.CaptureType
 }
 
-func (s *StableToolInputVariables2) GetRequired() *bool {
+func (s *StableToolInputVariables2) GetRequired() bool {
 	if s == nil {
-		return nil
+		return false
 	}
 	return s.Required
 }
@@ -1413,8 +1928,8 @@ type StableToolInputVariables1 struct {
 	DefaultValue           optionalnullable.OptionalNullable[[]StableToolDefaultValue1] `json:"defaultValue,omitzero"`
 	APIToolInputVariableID string                                                       `json:"apiToolInputVariableID"`
 	CaptureType            *ToolNodeCaptureType                                         `json:"captureType,omitzero"`
-	// Whether the agent must provide a value for this input.
-	Required *bool `default:"true" json:"required"`
+	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
+	Required bool `json:"required"`
 }
 
 func (s StableToolInputVariables1) MarshalJSON() ([]byte, error) {
@@ -1456,9 +1971,9 @@ func (s *StableToolInputVariables1) GetCaptureType() *ToolNodeCaptureType {
 	return s.CaptureType
 }
 
-func (s *StableToolInputVariables1) GetRequired() *bool {
+func (s *StableToolInputVariables1) GetRequired() bool {
 	if s == nil {
-		return nil
+		return false
 	}
 	return s.Required
 }
@@ -1578,17 +2093,19 @@ func (s *StableToolAPI) GetCaptureResponse() map[string]ToolNodeDataAPICaptureRe
 type StableToolType string
 
 const (
-	StableToolTypeAPIValue      StableToolType = "api"
-	StableToolTypeFunctionValue StableToolType = "function"
-	StableToolTypeMcpValue      StableToolType = "mcp"
-	StableToolTypeUnknown       StableToolType = "UNKNOWN"
+	StableToolTypeAPIValue         StableToolType = "api"
+	StableToolTypeFunctionValue    StableToolType = "function"
+	StableToolTypeMcpValue         StableToolType = "mcp"
+	StableToolTypeIntegrationValue StableToolType = "integration"
+	StableToolTypeUnknown          StableToolType = "UNKNOWN"
 )
 
 type StableTool struct {
-	StableToolAPI      *StableToolAPI      `queryParam:"inline" union:"member"`
-	StableToolFunction *StableToolFunction `queryParam:"inline" union:"member"`
-	StableToolMcp      *StableToolMcp      `queryParam:"inline" union:"member"`
-	UnknownRaw         json.RawMessage     `json:"-" union:"unknown"`
+	StableToolAPI         *StableToolAPI         `queryParam:"inline" union:"member"`
+	StableToolFunction    *StableToolFunction    `queryParam:"inline" union:"member"`
+	StableToolMcp         *StableToolMcp         `queryParam:"inline" union:"member"`
+	StableToolIntegration *StableToolIntegration `queryParam:"inline" union:"member"`
+	UnknownRaw            json.RawMessage        `json:"-" union:"unknown"`
 
 	Type StableToolType
 }
@@ -1626,6 +2143,18 @@ func CreateStableToolMcp(mcp StableToolMcp) StableTool {
 	return StableTool{
 		StableToolMcp: &mcp,
 		Type:          typ,
+	}
+}
+
+func CreateStableToolIntegration(integration StableToolIntegration) StableTool {
+	typ := StableToolTypeIntegrationValue
+
+	typStr := StableToolTypeIntegration(typ)
+	integration.Type = typStr
+
+	return StableTool{
+		StableToolIntegration: &integration,
+		Type:                  typ,
 	}
 }
 
@@ -1690,6 +2219,15 @@ func (u *StableTool) UnmarshalJSON(data []byte) error {
 		u.StableToolMcp = stableToolMcp
 		u.Type = StableToolTypeMcpValue
 		return nil
+	case "integration":
+		stableToolIntegration := new(StableToolIntegration)
+		if err := utils.UnmarshalJSON(data, &stableToolIntegration, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == integration) type StableToolIntegration within StableTool: %w", string(data), err)
+		}
+
+		u.StableToolIntegration = stableToolIntegration
+		u.Type = StableToolTypeIntegrationValue
+		return nil
 	default:
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = StableToolTypeUnknown
@@ -1709,6 +2247,10 @@ func (u StableTool) MarshalJSON() ([]byte, error) {
 
 	if u.StableToolMcp != nil {
 		return utils.MarshalJSON(u.StableToolMcp, "", true)
+	}
+
+	if u.StableToolIntegration != nil {
+		return utils.MarshalJSON(u.StableToolIntegration, "", true)
 	}
 
 	if u.UnknownRaw != nil {

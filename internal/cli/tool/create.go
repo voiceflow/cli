@@ -18,10 +18,11 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, target: object, messages: object, captureInputVariables: object, ... }, function: { description: string, target: object, messages: object, captureInputVariables: object, ... }, mcp: { description: string, target: object, messages: object, captureInputVariables: object, ... })", Variants: []flagutil.UnionVariantMeta{
+	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, target: object, messages: object, captureInputVariables: object, ... }, function: { description: string, target: object, messages: object, captureInputVariables: object, ... }, mcp: { description: string, target: object, messages: object, captureInputVariables: object, ... }, integration: { description: string, target: object, messages: object, captureInputVariables: object, ... })", Variants: []flagutil.UnionVariantMeta{
 		{DiscriminatorValue: "api", FlagName: "body-param.api", FieldName: "StableToolCreateRequestAPI", CanExpand: false, Description: "StableToolCreateRequest_API variant as JSON"},
 		{DiscriminatorValue: "function", FlagName: "body-param.function", FieldName: "StableToolCreateRequestFunction", CanExpand: false, Description: "StableToolCreateRequest_Function variant as JSON"},
 		{DiscriminatorValue: "mcp", FlagName: "body-param.mcp", FieldName: "StableToolCreateRequestMcp", CanExpand: false, Description: "StableToolCreateRequest_Mcp variant as JSON"},
+		{DiscriminatorValue: "integration", FlagName: "body-param.integration", FieldName: "StableToolCreateRequestIntegration", CanExpand: false, Description: "StableToolCreateRequest_Integration variant as JSON"},
 	}}},
 }
 

@@ -181,7 +181,7 @@ func (s *McpServer) List(ctx context.Context, request operations.StableMCPServer
 }
 
 // Create MCP server
-// Create a new MCP server.
+// Create a new MCP server. Header values are Markup and may reference a secret by ID; MCP clients must send every header value as such a reference rather than as literal text.
 func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServerControllerCreateRequest, opts ...operations.Option) (*operations.StableMCPServerControllerCreateResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -486,7 +486,7 @@ func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerC
 }
 
 // Update MCP server
-// Update an MCP server by ID.
+// Update an MCP server by ID. As on create, MCP clients must send every header value as a secret reference rather than as literal text.
 func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServerControllerUpdateRequest, opts ...operations.Option) (*operations.StableMCPServerControllerUpdateResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{

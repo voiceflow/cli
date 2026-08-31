@@ -335,6 +335,12 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`get`](docs/vf_agent_get.md) - Get agent
 * [`update`](docs/vf_agent_update.md) - Update agent
 
+### [integration](docs/vf_integration.md)
+
+* [`list`](docs/vf_integration_list.md) - List integrations
+* [`connect`](docs/vf_integration_connect.md) - Connect integration
+* [`disconnect`](docs/vf_integration_disconnect.md) - Disconnect integration
+
 ### [mcp-server](docs/vf_mcp-server.md)
 
 * [`list`](docs/vf_mcp-server_list.md) - List MCP servers
@@ -348,6 +354,14 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 
 * [`list`](docs/vf_mcp-tool_list.md) - List MCP tools
 * [`get`](docs/vf_mcp-tool_get.md) - Get MCP tool
+
+### [secret](docs/vf_secret.md)
+
+* [`list`](docs/vf_secret_list.md) - List secrets
+* [`create`](docs/vf_secret_create.md) - Create secret
+* [`list-overrides`](docs/vf_secret_list-overrides.md) - List secret overrides
+* [`delete`](docs/vf_secret_delete.md) - Delete secret
+* [`set-value`](docs/vf_secret_set-value.md) - Set secret value
 
 ### [tool](docs/vf_tool.md)
 

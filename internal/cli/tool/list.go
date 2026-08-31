@@ -20,7 +20,7 @@ var listCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "playbook-id", FieldPath: "PlaybookID", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "project-id", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "type", Shorthand: "t", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"api", "mcp", "function"}, Description: "When provided, only tools of this type are returned. (options: api, mcp, function)"},
+	{FlagName: "type", Shorthand: "t", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"api", "mcp", "function", "integration"}, Description: "When provided, only tools of this type are returned. (options: api, mcp, function, integration)"},
 }
 
 // initListCmd initializes the list command.

@@ -1180,7 +1180,7 @@ paths:
               ## Inputs     — list of project variables the playbook references (e.g. `- {customer_name}: caller's name if collected`). Any variable listed here can be referenced inline elsewhere in the prompt via {variable_name} syntax — the runtime substitutes the actual value. Built-in variables like {user_id}, {last_utterance}, {vf_now} can be referenced without declaring them. Unset variables resolve to the literal 0 (number), not empty string — guard branches in ## Flow or ## Edge cases against that.
             USE WHEN — User wants to add a new multi-step task the agent can handle (booking, escalation, FAQ + tool use).
             AFTER — voiceflow_agent.update (make it reachable), voiceflow_tool.create (give it capabilities), then voiceflow_conversation.
-            DO NOT — Write the description as a one-liner that only says what the playbook does. The Main Agent uses this text to route — it must also describe WHEN to route here (the user signals, intents, or topics that should trigger this playbook). Also: don't put identity, tone, or guardrails in the playbook's instructions — those inherit from the Global Prompt. And: if a playbook's only tool is the Knowledge Base, it shouldn't be a playbook — the Main Agent handles Knowledge Base Q&A directly.
+            DO NOT — Write the description as a one-liner that only says what the playbook does. The Main Agent uses this text to route — it must also describe WHEN to route here (the user signals, intents, or topics that should trigger this playbook). Also: don't put identity, tone, or guardrails in the playbook's instructions — those inherit from the Global Prompt. And: if a playbook's only tool is the Knowledge Base, it shouldn't be a playbook — the Main Agent handles Knowledge Base Q&A directly. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: playbook create
       x-speakeasy-group: playbook
@@ -1344,7 +1344,7 @@ paths:
             USE WHEN — Iterating on instructions based on transcript failures, fixing the LLM description because the Main Agent is mis-routing, adding/removing attached tools, swapping the model override.
             BEFORE — voiceflow_playbook.get to see current state and merge changes against it.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
-            DO NOT — Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first.
+            DO NOT — Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: playbook update
       x-speakeasy-group: playbook
@@ -4325,7 +4325,7 @@ paths:
             USE WHEN — Changing the agent's identity, brand voice, tone, or cross-cutting guardrails; adding or removing routing targets; tuning model, voice, or timeout behavior; or enabling/configuring system tools.
             BEFORE — voiceflow_agent.get to see current state and merge changes against it — each playbookID/workflowID in playbooks/workflows must already exist.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send to verify the change — include at least one adversarial probe for tone or guardrail edits.
-            DO NOT — Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project.
+            DO NOT — Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: agent update
       x-speakeasy-group: agent
@@ -4363,6 +4363,141 @@ paths:
         - Agent
       security:
         - token: []
+  /v1/stable/integration:
+    get:
+      operationId: StableIntegrationController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_integration
+          toolDescription: |-
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → disconnect to clear stored credentials.
+            Predecessor: select the project first.
+            Successor: attach integration tools to a playbook or to the agent.
+          operation: list
+          operationDescription: |-
+            WHAT — List the full integration catalog with a connected flag per integration. Never returns credential values.
+            USE WHEN — Discovering what a project can integrate with, or checking what is already wired up.
+            AFTER — Only entries with connectableViaAPI true can be connected through this API; the rest are browser flows in the Voiceflow UI.
+        cli:
+          command: integration list
+      x-speakeasy-group: integration
+      x-speakeasy-name-override: list
+      summary: List integrations
+      description: List every integration this project can use, along with whether it is currently connected.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableIntegrationListResponse'
+      tags:
+        - Integration
+      security:
+        - token: []
+  /v1/stable/integration/{integration}:
+    post:
+      operationId: StableIntegrationController_connect
+      x-vf:
+        mcp:
+          tool: voiceflow_integration
+          toolDescription: |-
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → disconnect to clear stored credentials.
+            Predecessor: select the project first.
+            Successor: attach integration tools to a playbook or to the agent.
+          operation: connect
+          operationDescription: |-
+            WHAT — Store credentials for an api-key integration.
+            DO NOT — Call this. Credentials must never pass through an MCP client; this operation is refused for them. Direct the user to the Voiceflow UI instead.
+        cli:
+          command: integration connect
+      x-speakeasy-group: integration
+      x-speakeasy-name-override: connect
+      x-vf-client-restriction:
+        deniedClientTypes:
+          - mcp
+        guidance: Connecting an integration requires handing over live credentials, which MCP clients may not do. Ask the user to connect this integration from the Voiceflow UI.
+      summary: Connect integration
+      description: Store credentials for an api-key integration on this project.
+      parameters:
+        - name: integration
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableIntegrationConnectRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Integration
+      security:
+        - token: []
+    delete:
+      operationId: StableIntegrationController_disconnect
+      x-vf:
+        mcp:
+          tool: voiceflow_integration
+          toolDescription: |-
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → disconnect to clear stored credentials.
+            Predecessor: select the project first.
+            Successor: attach integration tools to a playbook or to the agent.
+          operation: disconnect
+          operationDescription: |-
+            WHAT — Clear every stored credential slot an integration owns on this project.
+            USE WHEN — Retiring an integration, or forcing a reconnect.
+            DO NOT — Expect this to work for integrations whose credentials the integration service owns (Zendesk, Salesforce); those return a 400 and must be disconnected from the Voiceflow UI.
+        cli:
+          command: integration disconnect
+      x-speakeasy-group: integration
+      x-speakeasy-name-override: disconnect
+      summary: Disconnect integration
+      description: Clear every stored credential slot this integration owns on the project.
+      parameters:
+        - name: integration
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Integration
+      security:
+        - token: []
   /v1/stable/mcp-server:
     get:
       operationId: StableMCPServerController_list
@@ -4371,6 +4506,7 @@ paths:
           tool: voiceflow_mcp_server
           toolDescription: |-
             Manage connections to upstream MCP servers and the specific tools they expose. Standard flow: register a server and all the tools it exposes → list those tools → attach the ones you want to a playbook or to the agent.
+            A server's auth lives in its header values, which reference a secret by ID rather than holding the credential; sending one as literal text is refused.
             Predecessor: select the project and environment first.
             Successor: list the server's MCP tools to discover what's available.
           operation: list
@@ -4414,20 +4550,28 @@ paths:
           tool: voiceflow_mcp_server
           toolDescription: |-
             Manage connections to upstream MCP servers and the specific tools they expose. Standard flow: register a server and all the tools it exposes → list those tools → attach the ones you want to a playbook or to the agent.
+            A server's auth lives in its header values, which reference a secret by ID rather than holding the credential; sending one as literal text is refused.
             Predecessor: select the project and environment first.
             Successor: list the server's MCP tools to discover what's available.
           operation: create
           operationDescription: |-
             WHAT — Register a new MCP server endpoint with URL + auth headers + optional custom instructions for the LLM.
             USE WHEN — Connecting a new upstream MCP service.
+            BEFORE — Every header value must reference a secret instead of carrying the credential: create an EMPTY secret with voiceflow_secret.create, then send its ID as the header value (`value: [{ secretID }]`, or `value: ['Bearer ', { secretID }]` when the scheme prefix is needed) and tell the user to fill that secret in.
             AFTER — voiceflow_mcp_server.sync to pull the server's tool catalog.
-            DO NOT — Hardcode bearer tokens in headers. Configure them as header values that can be edited via voiceflow_mcp_server.update when they need rotating.
+            DO NOT — Send a header value that is literal text, even when the user pasted the credential into the conversation. Such a request is refused and no server is created. The same refusal covers a header that is not a credential at all (`Content-Type`, a tenant ID) — ask the user to add those in the Voiceflow UI (Agent settings → MCP servers).
+            DO NOT — Put a credential in the URL either. Reference a secret there the same way: a token written into a path segment or a query parameter is stored verbatim and is never redacted on read.
         cli:
           command: mcp-server create
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: create
+      x-vf-client-restriction:
+        deniedClientTypes:
+          - mcp
+        guidance: 'An MCP server header value cannot be sent as literal text from an MCP client — the credential would be recorded in this conversation. Reference a secret instead (`value: [{ secretID }]`, or `value: [''Bearer '', { secretID }]` when the scheme prefix is needed). A header that is genuinely not a credential has to be added in the Voiceflow UI (Agent settings → MCP servers), with the Voiceflow CLI, or through the Voiceflow REST API.'
+        condition: Only when a header value carries literal text that does not reference a secret or variable.
       summary: Create MCP server
-      description: Create a new MCP server.
+      description: Create a new MCP server. Header values are Markup and may reference a secret by ID; MCP clients must send every header value as such a reference rather than as literal text.
       parameters:
         - name: projectID
           required: true
@@ -4466,6 +4610,7 @@ paths:
           tool: voiceflow_mcp_server
           toolDescription: |-
             Manage connections to upstream MCP servers and the specific tools they expose. Standard flow: register a server and all the tools it exposes → list those tools → attach the ones you want to a playbook or to the agent.
+            A server's auth lives in its header values, which reference a secret by ID rather than holding the credential; sending one as literal text is refused.
             Predecessor: select the project and environment first.
             Successor: list the server's MCP tools to discover what's available.
           operation: get
@@ -4514,16 +4659,25 @@ paths:
           tool: voiceflow_mcp_server
           toolDescription: |-
             Manage connections to upstream MCP servers and the specific tools they expose. Standard flow: register a server and all the tools it exposes → list those tools → attach the ones you want to a playbook or to the agent.
+            A server's auth lives in its header values, which reference a secret by ID rather than holding the credential; sending one as literal text is refused.
             Predecessor: select the project and environment first.
             Successor: list the server's MCP tools to discover what's available.
           operation: update
-          operationDescription: WHAT — Patch an MCP server's config. Partial PATCH.
+          operationDescription: |-
+            WHAT — Patch an MCP server's config. Partial PATCH.
+            USE WHEN — Renaming a server, moving its endpoint, or pointing a header at a different secret.
+            DO NOT — Send a header value that is literal text; the refusal described on voiceflow_mcp_server.create applies here too. Rotating a credential is a change to the secret's value, not to the header: leave the header referencing the secret and tell the user to update it in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
         cli:
           command: mcp-server update
       x-speakeasy-group: mcp-server
       x-speakeasy-name-override: update
+      x-vf-client-restriction:
+        deniedClientTypes:
+          - mcp
+        guidance: 'An MCP server header value cannot be sent as literal text from an MCP client — the credential would be recorded in this conversation. Reference a secret instead (`value: [{ secretID }]`, or `value: [''Bearer '', { secretID }]` when the scheme prefix is needed). A header that is genuinely not a credential has to be added in the Voiceflow UI (Agent settings → MCP servers), with the Voiceflow CLI, or through the Voiceflow REST API.'
+        condition: Only when a header value carries literal text that does not reference a secret or variable.
       summary: Update MCP server
-      description: Update an MCP server by ID.
+      description: Update an MCP server by ID. As on create, MCP clients must send every header value as a secret reference rather than as literal text.
       parameters:
         - name: serverID
           required: true
@@ -4567,6 +4721,7 @@ paths:
           tool: voiceflow_mcp_server
           toolDescription: |-
             Manage connections to upstream MCP servers and the specific tools they expose. Standard flow: register a server and all the tools it exposes → list those tools → attach the ones you want to a playbook or to the agent.
+            A server's auth lives in its header values, which reference a secret by ID rather than holding the credential; sending one as literal text is refused.
             Predecessor: select the project and environment first.
             Successor: list the server's MCP tools to discover what's available.
           operation: delete
@@ -4616,6 +4771,7 @@ paths:
           tool: voiceflow_mcp_server
           toolDescription: |-
             Manage connections to upstream MCP servers and the specific tools they expose. Standard flow: register a server and all the tools it exposes → list those tools → attach the ones you want to a playbook or to the agent.
+            A server's auth lives in its header values, which reference a secret by ID rather than holding the credential; sending one as literal text is refused.
             Predecessor: select the project and environment first.
             Successor: list the server's MCP tools to discover what's available.
           operation: sync
@@ -4754,6 +4910,230 @@ paths:
         - MCP Tool
       security:
         - token: []
+  /v1/stable/secret:
+    get:
+      operationId: StableSecretController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_secret
+          toolDescription: |-
+            Manage the project's secrets — named, write-only credentials (API keys, bearer tokens) that tools and integrations reference by ID instead of embedding the literal value. This surface returns IDs, names and whether a value is set; it never returns a value.
+            Predecessor: select the project first.
+            Successor: use a secret's ID as a tool input default (`defaultValue: [{ secretID }]`) so the tool fills the credential at runtime.
+          operation: list
+          operationDescription: |-
+            WHAT — List the project's secrets: ID, name, visibility, and whether a project-level value is set. Values are never returned.
+            USE WHEN — You need a secret's ID to reference it as a tool input default (`defaultValue: [{ secretID }]`), or to check which secrets already exist before creating another.
+            DO NOT — Expect to read a secret's value here or anywhere else in this API. Values are write-only.
+        cli:
+          command: secret list
+      x-speakeasy-group: secret
+      x-speakeasy-name-override: list
+      summary: List secrets
+      description: List all secrets by project ID. Secret values are never returned.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableSecretListResponse'
+      tags:
+        - Secret
+      security:
+        - token: []
+    post:
+      operationId: StableSecretController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_secret
+          toolDescription: |-
+            Manage the project's secrets — named, write-only credentials (API keys, bearer tokens) that tools and integrations reference by ID instead of embedding the literal value. This surface returns IDs, names and whether a value is set; it never returns a value.
+            Predecessor: select the project first.
+            Successor: use a secret's ID as a tool input default (`defaultValue: [{ secretID }]`) so the tool fills the credential at runtime.
+          operation: create
+          operationDescription: |-
+            WHAT — Create a named, EMPTY secret. Returns its ID, which is what you put in a tool input default (`defaultValue: [{ secretID }]`).
+            USE WHEN — A tool or integration needs a credential that must not be written literally into a URL, header or prompt.
+            AFTER — Reference the returned ID from the tool input, then tell the user the secret has no value yet and that they must set it themselves in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
+            DO NOT — Send `defaultValue`. A secret value cannot be set from this client at all: a request carrying one is refused and no secret is created. Omit the field even when the user has pasted the credential into the conversation, and do not fall back to voiceflow_secret.set_value — that is refused for the same reason.
+        cli:
+          command: secret create
+      x-speakeasy-group: secret
+      x-speakeasy-name-override: create
+      x-vf-client-restriction:
+        deniedClientTypes:
+          - mcp
+        guidance: A secret value cannot be set from an MCP client. Create the secret without `defaultValue`, then set the value in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
+        condition: Only when the request body carries a non-empty `defaultValue`.
+      summary: Create secret
+      description: Create a new secret. The value, if given, is written to the vault and never returned. MCP clients must omit the value and create the secret empty.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableSecretCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableSecretResponse'
+      tags:
+        - Secret
+      security:
+        - token: []
+  /v1/stable/secret/override:
+    get:
+      operationId: StableSecretController_listOverrides
+      x-vf:
+        mcp:
+          tool: voiceflow_secret
+          toolDescription: |-
+            Manage the project's secrets — named, write-only credentials (API keys, bearer tokens) that tools and integrations reference by ID instead of embedding the literal value. This surface returns IDs, names and whether a value is set; it never returns a value.
+            Predecessor: select the project first.
+            Successor: use a secret's ID as a tool input default (`defaultValue: [{ secretID }]`) so the tool fills the credential at runtime.
+          operation: list_overrides
+          operationDescription: |-
+            WHAT — List which secrets are overridden per environment, and on which version of that environment (`draft` or `published`). Only IDs are returned, never values.
+            USE WHEN — A tool behaves differently between environments and you need to know whether the environment overrides the secret rather than falling back to the project default.
+            BEFORE — Run voiceflow_secret.list to map the returned secret IDs back to names.
+        cli:
+          command: secret list-overrides
+      x-speakeasy-group: secret
+      x-speakeasy-name-override: list-overrides
+      summary: List secret overrides
+      description: List which secrets are overridden per environment version. Only secret IDs are returned, never values.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableSecretOverrideListResponse'
+      tags:
+        - Secret
+      security:
+        - token: []
+  /v1/stable/secret/{secretID}:
+    delete:
+      operationId: StableSecretController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_secret
+          toolDescription: |-
+            Manage the project's secrets — named, write-only credentials (API keys, bearer tokens) that tools and integrations reference by ID instead of embedding the literal value. This surface returns IDs, names and whether a value is set; it never returns a value.
+            Predecessor: select the project first.
+            Successor: use a secret's ID as a tool input default (`defaultValue: [{ secretID }]`) so the tool fills the credential at runtime.
+          operation: delete
+          operationDescription: |-
+            WHAT — Permanently delete a secret, its project value and every environment override.
+            BEFORE — Check whether any tool, function or integration still references this secret ID as an input default; those references break at runtime once it is gone.
+        cli:
+          command: secret delete
+      x-speakeasy-group: secret
+      x-speakeasy-name-override: delete
+      summary: Delete secret
+      description: Delete a secret by ID. Removes the project value and every environment override.
+      parameters:
+        - name: secretID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Secret
+      security:
+        - token: []
+  /v1/stable/secret/{secretID}/value:
+    put:
+      operationId: StableSecretController_setValue
+      x-vf:
+        mcp:
+          tool: voiceflow_secret
+          toolDescription: |-
+            Manage the project's secrets — named, write-only credentials (API keys, bearer tokens) that tools and integrations reference by ID instead of embedding the literal value. This surface returns IDs, names and whether a value is set; it never returns a value.
+            Predecessor: select the project first.
+            Successor: use a secret's ID as a tool input default (`defaultValue: [{ secretID }]`) so the tool fills the credential at runtime.
+          operation: set_value
+          operationDescription: |-
+            WHAT — Set a secret's value: the project default, or an override on one environment version.
+            DO NOT — Call this. Secret values cannot be set from an MCP client and the request will be refused. Tell the user to set the value in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
+        cli:
+          command: secret set-value
+      x-speakeasy-group: secret
+      x-speakeasy-name-override: set-value
+      x-vf-client-restriction:
+        deniedClientTypes:
+          - mcp
+        guidance: Secret values cannot be set from an MCP client. Set the value in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
+      summary: Set secret value
+      description: Set a secret value — the project-wide default, or an override on one environment version. Not available to MCP clients.
+      parameters:
+        - name: secretID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableSecretValueRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Secret
+      security:
+        - token: []
   /v1/stable/tool:
     get:
       operationId: StableToolController_list
@@ -4761,9 +5141,9 @@ paths:
         mcp:
           tool: voiceflow_tool
           toolDescription: |-
-            The wiring layer that attaches Function, API, and MCP tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: list
           operationDescription: |-
@@ -4811,10 +5191,12 @@ paths:
               - api
               - mcp
               - function
+              - integration
             x-enumNames:
               - API
               - MCP
               - FUNCTION
+              - INTEGRATION
       responses:
         "200":
           description: ""
@@ -4832,17 +5214,17 @@ paths:
         mcp:
           tool: voiceflow_tool
           toolDescription: |-
-            The wiring layer that attaches Function, API, and MCP tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create
           operationDescription: |-
-            WHAT — Attach one tool (function | api | mcp) to a target and wire its inputs and outputs.
+            WHAT — Attach one tool (function | api | mcp | integration) to a target and wire its inputs and outputs.
             USE WHEN — Enabling a specific tool on the global agent or a single playbook for the first time.
-            BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first.
+            BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first. Integration tools are not creatable through this API — the integration must already be connected in the Creator UI. An integrationToolID is only visible on an attachment that already exists (voiceflow_tool.list reports it); nothing in this API lists integration tools that have never been attached, so the first attachment has to be made in the Creator UI.
             AFTER — Set captureResponse so tool output lands in project variables; omitting it means the response is silently discarded. Then voiceflow_environment.compile + voiceflow_conversation.
-            DO NOT — Attach the same tool twice to the same target without allowDuplicate: true (function type only) — the second attach will fail.
+            DO NOT — Attach the same tool twice to the same target without allowDuplicate: true (function type only) — the second attach will fail. Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: tool create
       x-speakeasy-group: tool
@@ -4886,9 +5268,9 @@ paths:
         mcp:
           tool: voiceflow_tool
           toolDescription: |-
-            The wiring layer that attaches Function, API, and MCP tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create_many
           operationDescription: |-
@@ -4896,6 +5278,7 @@ paths:
             USE WHEN — Bulk-wiring a set of functions, API tools, or MCP tools to a playbook or the global agent (e.g. migrating all tools from one playbook to another via sourcePlaybookID, or seeding a new agent from a template).
             BEFORE — All referenced functionIDs / apiToolIDs / mcpToolIDs must already exist.
             AFTER — Verify captureResponse is set on each record — bulk creates are the most common place it gets omitted.
+            DO NOT — Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: tool create-many
       x-speakeasy-group: tool
@@ -4940,9 +5323,9 @@ paths:
         mcp:
           tool: voiceflow_tool
           toolDescription: |-
-            The wiring layer that attaches Function, API, and MCP tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: get
           operationDescription: |-
@@ -4982,11 +5365,13 @@ paths:
               - api
               - mcp
               - function
+              - integration
             description: The type of the tool to fetch.
             x-enumNames:
               - API
               - MCP
               - FUNCTION
+              - INTEGRATION
       responses:
         "200":
           description: ""
@@ -5004,9 +5389,9 @@ paths:
         mcp:
           tool: voiceflow_tool
           toolDescription: |-
-            The wiring layer that attaches Function, API, and MCP tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: update
           operationDescription: |-
@@ -5014,6 +5399,7 @@ paths:
             USE WHEN — Changing how a tool's inputs are resolved (switch from LLM-filled to variable-sourced), adding or correcting captureResponse mappings, or toggling asyncExecution on a function tool.
             BEFORE — voiceflow_tool.get to read current config; use its values as base to avoid accidentally clearing fields.
             AFTER — voiceflow_environment.compile + voiceflow_conversation to confirm the new wiring behaves correctly.
+            DO NOT — Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: tool update
       x-speakeasy-group: tool
@@ -5061,9 +5447,9 @@ paths:
         mcp:
           tool: voiceflow_tool
           toolDescription: |-
-            The wiring layer that attaches Function, API, and MCP tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: delete
           operationDescription: |-
@@ -5103,11 +5489,13 @@ paths:
               - api
               - mcp
               - function
+              - integration
             description: The type of the tool to delete.
             x-enumNames:
               - API
               - MCP
               - FUNCTION
+              - INTEGRATION
       responses:
         "200":
           description: ""
@@ -10634,6 +11022,20 @@ components:
       x-enumNames:
         - INPUT
         - OUTPUT
+    ToolNodeDataIntegrationCaptureResponse:
+      type: object
+      properties:
+        path:
+          type: string
+        variableOrEntityID:
+          nullable: true
+          type: string
+        captureType:
+          allOf:
+            - $ref: '#/components/schemas/ToolNodeCaptureType'
+      required:
+        - path
+        - variableOrEntityID
     AgentEndTool:
       type: object
       properties:
@@ -11244,6 +11646,22 @@ components:
       x-enumNames:
         - V_2025_03_26
         - V_2025_06_18
+    VersionVariant:
+      type: string
+      enum:
+        - draft
+        - published
+      x-enumNames:
+        - DRAFT
+        - PUBLISHED
+    SecretVisibility:
+      type: string
+      enum:
+        - restricted
+        - masked
+      x-enumNames:
+        - RESTRICTED
+        - MASKED
     VersionSettingsVoice:
       type: object
       properties:
@@ -17477,6 +17895,436 @@ components:
           description: A human-readable description of what the variable holds.
           type: string
       additionalProperties: false
+    StableIntegration:
+      type: object
+      properties:
+        integration:
+          description: The integration identifier, used as the path segment when connecting or disconnecting.
+          allOf:
+            - $ref: '#/components/schemas/ProjectIntegration'
+          enum:
+            - make
+            - zendesk
+            - shopify
+            - airtable
+            - salesforce
+            - hubspot
+            - google_gmail
+            - google_sheets
+            - twilio
+            - ujet
+            - genesys
+            - kustomer
+            - dixa
+            - sunshine
+            - example
+            - eleven_labs
+          x-enumNames:
+            - MAKE
+            - ZENDESK
+            - SHOPIFY
+            - AIRTABLE
+            - SALESFORCE
+            - HUBSPOT
+            - GOOGLE_GMAIL
+            - GOOGLE_SHEETS
+            - TWILIO
+            - UJET
+            - GENESYS
+            - KUSTOMER
+            - DIXA
+            - SUNSHINE
+            - EXAMPLE
+            - ELEVEN_LABS
+        name:
+          type: string
+          description: The human-readable name of the integration.
+        connectionType:
+          description: 'How credentials reach the integration: `oauth` and `app` are browser flows owned by the Voiceflow UI, `api-key` is a credential the caller supplies directly.'
+          allOf:
+            - $ref: '#/components/schemas/IntegrationConnectionType'
+          enum:
+            - app
+            - oauth
+            - api-key
+          x-enumNames:
+            - APP
+            - OAUTH
+            - API_KEY
+        connected:
+          type: boolean
+          description: Whether this project currently has credentials stored for the integration.
+        connectableViaAPI:
+          type: boolean
+          description: Whether this integration can be connected through this API. False for `oauth` and `app` integrations.
+      required:
+        - integration
+        - name
+        - connectionType
+        - connected
+        - connectableViaAPI
+    ProjectIntegration:
+      type: string
+      enum:
+        - make
+        - zendesk
+        - shopify
+        - airtable
+        - salesforce
+        - hubspot
+        - google_gmail
+        - google_sheets
+        - twilio
+        - ujet
+        - genesys
+        - kustomer
+        - dixa
+        - sunshine
+        - example
+        - eleven_labs
+      x-enumNames:
+        - MAKE
+        - ZENDESK
+        - SHOPIFY
+        - AIRTABLE
+        - SALESFORCE
+        - HUBSPOT
+        - GOOGLE_GMAIL
+        - GOOGLE_SHEETS
+        - TWILIO
+        - UJET
+        - GENESYS
+        - KUSTOMER
+        - DIXA
+        - SUNSHINE
+        - EXAMPLE
+        - ELEVEN_LABS
+    IntegrationConnectionType:
+      type: string
+      enum:
+        - app
+        - oauth
+        - api-key
+      x-enumNames:
+        - APP
+        - OAUTH
+        - API_KEY
+    StableIntegrationListResponse:
+      type: object
+      properties:
+        integrations:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableIntegration'
+      required:
+        - integrations
+    TwilioIntegrationAPIKeyValue:
+      type: object
+      properties:
+        apiKeySid:
+          type: string
+          description: Sid associated with the API key.
+        apiKeySecret:
+          type: string
+          description: Twilio API key secret value.
+        accountSid:
+          type: string
+          description: Sid associated with the Twilio account.
+      required:
+        - apiKeySid
+        - apiKeySecret
+        - accountSid
+    UjetIntegrationCredentialsValue:
+      type: object
+      properties:
+        domain:
+          type: string
+          description: UJET domain.
+        subdomain:
+          type: string
+          description: UJET subdomain.
+        apiKey:
+          type: string
+          description: UJET API key.
+        secretKey:
+          type: string
+          description: UJET secret key.
+      required:
+        - domain
+        - subdomain
+        - apiKey
+        - secretKey
+    GenesysIntegrationCredentialsValue:
+      type: object
+      properties:
+        domain:
+          type: string
+          description: Genesys domain.
+        clientId:
+          type: string
+          description: Genesys client ID.
+        secretKey:
+          type: string
+          description: Genesys webhook secret.
+        oauthSecretKey:
+          type: string
+          description: Genesys OAuth secret key.
+      required:
+        - domain
+        - clientId
+        - secretKey
+        - oauthSecretKey
+    KustomerIntegrationCredentialsValue:
+      type: object
+      properties:
+        orgName:
+          type: string
+          description: Kustomer org slug
+        apiKey:
+          type: string
+          description: Kustomer org-level Bearer API key.
+        secretKey:
+          type: string
+          description: Kustomer outbound webhook signing secret.
+      required:
+        - orgName
+        - apiKey
+        - secretKey
+    DixaIntegrationCredentialsValue:
+      type: object
+      properties:
+        apiKey:
+          type: string
+          description: Dixa API key.
+        webhookSecretKey:
+          type: string
+          description: Dixa webhook secret key.
+      required:
+        - apiKey
+        - webhookSecretKey
+    SunshineIntegrationCredentialsValue:
+      type: object
+      properties:
+        subdomain:
+          type: string
+          description: Zendesk subdomain, base of the Sunshine Conversations API.
+        appId:
+          type: string
+          description: Sunshine Conversations app ID.
+        keyId:
+          type: string
+          description: Sunshine API key ID, the Basic auth username.
+        keySecret:
+          type: string
+          description: Sunshine API key secret, the Basic auth password.
+        webhookSecret:
+          type: string
+          description: Sunshine webhook secret.
+      required:
+        - subdomain
+        - appId
+        - keyId
+        - keySecret
+        - webhookSecret
+    StableIntegrationConnectRequest:
+      oneOf:
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - eleven_labs
+              x-enumNames:
+                - ELEVEN_LABS
+            credentials:
+              type: string
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - twilio
+              x-enumNames:
+                - TWILIO
+            credentials:
+              $ref: '#/components/schemas/TwilioIntegrationAPIKeyValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - ujet
+              x-enumNames:
+                - UJET
+            credentials:
+              $ref: '#/components/schemas/UjetIntegrationCredentialsValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - genesys
+              x-enumNames:
+                - GENESYS
+            credentials:
+              $ref: '#/components/schemas/GenesysIntegrationCredentialsValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - kustomer
+              x-enumNames:
+                - KUSTOMER
+            credentials:
+              $ref: '#/components/schemas/KustomerIntegrationCredentialsValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - dixa
+              x-enumNames:
+                - DIXA
+            credentials:
+              $ref: '#/components/schemas/DixaIntegrationCredentialsValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - sunshine
+              x-enumNames:
+                - SUNSHINE
+            credentials:
+              $ref: '#/components/schemas/SunshineIntegrationCredentialsValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - zendesk
+              x-enumNames:
+                - ZENDESK
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - salesforce
+              x-enumNames:
+                - SALESFORCE
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - shopify
+              x-enumNames:
+                - SHOPIFY
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - google_sheets
+              x-enumNames:
+                - GOOGLE_SHEETS
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - google_gmail
+              x-enumNames:
+                - GOOGLE_GMAIL
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - airtable
+              x-enumNames:
+                - AIRTABLE
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - make
+              x-enumNames:
+                - MAKE
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - hubspot
+              x-enumNames:
+                - HUBSPOT
+          required:
+            - integration
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - example
+              x-enumNames:
+                - EXAMPLE
+          required:
+            - integration
+          additionalProperties: false
     StableKnowledgeBaseQueryResponse:
       type: object
       properties:
@@ -18434,6 +19282,130 @@ components:
       properties:
         name:
           type: string
+      additionalProperties: false
+    StableSecret:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'The ID of the secret. This is the value to put in a tool input default (`defaultValue: [{ secretID }]`) so the credential is injected at runtime.'
+        name:
+          type: string
+          description: The name of the secret, unique within the project.
+        visibility:
+          description: '`masked` secrets can be revealed in the Voiceflow UI by users with permission; `restricted` secrets can never be read back by anyone.'
+          allOf:
+            - $ref: '#/components/schemas/SecretVisibility'
+          enum:
+            - restricted
+            - masked
+          x-enumNames:
+            - RESTRICTED
+            - MASKED
+        hasValue:
+          type: boolean
+          description: Whether a project-level default value is currently stored for this secret.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - name
+        - visibility
+        - hasValue
+        - createdAt
+        - updatedAt
+    StableSecretListResponse:
+      type: object
+      properties:
+        secrets:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableSecret'
+      required:
+        - secrets
+    StableSecretOverride:
+      type: object
+      properties:
+        environmentAlias:
+          type: string
+          description: The alias of the environment carrying the override (e.g. `main`).
+        versionVariant:
+          description: Which version of the environment carries the override — its editable `draft` or its `published` copy.
+          allOf:
+            - $ref: '#/components/schemas/VersionVariant'
+          enum:
+            - draft
+            - published
+          x-enumNames:
+            - DRAFT
+            - PUBLISHED
+        secretIDs:
+          type: array
+          items:
+            type: string
+          description: The IDs of the secrets overridden on this environment version.
+      required:
+        - environmentAlias
+        - versionVariant
+        - secretIDs
+    StableSecretOverrideListResponse:
+      type: object
+      properties:
+        overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableSecretOverride'
+      required:
+        - overrides
+    StableSecretResponse:
+      type: object
+      properties:
+        secret:
+          $ref: '#/components/schemas/StableSecret'
+      required:
+        - secret
+    StableSecretCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: The name of the secret. Must be unique within the project.
+        defaultValue:
+          description: The project-level value. Omit to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI.
+          type: string
+        visibility:
+          default: masked
+          description: Whether the value can be revealed in the Voiceflow UI. `restricted` secrets can never be read back by anyone.
+          allOf:
+            - $ref: '#/components/schemas/SecretVisibility'
+      required:
+        - name
+      additionalProperties: false
+    StableSecretValueRequest:
+      type: object
+      properties:
+        value:
+          type: string
+          minLength: 1
+          description: The secret value to store. Write-only — it can never be read back through this API.
+        environmentAlias:
+          description: Set the value as an override on this environment (e.g. `main`) instead of as the project-wide default.
+          type: string
+          minLength: 1
+        versionVariant:
+          description: Which version of the environment the override applies to. Defaults to `draft`. Ignored without `environmentAlias`.
+          allOf:
+            - $ref: '#/components/schemas/VersionVariant'
+      required:
+        - value
       additionalProperties: false
     StableTestCheck:
       oneOf:
@@ -19537,11 +20509,11 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - apiToolInputVariableID
+                  - required
               description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               type: object
@@ -19619,11 +20591,11 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - functionInputVariableID
+                  - required
               description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               type: object
@@ -19698,11 +20670,11 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - mcpIntegrationVariableName
+                  - required
               description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               type: object
@@ -19718,6 +20690,84 @@ components:
             - captureInputVariables
             - type
             - mcpToolID
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/AgentToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/Markup'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - integrationToolID
             - inputVariables
             - captureResponse
     StableToolListResponse:
@@ -19793,12 +20843,10 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - apiToolInputVariableID
-              description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               default: {}
               type: object
@@ -19865,12 +20913,10 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - functionInputVariableID
-              description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               default: {}
               type: object
@@ -19933,12 +20979,10 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - mcpIntegrationVariableName
-              description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               default: {}
               type: object
@@ -19959,6 +21003,72 @@ components:
             - target
             - type
             - mcpToolID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/AgentToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/Markup'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+          required:
+            - target
+            - type
+            - integrationToolID
           additionalProperties: false
     StableToolCreateManyRequest:
       oneOf:
@@ -20019,12 +21129,10 @@ components:
                           allOf:
                             - $ref: '#/components/schemas/ToolNodeCaptureType'
                         required:
-                          default: true
-                          description: Whether the agent must provide a value for this input.
                           type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                       required:
                         - apiToolInputVariableID
-                    description: A map of input names to the values the agent supplies when calling the tool.
                   captureResponse:
                     default: {}
                     type: object
@@ -20098,12 +21206,10 @@ components:
                           allOf:
                             - $ref: '#/components/schemas/ToolNodeCaptureType'
                         required:
-                          default: true
-                          description: Whether the agent must provide a value for this input.
                           type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                       required:
                         - functionInputVariableID
-                    description: A map of input names to the values the agent supplies when calling the tool.
                   captureResponse:
                     default: {}
                     type: object
@@ -20173,12 +21279,10 @@ components:
                           allOf:
                             - $ref: '#/components/schemas/ToolNodeCaptureType'
                         required:
-                          default: true
-                          description: Whether the agent must provide a value for this input.
                           type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                       required:
                         - mcpIntegrationVariableName
-                    description: A map of input names to the values the agent supplies when calling the tool.
                   captureResponse:
                     default: {}
                     type: object
@@ -20190,6 +21294,79 @@ components:
                     description: The ID of the MCP tool resource this tool calls.
                 required:
                   - mcpToolID
+                additionalProperties: false
+          required:
+            - type
+            - target
+            - tools
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating that integration tools are being created.
+              x-enumNames:
+                - INTEGRATION
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            tools:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    nullable: true
+                    description: A description of what the tool does, used by the agent to decide when to call it.
+                    type: string
+                  messages:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/AgentToolMessages'
+                  captureInputVariables:
+                    default: {}
+                    nullable: true
+                    description: A map of tool input names to the variables or entities whose values are captured into them.
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  inputVariables:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        description:
+                          default: null
+                          nullable: true
+                          type: string
+                        defaultValue:
+                          default: null
+                          nullable: true
+                          allOf:
+                            - $ref: '#/components/schemas/Markup'
+                        integrationToolVariableName:
+                          type: string
+                        captureType:
+                          allOf:
+                            - $ref: '#/components/schemas/ToolNodeCaptureType'
+                        required:
+                          type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                      required:
+                        - integrationToolVariableName
+                  captureResponse:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+                    description: A map of variable names to the parts of the tool response captured into them.
+                  integrationToolID:
+                    type: string
+                    description: The ID of the integration tool resource this tool calls.
+                required:
+                  - integrationToolID
                 additionalProperties: false
           required:
             - type
@@ -20239,12 +21416,10 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - apiToolInputVariableID
-              description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               type: object
               additionalProperties:
@@ -20295,12 +21470,10 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - functionInputVariableID
-              description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               type: object
               additionalProperties:
@@ -20348,16 +21521,65 @@ components:
                     allOf:
                       - $ref: '#/components/schemas/ToolNodeCaptureType'
                   required:
-                    default: true
-                    description: Whether the agent must provide a value for this input.
                     type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
                 required:
                   - mcpIntegrationVariableName
-              description: A map of input names to the values the agent supplies when calling the tool.
             captureResponse:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/Markup'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
               description: A map of variable names to the parts of the tool response captured into them.
           required:
             - type

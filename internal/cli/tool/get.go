@@ -19,7 +19,7 @@ var getCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "type", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function"}, Description: "The type of the tool to fetch. (options: api, mcp, function) [required]"},
+	{FlagName: "type", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration"}, Description: "The type of the tool to fetch. (options: api, mcp, function, integration) [required]"},
 }
 
 // initGetCmd initializes the get command.

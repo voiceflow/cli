@@ -25,3 +25,7 @@ func (s *StableToolResponse) GetToolFunction() *StableToolFunction {
 func (s *StableToolResponse) GetToolMcp() *StableToolMcp {
 	return s.GetTool().StableToolMcp
 }
+
+func (s *StableToolResponse) GetToolIntegration() *StableToolIntegration {
+	return s.GetTool().StableToolIntegration
+}
