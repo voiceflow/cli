@@ -89,7 +89,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Must be YARN_NPM_*, not NODE_AUTH_TOKEN. Yarn 3 does not read the
+          # .npmrc that actions/setup-node writes — the first version of this
+          # workflow set NODE_AUTH_TOKEN, and yarn went to its own default
+          # registry unauthenticated and 404'd on both private packages.
+          YARN_NPM_REGISTRY_SERVER: https://registry.npmjs.org
+          YARN_NPM_ALWAYS_AUTH: "true"
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # test/vf-*.test.ts drive the real API and exclude themselves when
       # VF_TOKEN / VF_WORKSPACE_ID are absent (see vitest.config.mts), so this
@@ -115,7 +121,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Must be YARN_NPM_*, not NODE_AUTH_TOKEN. Yarn 3 does not read the
+          # .npmrc that actions/setup-node writes — the first version of this
+          # workflow set NODE_AUTH_TOKEN, and yarn went to its own default
+          # registry unauthenticated and 404'd on both private packages.
+          YARN_NPM_REGISTRY_SERVER: https://registry.npmjs.org
+          YARN_NPM_ALWAYS_AUTH: "true"
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Lint
         run: yarn oxlint
