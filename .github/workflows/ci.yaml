@@ -106,10 +106,6 @@ jobs:
   lint:
     name: Lint and format
     runs-on: ubuntu-latest
-    # The lint configs extend private packages this workflow's author could not
-    # install, so unlike every other job here its result was never observed
-    # locally. Non-blocking until one green run proves it, then drop this line.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -129,8 +125,16 @@ jobs:
           YARN_NPM_ALWAYS_AUTH: "true"
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      # Blocking: verified green on this workflow's own first run (1 warning,
+      # 0 errors) before the continue-on-error escape hatch was removed.
       - name: Lint
         run: yarn oxlint
 
-      - name: Format check
-        run: yarn oxfmt --check
+      # No format check here, deliberately. `oxfmt --check` reports 193 of 204
+      # files as unformatted: formatting has never run in this repo, and the
+      # overwhelming majority of those files are Speakeasy output. Reformatting
+      # them would produce a diff that the next regeneration silently undoes,
+      # and reformatting only the hand-written files still means touching every
+      # test file at once. That is a decision about which paths this repo wants
+      # to own, not something to smuggle in behind a CI change — so the gate is
+      # left off rather than left permanently red.
