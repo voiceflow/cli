@@ -62,8 +62,10 @@ type VoiceflowSDK struct {
 	Evaluation    *Evaluation
 	Document      *Document
 	Agent         *Agent
+	Integration   *Integration
 	McpServer     *McpServer
 	McpTool       *McpTool
+	Secret        *Secret
 	Tool          *Tool
 	KnowledgeBase *KnowledgeBase
 	Conversation  *Conversation
@@ -173,8 +175,10 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Evaluation = newEvaluation(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Document = newDocument(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Agent = newAgent(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Integration = newIntegration(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.McpServer = newMcpServer(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.McpTool = newMcpTool(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Secret = newSecret(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Tool = newTool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.KnowledgeBase = newKnowledgeBase(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Conversation = newConversation(sdk, sdk.sdkConfiguration, sdk.hooks)

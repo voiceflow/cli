@@ -15,11 +15,13 @@ import (
 	"github.com/voiceflow/cli/internal/cli/environment"
 	"github.com/voiceflow/cli/internal/cli/evaluation"
 	"github.com/voiceflow/cli/internal/cli/function"
+	"github.com/voiceflow/cli/internal/cli/integration"
 	"github.com/voiceflow/cli/internal/cli/knowledgebase"
 	"github.com/voiceflow/cli/internal/cli/mcpserver"
 	"github.com/voiceflow/cli/internal/cli/mcptool"
 	"github.com/voiceflow/cli/internal/cli/playbook"
 	"github.com/voiceflow/cli/internal/cli/project"
+	"github.com/voiceflow/cli/internal/cli/secret"
 	"github.com/voiceflow/cli/internal/cli/test"
 	"github.com/voiceflow/cli/internal/cli/tool"
 	"github.com/voiceflow/cli/internal/cli/transcript"
@@ -97,11 +99,17 @@ func NewRootCommand() (*cobra.Command, error) {
 	if err := agent.InitAgentRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init agent: %w", err)
 	}
+	if err := integration.InitIntegrationRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init integration: %w", err)
+	}
 	if err := mcpserver.InitMcpServerRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init mcp-server: %w", err)
 	}
 	if err := mcptool.InitMcpToolRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init mcp-tool: %w", err)
+	}
+	if err := secret.InitSecretRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init secret: %w", err)
 	}
 	if err := tool.InitToolRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init tool: %w", err)

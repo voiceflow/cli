@@ -47,6 +47,10 @@ func (s *StableToolControllerCreateRequest) GetBodyMcp() *components.StableToolC
 	return s.GetBody().StableToolCreateRequestMcp
 }
 
+func (s *StableToolControllerCreateRequest) GetBodyIntegration() *components.StableToolCreateRequestIntegration {
+	return s.GetBody().StableToolCreateRequestIntegration
+}
+
 type StableToolControllerCreateResponse struct {
 	HTTPMeta           components.HTTPMetadata `json:"-"`
 	StableToolResponse *components.StableToolResponse
