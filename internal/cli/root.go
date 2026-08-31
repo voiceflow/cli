@@ -226,7 +226,7 @@ func Execute() error {
 		return runExplorer(rootCmd)
 	}
 
-	return rootCmd.Execute()
+	return renderFlagValueError(rootCmd, rootCmd.Execute()) // see flagerrors.go
 }
 
 // shouldAutoExplore returns true when the CLI is invoked with no subcommand
