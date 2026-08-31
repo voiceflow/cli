@@ -404,7 +404,7 @@ func Error(cmd *cobra.Command, err error) error {
 
 	printJSON(out, jsonData, colorize)
 
-	return err
+	return AlreadyReported(err) // see reported.go
 }
 
 // tryReadRawBody attempts to read the raw HTTP response body from the response
