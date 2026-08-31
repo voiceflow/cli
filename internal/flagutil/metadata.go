@@ -8,7 +8,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -252,7 +251,9 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 	// both surprise pipelines and re-relax required path/query params via the
 	// bodyPrePopulated relaxation below.
 	if !bodyPrePopulated && (bodyFieldPath != "" || bodyFlagName != "") && HasStdinInput(cmd) {
-		stdinData, err := io.ReadAll(cmd.InOrStdin())
+		// Bounded: an open pipe that never sends data and never closes would
+		// otherwise block here forever. See internal/flagutil/stdin.go.
+		stdinData, err := readStdinBounded(cmd.InOrStdin())
 		if err != nil {
 			return nil, fmt.Errorf("failed to read stdin: %w", err)
 		}
@@ -330,7 +331,8 @@ func BuildRequestBody[T any](cmd *cobra.Command, flagName string, annotations st
 	if FlagChanged(cmd, flagName) {
 		requestData, _ = GetStringFlag(cmd, flagName)
 	} else if HasStdinInput(cmd) {
-		stdin, err := io.ReadAll(cmd.InOrStdin())
+		// Bounded, same reasoning as BuildRequest above.
+		stdin, err := readStdinBounded(cmd.InOrStdin())
 		if err != nil {
 			return nil, fmt.Errorf("failed to read stdin: %w", err)
 		}
