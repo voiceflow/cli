@@ -95,7 +95,7 @@ func setJSONFieldAsRawText(field reflect.Value, fieldType reflect.Type, isPtr bo
 		holder := reflect.New(reflect.PtrTo(fieldType))
 		holder.Elem().Set(reflect.New(fieldType))
 		if err := utils.UnmarshalJsonFromString(string(quoted), holder.Interface(), m.Annotations); err != nil {
-			return rawTextRetryFailed(m, val, cause)
+			return rawTextRetryFailed(m, val, err, cause)
 		}
 		field.Set(holder.Elem())
 		return nil
@@ -103,7 +103,7 @@ func setJSONFieldAsRawText(field reflect.Value, fieldType reflect.Type, isPtr bo
 
 	target := reflect.New(fieldType)
 	if err := utils.UnmarshalJsonFromString(string(quoted), target.Interface(), m.Annotations); err != nil {
-		return rawTextRetryFailed(m, val, cause)
+		return rawTextRetryFailed(m, val, err, cause)
 	}
 	field.Set(target.Elem())
 	return nil
@@ -112,11 +112,17 @@ func setJSONFieldAsRawText(field reflect.Value, fieldType reflect.Type, isPtr bo
 // rawTextRetryFailed reports a destination that looked string-shaped but refused
 // a JSON string anyway. Reaching this means stringLikeJSONTarget and the SDK's
 // unmarshaler disagree, so it names that explicitly instead of blaming the input.
-func rawTextRetryFailed(m FlagMeta, val string, cause error) error {
+//
+// retryErr is the error from the quoted retry — the one that describes the
+// disagreement. The first version reported the original parse error here, which
+// only ever says "this text is not JSON": true, expected, and useless for
+// diagnosing why the retry failed. The original is kept as the wrapped Cause so
+// the full sequence is still recoverable.
+func rawTextRetryFailed(m FlagMeta, val string, retryErr, cause error) error {
 	return &FlagValueError{
 		Flag:     m.FlagName,
 		Value:    val,
-		Expected: fmt.Sprintf("could not be set from text (%v)", cause),
+		Expected: fmt.Sprintf("could not be set from text (%v)", retryErr),
 		Hints:    []string{"this is a bug in the CLI — please report it with the command you ran"},
 		Cause:    cause,
 	}

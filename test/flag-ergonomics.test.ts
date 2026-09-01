@@ -18,12 +18,38 @@ const VF = path.resolve(__dirname, '..', 'vf');
 
 const BASE = ['agent', 'update', '--project-id', 'p', '--environment-alias', 'main', '--dry-run', '--token', 'vfp_x'];
 
-/** Runs vf with agent-detection env vars stripped, so human output is exercised. */
+// Every variable that puts the CLI into agent mode. Mirrors the list in
+// internal/output/agentmode.go — if that grows and this does not, a human-mode
+// test running on a machine that sets the new one would silently assert against
+// agent output. assertMode below is the guard against exactly that drift.
+const AGENT_ENV_VARS = [
+  'CLAUDECODE', 'CLAUDE_CODE', 'CURSOR_AGENT', 'CODEX', 'AIDER', 'CLINE',
+  'WINDSURF_AGENT', 'GITHUB_COPILOT', 'AMAZON_Q', 'GEMINI_CODE_ASSIST',
+  'SRC_CODY', 'FORCE_AGENT_MODE',
+];
+
+/**
+ * Runs vf in a known output mode.
+ *
+ * Human mode has to clear ALL of AGENT_ENV_VARS, not just the obvious few: CI
+ * runs on GitHub, where GITHUB_COPILOT may well be set, and a stray one silently
+ * flips the CLI into agent mode so the assertions check the wrong renderer.
+ */
 function run(args: string[], opts: { agentMode?: boolean } = {}) {
-  const env: Record<string, string | undefined> = opts.agentMode
-    ? { CLAUDECODE: '1' }
-    : { CLAUDECODE: undefined, CLAUDE_CODE: undefined, CURSOR_AGENT: undefined };
+  const env: Record<string, string | undefined> = Object.fromEntries(
+    AGENT_ENV_VARS.map((name) => [name, undefined]),
+  );
+  if (opts.agentMode) env.CLAUDECODE = '1';
   return execa({ reject: false, timeout: 20_000, stdin: 'ignore', env, extendEnv: true })(VF, args);
+}
+
+/** Fails loudly if the CLI rendered in the mode we did not ask for. */
+function assertMode(stderr: string, mode: 'human' | 'agent') {
+  const looksLikeAgent = stderr.trimStart().startsWith('{');
+  expect(
+    looksLikeAgent,
+    `expected ${mode} output but got the other renderer — a new agent-detection env var is probably set and missing from AGENT_ENV_VARS:\n${stderr.slice(0, 200)}`,
+  ).toBe(mode === 'agent');
 }
 
 /** Pull a field back out of the --dry-run request preview. */
@@ -76,6 +102,7 @@ describe('structured flags still reject raw text', () => {
 
   it('explains what was wanted, echoes what was passed, and shows a worked example', async () => {
     const r = await run([...BASE, '--llm', 'gpt-4']);
+    assertMode(r.stderr, 'human');
     expect(r.stderr).toContain('expected a JSON value');
     expect(r.stderr).toContain('you passed: gpt-4');
     expect(r.stderr).toContain(`--llm '{"key":"value"}'`);
@@ -84,6 +111,7 @@ describe('structured flags still reject raw text', () => {
 
   it('emits a structured envelope in agent mode', async () => {
     const r = await run([...BASE, '--llm', 'gpt-4'], { agentMode: true });
+    assertMode(r.stderr, 'agent');
     const json = JSON.parse(r.stderr.slice(r.stderr.indexOf('{'), r.stderr.lastIndexOf('}') + 1));
     expect(json.error_type).toBe('invalid_flag_value');
     expect(json.error).toContain('invalid value for --llm');
