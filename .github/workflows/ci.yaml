@@ -31,6 +31,8 @@ jobs:
   go:
     name: Go
     runs-on: ubuntu-latest
+    env:
+      GOFLAGS: -mod=readonly
     steps:
       - uses: actions/checkout@v4
 
@@ -41,12 +43,21 @@ jobs:
 
       # Catches an incomplete go.sum, which is what made master uncompilable
       # from a clean checkout. A warm local module cache hides this; CI cannot.
+      #
+      # -mod=readonly is already the default from Go 1.16, and removing a
+      # required module from go.sum does make `go build ./...` fail here — but
+      # relying on a default for a security-relevant guarantee is how it quietly
+      # stops holding. Set it explicitly, and assert afterwards that nothing in
+      # this job rewrote the committed dependency metadata.
       - name: Verify module integrity
         run: go mod verify
 
+      # No vendor/ filter: this repo has no vendored code, and `gofmt -l .`
+      # emits paths without a leading ./ anyway, so the filter it replaced was
+      # guarding against nothing. If vendoring is ever added, this will say so.
       - name: Check formatting
         run: |
-          unformatted=$(gofmt -l . | grep -v '^vendor/' || true)
+          unformatted=$(gofmt -l .)
           if [ -n "$unformatted" ]; then
             echo "::error::gofmt would reformat these files:"
             echo "$unformatted"
@@ -61,6 +72,11 @@ jobs:
 
       - name: Unit tests
         run: go test ./...
+
+      # If any step above rewrote go.mod or go.sum, what is committed was
+      # incomplete — fail rather than pass on a state no reviewer approved.
+      - name: Dependency metadata is unchanged
+        run: git diff --exit-code go.mod go.sum
 
   cli:
     name: CLI behaviour
@@ -97,11 +113,17 @@ jobs:
           YARN_NPM_ALWAYS_AUTH: "true"
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # test/vf-*.test.ts drive the real API and exclude themselves when
-      # VF_TOKEN / VF_WORKSPACE_ID are absent (see vitest.config.mts), so this
-      # runs the hermetic suite: mock server, --dry-run and --help only.
+      # test/vf-*.test.ts create and delete real projects, so they need a token
+      # and a workspace this job does not have. Skipping them is opted into
+      # explicitly — vitest.config.mts fails rather than quietly running a
+      # subset — which leaves the hermetic suite: mock server, --dry-run, --help.
+      #
+      # Worth revisiting: with a scoped token and a throwaway workspace as
+      # secrets, CI could run the integration suite too. Nothing covers it today.
       - name: Behaviour tests
         run: yarn test
+        env:
+          VF_SKIP_INTEGRATION_TESTS: "1"
 
   lint:
     name: Lint and format
