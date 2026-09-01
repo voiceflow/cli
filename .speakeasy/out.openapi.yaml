@@ -1499,7 +1499,7 @@ paths:
           operationDescription: |-
             WHAT — Create a new API tool with name, description (WHAT/WHEN format — LLM-routing field), method, URL, headers, body, and declared input variables.
             USE WHEN — User gives a REST endpoint to call.
-            DO NOT — Write the description as pure WHAT. The LLM uses this text to decide whether to call the API — it must include WHEN (the user signals or data conditions that should trigger the call). Also: don't embed auth tokens in URL or headers literally — declare them as input variables (filled at call time or auto-filled from a project variable).
+            DO NOT — Write the description as pure WHAT. The LLM uses this text to decide whether to call the API — it must include WHEN (the user signals or data conditions that should trigger the call). Also: literal text (hostnames, paths, static params) is fine in url/headers/body — but don't write a project variable or secret ID reference there, and don't hardcode credentials. Those fields resolve against THIS tool's own declared input variables only; any other reference resolves to empty at runtime and the request still fires. Declare an input variable (voiceflow_api_tool.create_variable), reference that, then bind the real value as the input's defaultValue on each attachment via voiceflow_tool.
         cli:
           command: api-tool create
       x-speakeasy-group: api-tool
@@ -1653,6 +1653,7 @@ paths:
             WHAT — Patch an API tool's config. Partial PATCH.
             BEFORE — voiceflow_api_tool.get to see current config.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
+            DO NOT — Reference a project variable or a secret ID from url, headers or body. Those fields resolve against this tool's own declared input variables only; anything else resolves to empty at runtime. Bind secrets as an input's defaultValue on the tool attachment (voiceflow_tool) instead.
         cli:
           command: api-tool update
       x-speakeasy-group: api-tool
@@ -3348,7 +3349,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against transcripts (single or batch), retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: list
@@ -3385,7 +3386,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against transcripts (single or batch), retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: create
@@ -3430,7 +3431,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against transcripts (single or batch), retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: get
@@ -3472,7 +3473,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against transcripts (single or batch), retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: update
@@ -3520,7 +3521,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against transcripts (single or batch), retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: delete
@@ -3563,13 +3564,13 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against transcripts (single or batch), retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: run
           operationDescription: |-
-            WHAT — Run a single evaluation against a transcript.
-            USE WHEN — Smoke-testing a calibration tweak on a transcript before doing a wider batch_run.
+            WHAT — Run a single evaluation against a transcript. One transcript per call — there is no batch form.
+            USE WHEN — Smoke-testing a calibration tweak on one transcript before repeating the call across the rest.
         cli:
           command: evaluation run
       x-speakeasy-group: evaluation
