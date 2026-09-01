@@ -818,13 +818,13 @@ func buildJSONField(cmd *cobra.Command, v reflect.Value, m FlagMeta) error {
 		holder := reflect.New(reflect.PtrTo(fieldType))
 		holder.Elem().Set(reflect.New(fieldType))
 		if err := utils.UnmarshalJsonFromString(val, holder.Interface(), m.Annotations); err != nil {
-			return jsonValueError(field.Type(), val, m, err) // see jsonerror.go
+			return setJSONFieldAsRawText(field, fieldType, isPtr, val, m, err) // see rawtext.go
 		}
 		field.Set(holder.Elem())
 	} else {
 		target := reflect.New(fieldType)
 		if err := utils.UnmarshalJsonFromString(val, target.Interface(), m.Annotations); err != nil {
-			return jsonValueError(field.Type(), val, m, err) // see jsonerror.go
+			return setJSONFieldAsRawText(field, fieldType, isPtr, val, m, err) // see rawtext.go
 		}
 		field.Set(target.Elem())
 	}

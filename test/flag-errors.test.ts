@@ -77,20 +77,15 @@ describe('nullability is unaffected', () => {
   });
 });
 
-describe('a string-valued flag says how to quote it', () => {
-  // The motivating failure. Prose still has to be JSON-quoted here, but the
-  // error now names the shape instead of naming the first character of the
-  // sentence and stopping.
-  it('offers a quoting example, and following it works', async () => {
-    const rejected = await run([...BASE, '--instructions', 'You are a support agent.']);
-    expect(rejected.exitCode).not.toBe(0);
-    const suggestion = (rejected.stderr + rejected.stdout).match(
-      /expected shape: --instructions '(.+)'/,
-    )?.[1];
-    expect(suggestion, 'no quoting example offered').toBe('"your text here"');
-
-    const retry = await run([...BASE, '--instructions', '"You are a support agent."']);
-    expect(sent(retry.stderr + retry.stdout, 'instructions')).toBe('"You are a support agent."');
+describe('a string-valued flag accepts prose directly', () => {
+  // In the errors-only PR this flag rejected prose and the test asserted that
+  // the error said how to quote it. The raw-text fallback removes the rejection,
+  // so what is pinned here is the behaviour that replaced it. The quoting
+  // example still exists for the flags the fallback does not cover.
+  it('takes prose without JSON quoting', async () => {
+    const r = await run([...BASE, '--instructions', 'You are a support agent.']);
+    expect(r.exitCode).toBe(0);
+    expect(sent(r.stderr + r.stdout, 'instructions')).toBe('"You are a support agent."');
   });
 });
 
