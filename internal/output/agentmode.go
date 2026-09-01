@@ -176,11 +176,11 @@ func AgentModeError(cmd *cobra.Command, errorType, message string, hints []strin
 	jsonData, err := json.MarshalIndent(envelope, "", "  ")
 	if err != nil {
 		fmt.Fprintln(out, message)
-		return fmt.Errorf("%s", message)
+		return AlreadyReported(fmt.Errorf("%s", message)) // see reported.go
 	}
 
 	// No colorization in agent mode.
 	fmt.Fprintln(out, string(jsonData))
 
-	return fmt.Errorf("%s", message)
+	return AlreadyReported(fmt.Errorf("%s", message)) // see reported.go
 }

@@ -105,6 +105,7 @@ type FlagMeta struct {
 // credentials) are skipped to prevent local flags from shadowing them.
 func RegisterFlags(cmd *cobra.Command, meta []FlagMeta) {
 	for _, m := range meta {
+		m.Description = flagDescription(m.Description) // see description.go
 		// Skip if a flag with this name already exists — either inherited from
 		// a parent command (persistent globals/security) or already registered
 		// locally (e.g., operation security flags like username/password).
@@ -817,13 +818,13 @@ func buildJSONField(cmd *cobra.Command, v reflect.Value, m FlagMeta) error {
 		holder := reflect.New(reflect.PtrTo(fieldType))
 		holder.Elem().Set(reflect.New(fieldType))
 		if err := utils.UnmarshalJsonFromString(val, holder.Interface(), m.Annotations); err != nil {
-			return fmt.Errorf("invalid value for --%s: %w", m.FlagName, err)
+			return jsonValueError(field.Type(), val, m, err) // see jsonerror.go
 		}
 		field.Set(holder.Elem())
 	} else {
 		target := reflect.New(fieldType)
 		if err := utils.UnmarshalJsonFromString(val, target.Interface(), m.Annotations); err != nil {
-			return fmt.Errorf("invalid value for --%s: %w", m.FlagName, err)
+			return jsonValueError(field.Type(), val, m, err) // see jsonerror.go
 		}
 		field.Set(target.Elem())
 	}
