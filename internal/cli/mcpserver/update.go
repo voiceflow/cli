@@ -31,7 +31,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "update",
 		Short:   "Update MCP server",
-		Long:    "Update an MCP server by ID. As on create, MCP clients must send every header value as a secret reference rather than as literal text.",
+		Long:    "Update an MCP server by ID.",
 		Example: "  vf mcp-server update --server-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runUpdateCmd,
 	}

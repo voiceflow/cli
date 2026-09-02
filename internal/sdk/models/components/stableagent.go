@@ -768,6 +768,225 @@ func (s *StableAgentButtonTool) GetDescription() string {
 	return s.Description
 }
 
+type StableAgentInstructionType string
+
+const (
+	StableAgentInstructionTypeStr                     StableAgentInstructionType = "str"
+	StableAgentInstructionTypeMarkupSpan1             StableAgentInstructionType = "MarkupSpan_1"
+	StableAgentInstructionTypeMarkupToolReference     StableAgentInstructionType = "MarkupToolReference"
+	StableAgentInstructionTypeMarkupSecretReference   StableAgentInstructionType = "MarkupSecretReference"
+	StableAgentInstructionTypeMarkupEntityReference   StableAgentInstructionType = "MarkupEntityReference"
+	StableAgentInstructionTypeMarkupVariableReference StableAgentInstructionType = "MarkupVariableReference"
+	StableAgentInstructionTypeUnknown                 StableAgentInstructionType = "Unknown"
+)
+
+type StableAgentInstruction struct {
+	Str                     *string                  `queryParam:"inline" union:"member"`
+	MarkupSpan1             *MarkupSpan1             `queryParam:"inline" union:"member"`
+	MarkupToolReference     *MarkupToolReference     `queryParam:"inline" union:"member"`
+	MarkupSecretReference   *MarkupSecretReference   `queryParam:"inline" union:"member"`
+	MarkupEntityReference   *MarkupEntityReference   `queryParam:"inline" union:"member"`
+	MarkupVariableReference *MarkupVariableReference `queryParam:"inline" union:"member"`
+	UnknownRaw              json.RawMessage          `json:"-" union:"unknown"`
+
+	Type StableAgentInstructionType
+}
+
+func CreateStableAgentInstructionStr(str string) StableAgentInstruction {
+	typ := StableAgentInstructionTypeStr
+
+	return StableAgentInstruction{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func CreateStableAgentInstructionMarkupSpan1(markupSpan1 MarkupSpan1) StableAgentInstruction {
+	typ := StableAgentInstructionTypeMarkupSpan1
+
+	return StableAgentInstruction{
+		MarkupSpan1: &markupSpan1,
+		Type:        typ,
+	}
+}
+
+func CreateStableAgentInstructionMarkupToolReference(markupToolReference MarkupToolReference) StableAgentInstruction {
+	typ := StableAgentInstructionTypeMarkupToolReference
+
+	return StableAgentInstruction{
+		MarkupToolReference: &markupToolReference,
+		Type:                typ,
+	}
+}
+
+func CreateStableAgentInstructionMarkupSecretReference(markupSecretReference MarkupSecretReference) StableAgentInstruction {
+	typ := StableAgentInstructionTypeMarkupSecretReference
+
+	return StableAgentInstruction{
+		MarkupSecretReference: &markupSecretReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStableAgentInstructionMarkupEntityReference(markupEntityReference MarkupEntityReference) StableAgentInstruction {
+	typ := StableAgentInstructionTypeMarkupEntityReference
+
+	return StableAgentInstruction{
+		MarkupEntityReference: &markupEntityReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStableAgentInstructionMarkupVariableReference(markupVariableReference MarkupVariableReference) StableAgentInstruction {
+	typ := StableAgentInstructionTypeMarkupVariableReference
+
+	return StableAgentInstruction{
+		MarkupVariableReference: &markupVariableReference,
+		Type:                    typ,
+	}
+}
+
+func CreateStableAgentInstructionUnknown(raw json.RawMessage) StableAgentInstruction {
+	return StableAgentInstruction{
+		UnknownRaw: raw,
+		Type:       StableAgentInstructionTypeUnknown,
+	}
+}
+
+func (u StableAgentInstruction) GetUnknownRaw() json.RawMessage {
+	return u.UnknownRaw
+}
+
+func (u StableAgentInstruction) IsUnknown() bool {
+	return u.Type == StableAgentInstructionTypeUnknown
+}
+
+func (u *StableAgentInstruction) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentInstructionTypeStr,
+			Value: &str,
+		})
+	}
+
+	var markupSpan1 MarkupSpan1 = MarkupSpan1{}
+	if err := utils.UnmarshalJSON(data, &markupSpan1, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentInstructionTypeMarkupSpan1,
+			Value: &markupSpan1,
+		})
+	}
+
+	var markupToolReference MarkupToolReference = MarkupToolReference{}
+	if err := utils.UnmarshalJSON(data, &markupToolReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentInstructionTypeMarkupToolReference,
+			Value: &markupToolReference,
+		})
+	}
+
+	var markupSecretReference MarkupSecretReference = MarkupSecretReference{}
+	if err := utils.UnmarshalJSON(data, &markupSecretReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentInstructionTypeMarkupSecretReference,
+			Value: &markupSecretReference,
+		})
+	}
+
+	var markupEntityReference MarkupEntityReference = MarkupEntityReference{}
+	if err := utils.UnmarshalJSON(data, &markupEntityReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentInstructionTypeMarkupEntityReference,
+			Value: &markupEntityReference,
+		})
+	}
+
+	var markupVariableReference MarkupVariableReference = MarkupVariableReference{}
+	if err := utils.UnmarshalJSON(data, &markupVariableReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentInstructionTypeMarkupVariableReference,
+			Value: &markupVariableReference,
+		})
+	}
+
+	if len(candidates) == 0 {
+		u.UnknownRaw = json.RawMessage(data)
+		u.Type = StableAgentInstructionTypeUnknown
+		return nil
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		u.UnknownRaw = json.RawMessage(data)
+		u.Type = StableAgentInstructionTypeUnknown
+		return nil
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StableAgentInstructionType)
+	switch best.Type {
+	case StableAgentInstructionTypeStr:
+		u.Str = best.Value.(*string)
+		return nil
+	case StableAgentInstructionTypeMarkupSpan1:
+		u.MarkupSpan1 = best.Value.(*MarkupSpan1)
+		return nil
+	case StableAgentInstructionTypeMarkupToolReference:
+		u.MarkupToolReference = best.Value.(*MarkupToolReference)
+		return nil
+	case StableAgentInstructionTypeMarkupSecretReference:
+		u.MarkupSecretReference = best.Value.(*MarkupSecretReference)
+		return nil
+	case StableAgentInstructionTypeMarkupEntityReference:
+		u.MarkupEntityReference = best.Value.(*MarkupEntityReference)
+		return nil
+	case StableAgentInstructionTypeMarkupVariableReference:
+		u.MarkupVariableReference = best.Value.(*MarkupVariableReference)
+		return nil
+	}
+
+	u.UnknownRaw = json.RawMessage(data)
+	u.Type = StableAgentInstructionTypeUnknown
+	return nil
+}
+
+func (u StableAgentInstruction) MarshalJSON() ([]byte, error) {
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	if u.MarkupSpan1 != nil {
+		return utils.MarshalJSON(u.MarkupSpan1, "", true)
+	}
+
+	if u.MarkupToolReference != nil {
+		return utils.MarshalJSON(u.MarkupToolReference, "", true)
+	}
+
+	if u.MarkupSecretReference != nil {
+		return utils.MarshalJSON(u.MarkupSecretReference, "", true)
+	}
+
+	if u.MarkupEntityReference != nil {
+		return utils.MarshalJSON(u.MarkupEntityReference, "", true)
+	}
+
+	if u.MarkupVariableReference != nil {
+		return utils.MarshalJSON(u.MarkupVariableReference, "", true)
+	}
+
+	if u.UnknownRaw != nil {
+		return json.RawMessage(u.UnknownRaw), nil
+	}
+	return nil, errors.New("could not marshal union type StableAgentInstruction: all fields are null")
+}
+
 type StableAgentCarouselToolGenerative struct {
 	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
 	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
@@ -1793,21 +2012,19 @@ func (s *StableAgentKnowledgeBaseTool) GetSourceUrlsCount() optionalnullable.Opt
 }
 
 type StableAgent struct {
-	Llm StableAgentLlm `json:"llm"`
-	// Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
-	Prompt string `json:"prompt"`
+	Llm    StableAgentLlm `json:"llm"`
+	Prompt []Markup       `json:"prompt"`
 	// Whether to append the default prompting guidelines to the global prompt.
 	IncludeGuidelines bool                  `json:"includeGuidelines"`
 	Voice             *VersionSettingsVoice `json:"voice,omitzero"`
 	// Playbooks available for the agent to invoke.
 	Playbooks []StableAgentPlaybook `json:"playbooks"`
 	// Workflows available for the agent to invoke.
-	Workflows  []StableAgentWorkflow  `json:"workflows"`
-	EndTool    *StableAgentEndTool    `json:"endTool"`
-	CardTool   *StableAgentCardTool   `json:"cardTool"`
-	ButtonTool *StableAgentButtonTool `json:"buttonTool"`
-	// Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
-	Instructions *string                  `json:"instructions"`
+	Workflows    []StableAgentWorkflow    `json:"workflows"`
+	EndTool      *StableAgentEndTool      `json:"endTool"`
+	CardTool     *StableAgentCardTool     `json:"cardTool"`
+	ButtonTool   *StableAgentButtonTool   `json:"buttonTool"`
+	Instructions []StableAgentInstruction `json:"instructions"`
 	CarouselTool *StableAgentCarouselTool `json:"carouselTool"`
 	SkipTurnTool *StableAgentSkipTurnTool `json:"skipTurnTool"`
 	// The ordered list of path tool IDs that controls the order of the agent exit paths.
@@ -1835,9 +2052,9 @@ func (s *StableAgent) GetLlm() StableAgentLlm {
 	return s.Llm
 }
 
-func (s *StableAgent) GetPrompt() string {
+func (s *StableAgent) GetPrompt() []Markup {
 	if s == nil {
-		return ""
+		return []Markup{}
 	}
 	return s.Prompt
 }
@@ -1891,7 +2108,7 @@ func (s *StableAgent) GetButtonTool() *StableAgentButtonTool {
 	return s.ButtonTool
 }
 
-func (s *StableAgent) GetInstructions() *string {
+func (s *StableAgent) GetInstructions() []StableAgentInstruction {
 	if s == nil {
 		return nil
 	}

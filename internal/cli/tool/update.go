@@ -19,11 +19,10 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", Shorthand: "t", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, captureInputVariables: object, type: string, asyncExecution: boolean, ... }, function: { description: string, captureInputVariables: object, type: string, asyncExecution: boolean, ... }, mcp: { description: string, captureInputVariables: object, type: string, inputVariables: object, ... }, integration: { description: string, captureInputVariables: object, type: string, inputVariables: object, ... })", Variants: []flagutil.UnionVariantMeta{
+	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, captureInputVariables: object, type: string, asyncExecution: boolean, ... }, function: { description: string, captureInputVariables: object, type: string, asyncExecution: boolean, ... }, mcp: { description: string, captureInputVariables: object, type: string, inputVariables: object, ... })", Variants: []flagutil.UnionVariantMeta{
 		{DiscriminatorValue: "api", FlagName: "body-param.api", FieldName: "StableToolUpdateRequestAPI", CanExpand: false, Description: "StableToolUpdateRequest_API variant as JSON"},
 		{DiscriminatorValue: "function", FlagName: "body-param.function", FieldName: "StableToolUpdateRequestFunction", CanExpand: false, Description: "StableToolUpdateRequest_Function variant as JSON"},
 		{DiscriminatorValue: "mcp", FlagName: "body-param.mcp", FieldName: "StableToolUpdateRequestMcp", CanExpand: false, Description: "StableToolUpdateRequest_Mcp variant as JSON"},
-		{DiscriminatorValue: "integration", FlagName: "body-param.integration", FieldName: "StableToolUpdateRequestIntegration", CanExpand: false, Description: "StableToolUpdateRequest_Integration variant as JSON"},
 	}}},
 }
 

@@ -63,32 +63,32 @@ func (m *McpIntegrationToolSimulationTurnTestPayload) GetToolID() string {
 	return m.ToolID
 }
 
-type ToolSimulationTurnTestPayloadTypeIntegration string
+type TypeIntegration string
 
 const (
-	ToolSimulationTurnTestPayloadTypeIntegrationIntegration ToolSimulationTurnTestPayloadTypeIntegration = "integration"
+	TypeIntegrationIntegration TypeIntegration = "integration"
 )
 
-func (e ToolSimulationTurnTestPayloadTypeIntegration) ToPointer() *ToolSimulationTurnTestPayloadTypeIntegration {
+func (e TypeIntegration) ToPointer() *TypeIntegration {
 	return &e
 }
-func (e *ToolSimulationTurnTestPayloadTypeIntegration) UnmarshalJSON(data []byte) error {
+func (e *TypeIntegration) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 	switch v {
 	case "integration":
-		*e = ToolSimulationTurnTestPayloadTypeIntegration(v)
+		*e = TypeIntegration(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for ToolSimulationTurnTestPayloadTypeIntegration: %v", v)
+		return fmt.Errorf("invalid value for TypeIntegration: %v", v)
 	}
 }
 
 type IntegrationToolSimulationTurnTestPayload struct {
-	Type   ToolSimulationTurnTestPayloadTypeIntegration `json:"type"`
-	ToolID string                                       `json:"toolID"`
+	Type   TypeIntegration `json:"type"`
+	ToolID string          `json:"toolID"`
 }
 
 func (i IntegrationToolSimulationTurnTestPayload) MarshalJSON() ([]byte, error) {
@@ -102,9 +102,9 @@ func (i *IntegrationToolSimulationTurnTestPayload) UnmarshalJSON(data []byte) er
 	return nil
 }
 
-func (i *IntegrationToolSimulationTurnTestPayload) GetType() ToolSimulationTurnTestPayloadTypeIntegration {
+func (i *IntegrationToolSimulationTurnTestPayload) GetType() TypeIntegration {
 	if i == nil {
-		return ToolSimulationTurnTestPayloadTypeIntegration("")
+		return TypeIntegration("")
 	}
 	return i.Type
 }
@@ -336,7 +336,7 @@ func CreateToolFunction(function FunctionToolSimulationTurnTestPayload) Tool {
 func CreateToolIntegration(integration IntegrationToolSimulationTurnTestPayload) Tool {
 	typ := ToolTypeIntegration
 
-	typStr := ToolSimulationTurnTestPayloadTypeIntegration(typ)
+	typStr := TypeIntegration(typ)
 	integration.Type = typStr
 
 	return Tool{

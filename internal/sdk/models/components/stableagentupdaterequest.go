@@ -825,6 +825,199 @@ func (s *StableAgentUpdateRequestCarouselTool) GetDescription() string {
 	return s.Description
 }
 
+type StableAgentUpdateRequestInstructionType string
+
+const (
+	StableAgentUpdateRequestInstructionTypeStr                     StableAgentUpdateRequestInstructionType = "str"
+	StableAgentUpdateRequestInstructionTypeMarkupSpan1             StableAgentUpdateRequestInstructionType = "MarkupSpan_1"
+	StableAgentUpdateRequestInstructionTypeMarkupToolReference     StableAgentUpdateRequestInstructionType = "MarkupToolReference"
+	StableAgentUpdateRequestInstructionTypeMarkupSecretReference   StableAgentUpdateRequestInstructionType = "MarkupSecretReference"
+	StableAgentUpdateRequestInstructionTypeMarkupEntityReference   StableAgentUpdateRequestInstructionType = "MarkupEntityReference"
+	StableAgentUpdateRequestInstructionTypeMarkupVariableReference StableAgentUpdateRequestInstructionType = "MarkupVariableReference"
+)
+
+type StableAgentUpdateRequestInstruction struct {
+	Str                     *string                  `queryParam:"inline" union:"member"`
+	MarkupSpan1             *MarkupSpan1             `queryParam:"inline" union:"member"`
+	MarkupToolReference     *MarkupToolReference     `queryParam:"inline" union:"member"`
+	MarkupSecretReference   *MarkupSecretReference   `queryParam:"inline" union:"member"`
+	MarkupEntityReference   *MarkupEntityReference   `queryParam:"inline" union:"member"`
+	MarkupVariableReference *MarkupVariableReference `queryParam:"inline" union:"member"`
+
+	Type StableAgentUpdateRequestInstructionType
+}
+
+func CreateStableAgentUpdateRequestInstructionStr(str string) StableAgentUpdateRequestInstruction {
+	typ := StableAgentUpdateRequestInstructionTypeStr
+
+	return StableAgentUpdateRequestInstruction{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func CreateStableAgentUpdateRequestInstructionMarkupSpan1(markupSpan1 MarkupSpan1) StableAgentUpdateRequestInstruction {
+	typ := StableAgentUpdateRequestInstructionTypeMarkupSpan1
+
+	return StableAgentUpdateRequestInstruction{
+		MarkupSpan1: &markupSpan1,
+		Type:        typ,
+	}
+}
+
+func CreateStableAgentUpdateRequestInstructionMarkupToolReference(markupToolReference MarkupToolReference) StableAgentUpdateRequestInstruction {
+	typ := StableAgentUpdateRequestInstructionTypeMarkupToolReference
+
+	return StableAgentUpdateRequestInstruction{
+		MarkupToolReference: &markupToolReference,
+		Type:                typ,
+	}
+}
+
+func CreateStableAgentUpdateRequestInstructionMarkupSecretReference(markupSecretReference MarkupSecretReference) StableAgentUpdateRequestInstruction {
+	typ := StableAgentUpdateRequestInstructionTypeMarkupSecretReference
+
+	return StableAgentUpdateRequestInstruction{
+		MarkupSecretReference: &markupSecretReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStableAgentUpdateRequestInstructionMarkupEntityReference(markupEntityReference MarkupEntityReference) StableAgentUpdateRequestInstruction {
+	typ := StableAgentUpdateRequestInstructionTypeMarkupEntityReference
+
+	return StableAgentUpdateRequestInstruction{
+		MarkupEntityReference: &markupEntityReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStableAgentUpdateRequestInstructionMarkupVariableReference(markupVariableReference MarkupVariableReference) StableAgentUpdateRequestInstruction {
+	typ := StableAgentUpdateRequestInstructionTypeMarkupVariableReference
+
+	return StableAgentUpdateRequestInstruction{
+		MarkupVariableReference: &markupVariableReference,
+		Type:                    typ,
+	}
+}
+
+func (u *StableAgentUpdateRequestInstruction) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentUpdateRequestInstructionTypeStr,
+			Value: &str,
+		})
+	}
+
+	var markupSpan1 MarkupSpan1 = MarkupSpan1{}
+	if err := utils.UnmarshalJSON(data, &markupSpan1, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentUpdateRequestInstructionTypeMarkupSpan1,
+			Value: &markupSpan1,
+		})
+	}
+
+	var markupToolReference MarkupToolReference = MarkupToolReference{}
+	if err := utils.UnmarshalJSON(data, &markupToolReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentUpdateRequestInstructionTypeMarkupToolReference,
+			Value: &markupToolReference,
+		})
+	}
+
+	var markupSecretReference MarkupSecretReference = MarkupSecretReference{}
+	if err := utils.UnmarshalJSON(data, &markupSecretReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentUpdateRequestInstructionTypeMarkupSecretReference,
+			Value: &markupSecretReference,
+		})
+	}
+
+	var markupEntityReference MarkupEntityReference = MarkupEntityReference{}
+	if err := utils.UnmarshalJSON(data, &markupEntityReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentUpdateRequestInstructionTypeMarkupEntityReference,
+			Value: &markupEntityReference,
+		})
+	}
+
+	var markupVariableReference MarkupVariableReference = MarkupVariableReference{}
+	if err := utils.UnmarshalJSON(data, &markupVariableReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableAgentUpdateRequestInstructionTypeMarkupVariableReference,
+			Value: &markupVariableReference,
+		})
+	}
+
+	if len(candidates) == 0 {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableAgentUpdateRequestInstruction", string(data))
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableAgentUpdateRequestInstruction", string(data))
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StableAgentUpdateRequestInstructionType)
+	switch best.Type {
+	case StableAgentUpdateRequestInstructionTypeStr:
+		u.Str = best.Value.(*string)
+		return nil
+	case StableAgentUpdateRequestInstructionTypeMarkupSpan1:
+		u.MarkupSpan1 = best.Value.(*MarkupSpan1)
+		return nil
+	case StableAgentUpdateRequestInstructionTypeMarkupToolReference:
+		u.MarkupToolReference = best.Value.(*MarkupToolReference)
+		return nil
+	case StableAgentUpdateRequestInstructionTypeMarkupSecretReference:
+		u.MarkupSecretReference = best.Value.(*MarkupSecretReference)
+		return nil
+	case StableAgentUpdateRequestInstructionTypeMarkupEntityReference:
+		u.MarkupEntityReference = best.Value.(*MarkupEntityReference)
+		return nil
+	case StableAgentUpdateRequestInstructionTypeMarkupVariableReference:
+		u.MarkupVariableReference = best.Value.(*MarkupVariableReference)
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableAgentUpdateRequestInstruction", string(data))
+}
+
+func (u StableAgentUpdateRequestInstruction) MarshalJSON() ([]byte, error) {
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	if u.MarkupSpan1 != nil {
+		return utils.MarshalJSON(u.MarkupSpan1, "", true)
+	}
+
+	if u.MarkupToolReference != nil {
+		return utils.MarshalJSON(u.MarkupToolReference, "", true)
+	}
+
+	if u.MarkupSecretReference != nil {
+		return utils.MarshalJSON(u.MarkupSecretReference, "", true)
+	}
+
+	if u.MarkupEntityReference != nil {
+		return utils.MarshalJSON(u.MarkupEntityReference, "", true)
+	}
+
+	if u.MarkupVariableReference != nil {
+		return utils.MarshalJSON(u.MarkupVariableReference, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type StableAgentUpdateRequestInstruction: all fields are null")
+}
+
 type StableAgentUpdateRequestSkipTurnTool struct {
 	Enabled     bool   `json:"enabled"`
 	Description string `json:"description"`
@@ -1983,19 +2176,17 @@ func (v *Voice) GetMaxDuration() *VoiceMaxDurationSettings {
 }
 
 type StableAgentUpdateRequest struct {
-	// Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
-	Prompt   *string                                                             `json:"prompt,omitzero"`
+	Prompt   []Markup                                                            `json:"prompt,omitzero"`
 	EndTool  optionalnullable.OptionalNullable[StableAgentUpdateRequestEndTool]  `json:"endTool,omitzero"`
 	CardTool optionalnullable.OptionalNullable[StableAgentUpdateRequestCardTool] `json:"cardTool,omitzero"`
 	// Playbooks available for the agent to invoke.
 	Playbooks []StableAgentUpdateRequestPlaybook `json:"playbooks,omitzero"`
 	// Workflows available for the agent to invoke.
-	Workflows    []StableAgentUpdateRequestWorkflow                                      `json:"workflows,omitzero"`
-	ButtonTool   optionalnullable.OptionalNullable[StableAgentUpdateRequestButtonTool]   `json:"buttonTool,omitzero"`
-	CarouselTool optionalnullable.OptionalNullable[StableAgentUpdateRequestCarouselTool] `json:"carouselTool,omitzero"`
-	// Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
-	Instructions optionalnullable.OptionalNullable[string]                               `json:"instructions,omitzero"`
-	SkipTurnTool optionalnullable.OptionalNullable[StableAgentUpdateRequestSkipTurnTool] `json:"skipTurnTool,omitzero"`
+	Workflows    []StableAgentUpdateRequestWorkflow                                       `json:"workflows,omitzero"`
+	ButtonTool   optionalnullable.OptionalNullable[StableAgentUpdateRequestButtonTool]    `json:"buttonTool,omitzero"`
+	CarouselTool optionalnullable.OptionalNullable[StableAgentUpdateRequestCarouselTool]  `json:"carouselTool,omitzero"`
+	Instructions optionalnullable.OptionalNullable[[]StableAgentUpdateRequestInstruction] `json:"instructions,omitzero"`
+	SkipTurnTool optionalnullable.OptionalNullable[StableAgentUpdateRequestSkipTurnTool]  `json:"skipTurnTool,omitzero"`
 	// The ordered list of path tool IDs that controls the order of the agent exit paths.
 	PathToolOrder     []string                                                                     `json:"pathToolOrder,omitzero"`
 	WebSearchTool     optionalnullable.OptionalNullable[StableAgentUpdateRequestWebSearchTool]     `json:"webSearchTool,omitzero"`
@@ -2018,7 +2209,7 @@ func (s *StableAgentUpdateRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableAgentUpdateRequest) GetPrompt() *string {
+func (s *StableAgentUpdateRequest) GetPrompt() []Markup {
 	if s == nil {
 		return nil
 	}
@@ -2067,7 +2258,7 @@ func (s *StableAgentUpdateRequest) GetCarouselTool() optionalnullable.OptionalNu
 	return s.CarouselTool
 }
 
-func (s *StableAgentUpdateRequest) GetInstructions() optionalnullable.OptionalNullable[string] {
+func (s *StableAgentUpdateRequest) GetInstructions() optionalnullable.OptionalNullable[[]StableAgentUpdateRequestInstruction] {
 	if s == nil {
 		return nil
 	}
