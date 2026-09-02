@@ -8,8 +8,6 @@ import (
 )
 
 type DixaIntegrationCredentialsValue struct {
-	// Dixa domain.
-	Domain *string `json:"domain,omitzero"`
 	// Dixa API key.
 	APIKey string `json:"apiKey"`
 	// Dixa webhook secret key.
@@ -25,13 +23,6 @@ func (d *DixaIntegrationCredentialsValue) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
-}
-
-func (d *DixaIntegrationCredentialsValue) GetDomain() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Domain
 }
 
 func (d *DixaIntegrationCredentialsValue) GetAPIKey() string {
