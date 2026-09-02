@@ -30,7 +30,7 @@ func initCreateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "create",
 		Short:   "Create MCP server",
-		Long:    "Create a new MCP server. Header values are Markup and may reference a secret by ID; MCP clients must send every header value as such a reference rather than as literal text.",
+		Long:    "Create a new MCP server.",
 		Example: "  vf mcp-server create --project-id <id> --environment-alias <value> --name <value> --url '[]'",
 		RunE:    runCreateCmd,
 	}

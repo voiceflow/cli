@@ -51,7 +51,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude48Opus       StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.8-opus"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore40           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.0"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore41           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.1"
-	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash42          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.2"
+	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash41          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.1"
 	StableKnowledgeBaseQuerySettingsModelKimiK3                    StableKnowledgeBaseQuerySettingsModel = "kimi-k3"
 	StableKnowledgeBaseQuerySettingsModelGemini25Pro               StableKnowledgeBaseQuerySettingsModel = "gemini-2.5-pro"
 	StableKnowledgeBaseQuerySettingsModelGemini25Flash             StableKnowledgeBaseQuerySettingsModel = "gemini-2.5-flash"
@@ -65,8 +65,6 @@ const (
 	StableKnowledgeBaseQuerySettingsModelLlama31Instant            StableKnowledgeBaseQuerySettingsModel = "llama-3.1-instant"
 	StableKnowledgeBaseQuerySettingsModelLlama33Versatile          StableKnowledgeBaseQuerySettingsModel = "llama-3.3-versatile"
 	StableKnowledgeBaseQuerySettingsModelQwen3627b                 StableKnowledgeBaseQuerySettingsModel = "qwen3.6-27b"
-	StableKnowledgeBaseQuerySettingsModelGrok46                    StableKnowledgeBaseQuerySettingsModel = "grok-4.6"
-	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash41          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.1"
 	StableKnowledgeBaseQuerySettingsModelGeminiFlash2              StableKnowledgeBaseQuerySettingsModel = "gemini-flash-2"
 	StableKnowledgeBaseQuerySettingsModelGpt4Turbo                 StableKnowledgeBaseQuerySettingsModel = "gpt-4-turbo"
 	StableKnowledgeBaseQuerySettingsModelClaude35Haiku             StableKnowledgeBaseQuerySettingsModel = "claude-3.5-haiku"
@@ -171,7 +169,7 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 		fallthrough
 	case "voiceflow-core-4.1":
 		fallthrough
-	case "voiceflow-flash-4.2":
+	case "voiceflow-flash-4.1":
 		fallthrough
 	case "kimi-k3":
 		fallthrough
@@ -198,10 +196,6 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "llama-3.3-versatile":
 		fallthrough
 	case "qwen3.6-27b":
-		fallthrough
-	case "grok-4.6":
-		fallthrough
-	case "voiceflow-flash-4.1":
 		fallthrough
 	case "gemini-flash-2":
 		fallthrough

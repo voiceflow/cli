@@ -55,10 +55,6 @@ func (s *StableToolControllerUpdateRequest) GetBodyMcp() *components.StableToolU
 	return s.GetBody().StableToolUpdateRequestMcp
 }
 
-func (s *StableToolControllerUpdateRequest) GetBodyIntegration() *components.StableToolUpdateRequestIntegration {
-	return s.GetBody().StableToolUpdateRequestIntegration
-}
-
 type StableToolControllerUpdateResponse struct {
 	HTTPMeta             components.HTTPMetadata `json:"-"`
 	StableUpdateResponse *components.StableUpdateResponse

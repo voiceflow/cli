@@ -14,10 +14,9 @@ import (
 type StableToolControllerDeleteType string
 
 const (
-	StableToolControllerDeleteTypeAPI         StableToolControllerDeleteType = "api"
-	StableToolControllerDeleteTypeMcp         StableToolControllerDeleteType = "mcp"
-	StableToolControllerDeleteTypeFunction    StableToolControllerDeleteType = "function"
-	StableToolControllerDeleteTypeIntegration StableToolControllerDeleteType = "integration"
+	StableToolControllerDeleteTypeAPI      StableToolControllerDeleteType = "api"
+	StableToolControllerDeleteTypeMcp      StableToolControllerDeleteType = "mcp"
+	StableToolControllerDeleteTypeFunction StableToolControllerDeleteType = "function"
 )
 
 func (e StableToolControllerDeleteType) ToPointer() *StableToolControllerDeleteType {
@@ -34,8 +33,6 @@ func (e *StableToolControllerDeleteType) UnmarshalJSON(data []byte) error {
 	case "mcp":
 		fallthrough
 	case "function":
-		fallthrough
-	case "integration":
 		*e = StableToolControllerDeleteType(v)
 		return nil
 	default:

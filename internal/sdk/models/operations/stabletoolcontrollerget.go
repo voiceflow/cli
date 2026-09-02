@@ -14,10 +14,9 @@ import (
 type StableToolControllerGetType string
 
 const (
-	StableToolControllerGetTypeAPI         StableToolControllerGetType = "api"
-	StableToolControllerGetTypeMcp         StableToolControllerGetType = "mcp"
-	StableToolControllerGetTypeFunction    StableToolControllerGetType = "function"
-	StableToolControllerGetTypeIntegration StableToolControllerGetType = "integration"
+	StableToolControllerGetTypeAPI      StableToolControllerGetType = "api"
+	StableToolControllerGetTypeMcp      StableToolControllerGetType = "mcp"
+	StableToolControllerGetTypeFunction StableToolControllerGetType = "function"
 )
 
 func (e StableToolControllerGetType) ToPointer() *StableToolControllerGetType {
@@ -34,8 +33,6 @@ func (e *StableToolControllerGetType) UnmarshalJSON(data []byte) error {
 	case "mcp":
 		fallthrough
 	case "function":
-		fallthrough
-	case "integration":
 		*e = StableToolControllerGetType(v)
 		return nil
 	default:

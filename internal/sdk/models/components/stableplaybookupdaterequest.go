@@ -10,6 +10,199 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+type StablePlaybookUpdateRequestInstructionType string
+
+const (
+	StablePlaybookUpdateRequestInstructionTypeStr                     StablePlaybookUpdateRequestInstructionType = "str"
+	StablePlaybookUpdateRequestInstructionTypeMarkupSpan1             StablePlaybookUpdateRequestInstructionType = "MarkupSpan_1"
+	StablePlaybookUpdateRequestInstructionTypeMarkupToolReference     StablePlaybookUpdateRequestInstructionType = "MarkupToolReference"
+	StablePlaybookUpdateRequestInstructionTypeMarkupSecretReference   StablePlaybookUpdateRequestInstructionType = "MarkupSecretReference"
+	StablePlaybookUpdateRequestInstructionTypeMarkupEntityReference   StablePlaybookUpdateRequestInstructionType = "MarkupEntityReference"
+	StablePlaybookUpdateRequestInstructionTypeMarkupVariableReference StablePlaybookUpdateRequestInstructionType = "MarkupVariableReference"
+)
+
+type StablePlaybookUpdateRequestInstruction struct {
+	Str                     *string                  `queryParam:"inline" union:"member"`
+	MarkupSpan1             *MarkupSpan1             `queryParam:"inline" union:"member"`
+	MarkupToolReference     *MarkupToolReference     `queryParam:"inline" union:"member"`
+	MarkupSecretReference   *MarkupSecretReference   `queryParam:"inline" union:"member"`
+	MarkupEntityReference   *MarkupEntityReference   `queryParam:"inline" union:"member"`
+	MarkupVariableReference *MarkupVariableReference `queryParam:"inline" union:"member"`
+
+	Type StablePlaybookUpdateRequestInstructionType
+}
+
+func CreateStablePlaybookUpdateRequestInstructionStr(str string) StablePlaybookUpdateRequestInstruction {
+	typ := StablePlaybookUpdateRequestInstructionTypeStr
+
+	return StablePlaybookUpdateRequestInstruction{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func CreateStablePlaybookUpdateRequestInstructionMarkupSpan1(markupSpan1 MarkupSpan1) StablePlaybookUpdateRequestInstruction {
+	typ := StablePlaybookUpdateRequestInstructionTypeMarkupSpan1
+
+	return StablePlaybookUpdateRequestInstruction{
+		MarkupSpan1: &markupSpan1,
+		Type:        typ,
+	}
+}
+
+func CreateStablePlaybookUpdateRequestInstructionMarkupToolReference(markupToolReference MarkupToolReference) StablePlaybookUpdateRequestInstruction {
+	typ := StablePlaybookUpdateRequestInstructionTypeMarkupToolReference
+
+	return StablePlaybookUpdateRequestInstruction{
+		MarkupToolReference: &markupToolReference,
+		Type:                typ,
+	}
+}
+
+func CreateStablePlaybookUpdateRequestInstructionMarkupSecretReference(markupSecretReference MarkupSecretReference) StablePlaybookUpdateRequestInstruction {
+	typ := StablePlaybookUpdateRequestInstructionTypeMarkupSecretReference
+
+	return StablePlaybookUpdateRequestInstruction{
+		MarkupSecretReference: &markupSecretReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStablePlaybookUpdateRequestInstructionMarkupEntityReference(markupEntityReference MarkupEntityReference) StablePlaybookUpdateRequestInstruction {
+	typ := StablePlaybookUpdateRequestInstructionTypeMarkupEntityReference
+
+	return StablePlaybookUpdateRequestInstruction{
+		MarkupEntityReference: &markupEntityReference,
+		Type:                  typ,
+	}
+}
+
+func CreateStablePlaybookUpdateRequestInstructionMarkupVariableReference(markupVariableReference MarkupVariableReference) StablePlaybookUpdateRequestInstruction {
+	typ := StablePlaybookUpdateRequestInstructionTypeMarkupVariableReference
+
+	return StablePlaybookUpdateRequestInstruction{
+		MarkupVariableReference: &markupVariableReference,
+		Type:                    typ,
+	}
+}
+
+func (u *StablePlaybookUpdateRequestInstruction) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StablePlaybookUpdateRequestInstructionTypeStr,
+			Value: &str,
+		})
+	}
+
+	var markupSpan1 MarkupSpan1 = MarkupSpan1{}
+	if err := utils.UnmarshalJSON(data, &markupSpan1, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StablePlaybookUpdateRequestInstructionTypeMarkupSpan1,
+			Value: &markupSpan1,
+		})
+	}
+
+	var markupToolReference MarkupToolReference = MarkupToolReference{}
+	if err := utils.UnmarshalJSON(data, &markupToolReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StablePlaybookUpdateRequestInstructionTypeMarkupToolReference,
+			Value: &markupToolReference,
+		})
+	}
+
+	var markupSecretReference MarkupSecretReference = MarkupSecretReference{}
+	if err := utils.UnmarshalJSON(data, &markupSecretReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StablePlaybookUpdateRequestInstructionTypeMarkupSecretReference,
+			Value: &markupSecretReference,
+		})
+	}
+
+	var markupEntityReference MarkupEntityReference = MarkupEntityReference{}
+	if err := utils.UnmarshalJSON(data, &markupEntityReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StablePlaybookUpdateRequestInstructionTypeMarkupEntityReference,
+			Value: &markupEntityReference,
+		})
+	}
+
+	var markupVariableReference MarkupVariableReference = MarkupVariableReference{}
+	if err := utils.UnmarshalJSON(data, &markupVariableReference, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StablePlaybookUpdateRequestInstructionTypeMarkupVariableReference,
+			Value: &markupVariableReference,
+		})
+	}
+
+	if len(candidates) == 0 {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StablePlaybookUpdateRequestInstruction", string(data))
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StablePlaybookUpdateRequestInstruction", string(data))
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StablePlaybookUpdateRequestInstructionType)
+	switch best.Type {
+	case StablePlaybookUpdateRequestInstructionTypeStr:
+		u.Str = best.Value.(*string)
+		return nil
+	case StablePlaybookUpdateRequestInstructionTypeMarkupSpan1:
+		u.MarkupSpan1 = best.Value.(*MarkupSpan1)
+		return nil
+	case StablePlaybookUpdateRequestInstructionTypeMarkupToolReference:
+		u.MarkupToolReference = best.Value.(*MarkupToolReference)
+		return nil
+	case StablePlaybookUpdateRequestInstructionTypeMarkupSecretReference:
+		u.MarkupSecretReference = best.Value.(*MarkupSecretReference)
+		return nil
+	case StablePlaybookUpdateRequestInstructionTypeMarkupEntityReference:
+		u.MarkupEntityReference = best.Value.(*MarkupEntityReference)
+		return nil
+	case StablePlaybookUpdateRequestInstructionTypeMarkupVariableReference:
+		u.MarkupVariableReference = best.Value.(*MarkupVariableReference)
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StablePlaybookUpdateRequestInstruction", string(data))
+}
+
+func (u StablePlaybookUpdateRequestInstruction) MarshalJSON() ([]byte, error) {
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	if u.MarkupSpan1 != nil {
+		return utils.MarshalJSON(u.MarkupSpan1, "", true)
+	}
+
+	if u.MarkupToolReference != nil {
+		return utils.MarshalJSON(u.MarkupToolReference, "", true)
+	}
+
+	if u.MarkupSecretReference != nil {
+		return utils.MarshalJSON(u.MarkupSecretReference, "", true)
+	}
+
+	if u.MarkupEntityReference != nil {
+		return utils.MarshalJSON(u.MarkupEntityReference, "", true)
+	}
+
+	if u.MarkupVariableReference != nil {
+		return utils.MarshalJSON(u.MarkupVariableReference, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type StablePlaybookUpdateRequestInstruction: all fields are null")
+}
+
 type StablePlaybookUpdateRequestEndToolGenerative struct {
 	Execution  *ToolMessageGenerative `json:"execution,omitzero"`
 	Failure    *ToolMessageGenerative `json:"failure,omitzero"`
@@ -1488,9 +1681,8 @@ type StablePlaybookUpdateRequest struct {
 	Name     *string        `json:"name,omitzero"`
 	Settings *AgentSettings `json:"settings,omitzero"`
 	// A human-readable description of what the playbook does.
-	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
-	// Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
-	Instructions      optionalnullable.OptionalNullable[string]                                       `json:"instructions,omitzero"`
+	Description       optionalnullable.OptionalNullable[string]                                       `json:"description,omitzero"`
+	Instructions      optionalnullable.OptionalNullable[[]StablePlaybookUpdateRequestInstruction]     `json:"instructions,omitzero"`
 	EndTool           optionalnullable.OptionalNullable[StablePlaybookUpdateRequestEndTool]           `json:"endTool,omitzero"`
 	CardTool          optionalnullable.OptionalNullable[StablePlaybookUpdateRequestCardTool]          `json:"cardTool,omitzero"`
 	ButtonTool        optionalnullable.OptionalNullable[StablePlaybookUpdateRequestButtonTool]        `json:"buttonTool,omitzero"`
@@ -1533,7 +1725,7 @@ func (s *StablePlaybookUpdateRequest) GetDescription() optionalnullable.Optional
 	return s.Description
 }
 
-func (s *StablePlaybookUpdateRequest) GetInstructions() optionalnullable.OptionalNullable[string] {
+func (s *StablePlaybookUpdateRequest) GetInstructions() optionalnullable.OptionalNullable[[]StablePlaybookUpdateRequestInstruction] {
 	if s == nil {
 		return nil
 	}

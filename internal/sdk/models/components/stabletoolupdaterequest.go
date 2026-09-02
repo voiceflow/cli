@@ -11,339 +11,6 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-// StableToolUpdateRequestTypeIntegration - Discriminator indicating this tool calls a connected first-party integration.
-type StableToolUpdateRequestTypeIntegration string
-
-const (
-	StableToolUpdateRequestTypeIntegrationIntegration StableToolUpdateRequestTypeIntegration = "integration"
-)
-
-func (e StableToolUpdateRequestTypeIntegration) ToPointer() *StableToolUpdateRequestTypeIntegration {
-	return &e
-}
-func (e *StableToolUpdateRequestTypeIntegration) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "integration":
-		*e = StableToolUpdateRequestTypeIntegration(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for StableToolUpdateRequestTypeIntegration: %v", v)
-	}
-}
-
-type StableToolUpdateRequestDefaultValue4Type string
-
-const (
-	StableToolUpdateRequestDefaultValue4TypeStr                     StableToolUpdateRequestDefaultValue4Type = "str"
-	StableToolUpdateRequestDefaultValue4TypeMarkupSpan1             StableToolUpdateRequestDefaultValue4Type = "MarkupSpan_1"
-	StableToolUpdateRequestDefaultValue4TypeMarkupToolReference     StableToolUpdateRequestDefaultValue4Type = "MarkupToolReference"
-	StableToolUpdateRequestDefaultValue4TypeMarkupSecretReference   StableToolUpdateRequestDefaultValue4Type = "MarkupSecretReference"
-	StableToolUpdateRequestDefaultValue4TypeMarkupEntityReference   StableToolUpdateRequestDefaultValue4Type = "MarkupEntityReference"
-	StableToolUpdateRequestDefaultValue4TypeMarkupVariableReference StableToolUpdateRequestDefaultValue4Type = "MarkupVariableReference"
-)
-
-type StableToolUpdateRequestDefaultValue4 struct {
-	Str                     *string                  `queryParam:"inline" union:"member"`
-	MarkupSpan1             *MarkupSpan1             `queryParam:"inline" union:"member"`
-	MarkupToolReference     *MarkupToolReference     `queryParam:"inline" union:"member"`
-	MarkupSecretReference   *MarkupSecretReference   `queryParam:"inline" union:"member"`
-	MarkupEntityReference   *MarkupEntityReference   `queryParam:"inline" union:"member"`
-	MarkupVariableReference *MarkupVariableReference `queryParam:"inline" union:"member"`
-
-	Type StableToolUpdateRequestDefaultValue4Type
-}
-
-func CreateStableToolUpdateRequestDefaultValue4Str(str string) StableToolUpdateRequestDefaultValue4 {
-	typ := StableToolUpdateRequestDefaultValue4TypeStr
-
-	return StableToolUpdateRequestDefaultValue4{
-		Str:  &str,
-		Type: typ,
-	}
-}
-
-func CreateStableToolUpdateRequestDefaultValue4MarkupSpan1(markupSpan1 MarkupSpan1) StableToolUpdateRequestDefaultValue4 {
-	typ := StableToolUpdateRequestDefaultValue4TypeMarkupSpan1
-
-	return StableToolUpdateRequestDefaultValue4{
-		MarkupSpan1: &markupSpan1,
-		Type:        typ,
-	}
-}
-
-func CreateStableToolUpdateRequestDefaultValue4MarkupToolReference(markupToolReference MarkupToolReference) StableToolUpdateRequestDefaultValue4 {
-	typ := StableToolUpdateRequestDefaultValue4TypeMarkupToolReference
-
-	return StableToolUpdateRequestDefaultValue4{
-		MarkupToolReference: &markupToolReference,
-		Type:                typ,
-	}
-}
-
-func CreateStableToolUpdateRequestDefaultValue4MarkupSecretReference(markupSecretReference MarkupSecretReference) StableToolUpdateRequestDefaultValue4 {
-	typ := StableToolUpdateRequestDefaultValue4TypeMarkupSecretReference
-
-	return StableToolUpdateRequestDefaultValue4{
-		MarkupSecretReference: &markupSecretReference,
-		Type:                  typ,
-	}
-}
-
-func CreateStableToolUpdateRequestDefaultValue4MarkupEntityReference(markupEntityReference MarkupEntityReference) StableToolUpdateRequestDefaultValue4 {
-	typ := StableToolUpdateRequestDefaultValue4TypeMarkupEntityReference
-
-	return StableToolUpdateRequestDefaultValue4{
-		MarkupEntityReference: &markupEntityReference,
-		Type:                  typ,
-	}
-}
-
-func CreateStableToolUpdateRequestDefaultValue4MarkupVariableReference(markupVariableReference MarkupVariableReference) StableToolUpdateRequestDefaultValue4 {
-	typ := StableToolUpdateRequestDefaultValue4TypeMarkupVariableReference
-
-	return StableToolUpdateRequestDefaultValue4{
-		MarkupVariableReference: &markupVariableReference,
-		Type:                    typ,
-	}
-}
-
-func (u *StableToolUpdateRequestDefaultValue4) UnmarshalJSON(data []byte) error {
-
-	var candidates []utils.UnionCandidate
-
-	// Collect all valid candidates
-	var str string = ""
-	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableToolUpdateRequestDefaultValue4TypeStr,
-			Value: &str,
-		})
-	}
-
-	var markupSpan1 MarkupSpan1 = MarkupSpan1{}
-	if err := utils.UnmarshalJSON(data, &markupSpan1, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableToolUpdateRequestDefaultValue4TypeMarkupSpan1,
-			Value: &markupSpan1,
-		})
-	}
-
-	var markupToolReference MarkupToolReference = MarkupToolReference{}
-	if err := utils.UnmarshalJSON(data, &markupToolReference, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableToolUpdateRequestDefaultValue4TypeMarkupToolReference,
-			Value: &markupToolReference,
-		})
-	}
-
-	var markupSecretReference MarkupSecretReference = MarkupSecretReference{}
-	if err := utils.UnmarshalJSON(data, &markupSecretReference, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableToolUpdateRequestDefaultValue4TypeMarkupSecretReference,
-			Value: &markupSecretReference,
-		})
-	}
-
-	var markupEntityReference MarkupEntityReference = MarkupEntityReference{}
-	if err := utils.UnmarshalJSON(data, &markupEntityReference, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableToolUpdateRequestDefaultValue4TypeMarkupEntityReference,
-			Value: &markupEntityReference,
-		})
-	}
-
-	var markupVariableReference MarkupVariableReference = MarkupVariableReference{}
-	if err := utils.UnmarshalJSON(data, &markupVariableReference, "", true, nil); err == nil {
-		candidates = append(candidates, utils.UnionCandidate{
-			Type:  StableToolUpdateRequestDefaultValue4TypeMarkupVariableReference,
-			Value: &markupVariableReference,
-		})
-	}
-
-	if len(candidates) == 0 {
-		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableToolUpdateRequestDefaultValue4", string(data))
-	}
-
-	// Pick the best candidate using multi-stage filtering
-	best := utils.PickBestUnionCandidate(candidates, data)
-	if best == nil {
-		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableToolUpdateRequestDefaultValue4", string(data))
-	}
-
-	// Set the union type and value based on the best candidate
-	u.Type = best.Type.(StableToolUpdateRequestDefaultValue4Type)
-	switch best.Type {
-	case StableToolUpdateRequestDefaultValue4TypeStr:
-		u.Str = best.Value.(*string)
-		return nil
-	case StableToolUpdateRequestDefaultValue4TypeMarkupSpan1:
-		u.MarkupSpan1 = best.Value.(*MarkupSpan1)
-		return nil
-	case StableToolUpdateRequestDefaultValue4TypeMarkupToolReference:
-		u.MarkupToolReference = best.Value.(*MarkupToolReference)
-		return nil
-	case StableToolUpdateRequestDefaultValue4TypeMarkupSecretReference:
-		u.MarkupSecretReference = best.Value.(*MarkupSecretReference)
-		return nil
-	case StableToolUpdateRequestDefaultValue4TypeMarkupEntityReference:
-		u.MarkupEntityReference = best.Value.(*MarkupEntityReference)
-		return nil
-	case StableToolUpdateRequestDefaultValue4TypeMarkupVariableReference:
-		u.MarkupVariableReference = best.Value.(*MarkupVariableReference)
-		return nil
-	}
-
-	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableToolUpdateRequestDefaultValue4", string(data))
-}
-
-func (u StableToolUpdateRequestDefaultValue4) MarshalJSON() ([]byte, error) {
-	if u.Str != nil {
-		return utils.MarshalJSON(u.Str, "", true)
-	}
-
-	if u.MarkupSpan1 != nil {
-		return utils.MarshalJSON(u.MarkupSpan1, "", true)
-	}
-
-	if u.MarkupToolReference != nil {
-		return utils.MarshalJSON(u.MarkupToolReference, "", true)
-	}
-
-	if u.MarkupSecretReference != nil {
-		return utils.MarshalJSON(u.MarkupSecretReference, "", true)
-	}
-
-	if u.MarkupEntityReference != nil {
-		return utils.MarshalJSON(u.MarkupEntityReference, "", true)
-	}
-
-	if u.MarkupVariableReference != nil {
-		return utils.MarshalJSON(u.MarkupVariableReference, "", true)
-	}
-
-	return nil, errors.New("could not marshal union type StableToolUpdateRequestDefaultValue4: all fields are null")
-}
-
-type StableToolUpdateRequestInputVariables4 struct {
-	Description                 optionalnullable.OptionalNullable[string]                                 `default:"null" json:"description"`
-	DefaultValue                optionalnullable.OptionalNullable[[]StableToolUpdateRequestDefaultValue4] `json:"defaultValue,omitzero"`
-	IntegrationToolVariableName string                                                                    `json:"integrationToolVariableName"`
-	CaptureType                 *ToolNodeCaptureType                                                      `json:"captureType,omitzero"`
-	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
-	Required *bool `json:"required,omitzero"`
-}
-
-func (s StableToolUpdateRequestInputVariables4) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableToolUpdateRequestInputVariables4) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableToolUpdateRequestInputVariables4) GetDescription() optionalnullable.OptionalNullable[string] {
-	if s == nil {
-		return nil
-	}
-	return s.Description
-}
-
-func (s *StableToolUpdateRequestInputVariables4) GetDefaultValue() optionalnullable.OptionalNullable[[]StableToolUpdateRequestDefaultValue4] {
-	if s == nil {
-		return nil
-	}
-	return s.DefaultValue
-}
-
-func (s *StableToolUpdateRequestInputVariables4) GetIntegrationToolVariableName() string {
-	if s == nil {
-		return ""
-	}
-	return s.IntegrationToolVariableName
-}
-
-func (s *StableToolUpdateRequestInputVariables4) GetCaptureType() *ToolNodeCaptureType {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureType
-}
-
-func (s *StableToolUpdateRequestInputVariables4) GetRequired() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Required
-}
-
-// #region class-body-stabletoolupdaterequestinputvariables4
-// #endregion class-body-stabletoolupdaterequestinputvariables4
-
-type StableToolUpdateRequestIntegration struct {
-	// A description of what the tool does, used by the agent to decide when to call it.
-	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
-	// A map of tool input names to the variables or entities whose values are captured into them.
-	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	// Discriminator indicating this tool calls a connected first-party integration.
-	Type           StableToolUpdateRequestTypeIntegration            `json:"type"`
-	InputVariables map[string]StableToolUpdateRequestInputVariables4 `json:"inputVariables,omitzero"`
-	// A map of variable names to the parts of the tool response captured into them.
-	CaptureResponse map[string]ToolNodeDataIntegrationCaptureResponse `json:"captureResponse,omitzero"`
-}
-
-func (s StableToolUpdateRequestIntegration) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *StableToolUpdateRequestIntegration) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *StableToolUpdateRequestIntegration) GetDescription() optionalnullable.OptionalNullable[string] {
-	if s == nil {
-		return nil
-	}
-	return s.Description
-}
-
-func (s *StableToolUpdateRequestIntegration) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureInputVariables
-}
-
-func (s *StableToolUpdateRequestIntegration) GetType() StableToolUpdateRequestTypeIntegration {
-	if s == nil {
-		return StableToolUpdateRequestTypeIntegration("")
-	}
-	return s.Type
-}
-
-func (s *StableToolUpdateRequestIntegration) GetInputVariables() map[string]StableToolUpdateRequestInputVariables4 {
-	if s == nil {
-		return nil
-	}
-	return s.InputVariables
-}
-
-func (s *StableToolUpdateRequestIntegration) GetCaptureResponse() map[string]ToolNodeDataIntegrationCaptureResponse {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureResponse
-}
-
 // StableToolUpdateRequestTypeMcp - Discriminator indicating this tool calls a tool from an MCP server.
 type StableToolUpdateRequestTypeMcp string
 
@@ -566,8 +233,8 @@ type StableToolUpdateRequestInputVariables3 struct {
 	DefaultValue               optionalnullable.OptionalNullable[[]StableToolUpdateRequestDefaultValue3] `json:"defaultValue,omitzero"`
 	McpIntegrationVariableName string                                                                    `json:"mcpIntegrationVariableName"`
 	CaptureType                *ToolNodeCaptureType                                                      `json:"captureType,omitzero"`
-	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
-	Required *bool `json:"required,omitzero"`
+	// Whether the agent must provide a value for this input.
+	Required *bool `default:"true" json:"required"`
 }
 
 func (s StableToolUpdateRequestInputVariables3) MarshalJSON() ([]byte, error) {
@@ -625,7 +292,8 @@ type StableToolUpdateRequestMcp struct {
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool calls a tool from an MCP server.
-	Type           StableToolUpdateRequestTypeMcp                    `json:"type"`
+	Type StableToolUpdateRequestTypeMcp `json:"type"`
+	// A map of input names to the values the agent supplies when calling the tool.
 	InputVariables map[string]StableToolUpdateRequestInputVariables3 `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataMcpIntegrationCaptureResponse `json:"captureResponse,omitzero"`
@@ -899,8 +567,8 @@ type StableToolUpdateRequestInputVariables2 struct {
 	DefaultValue            optionalnullable.OptionalNullable[[]StableToolUpdateRequestDefaultValue2] `json:"defaultValue,omitzero"`
 	FunctionInputVariableID string                                                                    `json:"functionInputVariableID"`
 	CaptureType             *ToolNodeCaptureType                                                      `json:"captureType,omitzero"`
-	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
-	Required *bool `json:"required,omitzero"`
+	// Whether the agent must provide a value for this input.
+	Required *bool `default:"true" json:"required"`
 }
 
 func (s StableToolUpdateRequestInputVariables2) MarshalJSON() ([]byte, error) {
@@ -960,7 +628,8 @@ type StableToolUpdateRequestFunction struct {
 	// Discriminator indicating this tool executes a custom function.
 	Type StableToolUpdateRequestTypeFunction `json:"type"`
 	// When enabled, the tool runs in the background without blocking the conversation.
-	AsyncExecution *bool                                             `json:"asyncExecution,omitzero"`
+	AsyncExecution *bool `json:"asyncExecution,omitzero"`
+	// A map of input names to the values the agent supplies when calling the tool.
 	InputVariables map[string]StableToolUpdateRequestInputVariables2 `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataFunctionCaptureResponse `json:"captureResponse,omitzero"`
@@ -1241,8 +910,8 @@ type StableToolUpdateRequestInputVariables1 struct {
 	DefaultValue           optionalnullable.OptionalNullable[[]StableToolUpdateRequestDefaultValue1] `json:"defaultValue,omitzero"`
 	APIToolInputVariableID string                                                                    `json:"apiToolInputVariableID"`
 	CaptureType            *ToolNodeCaptureType                                                      `json:"captureType,omitzero"`
-	// Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.
-	Required *bool `json:"required,omitzero"`
+	// Whether the agent must provide a value for this input.
+	Required *bool `default:"true" json:"required"`
 }
 
 func (s StableToolUpdateRequestInputVariables1) MarshalJSON() ([]byte, error) {
@@ -1302,7 +971,8 @@ type StableToolUpdateRequestAPI struct {
 	// Discriminator indicating this tool executes a saved API request.
 	Type StableToolUpdateRequestTypeAPI `json:"type"`
 	// When enabled, the tool runs in the background without blocking the conversation.
-	AsyncExecution *bool                                             `json:"asyncExecution,omitzero"`
+	AsyncExecution *bool `json:"asyncExecution,omitzero"`
+	// A map of input names to the values the agent supplies when calling the tool.
 	InputVariables map[string]StableToolUpdateRequestInputVariables1 `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataAPICaptureResponse `json:"captureResponse,omitzero"`
@@ -1364,17 +1034,15 @@ func (s *StableToolUpdateRequestAPI) GetCaptureResponse() map[string]ToolNodeDat
 type StableToolUpdateRequestType string
 
 const (
-	StableToolUpdateRequestTypeAPIValue         StableToolUpdateRequestType = "api"
-	StableToolUpdateRequestTypeFunctionValue    StableToolUpdateRequestType = "function"
-	StableToolUpdateRequestTypeMcpValue         StableToolUpdateRequestType = "mcp"
-	StableToolUpdateRequestTypeIntegrationValue StableToolUpdateRequestType = "integration"
+	StableToolUpdateRequestTypeAPIValue      StableToolUpdateRequestType = "api"
+	StableToolUpdateRequestTypeFunctionValue StableToolUpdateRequestType = "function"
+	StableToolUpdateRequestTypeMcpValue      StableToolUpdateRequestType = "mcp"
 )
 
 type StableToolUpdateRequest struct {
-	StableToolUpdateRequestAPI         *StableToolUpdateRequestAPI         `queryParam:"inline" union:"member"`
-	StableToolUpdateRequestFunction    *StableToolUpdateRequestFunction    `queryParam:"inline" union:"member"`
-	StableToolUpdateRequestMcp         *StableToolUpdateRequestMcp         `queryParam:"inline" union:"member"`
-	StableToolUpdateRequestIntegration *StableToolUpdateRequestIntegration `queryParam:"inline" union:"member"`
+	StableToolUpdateRequestAPI      *StableToolUpdateRequestAPI      `queryParam:"inline" union:"member"`
+	StableToolUpdateRequestFunction *StableToolUpdateRequestFunction `queryParam:"inline" union:"member"`
+	StableToolUpdateRequestMcp      *StableToolUpdateRequestMcp      `queryParam:"inline" union:"member"`
 
 	Type StableToolUpdateRequestType
 }
@@ -1412,18 +1080,6 @@ func CreateStableToolUpdateRequestMcp(mcp StableToolUpdateRequestMcp) StableTool
 	return StableToolUpdateRequest{
 		StableToolUpdateRequestMcp: &mcp,
 		Type:                       typ,
-	}
-}
-
-func CreateStableToolUpdateRequestIntegration(integration StableToolUpdateRequestIntegration) StableToolUpdateRequest {
-	typ := StableToolUpdateRequestTypeIntegrationValue
-
-	typStr := StableToolUpdateRequestTypeIntegration(typ)
-	integration.Type = typStr
-
-	return StableToolUpdateRequest{
-		StableToolUpdateRequestIntegration: &integration,
-		Type:                               typ,
 	}
 }
 
@@ -1466,15 +1122,6 @@ func (u *StableToolUpdateRequest) UnmarshalJSON(data []byte) error {
 		u.StableToolUpdateRequestMcp = stableToolUpdateRequestMcp
 		u.Type = StableToolUpdateRequestTypeMcpValue
 		return nil
-	case "integration":
-		stableToolUpdateRequestIntegration := new(StableToolUpdateRequestIntegration)
-		if err := utils.UnmarshalJSON(data, &stableToolUpdateRequestIntegration, "", true, nil); err != nil {
-			return fmt.Errorf("could not unmarshal `%s` into expected (Type == integration) type StableToolUpdateRequestIntegration within StableToolUpdateRequest: %w", string(data), err)
-		}
-
-		u.StableToolUpdateRequestIntegration = stableToolUpdateRequestIntegration
-		u.Type = StableToolUpdateRequestTypeIntegrationValue
-		return nil
 	}
 
 	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableToolUpdateRequest", string(data))
@@ -1491,10 +1138,6 @@ func (u StableToolUpdateRequest) MarshalJSON() ([]byte, error) {
 
 	if u.StableToolUpdateRequestMcp != nil {
 		return utils.MarshalJSON(u.StableToolUpdateRequestMcp, "", true)
-	}
-
-	if u.StableToolUpdateRequestIntegration != nil {
-		return utils.MarshalJSON(u.StableToolUpdateRequestIntegration, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type StableToolUpdateRequest: all fields are null")

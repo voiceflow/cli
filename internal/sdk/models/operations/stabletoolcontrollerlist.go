@@ -14,10 +14,9 @@ import (
 type StableToolControllerListType string
 
 const (
-	StableToolControllerListTypeAPI         StableToolControllerListType = "api"
-	StableToolControllerListTypeMcp         StableToolControllerListType = "mcp"
-	StableToolControllerListTypeFunction    StableToolControllerListType = "function"
-	StableToolControllerListTypeIntegration StableToolControllerListType = "integration"
+	StableToolControllerListTypeAPI      StableToolControllerListType = "api"
+	StableToolControllerListTypeMcp      StableToolControllerListType = "mcp"
+	StableToolControllerListTypeFunction StableToolControllerListType = "function"
 )
 
 func (e StableToolControllerListType) ToPointer() *StableToolControllerListType {
@@ -34,8 +33,6 @@ func (e *StableToolControllerListType) UnmarshalJSON(data []byte) error {
 	case "mcp":
 		fallthrough
 	case "function":
-		fallthrough
-	case "integration":
 		*e = StableToolControllerListType(v)
 		return nil
 	default:

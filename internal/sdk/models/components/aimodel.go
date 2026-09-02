@@ -45,7 +45,7 @@ const (
 	AIModelBedrockClaude48Opus       AIModel = "bedrock-claude-4.8-opus"
 	AIModelVoiceflowCore40           AIModel = "voiceflow-core-4.0"
 	AIModelVoiceflowCore41           AIModel = "voiceflow-core-4.1"
-	AIModelVoiceflowFlash42          AIModel = "voiceflow-flash-4.2"
+	AIModelVoiceflowFlash41          AIModel = "voiceflow-flash-4.1"
 	AIModelKimiK3                    AIModel = "kimi-k3"
 	AIModelGemini25Pro               AIModel = "gemini-2.5-pro"
 	AIModelGemini25Flash             AIModel = "gemini-2.5-flash"
@@ -59,8 +59,6 @@ const (
 	AIModelLlama31Instant            AIModel = "llama-3.1-instant"
 	AIModelLlama33Versatile          AIModel = "llama-3.3-versatile"
 	AIModelQwen3627b                 AIModel = "qwen3.6-27b"
-	AIModelGrok46                    AIModel = "grok-4.6"
-	AIModelVoiceflowFlash41          AIModel = "voiceflow-flash-4.1"
 	AIModelGeminiFlash2              AIModel = "gemini-flash-2"
 	AIModelGpt4Turbo                 AIModel = "gpt-4-turbo"
 	AIModelClaude35Haiku             AIModel = "claude-3.5-haiku"
@@ -86,7 +84,7 @@ func (e AIModel) ToPointer() *AIModel {
 func (e *AIModel) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "gpt-3.5-turbo-1106", "gpt-3.5-turbo", "gpt-4", "gpt-4o", "gpt-4o-mini", "gpt-4.1-2025-04-14", "gpt-4.1-mini-2025-04-14", "gpt-4.1-nano-2025-04-14", "gpt-o3-mini", "o3-2025-04-16", "o4-mini-2025-04-16", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-5.2", "gpt-5.4", "gpt-5.4-mini", "gpt-5.5", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-realtime", "claude-4-opus", "claude-4-sonnet", "claude-4.5-sonnet", "claude-4.6-sonnet", "claude-4.5-haiku", "claude-4.5-opus", "claude-4.7-opus", "bedrock-claude-4-sonnet", "bedrock-claude-4.5-sonnet", "bedrock-claude-4.6-sonnet", "bedrock-claude-5-sonnet", "bedrock-claude-4.5-haiku", "bedrock-claude-4.5-opus", "bedrock-claude-4.7-opus", "bedrock-claude-4.8-opus", "voiceflow-core-4.0", "voiceflow-core-4.1", "voiceflow-flash-4.2", "kimi-k3", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-live-2.5-flash", "gemini-3-flash", "gemini-3.5-flash", "gemini-3.1-pro", "gpt-oss-20b", "gpt-oss-120b", "llama-guard-4", "llama-3.1-instant", "llama-3.3-versatile", "qwen3.6-27b", "grok-4.6", "voiceflow-flash-4.1", "gemini-flash-2", "gpt-4-turbo", "claude-3.5-haiku", "claude-3-opus", "claude-3.7-sonnet", "claude-v2", "llama-3.2-1b-preview", "gemini-pro-1.5", "claude-3-haiku", "claude-3-sonnet", "text-davinci-003", "claude-v1", "claude-instant-v1", "deep-seek-r1-distill-llama-70B", "claude-3.5-sonnet":
+		case "gpt-3.5-turbo-1106", "gpt-3.5-turbo", "gpt-4", "gpt-4o", "gpt-4o-mini", "gpt-4.1-2025-04-14", "gpt-4.1-mini-2025-04-14", "gpt-4.1-nano-2025-04-14", "gpt-o3-mini", "o3-2025-04-16", "o4-mini-2025-04-16", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-5.2", "gpt-5.4", "gpt-5.4-mini", "gpt-5.5", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-realtime", "claude-4-opus", "claude-4-sonnet", "claude-4.5-sonnet", "claude-4.6-sonnet", "claude-4.5-haiku", "claude-4.5-opus", "claude-4.7-opus", "bedrock-claude-4-sonnet", "bedrock-claude-4.5-sonnet", "bedrock-claude-4.6-sonnet", "bedrock-claude-5-sonnet", "bedrock-claude-4.5-haiku", "bedrock-claude-4.5-opus", "bedrock-claude-4.7-opus", "bedrock-claude-4.8-opus", "voiceflow-core-4.0", "voiceflow-core-4.1", "voiceflow-flash-4.1", "kimi-k3", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-live-2.5-flash", "gemini-3-flash", "gemini-3.5-flash", "gemini-3.1-pro", "gpt-oss-20b", "gpt-oss-120b", "llama-guard-4", "llama-3.1-instant", "llama-3.3-versatile", "qwen3.6-27b", "gemini-flash-2", "gpt-4-turbo", "claude-3.5-haiku", "claude-3-opus", "claude-3.7-sonnet", "claude-v2", "llama-3.2-1b-preview", "gemini-pro-1.5", "claude-3-haiku", "claude-3-sonnet", "text-davinci-003", "claude-v1", "claude-instant-v1", "deep-seek-r1-distill-llama-70B", "claude-3.5-sonnet":
 			return true
 		}
 	}
