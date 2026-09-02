@@ -18094,6 +18094,9 @@ components:
     DixaIntegrationCredentialsValue:
       type: object
       properties:
+        domain:
+          description: Dixa domain.
+          type: string
         apiKey:
           type: string
           description: Dixa API key.
