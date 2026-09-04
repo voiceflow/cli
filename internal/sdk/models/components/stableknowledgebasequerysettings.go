@@ -243,10 +243,12 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 type StableKnowledgeBaseQuerySettingsReasoningEffort string
 
 const (
-	StableKnowledgeBaseQuerySettingsReasoningEffortMinimal StableKnowledgeBaseQuerySettingsReasoningEffort = "minimal"
-	StableKnowledgeBaseQuerySettingsReasoningEffortLow     StableKnowledgeBaseQuerySettingsReasoningEffort = "low"
-	StableKnowledgeBaseQuerySettingsReasoningEffortMedium  StableKnowledgeBaseQuerySettingsReasoningEffort = "medium"
-	StableKnowledgeBaseQuerySettingsReasoningEffortHigh    StableKnowledgeBaseQuerySettingsReasoningEffort = "high"
+	StableKnowledgeBaseQuerySettingsReasoningEffortOff      StableKnowledgeBaseQuerySettingsReasoningEffort = "off"
+	StableKnowledgeBaseQuerySettingsReasoningEffortAdaptive StableKnowledgeBaseQuerySettingsReasoningEffort = "adaptive"
+	StableKnowledgeBaseQuerySettingsReasoningEffortMinimal  StableKnowledgeBaseQuerySettingsReasoningEffort = "minimal"
+	StableKnowledgeBaseQuerySettingsReasoningEffortLow      StableKnowledgeBaseQuerySettingsReasoningEffort = "low"
+	StableKnowledgeBaseQuerySettingsReasoningEffortMedium   StableKnowledgeBaseQuerySettingsReasoningEffort = "medium"
+	StableKnowledgeBaseQuerySettingsReasoningEffortHigh     StableKnowledgeBaseQuerySettingsReasoningEffort = "high"
 )
 
 func (e StableKnowledgeBaseQuerySettingsReasoningEffort) ToPointer() *StableKnowledgeBaseQuerySettingsReasoningEffort {
@@ -258,6 +260,10 @@ func (e *StableKnowledgeBaseQuerySettingsReasoningEffort) UnmarshalJSON(data []b
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":

@@ -1507,10 +1507,12 @@ func (s *StablePlaybookCreateRequestRealtime) GetEagerness() *string {
 type StablePlaybookCreateRequestReasoningEffort string
 
 const (
-	StablePlaybookCreateRequestReasoningEffortMinimal StablePlaybookCreateRequestReasoningEffort = "minimal"
-	StablePlaybookCreateRequestReasoningEffortLow     StablePlaybookCreateRequestReasoningEffort = "low"
-	StablePlaybookCreateRequestReasoningEffortMedium  StablePlaybookCreateRequestReasoningEffort = "medium"
-	StablePlaybookCreateRequestReasoningEffortHigh    StablePlaybookCreateRequestReasoningEffort = "high"
+	StablePlaybookCreateRequestReasoningEffortOff      StablePlaybookCreateRequestReasoningEffort = "off"
+	StablePlaybookCreateRequestReasoningEffortAdaptive StablePlaybookCreateRequestReasoningEffort = "adaptive"
+	StablePlaybookCreateRequestReasoningEffortMinimal  StablePlaybookCreateRequestReasoningEffort = "minimal"
+	StablePlaybookCreateRequestReasoningEffortLow      StablePlaybookCreateRequestReasoningEffort = "low"
+	StablePlaybookCreateRequestReasoningEffortMedium   StablePlaybookCreateRequestReasoningEffort = "medium"
+	StablePlaybookCreateRequestReasoningEffortHigh     StablePlaybookCreateRequestReasoningEffort = "high"
 )
 
 func (e StablePlaybookCreateRequestReasoningEffort) ToPointer() *StablePlaybookCreateRequestReasoningEffort {
@@ -1522,6 +1524,10 @@ func (e *StablePlaybookCreateRequestReasoningEffort) UnmarshalJSON(data []byte) 
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":

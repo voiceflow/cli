@@ -11225,11 +11225,15 @@ components:
     AIReasoningEffort:
       type: string
       enum:
+        - off
+        - adaptive
         - minimal
         - low
         - medium
         - high
       x-enumNames:
+        - OFF
+        - ADAPTIVE
         - MINIMAL
         - LOW
         - MEDIUM
@@ -18766,11 +18770,15 @@ components:
           description: The reasoning effort applied to the model when synthesizing the answer.
           type: string
           enum:
+            - off
+            - adaptive
             - minimal
             - low
             - medium
             - high
           x-enumNames:
+            - OFF
+            - ADAPTIVE
             - MINIMAL
             - LOW
             - MEDIUM

@@ -30,10 +30,12 @@ func (a *AgentSettingsRealtime) GetEagerness() *string {
 type AgentSettingsReasoningEffort string
 
 const (
-	AgentSettingsReasoningEffortMinimal AgentSettingsReasoningEffort = "minimal"
-	AgentSettingsReasoningEffortLow     AgentSettingsReasoningEffort = "low"
-	AgentSettingsReasoningEffortMedium  AgentSettingsReasoningEffort = "medium"
-	AgentSettingsReasoningEffortHigh    AgentSettingsReasoningEffort = "high"
+	AgentSettingsReasoningEffortOff      AgentSettingsReasoningEffort = "off"
+	AgentSettingsReasoningEffortAdaptive AgentSettingsReasoningEffort = "adaptive"
+	AgentSettingsReasoningEffortMinimal  AgentSettingsReasoningEffort = "minimal"
+	AgentSettingsReasoningEffortLow      AgentSettingsReasoningEffort = "low"
+	AgentSettingsReasoningEffortMedium   AgentSettingsReasoningEffort = "medium"
+	AgentSettingsReasoningEffortHigh     AgentSettingsReasoningEffort = "high"
 )
 
 func (e AgentSettingsReasoningEffort) ToPointer() *AgentSettingsReasoningEffort {
@@ -44,7 +46,7 @@ func (e AgentSettingsReasoningEffort) ToPointer() *AgentSettingsReasoningEffort 
 func (e *AgentSettingsReasoningEffort) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "minimal", "low", "medium", "high":
+		case "off", "adaptive", "minimal", "low", "medium", "high":
 			return true
 		}
 	}

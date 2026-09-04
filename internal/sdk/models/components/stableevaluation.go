@@ -124,10 +124,12 @@ func (s *StableEvaluationRealtime4) GetEagerness() *string {
 type StableEvaluationReasoningEffort4 string
 
 const (
-	StableEvaluationReasoningEffort4Minimal StableEvaluationReasoningEffort4 = "minimal"
-	StableEvaluationReasoningEffort4Low     StableEvaluationReasoningEffort4 = "low"
-	StableEvaluationReasoningEffort4Medium  StableEvaluationReasoningEffort4 = "medium"
-	StableEvaluationReasoningEffort4High    StableEvaluationReasoningEffort4 = "high"
+	StableEvaluationReasoningEffort4Off      StableEvaluationReasoningEffort4 = "off"
+	StableEvaluationReasoningEffort4Adaptive StableEvaluationReasoningEffort4 = "adaptive"
+	StableEvaluationReasoningEffort4Minimal  StableEvaluationReasoningEffort4 = "minimal"
+	StableEvaluationReasoningEffort4Low      StableEvaluationReasoningEffort4 = "low"
+	StableEvaluationReasoningEffort4Medium   StableEvaluationReasoningEffort4 = "medium"
+	StableEvaluationReasoningEffort4High     StableEvaluationReasoningEffort4 = "high"
 )
 
 func (e StableEvaluationReasoningEffort4) ToPointer() *StableEvaluationReasoningEffort4 {
@@ -138,7 +140,7 @@ func (e StableEvaluationReasoningEffort4) ToPointer() *StableEvaluationReasoning
 func (e *StableEvaluationReasoningEffort4) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "minimal", "low", "medium", "high":
+		case "off", "adaptive", "minimal", "low", "medium", "high":
 			return true
 		}
 	}
@@ -374,10 +376,12 @@ func (s *StableEvaluationRealtime3) GetEagerness() *string {
 type StableEvaluationReasoningEffort3 string
 
 const (
-	StableEvaluationReasoningEffort3Minimal StableEvaluationReasoningEffort3 = "minimal"
-	StableEvaluationReasoningEffort3Low     StableEvaluationReasoningEffort3 = "low"
-	StableEvaluationReasoningEffort3Medium  StableEvaluationReasoningEffort3 = "medium"
-	StableEvaluationReasoningEffort3High    StableEvaluationReasoningEffort3 = "high"
+	StableEvaluationReasoningEffort3Off      StableEvaluationReasoningEffort3 = "off"
+	StableEvaluationReasoningEffort3Adaptive StableEvaluationReasoningEffort3 = "adaptive"
+	StableEvaluationReasoningEffort3Minimal  StableEvaluationReasoningEffort3 = "minimal"
+	StableEvaluationReasoningEffort3Low      StableEvaluationReasoningEffort3 = "low"
+	StableEvaluationReasoningEffort3Medium   StableEvaluationReasoningEffort3 = "medium"
+	StableEvaluationReasoningEffort3High     StableEvaluationReasoningEffort3 = "high"
 )
 
 func (e StableEvaluationReasoningEffort3) ToPointer() *StableEvaluationReasoningEffort3 {
@@ -388,7 +392,7 @@ func (e StableEvaluationReasoningEffort3) ToPointer() *StableEvaluationReasoning
 func (e *StableEvaluationReasoningEffort3) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "minimal", "low", "medium", "high":
+		case "off", "adaptive", "minimal", "low", "medium", "high":
 			return true
 		}
 	}
@@ -613,10 +617,12 @@ func (s *StableEvaluationRealtime2) GetEagerness() *string {
 type StableEvaluationReasoningEffort2 string
 
 const (
-	StableEvaluationReasoningEffort2Minimal StableEvaluationReasoningEffort2 = "minimal"
-	StableEvaluationReasoningEffort2Low     StableEvaluationReasoningEffort2 = "low"
-	StableEvaluationReasoningEffort2Medium  StableEvaluationReasoningEffort2 = "medium"
-	StableEvaluationReasoningEffort2High    StableEvaluationReasoningEffort2 = "high"
+	StableEvaluationReasoningEffort2Off      StableEvaluationReasoningEffort2 = "off"
+	StableEvaluationReasoningEffort2Adaptive StableEvaluationReasoningEffort2 = "adaptive"
+	StableEvaluationReasoningEffort2Minimal  StableEvaluationReasoningEffort2 = "minimal"
+	StableEvaluationReasoningEffort2Low      StableEvaluationReasoningEffort2 = "low"
+	StableEvaluationReasoningEffort2Medium   StableEvaluationReasoningEffort2 = "medium"
+	StableEvaluationReasoningEffort2High     StableEvaluationReasoningEffort2 = "high"
 )
 
 func (e StableEvaluationReasoningEffort2) ToPointer() *StableEvaluationReasoningEffort2 {
@@ -627,7 +633,7 @@ func (e StableEvaluationReasoningEffort2) ToPointer() *StableEvaluationReasoning
 func (e *StableEvaluationReasoningEffort2) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "minimal", "low", "medium", "high":
+		case "off", "adaptive", "minimal", "low", "medium", "high":
 			return true
 		}
 	}
@@ -888,10 +894,12 @@ func (s *StableEvaluationRealtime1) GetEagerness() *string {
 type StableEvaluationReasoningEffort1 string
 
 const (
-	StableEvaluationReasoningEffort1Minimal StableEvaluationReasoningEffort1 = "minimal"
-	StableEvaluationReasoningEffort1Low     StableEvaluationReasoningEffort1 = "low"
-	StableEvaluationReasoningEffort1Medium  StableEvaluationReasoningEffort1 = "medium"
-	StableEvaluationReasoningEffort1High    StableEvaluationReasoningEffort1 = "high"
+	StableEvaluationReasoningEffort1Off      StableEvaluationReasoningEffort1 = "off"
+	StableEvaluationReasoningEffort1Adaptive StableEvaluationReasoningEffort1 = "adaptive"
+	StableEvaluationReasoningEffort1Minimal  StableEvaluationReasoningEffort1 = "minimal"
+	StableEvaluationReasoningEffort1Low      StableEvaluationReasoningEffort1 = "low"
+	StableEvaluationReasoningEffort1Medium   StableEvaluationReasoningEffort1 = "medium"
+	StableEvaluationReasoningEffort1High     StableEvaluationReasoningEffort1 = "high"
 )
 
 func (e StableEvaluationReasoningEffort1) ToPointer() *StableEvaluationReasoningEffort1 {
@@ -902,7 +910,7 @@ func (e StableEvaluationReasoningEffort1) ToPointer() *StableEvaluationReasoning
 func (e *StableEvaluationReasoningEffort1) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "minimal", "low", "medium", "high":
+		case "off", "adaptive", "minimal", "low", "medium", "high":
 			return true
 		}
 	}

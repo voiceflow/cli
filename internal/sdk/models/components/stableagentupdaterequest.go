@@ -1680,10 +1680,12 @@ func (s *StableAgentUpdateRequestKnowledgeBaseTool) GetSourceUrlsCount() optiona
 type StableAgentUpdateRequestReasoningEffort string
 
 const (
-	StableAgentUpdateRequestReasoningEffortMinimal StableAgentUpdateRequestReasoningEffort = "minimal"
-	StableAgentUpdateRequestReasoningEffortLow     StableAgentUpdateRequestReasoningEffort = "low"
-	StableAgentUpdateRequestReasoningEffortMedium  StableAgentUpdateRequestReasoningEffort = "medium"
-	StableAgentUpdateRequestReasoningEffortHigh    StableAgentUpdateRequestReasoningEffort = "high"
+	StableAgentUpdateRequestReasoningEffortOff      StableAgentUpdateRequestReasoningEffort = "off"
+	StableAgentUpdateRequestReasoningEffortAdaptive StableAgentUpdateRequestReasoningEffort = "adaptive"
+	StableAgentUpdateRequestReasoningEffortMinimal  StableAgentUpdateRequestReasoningEffort = "minimal"
+	StableAgentUpdateRequestReasoningEffortLow      StableAgentUpdateRequestReasoningEffort = "low"
+	StableAgentUpdateRequestReasoningEffortMedium   StableAgentUpdateRequestReasoningEffort = "medium"
+	StableAgentUpdateRequestReasoningEffortHigh     StableAgentUpdateRequestReasoningEffort = "high"
 )
 
 func (e StableAgentUpdateRequestReasoningEffort) ToPointer() *StableAgentUpdateRequestReasoningEffort {
@@ -1695,6 +1697,10 @@ func (e *StableAgentUpdateRequestReasoningEffort) UnmarshalJSON(data []byte) err
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":
