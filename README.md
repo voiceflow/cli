@@ -98,13 +98,62 @@ vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
   --action '{"type":"text","payload":"What can you help me with?"}' --output-format json
 ```
 
-The agent's replies arrive as `text` traces in the response.
+The agent's replies arrive as `text` traces, mixed in with `debug`, `block`, `choice` and
+`end` traces. A bare template turn returns six or so `debug` traces; every tool the agent
+calls — knowledge base, web search — adds roughly four more, and a turn can return more than
+one `text`. Do not count on the shape; select on it.
 
-A new project starts from a **template**, so it answers immediately but introduces itself as a placeholder brand ("Acme Corp support") and its instructions still contain fill-in-the-blank prompts. Getting to *your* agent is the next step, not the last one: edit the instructions (`vf agent update`), add knowledge (`vf document create-url`), run tests (`vf test run create`), and publish (`vf environment publish`).
+Filter by type, not by `.message`. Debug payloads carry a `.message` of their own, so an
+unselective filter does not fail — it quietly returns the runtime's log lines interleaved with
+the reply:
+
+```bash
+vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
+  --environment-alias main --version-param draft \
+  --action '{"type":"text","payload":"What can you help me with?"}' \
+  --output-format json </dev/null | jq -r '.traces[] | select(.type=="text") | .payload.message'
+```
+
+The `</dev/null` matters when something else owns your stdin — a CI step, or a coding agent.
+Without it the CLI waits for a request body that never arrives, and because `jq` succeeds on
+empty input the whole pipeline still exits 0. A scripted caller sees success and no reply.
+
+A new project starts from a **template**, so it answers immediately — as someone else. Getting
+to *your* agent means editing two separate fields:
+
+- **`--prompt`** is the global prompt, and it holds the persona. This is where the template's
+  `Acme Corp` brand lives, so changing `--instructions` alone leaves it in place. Note that
+  `--prompt` replaces the whole field: the template ships Role, Goal, Tone and Guardrails
+  sections, and a one-line prompt discards all four. Read the current value with `vf agent get`
+  before you overwrite it.
+- **`--instructions`** is the turn-level behaviour, and the template leaves fill-in-the-blank
+  text there (`"Greet the user and offer help related to."`).
+
+```bash
+vf agent update --project-id "$PROJECT_ID" --environment-alias main \
+  --prompt 'You are the support assistant for Northwind Coffee.' \
+  --instructions 'Help with subscriptions, delivery frequency and refunds.'
+
+vf environment compile --project-id "$PROJECT_ID" --environment-alias main
+```
+
+**That `compile` is required, and it is easy to miss.** `agent update` writes the definition;
+`compile` builds the form a conversation actually runs. Without it every signal says the change
+landed — the update returns `Agent updated.`, and `vf agent get` reads your text back — while
+the runtime keeps answering as the template. Nothing errors, so there is nothing to search for.
+
+Publishing compiles as well, so a publish-then-test loop never hits this. It is testing on
+`draft` — the loop the quickstart above uses — where the step is yours to remember.
+
+```bash
+vf environment publish --project-id "$PROJECT_ID" --environment-alias main --name "v1"
+```
+
+From there: add knowledge (`vf document create-url`) and write tests (`vf test create`).
 
 Worth knowing before you script against the CLI:
 
-- **`--version-param draft` runs what you are editing; `published` runs the live version.** A new project is created with a first release already in place, so either works immediately — you do not have to publish anything first.
+- **`--version-param draft` runs what you are editing; `published` runs the live version.** A new project is created with a first release already in place, so both work immediately — but that release is a snapshot of the **template**, so `published` keeps answering as Acme Corp until you publish your own. Test on `draft`, and publish before you rely on `published`.
 - **`--action '{"type":"launch"}'` is optional.** Sending a `text` action straight away works; the runtime starts the conversation itself. The launch step is shown because it makes the first turn explicit.
 - **Pass `--output-format json` explicitly when piping.** Inside AI coding agents (`CLAUDECODE`, `CURSOR_AGENT`, …) the default output is TOON, not JSON.
 - **Capture values with `--output-format json | jq -r`** — the built-in `--jq` flag emits JSON, so strings keep their quotes.
