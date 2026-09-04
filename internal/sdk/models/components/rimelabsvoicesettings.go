@@ -36,6 +36,7 @@ type RimelabsVoiceSettings struct {
 	Provider RimelabsVoiceSettingsProvider `json:"provider"`
 	Model    *string                       `json:"model,omitzero"`
 	Voice    string                        `json:"voice"`
+	Language *string                       `json:"language,omitzero"`
 }
 
 func (r RimelabsVoiceSettings) MarshalJSON() ([]byte, error) {
@@ -68,4 +69,11 @@ func (r *RimelabsVoiceSettings) GetVoice() string {
 		return ""
 	}
 	return r.Voice
+}
+
+func (r *RimelabsVoiceSettings) GetLanguage() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Language
 }
