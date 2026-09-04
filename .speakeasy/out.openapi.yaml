@@ -13108,6 +13108,8 @@ components:
           type: string
         voice:
           type: string
+        language:
+          type: string
       required:
         - provider
         - voice
