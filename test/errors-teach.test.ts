@@ -16,7 +16,14 @@ const AGENT_ENV = { CLAUDE_CODE: '1', VF_TOKEN: '' } as const;
 const $vf = (args: string[], env: Record<string, string> = {}) =>
   execa({ reject: false, env: { ...AGENT_ENV, ...env }, stdin: 'ignore' })(VF, args);
 
-/** stderr of agent-mode errors is a JSON envelope followed by plain lines. */
+/**
+ * In agent mode stderr is the JSON envelope and nothing else. It used to be the
+ * envelope followed by a duplicate plain-text line, because every printer in
+ * internal/output prints AND returns the error while cmd/vf/main.go printed
+ * whatever Execute returned. This parser reads the first balanced object, so it
+ * tolerated the duplicate; the "is nothing but JSON" assertions below are what
+ * actually pin the single-print contract.
+ */
 function parseEnvelope(stderr: string): Record<string, unknown> {
   const start = stderr.indexOf('{');
   expect(start, `no JSON envelope in stderr:\n${stderr}`).toBeGreaterThanOrEqual(0);
@@ -149,4 +156,40 @@ describe('error hint injection', () => {
     expect(JSON.stringify(envelope.hints)).toContain('expire');
     expect(JSON.stringify(envelope.hints)).toContain('export VF_TOKEN=vfp_');
   });
+});
+
+describe('agent-mode errors are printed exactly once', () => {
+  // Every printer in internal/output writes the error to stderr and also returns
+  // it, and main.go printed whatever Execute returned — so a single failure
+  // reached stderr twice. AgentModeError's own doc comment promised the
+  // opposite ("outputs structured JSON exactly once… Callers must NOT print the
+  // error again"), but main.go is generated and printed unconditionally.
+  //
+  // This matters because the envelope is the machine-readable product: a
+  // trailing non-JSON line after a JSON object is exactly what breaks a parser
+  // that does the obvious thing.
+  const cases: Array<[name: string, args: string[]]> = [
+    ['CLI-level error (AgentModeError)', ['configure']],
+    ['preflight error (no token)', ['workspace', 'list']],
+    ['flag-value error', ['agent', 'update', '--project-id', 'p', '--environment-alias', 'main',
+      '--dry-run', '--token', 'vfp_x', '--llm', 'not json']],
+  ];
+
+  for (const [name, args] of cases) {
+    it(`${name}: stderr is nothing but the JSON envelope`, async () => {
+      const result = await $vf(args);
+      expect(result.exitCode, 'must still fail').not.toBe(0);
+      // The strict test: the whole stream parses, with no trailing prose.
+      expect(() => JSON.parse(result.stderr.trim()), `stderr was not pure JSON:\n${result.stderr}`).not.toThrow();
+    });
+
+    it(`${name}: the message does not appear twice`, async () => {
+      const result = await $vf(args);
+      const envelope = parseEnvelope(result.stderr);
+      const message = String(envelope.message ?? envelope.error ?? '');
+      expect(message.length, 'envelope carried no message to check').toBeGreaterThan(0);
+      const after = result.stderr.slice(result.stderr.lastIndexOf('}') + 1);
+      expect(after.trim(), `text printed after the envelope:\n${after}`).toBe('');
+    });
+  }
 });

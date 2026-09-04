@@ -25,7 +25,11 @@ func main() {
 	}
 
 	if err := cli.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		// An empty message means the producer already wrote it to stderr;
+		// printing again would duplicate it. See internal/output/reported.go.
+		if msg := err.Error(); msg != "" {
+			fmt.Fprintln(os.Stderr, msg)
+		}
 		os.Exit(1)
 	}
 }
