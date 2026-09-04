@@ -14,10 +14,12 @@ import (
 type StableAgentReasoningEffort string
 
 const (
-	StableAgentReasoningEffortMinimal StableAgentReasoningEffort = "minimal"
-	StableAgentReasoningEffortLow     StableAgentReasoningEffort = "low"
-	StableAgentReasoningEffortMedium  StableAgentReasoningEffort = "medium"
-	StableAgentReasoningEffortHigh    StableAgentReasoningEffort = "high"
+	StableAgentReasoningEffortOff      StableAgentReasoningEffort = "off"
+	StableAgentReasoningEffortAdaptive StableAgentReasoningEffort = "adaptive"
+	StableAgentReasoningEffortMinimal  StableAgentReasoningEffort = "minimal"
+	StableAgentReasoningEffortLow      StableAgentReasoningEffort = "low"
+	StableAgentReasoningEffortMedium   StableAgentReasoningEffort = "medium"
+	StableAgentReasoningEffortHigh     StableAgentReasoningEffort = "high"
 )
 
 func (e StableAgentReasoningEffort) ToPointer() *StableAgentReasoningEffort {
@@ -28,7 +30,7 @@ func (e StableAgentReasoningEffort) ToPointer() *StableAgentReasoningEffort {
 func (e *StableAgentReasoningEffort) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "minimal", "low", "medium", "high":
+		case "off", "adaptive", "minimal", "low", "medium", "high":
 			return true
 		}
 	}

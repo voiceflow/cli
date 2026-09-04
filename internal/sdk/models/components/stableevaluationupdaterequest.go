@@ -100,10 +100,12 @@ func (s *StableEvaluationUpdateRequestRealtime4) GetEagerness() *string {
 type StableEvaluationUpdateRequestReasoningEffort4 string
 
 const (
-	StableEvaluationUpdateRequestReasoningEffort4Minimal StableEvaluationUpdateRequestReasoningEffort4 = "minimal"
-	StableEvaluationUpdateRequestReasoningEffort4Low     StableEvaluationUpdateRequestReasoningEffort4 = "low"
-	StableEvaluationUpdateRequestReasoningEffort4Medium  StableEvaluationUpdateRequestReasoningEffort4 = "medium"
-	StableEvaluationUpdateRequestReasoningEffort4High    StableEvaluationUpdateRequestReasoningEffort4 = "high"
+	StableEvaluationUpdateRequestReasoningEffort4Off      StableEvaluationUpdateRequestReasoningEffort4 = "off"
+	StableEvaluationUpdateRequestReasoningEffort4Adaptive StableEvaluationUpdateRequestReasoningEffort4 = "adaptive"
+	StableEvaluationUpdateRequestReasoningEffort4Minimal  StableEvaluationUpdateRequestReasoningEffort4 = "minimal"
+	StableEvaluationUpdateRequestReasoningEffort4Low      StableEvaluationUpdateRequestReasoningEffort4 = "low"
+	StableEvaluationUpdateRequestReasoningEffort4Medium   StableEvaluationUpdateRequestReasoningEffort4 = "medium"
+	StableEvaluationUpdateRequestReasoningEffort4High     StableEvaluationUpdateRequestReasoningEffort4 = "high"
 )
 
 func (e StableEvaluationUpdateRequestReasoningEffort4) ToPointer() *StableEvaluationUpdateRequestReasoningEffort4 {
@@ -115,6 +117,10 @@ func (e *StableEvaluationUpdateRequestReasoningEffort4) UnmarshalJSON(data []byt
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":
@@ -323,10 +329,12 @@ func (s *StableEvaluationUpdateRequestRealtime3) GetEagerness() *string {
 type StableEvaluationUpdateRequestReasoningEffort3 string
 
 const (
-	StableEvaluationUpdateRequestReasoningEffort3Minimal StableEvaluationUpdateRequestReasoningEffort3 = "minimal"
-	StableEvaluationUpdateRequestReasoningEffort3Low     StableEvaluationUpdateRequestReasoningEffort3 = "low"
-	StableEvaluationUpdateRequestReasoningEffort3Medium  StableEvaluationUpdateRequestReasoningEffort3 = "medium"
-	StableEvaluationUpdateRequestReasoningEffort3High    StableEvaluationUpdateRequestReasoningEffort3 = "high"
+	StableEvaluationUpdateRequestReasoningEffort3Off      StableEvaluationUpdateRequestReasoningEffort3 = "off"
+	StableEvaluationUpdateRequestReasoningEffort3Adaptive StableEvaluationUpdateRequestReasoningEffort3 = "adaptive"
+	StableEvaluationUpdateRequestReasoningEffort3Minimal  StableEvaluationUpdateRequestReasoningEffort3 = "minimal"
+	StableEvaluationUpdateRequestReasoningEffort3Low      StableEvaluationUpdateRequestReasoningEffort3 = "low"
+	StableEvaluationUpdateRequestReasoningEffort3Medium   StableEvaluationUpdateRequestReasoningEffort3 = "medium"
+	StableEvaluationUpdateRequestReasoningEffort3High     StableEvaluationUpdateRequestReasoningEffort3 = "high"
 )
 
 func (e StableEvaluationUpdateRequestReasoningEffort3) ToPointer() *StableEvaluationUpdateRequestReasoningEffort3 {
@@ -338,6 +346,10 @@ func (e *StableEvaluationUpdateRequestReasoningEffort3) UnmarshalJSON(data []byt
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":
@@ -535,10 +547,12 @@ func (s *StableEvaluationUpdateRequestRealtime2) GetEagerness() *string {
 type StableEvaluationUpdateRequestReasoningEffort2 string
 
 const (
-	StableEvaluationUpdateRequestReasoningEffort2Minimal StableEvaluationUpdateRequestReasoningEffort2 = "minimal"
-	StableEvaluationUpdateRequestReasoningEffort2Low     StableEvaluationUpdateRequestReasoningEffort2 = "low"
-	StableEvaluationUpdateRequestReasoningEffort2Medium  StableEvaluationUpdateRequestReasoningEffort2 = "medium"
-	StableEvaluationUpdateRequestReasoningEffort2High    StableEvaluationUpdateRequestReasoningEffort2 = "high"
+	StableEvaluationUpdateRequestReasoningEffort2Off      StableEvaluationUpdateRequestReasoningEffort2 = "off"
+	StableEvaluationUpdateRequestReasoningEffort2Adaptive StableEvaluationUpdateRequestReasoningEffort2 = "adaptive"
+	StableEvaluationUpdateRequestReasoningEffort2Minimal  StableEvaluationUpdateRequestReasoningEffort2 = "minimal"
+	StableEvaluationUpdateRequestReasoningEffort2Low      StableEvaluationUpdateRequestReasoningEffort2 = "low"
+	StableEvaluationUpdateRequestReasoningEffort2Medium   StableEvaluationUpdateRequestReasoningEffort2 = "medium"
+	StableEvaluationUpdateRequestReasoningEffort2High     StableEvaluationUpdateRequestReasoningEffort2 = "high"
 )
 
 func (e StableEvaluationUpdateRequestReasoningEffort2) ToPointer() *StableEvaluationUpdateRequestReasoningEffort2 {
@@ -550,6 +564,10 @@ func (e *StableEvaluationUpdateRequestReasoningEffort2) UnmarshalJSON(data []byt
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":
@@ -783,10 +801,12 @@ func (s *StableEvaluationUpdateRequestRealtime1) GetEagerness() *string {
 type StableEvaluationUpdateRequestReasoningEffort1 string
 
 const (
-	StableEvaluationUpdateRequestReasoningEffort1Minimal StableEvaluationUpdateRequestReasoningEffort1 = "minimal"
-	StableEvaluationUpdateRequestReasoningEffort1Low     StableEvaluationUpdateRequestReasoningEffort1 = "low"
-	StableEvaluationUpdateRequestReasoningEffort1Medium  StableEvaluationUpdateRequestReasoningEffort1 = "medium"
-	StableEvaluationUpdateRequestReasoningEffort1High    StableEvaluationUpdateRequestReasoningEffort1 = "high"
+	StableEvaluationUpdateRequestReasoningEffort1Off      StableEvaluationUpdateRequestReasoningEffort1 = "off"
+	StableEvaluationUpdateRequestReasoningEffort1Adaptive StableEvaluationUpdateRequestReasoningEffort1 = "adaptive"
+	StableEvaluationUpdateRequestReasoningEffort1Minimal  StableEvaluationUpdateRequestReasoningEffort1 = "minimal"
+	StableEvaluationUpdateRequestReasoningEffort1Low      StableEvaluationUpdateRequestReasoningEffort1 = "low"
+	StableEvaluationUpdateRequestReasoningEffort1Medium   StableEvaluationUpdateRequestReasoningEffort1 = "medium"
+	StableEvaluationUpdateRequestReasoningEffort1High     StableEvaluationUpdateRequestReasoningEffort1 = "high"
 )
 
 func (e StableEvaluationUpdateRequestReasoningEffort1) ToPointer() *StableEvaluationUpdateRequestReasoningEffort1 {
@@ -798,6 +818,10 @@ func (e *StableEvaluationUpdateRequestReasoningEffort1) UnmarshalJSON(data []byt
 		return err
 	}
 	switch v {
+	case "off":
+		fallthrough
+	case "adaptive":
+		fallthrough
 	case "minimal":
 		fallthrough
 	case "low":
