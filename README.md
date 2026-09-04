@@ -98,30 +98,44 @@ vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
   --action '{"type":"text","payload":"What can you help me with?"}' --output-format json
 ```
 
-The agent's replies arrive as `text` traces in the response. Most traces are not replies —
-a typical turn returns five `debug` traces for one `text` — and a `debug` payload is a bare
-string, so a recursive filter errors on it. Select the type first:
+The agent's replies arrive as `text` traces in the response, alongside `debug`, `block` and
+`choice` traces — a typical turn returns five to seven `debug` traces for one `text`. Select
+the type; do not filter on `.message` alone. Debug payloads carry a `.message` too, so an
+unselective filter does not fail, it quietly returns the runtime's log lines interleaved with
+the reply:
 
 ```bash
-... --output-format json | jq -r '.traces[] | select(.type=="text") | .payload.message'
+vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
+  --environment-alias main --version-param draft \
+  --action '{"type":"text","payload":"What can you help me with?"}' \
+  --output-format json | jq -r '.traces[] | select(.type=="text") | .payload.message'
 ```
 
-A new project starts from a **template**, so it answers immediately but introduces itself as a placeholder brand ("Acme Corp support") and its instructions still contain fill-in-the-blank prompts. Getting to *your* agent is the next step, not the last one:
+A new project starts from a **template**, so it answers immediately — as someone else. Getting
+to *your* agent means editing two separate fields:
+
+- **`--prompt`** is the global prompt, and it holds the persona. This is where the template's
+  `Acme Corp` brand lives. Changing `--instructions` alone will not remove it.
+- **`--instructions`** is the turn-level behaviour, and the template leaves fill-in-the-blank
+  text there (`"Greet the user and offer help related to."`).
 
 ```bash
 vf agent update --project-id "$PROJECT_ID" --environment-alias main \
-  --instructions 'You are the support assistant for ...'
+  --prompt 'You are the support assistant for Northwind Coffee.' \
+  --instructions 'Help with subscriptions, delivery frequency and refunds.'
+
 vf environment compile --project-id "$PROJECT_ID" --environment-alias main
-vf environment publish --project-id "$PROJECT_ID" --environment-alias main --name "v1"
 ```
 
-**`vf environment compile` is required, and it is easy to miss.** `agent update` writes the
-definition; `compile` builds the form a conversation actually runs. Without it every signal
-says the change landed — the update returns `Agent updated.`, and `vf agent get` reads your
-text back — while the runtime keeps answering as the template. Nothing errors. If your agent
-still introduces itself as Acme Corp, this is why.
+**That `compile` is required, and it is easy to miss.** `agent update` writes the definition;
+`compile` builds the form a conversation actually runs. Without it every signal says the change
+landed — the update returns `Agent updated.`, and `vf agent get` reads your text back — while
+the runtime keeps answering as the template. Nothing errors, so there is nothing to search for.
 
-From there: add knowledge (`vf document create-url`) and run tests (`vf test run create`).
+`vf environment publish` compiles as well, so a publish-then-test loop never hits this. It is
+testing on `draft` — the loop the quickstart above uses — where the step is yours to remember.
+
+From there: add knowledge (`vf document create-url`) and write tests (`vf test create`).
 
 Worth knowing before you script against the CLI:
 
