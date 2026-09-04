@@ -98,13 +98,34 @@ vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
   --action '{"type":"text","payload":"What can you help me with?"}' --output-format json
 ```
 
-The agent's replies arrive as `text` traces in the response.
+The agent's replies arrive as `text` traces in the response. Most traces are not replies —
+a typical turn returns five `debug` traces for one `text` — and a `debug` payload is a bare
+string, so a recursive filter errors on it. Select the type first:
 
-A new project starts from a **template**, so it answers immediately but introduces itself as a placeholder brand ("Acme Corp support") and its instructions still contain fill-in-the-blank prompts. Getting to *your* agent is the next step, not the last one: edit the instructions (`vf agent update`), add knowledge (`vf document create-url`), run tests (`vf test run create`), and publish (`vf environment publish`).
+```bash
+... --output-format json | jq -r '.traces[] | select(.type=="text") | .payload.message'
+```
+
+A new project starts from a **template**, so it answers immediately but introduces itself as a placeholder brand ("Acme Corp support") and its instructions still contain fill-in-the-blank prompts. Getting to *your* agent is the next step, not the last one:
+
+```bash
+vf agent update --project-id "$PROJECT_ID" --environment-alias main \
+  --instructions 'You are the support assistant for ...'
+vf environment compile --project-id "$PROJECT_ID" --environment-alias main
+vf environment publish --project-id "$PROJECT_ID" --environment-alias main --name "v1"
+```
+
+**`vf environment compile` is required, and it is easy to miss.** `agent update` writes the
+definition; `compile` builds the form a conversation actually runs. Without it every signal
+says the change landed — the update returns `Agent updated.`, and `vf agent get` reads your
+text back — while the runtime keeps answering as the template. Nothing errors. If your agent
+still introduces itself as Acme Corp, this is why.
+
+From there: add knowledge (`vf document create-url`) and run tests (`vf test run create`).
 
 Worth knowing before you script against the CLI:
 
-- **`--version-param draft` runs what you are editing; `published` runs the live version.** A new project is created with a first release already in place, so either works immediately — you do not have to publish anything first.
+- **`--version-param draft` runs what you are editing; `published` runs the live version.** A new project is created with a first release already in place, so both work immediately — but that release is a snapshot of the **template**, so `published` keeps answering as Acme Corp until you publish your own. Test on `draft`, and publish before you rely on `published`.
 - **`--action '{"type":"launch"}'` is optional.** Sending a `text` action straight away works; the runtime starts the conversation itself. The launch step is shown because it makes the first turn explicit.
 - **Pass `--output-format json` explicitly when piping.** Inside AI coding agents (`CLAUDECODE`, `CURSOR_AGENT`, …) the default output is TOON, not JSON.
 - **Capture values with `--output-format json | jq -r`** — the built-in `--jq` flag emits JSON, so strings keep their quotes.
