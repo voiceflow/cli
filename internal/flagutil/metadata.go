@@ -800,6 +800,23 @@ func buildJSONField(cmd *cobra.Command, v reflect.Value, m FlagMeta) error {
 		return nil
 	}
 
+	// Nullable string fields land in this builder because OptionalNullable[T]
+	// needs three states (unset / null / value), which would otherwise force
+	// users to write --flag '"foo"'. Accept plain text too: keep the value as-is
+	// when it already parses as a JSON string, otherwise encode the raw text.
+	// Bare `null` is handled above and still means null, so a string whose
+	// literal value is `null` (or is itself quoted) must go through --body.
+	if targetsStringValue(fieldType) {
+		var s string
+		if err := json.Unmarshal([]byte(val), &s); err != nil {
+			encoded, encErr := json.Marshal(val)
+			if encErr != nil {
+				return fmt.Errorf("invalid value for --%s: %w", m.FlagName, encErr)
+			}
+			val = string(encoded)
+		}
+	}
+
 	// If the annotation specifies bigint:"string" or decimal:"string", the SDK's
 	// unmarshalValue expects the value as a JSON string (e.g., "123"), not a bare
 	// number. Wrap bare numbers in JSON quotes for user convenience.
@@ -818,18 +835,41 @@ func buildJSONField(cmd *cobra.Command, v reflect.Value, m FlagMeta) error {
 		holder := reflect.New(reflect.PtrTo(fieldType))
 		holder.Elem().Set(reflect.New(fieldType))
 		if err := utils.UnmarshalJsonFromString(val, holder.Interface(), m.Annotations); err != nil {
-			return setJSONFieldAsRawText(field, fieldType, isPtr, val, m, err) // see rawtext.go
+			return jsonValueError(field.Type(), val, m, err) // see jsonerror.go
 		}
 		field.Set(holder.Elem())
 	} else {
 		target := reflect.New(fieldType)
 		if err := utils.UnmarshalJsonFromString(val, target.Interface(), m.Annotations); err != nil {
-			return setJSONFieldAsRawText(field, fieldType, isPtr, val, m, err) // see rawtext.go
+			return jsonValueError(field.Type(), val, m, err) // see jsonerror.go
 		}
 		field.Set(target.Elem())
 	}
 
 	return nil
+}
+
+// targetsStringValue reports whether a field ultimately holds a string, seeing
+// through pointers and the map[bool]*T representation of
+// optionalnullable.OptionalNullable. String-based enum types report true, since
+// they share their underlying kind.
+func targetsStringValue(t reflect.Type) bool {
+	for {
+		switch t.Kind() {
+		case reflect.Ptr:
+			t = t.Elem()
+		case reflect.Map:
+			// OptionalNullable[T] is map[bool]*T; a genuine map is not a string.
+			if t.Key().Kind() != reflect.Bool {
+				return false
+			}
+			t = t.Elem()
+		case reflect.String:
+			return true
+		default:
+			return false
+		}
+	}
 }
 
 func buildFileField(cmd *cobra.Command, v reflect.Value, m FlagMeta) error {
