@@ -98,24 +98,34 @@ vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
   --action '{"type":"text","payload":"What can you help me with?"}' --output-format json
 ```
 
-The agent's replies arrive as `text` traces in the response, alongside `debug`, `block` and
-`choice` traces — a typical turn returns five to seven `debug` traces for one `text`. Select
-the type; do not filter on `.message` alone. Debug payloads carry a `.message` too, so an
-unselective filter does not fail, it quietly returns the runtime's log lines interleaved with
+The agent's replies arrive as `text` traces, mixed in with `debug`, `block`, `choice` and
+`end` traces. A bare template turn returns six or so `debug` traces; every tool the agent
+calls — knowledge base, web search — adds roughly four more, and a turn can return more than
+one `text`. Do not count on the shape; select on it.
+
+Filter by type, not by `.message`. Debug payloads carry a `.message` of their own, so an
+unselective filter does not fail — it quietly returns the runtime's log lines interleaved with
 the reply:
 
 ```bash
 vf conversation send --user-id quickstart-user --project-id "$PROJECT_ID" \
   --environment-alias main --version-param draft \
   --action '{"type":"text","payload":"What can you help me with?"}' \
-  --output-format json | jq -r '.traces[] | select(.type=="text") | .payload.message'
+  --output-format json </dev/null | jq -r '.traces[] | select(.type=="text") | .payload.message'
 ```
+
+The `</dev/null` matters when something else owns your stdin — a CI step, or a coding agent.
+Without it the CLI waits for a request body that never arrives, and because `jq` succeeds on
+empty input the whole pipeline still exits 0. A scripted caller sees success and no reply.
 
 A new project starts from a **template**, so it answers immediately — as someone else. Getting
 to *your* agent means editing two separate fields:
 
 - **`--prompt`** is the global prompt, and it holds the persona. This is where the template's
-  `Acme Corp` brand lives. Changing `--instructions` alone will not remove it.
+  `Acme Corp` brand lives, so changing `--instructions` alone leaves it in place. Note that
+  `--prompt` replaces the whole field: the template ships Role, Goal, Tone and Guardrails
+  sections, and a one-line prompt discards all four. Read the current value with `vf agent get`
+  before you overwrite it.
 - **`--instructions`** is the turn-level behaviour, and the template leaves fill-in-the-blank
   text there (`"Greet the user and offer help related to."`).
 
@@ -132,8 +142,12 @@ vf environment compile --project-id "$PROJECT_ID" --environment-alias main
 landed — the update returns `Agent updated.`, and `vf agent get` reads your text back — while
 the runtime keeps answering as the template. Nothing errors, so there is nothing to search for.
 
-`vf environment publish` compiles as well, so a publish-then-test loop never hits this. It is
-testing on `draft` — the loop the quickstart above uses — where the step is yours to remember.
+Publishing compiles as well, so a publish-then-test loop never hits this. It is testing on
+`draft` — the loop the quickstart above uses — where the step is yours to remember.
+
+```bash
+vf environment publish --project-id "$PROJECT_ID" --environment-alias main --name "v1"
+```
 
 From there: add knowledge (`vf document create-url`) and write tests (`vf test create`).
 
