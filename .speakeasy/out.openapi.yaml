@@ -1123,8 +1123,9 @@ paths:
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: list
           operationDescription: |-
-            WHAT — List all playbooks in the project.
-            USE WHEN — Discovering what playbooks exist, or finding a playbookID to edit.
+            WHAT — List all playbooks in the project. Instructions are NOT included by default; instructionsLineCount tells you how big each one is.
+            USE WHEN — Discovering what playbooks exist, or finding a playbookID to edit. Pass includeInstructions: true only when you need the text of every playbook at once.
+            DO NOT — Pull every playbook's instructions to read one of them; read that one with voiceflow_playbook.read_instructions instead.
         cli:
           command: playbook list
       x-speakeasy-group: playbook
@@ -1144,13 +1145,20 @@ paths:
           schema:
             type: string
             description: The alias of the environment to operate on (e.g. `main`).
+        - name: includeInstructions
+          required: false
+          in: query
+          schema:
+            default: false
+            description: Instructions can be tens of thousands of lines. Leave this off and use read_instructions to page through them only when you need the text.
+            type: boolean
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StablePlaybookListResponse'
+                $ref: '#/components/schemas/StablePlaybookReadListResponse'
       tags:
         - Playbook
       security:
@@ -1288,8 +1296,9 @@ paths:
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: get
           operationDescription: |-
-            WHAT — Fetch full details for one playbook.
-            USE WHEN — Before editing (to merge), or when debugging a playbook's behavior — the instructions field is often the first place to look when a playbook misbehaves.
+            WHAT — Fetch full details for one playbook. Instructions are NOT included by default; instructionsLineCount always is.
+            USE WHEN — Before editing (to merge), or when debugging a playbook's behavior — the instructions field is often the first place to look when a playbook misbehaves. Pass includeInstructions: true when the line count says the text is short enough to pull whole; page a long one with voiceflow_playbook.read_instructions instead.
+            DO NOT — Read an ABSENT instructions field as "empty" and overwrite it; absent means "not requested".
         cli:
           command: playbook get
       x-speakeasy-group: playbook
@@ -1314,13 +1323,20 @@ paths:
           schema:
             type: string
             description: The alias of the environment to operate on (e.g. `main`).
+        - name: includeInstructions
+          required: false
+          in: query
+          schema:
+            default: false
+            description: Instructions can be tens of thousands of lines. Leave this off and use read_instructions to page through them only when you need the text.
+            type: boolean
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StablePlaybookResponse'
+                $ref: '#/components/schemas/StablePlaybookReadResponse'
       tags:
         - Playbook
       security:
@@ -1344,7 +1360,7 @@ paths:
             USE WHEN — Iterating on instructions based on transcript failures, fixing the LLM description because the Main Agent is mis-routing, adding/removing attached tools, swapping the model override.
             BEFORE — voiceflow_playbook.get to see current state and merge changes against it.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
-            DO NOT — Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
+            DO NOT — Use this for a targeted edit to instructions; it re-sends the whole document, so reach for voiceflow_playbook.patch_instructions for anything short of a rewrite. Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: playbook update
       x-speakeasy-group: playbook
@@ -1436,6 +1452,202 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Playbook
+      security:
+        - token: []
+  /v1/stable/playbook/{playbookID}/instructions:
+    get:
+      operationId: StablePlaybookController_readInstructions
+      x-vf:
+        mcp:
+          tool: voiceflow_playbook
+          toolDescription: |-
+            A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
+            The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
+            Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
+            Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
+            Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
+            Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
+          operation: read_instructions
+          operationDescription: |-
+            WHAT — Read a page of a playbook's Instructions as numbered lines: the 1-based line number, a tab, then the text.
+            USE WHEN — You need the current wording before editing it, or the instructions are too large to pull whole.
+            AFTER — voiceflow_playbook.patch_instructions, with oldString copied verbatim from a line you just read.
+            Reading past the end is not an error: offset clamps to the last line and hasMore comes back false. Follow nextOffset only while hasMore is true.
+            DO NOT — Send the line numbers back in a patch; they are a reading aid the response adds, not part of the stored document.
+        cli:
+          command: playbook read-instructions
+      x-speakeasy-group: playbook
+      x-speakeasy-name-override: read-instructions
+      summary: Read playbook instructions
+      description: Read a page of a playbook's instructions as numbered lines.
+      parameters:
+        - name: playbookID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 1
+            description: The 1-based line number to start from. Clamped to the last line of the document.
+            type: integer
+            minimum: 1
+            maximum: 9.007199254740991e+15
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 400
+            description: The maximum number of lines to return. A page is also capped at 24,000 characters, so a page of very long lines can come back shorter than this — follow nextOffset while hasMore is true.
+            type: integer
+            minimum: 1
+            maximum: 2000
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsReadResponse'
+      tags:
+        - Playbook
+      security:
+        - token: []
+    patch:
+      operationId: StablePlaybookController_patchInstructions
+      x-vf:
+        mcp:
+          tool: voiceflow_playbook
+          toolDescription: |-
+            A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
+            The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
+            Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
+            Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
+            Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
+            Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
+          operation: patch_instructions
+          operationDescription: |-
+            WHAT — Replace one exact string in a playbook's Instructions and write the result back. Matching is literal: whitespace, punctuation and case must match exactly.
+            USE WHEN — Editing part of a large set of instructions. Prefer this over voiceflow_playbook.update for anything short of a rewrite — update re-sends the whole document.
+            BEFORE — voiceflow_playbook.read_instructions or voiceflow_playbook.search_instructions, and copy oldString verbatim from what came back.
+            AFTER — voiceflow_environment.compile, then voiceflow_conversation.send.
+            DO NOT — Include line numbers in oldString; the read adds them, the document does not carry them. Do not retry the same call after a 409; the text has changed under you, so read it again first. Do not pass a whole rewritten document as newString; a full rewrite is what voiceflow_playbook.update is for.
+        cli:
+          command: playbook patch-instructions
+      x-speakeasy-group: playbook
+      x-speakeasy-name-override: patch-instructions
+      summary: Patch playbook instructions
+      description: Replace an exact string in a playbook's instructions.
+      parameters:
+        - name: playbookID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableInstructionsPatchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsPatchResponse'
+      tags:
+        - Playbook
+      security:
+        - token: []
+  /v1/stable/playbook/{playbookID}/instructions/search:
+    post:
+      operationId: StablePlaybookController_searchInstructions
+      x-vf:
+        mcp:
+          tool: voiceflow_playbook
+          toolDescription: |-
+            A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
+            The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
+            Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
+            Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
+            Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
+            Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
+          operation: search_instructions
+          operationDescription: |-
+            WHAT — Grep a playbook's Instructions with a JavaScript regular expression, evaluated line by line. Returns matching lines with their numbers, optional context, and the totals for the whole document.
+            USE WHEN — Locating the exact wording to patch, or checking whether a rule is already stated before adding another one.
+            AFTER — voiceflow_playbook.read_instructions to see the region around a hit, then voiceflow_playbook.patch_instructions.
+            DO NOT — Write nested quantifiers such as (a+)+; the pattern is rejected. Do not assume every backticked hit is a reference: a tool, playbook or workflow reference serializes as its display name in backticks, but so does ordinary inline code.
+        cli:
+          command: playbook search-instructions
+      x-speakeasy-group: playbook
+      x-speakeasy-name-override: search-instructions
+      summary: Search playbook instructions
+      description: Search a playbook's instructions with a regular expression.
+      parameters:
+        - name: playbookID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableInstructionsSearchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsSearchResponse'
       tags:
         - Playbook
       security:
@@ -4272,9 +4484,9 @@ paths:
             Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
           operation: get
           operationDescription: |-
-            WHAT — Read the full agent configuration in one call.
-            USE WHEN — Before editing any part of the agent (merge target for update), auditing the agent's full capability surface, or diagnosing an identity, tone, routing, or tool problem that could originate in any of these layers.
-            DO NOT — Assume an empty prompt or instructions field means "never set" — on a freshly imported .vf agent these may not have materialized yet. Treat empty as unset and proceed with update.
+            WHAT — Read the full agent configuration in one call. The global prompt and the instructions are NOT included by default; promptLineCount and instructionsLineCount always are.
+            USE WHEN — Before editing any part of the agent (merge target for update), auditing the agent's full capability surface, or diagnosing an identity, tone, routing, or tool problem that could originate in any of these layers. Pass includePrompt: true / includeInstructions: true when the line counts say the text is short enough to pull whole; page long ones with voiceflow_agent.read_prompt and voiceflow_agent.read_instructions instead.
+            DO NOT — Treat an ABSENT prompt or instructions field as "unset" and overwrite it; absent means "not requested". A field that is present and empty is the unset case, and on a freshly imported .vf agent it may simply not have materialized yet.
         cli:
           command: agent get
       x-speakeasy-group: agent
@@ -4294,6 +4506,20 @@ paths:
           schema:
             type: string
             description: The alias of the environment to operate on (e.g. `main`).
+        - name: includeInstructions
+          required: false
+          in: query
+          schema:
+            default: false
+            description: Instructions can be tens of thousands of lines. Leave this off and use read_instructions to page through them only when you need the text.
+            type: boolean
+        - name: includePrompt
+          required: false
+          in: query
+          schema:
+            default: false
+            description: The global prompt can be tens of thousands of lines. Leave this off and use read_prompt to page through it only when you need the text.
+            type: boolean
       responses:
         "200":
           description: ""
@@ -4326,7 +4552,7 @@ paths:
             USE WHEN — Changing the agent's identity, brand voice, tone, or cross-cutting guardrails; adding or removing routing targets; tuning model, voice, or timeout behavior; or enabling/configuring system tools.
             BEFORE — voiceflow_agent.get to see current state and merge changes against it — each playbookID/workflowID in playbooks/workflows must already exist.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send to verify the change — include at least one adversarial probe for tone or guardrail edits.
-            DO NOT — Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
+            DO NOT — Use this for a targeted edit to prompt or instructions; it re-sends the whole document, so reach for voiceflow_agent.patch_prompt or voiceflow_agent.patch_instructions for anything short of a rewrite. Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples or in knowledgeBaseTool.query — those texts are sent to a model, so the request is rejected. Secrets belong in a tool input's defaultValue, which the runtime resolves without the model ever seeing the value.
         cli:
           command: agent update
       x-speakeasy-group: agent
@@ -4360,6 +4586,379 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/instructions:
+    get:
+      operationId: StableAgentController_readInstructions
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: read_instructions
+          operationDescription: |-
+            WHAT — Read a page of the Main Agent's Instructions (its routing logic) as numbered lines: the 1-based line number, a tab, then the text.
+            USE WHEN — You need the current routing rules before editing them, or they are too large to pull whole.
+            AFTER — voiceflow_agent.patch_instructions, with oldString copied verbatim from a line you just read.
+            The line numbers this read adds are for navigation only — never include them in the oldString or newString of a patch.
+            DO NOT — Confuse this with the Global Prompt, which is identity and tone and is read with voiceflow_agent.read_prompt.
+        cli:
+          command: agent read-instructions
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: read-instructions
+      summary: Read agent instructions
+      description: Read a page of the main agent's routing instructions as numbered lines.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 1
+            description: The 1-based line number to start from. Clamped to the last line of the document.
+            type: integer
+            minimum: 1
+            maximum: 9.007199254740991e+15
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 400
+            description: The maximum number of lines to return. A page is also capped at 24,000 characters, so a page of very long lines can come back shorter than this — follow nextOffset while hasMore is true.
+            type: integer
+            minimum: 1
+            maximum: 2000
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsReadResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+    patch:
+      operationId: StableAgentController_patchInstructions
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: patch_instructions
+          operationDescription: |-
+            WHAT — Replace one exact string in the Main Agent's Instructions and write the result back. Matching is literal: whitespace, punctuation and case must match exactly.
+            USE WHEN — Adjusting one routing rule. Prefer this over voiceflow_agent.update for anything short of a rewrite — update re-sends the whole document.
+            BEFORE — voiceflow_agent.read_instructions or voiceflow_agent.search_instructions, and copy oldString verbatim from what came back.
+            AFTER — voiceflow_environment.compile, then voiceflow_conversation.send.
+            DO NOT — Retry the same call after a 409; the text has changed under you, so read it again first. Do not add a routing rule for a target that is not registered in playbooks or workflows — register it with voiceflow_agent.update first, or the backticked name stays plain text.
+        cli:
+          command: agent patch-instructions
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: patch-instructions
+      summary: Patch agent instructions
+      description: Replace an exact string in the main agent's instructions.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableInstructionsPatchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsPatchResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/instructions/search:
+    post:
+      operationId: StableAgentController_searchInstructions
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: search_instructions
+          operationDescription: |-
+            WHAT — Grep the Main Agent's Instructions with a JavaScript regular expression, evaluated line by line.
+            USE WHEN — Finding the routing rule that fires for a target, or checking whether one already exists before adding another.
+            AFTER — voiceflow_agent.read_instructions to see the region around a hit, then voiceflow_agent.patch_instructions.
+            DO NOT — Write nested quantifiers such as (a+)+; the pattern is rejected. Do not assume every backticked hit is a reference: a tool, playbook or workflow reference serializes as its display name in backticks, but so does ordinary inline code.
+        cli:
+          command: agent search-instructions
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: search-instructions
+      summary: Search agent instructions
+      description: Search the main agent's instructions with a regular expression.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableInstructionsSearchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsSearchResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/prompt:
+    get:
+      operationId: StableAgentController_readPrompt
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: read_prompt
+          operationDescription: |-
+            WHAT — Read a page of the Global Prompt (identity, tone, formatting, guardrails) as numbered lines: the 1-based line number, a tab, then the text.
+            USE WHEN — You need the current wording before editing it, or it is too large to pull whole.
+            AFTER — voiceflow_agent.patch_prompt, with oldString copied verbatim from a line you just read.
+            DO NOT — Confuse this with the Main Agent's Instructions, which carry routing logic and are read with voiceflow_agent.read_instructions.
+        cli:
+          command: agent read-prompt
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: read-prompt
+      summary: Read the global prompt
+      description: Read a page of the global prompt as numbered lines.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 1
+            description: The 1-based line number to start from. Clamped to the last line of the document.
+            type: integer
+            minimum: 1
+            maximum: 9.007199254740991e+15
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 400
+            description: The maximum number of lines to return. A page is also capped at 24,000 characters, so a page of very long lines can come back shorter than this — follow nextOffset while hasMore is true.
+            type: integer
+            minimum: 1
+            maximum: 2000
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsReadResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+    patch:
+      operationId: StableAgentController_patchPrompt
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: patch_prompt
+          operationDescription: |-
+            WHAT — Replace one exact string in the Global Prompt and write the result back. Matching is literal: whitespace, punctuation and case must match exactly.
+            USE WHEN — Adjusting one identity, tone or guardrail rule. Prefer this over voiceflow_agent.update for anything short of a rewrite — update re-sends the whole document.
+            BEFORE — voiceflow_agent.read_prompt or voiceflow_agent.search_prompt, and copy oldString verbatim from what came back.
+            AFTER — voiceflow_environment.compile, then voiceflow_conversation.send with at least one adversarial probe.
+            DO NOT — Retry the same call after a 409; the text has changed under you, so read it again first. Do not put task-specific instructions here; those belong in a playbook.
+        cli:
+          command: agent patch-prompt
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: patch-prompt
+      summary: Patch the global prompt
+      description: Replace an exact string in the global prompt.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableInstructionsPatchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsPatchResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/prompt/search:
+    post:
+      operationId: StableAgentController_searchPrompt
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: search_prompt
+          operationDescription: |-
+            WHAT — Grep the Global Prompt with a JavaScript regular expression, evaluated line by line.
+            USE WHEN — Finding where a tone or guardrail rule is stated before changing it, or checking whether it is stated at all.
+            AFTER — voiceflow_agent.read_prompt to see the region around a hit, then voiceflow_agent.patch_prompt.
+            DO NOT — Write nested quantifiers such as (a+)+; the pattern is rejected. Do not assume every backticked hit is a reference: a tool, playbook or workflow reference serializes as its display name in backticks, but so does ordinary inline code.
+        cli:
+          command: agent search-prompt
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: search-prompt
+      summary: Search the global prompt
+      description: Search the global prompt with a regular expression.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableInstructionsSearchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableInstructionsSearchResponse'
       tags:
         - Agent
       security:
@@ -13565,7 +14164,7 @@ components:
         - type
         - payload
         - createdAt
-    StableAgent:
+    StableAgentRead:
       type: object
       properties:
         llm:
@@ -13681,27 +14280,37 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/AgentKnowledgeBaseTool'
+        promptLineCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines the global prompt has.
+        instructionsLineCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines the main agent's instructions have.
       required:
         - llm
-        - prompt
         - includeGuidelines
         - playbooks
         - workflows
         - endTool
         - cardTool
         - buttonTool
-        - instructions
         - carouselTool
         - skipTurnTool
         - pathToolOrder
         - webSearchTool
         - callForwardTool
         - knowledgeBaseTool
+        - promptLineCount
+        - instructionsLineCount
     StableAgentResponse:
       type: object
       properties:
         agent:
-          $ref: '#/components/schemas/StableAgent'
+          $ref: '#/components/schemas/StableAgentRead'
       required:
         - agent
     StableUpdateResponse:
@@ -13864,6 +14473,187 @@ components:
             maxDuration:
               allOf:
                 - $ref: '#/components/schemas/VoiceMaxDurationSettings'
+      additionalProperties: false
+    StableInstructionsReadResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          description: The requested lines, each as its 1-based number, a tab, then the text, joined by newlines.
+        offset:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: The line number this page actually starts at, after clamping.
+        returnedLines:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines this page carries.
+        totalLines:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines the whole document has.
+        totalCharacters:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many characters the whole document has.
+        hasMore:
+          type: boolean
+          description: Whether lines remain after this page.
+        nextOffset:
+          nullable: true
+          description: The first line not returned, or null when there is nothing more to read.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+      required:
+        - content
+        - offset
+        - returnedLines
+        - totalLines
+        - totalCharacters
+        - hasMore
+        - nextOffset
+    StableInstructionsSearchMatch:
+      type: object
+      properties:
+        line:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: The 1-based line number of the match.
+        count:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many times the pattern matched on this line.
+        before:
+          type: array
+          items:
+            type: string
+          description: The requested lines of context above this one.
+        text:
+          type: string
+          description: The matching line.
+        after:
+          type: array
+          items:
+            type: string
+          description: The requested lines of context below this one.
+      required:
+        - line
+        - count
+        - before
+        - text
+        - after
+    StableInstructionsSearchResponse:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableInstructionsSearchMatch'
+        totalMatches:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Total occurrences across the whole document, not just this page.
+        matchingLines:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Total lines with at least one occurrence, across the whole document.
+        hasMore:
+          type: boolean
+          description: Whether matching lines were left out because of the limit.
+      required:
+        - matches
+        - totalMatches
+        - matchingLines
+        - hasMore
+    StableInstructionsSearchRequest:
+      type: object
+      properties:
+        pattern:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: A JavaScript regular expression, evaluated against each line on its own.
+        ignoreCase:
+          default: false
+          description: Match case-insensitively. Defaults to false, like grep.
+          type: boolean
+        contextLines:
+          default: 0
+          description: How many lines either side of each match to return.
+          type: integer
+          minimum: 0
+          maximum: 5
+        limit:
+          default: 50
+          description: The maximum number of matching LINES to return. The reported totals cover the whole document.
+          type: integer
+          minimum: 1
+          maximum: 200
+      required:
+        - pattern
+      additionalProperties: false
+    StableInstructionsPatchResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable summary naming the lines that changed.
+        replacements:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many occurrences were replaced.
+        diff:
+          type: string
+          description: A unified diff of the changed lines, with 1-based hunk headers.
+        totalLines:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines the document has AFTER the write.
+        unresolvedReferences:
+          type: array
+          items:
+            type: string
+          description: Braced {name} tokens anywhere in the document AFTER the patch that matched no variable or entity and were stored as literal text. The whole document is resolved, so a token the patch did not touch is reported too.
+        unresolvedMentions:
+          type: array
+          items:
+            type: string
+          description: Backticked names anywhere in the document AFTER the patch that matched no attached tool, playbook or workflow. The whole document is resolved, so a name the patch did not touch is reported too.
+      required:
+        - message
+        - replacements
+        - diff
+        - totalLines
+        - unresolvedReferences
+        - unresolvedMentions
+    StableInstructionsPatchRequest:
+      type: object
+      properties:
+        oldString:
+          type: string
+          minLength: 1
+          description: The exact text to replace, copied verbatim from a read or search result. Matching is literal — whitespace, punctuation and case must match. Do not include the line numbers a read adds.
+        newString:
+          type: string
+          description: The text to put in its place. May be empty to delete.
+        replaceAll:
+          default: false
+          description: Replace every occurrence. When false, more than one match is an error rather than a guess.
+          type: boolean
+      required:
+        - oldString
+        - newString
       additionalProperties: false
     StableAnalyticsQueryCallCountResponse:
       type: object
@@ -19008,6 +19798,99 @@ components:
           $ref: '#/components/schemas/StableMCPTool'
       required:
         - mcpTool
+    StablePlaybookRead:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/AgentSettings'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          nullable: true
+          description: A human-readable description of what the playbook does.
+          type: string
+        instructions:
+          nullable: true
+          type: string
+          description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response.
+        pathToolOrder:
+          type: array
+          items:
+            type: string
+          description: The IDs of the playbook's path tools, in display order.
+        endTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentEndTool'
+        cardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentCardTool'
+        buttonTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentButtonTool'
+        carouselTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentCardTool'
+        skipTurnTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentSkipTurnTool'
+        webSearchTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentWebSearchTool'
+        callForwardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentCallForwardTool'
+        knowledgeBaseTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentKnowledgeBaseTool'
+        instructionsLineCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines the instructions have, so a caller can decide whether to page through them.
+      required:
+        - id
+        - name
+        - settings
+        - createdAt
+        - updatedAt
+        - description
+        - pathToolOrder
+        - endTool
+        - cardTool
+        - buttonTool
+        - carouselTool
+        - skipTurnTool
+        - webSearchTool
+        - callForwardTool
+        - knowledgeBaseTool
+        - instructionsLineCount
+    StablePlaybookReadListResponse:
+      type: object
+      properties:
+        playbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePlaybookRead'
+      required:
+        - playbooks
     StablePlaybook:
       type: object
       properties:
@@ -19087,18 +19970,6 @@ components:
         - webSearchTool
         - callForwardTool
         - knowledgeBaseTool
-    StablePlaybookListResponse:
-      type: object
-      properties:
-        playbooks:
-          type: array
-          items:
-            $ref: '#/components/schemas/StablePlaybook'
-        unresolvedReferences:
-          description: Advisory naming any references in the submitted markdown that did not resolve.
-          type: string
-      required:
-        - playbooks
     StablePlaybookResponse:
       type: object
       properties:
@@ -19161,6 +20032,18 @@ components:
       required:
         - name
       additionalProperties: false
+    StablePlaybookListResponse:
+      type: object
+      properties:
+        playbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePlaybook'
+        unresolvedReferences:
+          description: Advisory naming any references in the submitted markdown that did not resolve.
+          type: string
+      required:
+        - playbooks
     StablePlaybookCreateManyRequest:
       type: object
       properties:
@@ -19170,6 +20053,13 @@ components:
             $ref: '#/components/schemas/StablePlaybookCreateRequest'
       required:
         - playbooks
+    StablePlaybookReadResponse:
+      type: object
+      properties:
+        playbook:
+          $ref: '#/components/schemas/StablePlaybookRead'
+      required:
+        - playbook
     StablePlaybookUpdateRequest:
       type: object
       properties:

@@ -41,6 +41,18 @@ func InitPlaybookRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initReadInstructionsCmd(PlaybookCmd); err != nil {
+		return err
+	}
+
+	if err := initPatchInstructionsCmd(PlaybookCmd); err != nil {
+		return err
+	}
+
+	if err := initSearchInstructionsCmd(PlaybookCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(PlaybookCmd)
 	return nil
 }

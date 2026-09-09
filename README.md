@@ -259,6 +259,9 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`get`](docs/vf_playbook_get.md) - Get playbook
 * [`update`](docs/vf_playbook_update.md) - Update playbook
 * [`delete`](docs/vf_playbook_delete.md) - Delete playbook
+* [`read-instructions`](docs/vf_playbook_read-instructions.md) - Read playbook instructions
+* [`patch-instructions`](docs/vf_playbook_patch-instructions.md) - Patch playbook instructions
+* [`search-instructions`](docs/vf_playbook_search-instructions.md) - Search playbook instructions
 
 ### [api-tool](docs/vf_api-tool.md)
 
@@ -337,6 +340,12 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 
 * [`get`](docs/vf_agent_get.md) - Get agent
 * [`update`](docs/vf_agent_update.md) - Update agent
+* [`read-instructions`](docs/vf_agent_read-instructions.md) - Read agent instructions
+* [`patch-instructions`](docs/vf_agent_patch-instructions.md) - Patch agent instructions
+* [`search-instructions`](docs/vf_agent_search-instructions.md) - Search agent instructions
+* [`read-prompt`](docs/vf_agent_read-prompt.md) - Read the global prompt
+* [`patch-prompt`](docs/vf_agent_patch-prompt.md) - Patch the global prompt
+* [`search-prompt`](docs/vf_agent_search-prompt.md) - Search the global prompt
 
 ### [integration](docs/vf_integration.md)
 

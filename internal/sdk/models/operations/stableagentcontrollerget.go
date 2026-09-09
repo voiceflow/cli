@@ -9,8 +9,21 @@ import (
 )
 
 type StableAgentControllerGetRequest struct {
-	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
-	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	ProjectID           string `queryParam:"style=form,explode=true,name=projectID"`
+	EnvironmentAlias    string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	IncludeInstructions *bool  `default:"false" queryParam:"style=form,explode=true,name=includeInstructions"`
+	IncludePrompt       *bool  `default:"false" queryParam:"style=form,explode=true,name=includePrompt"`
+}
+
+func (s StableAgentControllerGetRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableAgentControllerGetRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StableAgentControllerGetRequest) GetProjectID() string {
@@ -25,6 +38,20 @@ func (s *StableAgentControllerGetRequest) GetEnvironmentAlias() string {
 		return ""
 	}
 	return s.EnvironmentAlias
+}
+
+func (s *StableAgentControllerGetRequest) GetIncludeInstructions() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.IncludeInstructions
+}
+
+func (s *StableAgentControllerGetRequest) GetIncludePrompt() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.IncludePrompt
 }
 
 type StableAgentControllerGetResponse struct {

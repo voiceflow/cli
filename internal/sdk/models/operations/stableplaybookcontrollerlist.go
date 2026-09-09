@@ -9,8 +9,20 @@ import (
 )
 
 type StablePlaybookControllerListRequest struct {
-	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
-	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	ProjectID           string `queryParam:"style=form,explode=true,name=projectID"`
+	EnvironmentAlias    string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	IncludeInstructions *bool  `default:"false" queryParam:"style=form,explode=true,name=includeInstructions"`
+}
+
+func (s StablePlaybookControllerListRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookControllerListRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookControllerListRequest) GetProjectID() string {
@@ -27,9 +39,16 @@ func (s *StablePlaybookControllerListRequest) GetEnvironmentAlias() string {
 	return s.EnvironmentAlias
 }
 
+func (s *StablePlaybookControllerListRequest) GetIncludeInstructions() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.IncludeInstructions
+}
+
 type StablePlaybookControllerListResponse struct {
-	HTTPMeta                   components.HTTPMetadata `json:"-"`
-	StablePlaybookListResponse *components.StablePlaybookListResponse
+	HTTPMeta                       components.HTTPMetadata `json:"-"`
+	StablePlaybookReadListResponse *components.StablePlaybookReadListResponse
 }
 
 func (s StablePlaybookControllerListResponse) MarshalJSON() ([]byte, error) {
@@ -50,9 +69,9 @@ func (s *StablePlaybookControllerListResponse) GetHTTPMeta() components.HTTPMeta
 	return s.HTTPMeta
 }
 
-func (s *StablePlaybookControllerListResponse) GetStablePlaybookListResponse() *components.StablePlaybookListResponse {
+func (s *StablePlaybookControllerListResponse) GetStablePlaybookReadListResponse() *components.StablePlaybookReadListResponse {
 	if s == nil {
 		return nil
 	}
-	return s.StablePlaybookListResponse
+	return s.StablePlaybookReadListResponse
 }

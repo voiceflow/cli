@@ -29,6 +29,30 @@ func InitAgentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initReadInstructionsCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initPatchInstructionsCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initSearchInstructionsCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initReadPromptCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initPatchPromptCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initSearchPromptCmd(AgentCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(AgentCmd)
 	return nil
 }

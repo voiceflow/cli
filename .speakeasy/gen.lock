@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: dbd6fccd74a2f2311f7e4081e619fbd2
+  docChecksum: c4012967a5179d4867f5e8422688dc55
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.242
-  configChecksum: 17ac725ca38d52752b2ba63432919137
+  releaseVersion: 0.2.243
+  configChecksum: 08562e46d03c6c01238105de68f844e0
 persistentEdits:
-  generation_id: cad41698-883d-470e-92f6-62c8dbad560f
-  pristine_commit_hash: 950f7e71e9a63d823303ce3618befb8d605a35ba
-  pristine_tree_hash: 290c8a4851d67d4514ad21bbd7efeb25755df52a
+  generation_id: ec679898-cc7c-4bb9-ab22-4798358bef9f
+  pristine_commit_hash: e183ae03d51e17ae5312cfebdc7e637ff266d70e
+  pristine_tree_hash: 7675decd60b71fd89f6c0131640f5a06951bf6cd
 features:
   cli:
     additionalProperties: 0.0.1
@@ -54,12 +54,36 @@ trackedFiles:
     pristine_git_object: c8aadb689d872e0d1b23771409e0a8b3cd74120c
   internal/cli/agent/get.go:
     id: 4d4635a6aedc
-    last_write_checksum: sha1:846d95304eab47ffab04174ed27ff886df6e7971
-    pristine_git_object: d346a10acedbce2de3b62a885fbf34197e73a56d
+    last_write_checksum: sha1:bc718ad7c24d13b8ea35891098d633141f14d8eb
+    pristine_git_object: e3de46a35534b5e568daf3f7ce2197d253ca6a0a
+  internal/cli/agent/patchinstructions.go:
+    id: 3d3a8d136de1
+    last_write_checksum: sha1:69932bfef24ecb45f9af3da5c3c0fe74161a6871
+    pristine_git_object: 37034938ade4d9ab76eb59228ea014b230c2e853
+  internal/cli/agent/patchprompt.go:
+    id: 7098fb24c4d4
+    last_write_checksum: sha1:dd1a50b023acec1c1275bb10c12ff69caa44ff33
+    pristine_git_object: d03d11a8fb014c9504893cb8571ddc555a8e2416
+  internal/cli/agent/readinstructions.go:
+    id: 87c097face4d
+    last_write_checksum: sha1:5a51b0654f972db91f8c1d27dfce1b8bec4b7dcb
+    pristine_git_object: c2b17aeba1abe34d708d37153e799651c68a1bcc
+  internal/cli/agent/readprompt.go:
+    id: 5530c27aec33
+    last_write_checksum: sha1:6d4e47504cff3e891c06bb44b0fc06eb30afeae5
+    pristine_git_object: f92e5d081c74018a06c23e0c1056ba5daef58137
   internal/cli/agent/root.go:
     id: 667fb833a048
-    last_write_checksum: sha1:867ca02218795ac008f607cb06c5e8d8b29a5409
-    pristine_git_object: dba7d803273354407a90573bd216feb1f31ca232
+    last_write_checksum: sha1:394dbc92885b300f268f2a9b3f192d009a4477af
+    pristine_git_object: 81d61435c99f41546d7205d89da745e3d467dec6
+  internal/cli/agent/searchinstructions.go:
+    id: be76d0c8f1a6
+    last_write_checksum: sha1:aa7776bdc9d27de96309b9793b04213e2fd079fd
+    pristine_git_object: 5e9cc0afa3303bde9ac897321e9f898e5364786c
+  internal/cli/agent/searchprompt.go:
+    id: 053ef1389bf7
+    last_write_checksum: sha1:0764eb1ff78dee8ea4bb1cead510df05f1437a7e
+    pristine_git_object: 30a78d01a10a20e552e8dd0d98db5f718df0a4c9
   internal/cli/agent/update.go:
     id: 4eb4b25f3158
     last_write_checksum: sha1:10313802ee1f114794816495c8354167e3e00627
@@ -506,16 +530,28 @@ trackedFiles:
     pristine_git_object: 44f81c1da7b1bdf5a4451ca5b7cbec00b06fb438
   internal/cli/playbook/get.go:
     id: ed4c468843b0
-    last_write_checksum: sha1:dc4245d13f1ff7e0b9320e7678263e4a4bb2a8cf
-    pristine_git_object: 2ec6ad89f31705057f58e44f2e953adb1bdae501
+    last_write_checksum: sha1:359926077e458ee07e0b3bf48bde145e5d368fcd
+    pristine_git_object: a93423f0dad8150e3defec454b4016916b13e608
   internal/cli/playbook/list.go:
     id: 3ca7d85ada91
-    last_write_checksum: sha1:f9452a6d95f2aa1863e9a8f36f91a523f7129817
-    pristine_git_object: 8dd6188d552b316bf51fc919c92a995afc668fb8
+    last_write_checksum: sha1:318aa9152c2492e0df625a5e546260e88a666044
+    pristine_git_object: 929d7dd9661d6cb6cc4421cbaef376b7392b8686
+  internal/cli/playbook/patchinstructions.go:
+    id: 56e49338546a
+    last_write_checksum: sha1:f8e31cb047a54df9ae12ba85344ec2445e81ac5b
+    pristine_git_object: ccdd187e111efc84fd7211573c3a6735e82805df
+  internal/cli/playbook/readinstructions.go:
+    id: 447a8cd5f410
+    last_write_checksum: sha1:ad0505dac5968a1f83e0c396c00287f2cea51ea4
+    pristine_git_object: e6e0bceeac10afa3aec85c9b2011d6336ffbde40
   internal/cli/playbook/root.go:
     id: 0e14aa05c8dd
-    last_write_checksum: sha1:f7525b5b2571bb0944be7330f2be575f3ee086b9
-    pristine_git_object: ee655ea215c4f94777e99f3c899829e58c94fd25
+    last_write_checksum: sha1:1536689a1aeea4aa30080050b53e4dd15fd49762
+    pristine_git_object: e8f325b3f6145b054522bb39a73426d3e733703e
+  internal/cli/playbook/searchinstructions.go:
+    id: a8e263772cdb
+    last_write_checksum: sha1:7f9822c708b2fabf7a947336c301808a7bed8e9a
+    pristine_git_object: cef3697d5705c8d86f8470b913aceac23b6053d8
   internal/cli/playbook/update.go:
     id: 06135ea5f683
     last_write_checksum: sha1:ac5eec474c7eccfbfbe892983261bf28d198ac10
@@ -750,8 +786,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:b070ea44cfe863ec531de6b985e98a7c43be9e67
-    pristine_git_object: 7e9f1957de70b3193acc36c868063b66e10179d0
+    last_write_checksum: sha1:b2a8f16062f823dbfc7024ae35ac0a9b8b92f89b
+    pristine_git_object: b19386837dc4c1779cc112bc592aff1503623610
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -850,8 +886,8 @@ trackedFiles:
     pristine_git_object: e6a994416d0f527912d2d272e2583458f4fc9bcb
   internal/sdk/agent.go:
     id: 2bc402f33132
-    last_write_checksum: sha1:3cbe0360fe3a146f26c7cd5a4ebaaa6b7a1e0b30
-    pristine_git_object: 93381dedddc443327c511dba1150479797ec8713
+    last_write_checksum: sha1:4b99423d083d2e0c3d6188044ca7f0df638ff560
+    pristine_git_object: e650c0f71f768c5864c8c6c5e116346b4f384b84
   internal/sdk/analytics.go:
     id: a1bd379d6569
     last_write_checksum: sha1:46dd9d26944c5e341246668ff4a389449eadc664
@@ -1516,14 +1552,14 @@ trackedFiles:
     id: a8bf05d791d7
     last_write_checksum: sha1:90ec93e34b4b746b1a8ae55d209df337b5de017f
     pristine_git_object: e0cf3247b2b0e0fc8e52ad9973514040e9c3e2f5
-  internal/sdk/models/components/stableagent.go:
-    id: 8ba7662bbcfd
-    last_write_checksum: sha1:c919c3fec119409109ef8cbd54ae156c95f69fa4
-    pristine_git_object: a8cab3da17beb1085338e5b2fbda953387226d1b
+  internal/sdk/models/components/stableagentread.go:
+    id: 6dc281ff5b47
+    last_write_checksum: sha1:c900c2c5a952eab3d08d8b0e78e47db4936cc5ce
+    pristine_git_object: 3b48b924e53341654d4d86f05a5b05710220ce58
   internal/sdk/models/components/stableagentresponse.go:
     id: f56fc3049b96
-    last_write_checksum: sha1:c1a8e555e6edab564d3ac229c2074d3f10e2869b
-    pristine_git_object: db644f974178599f9be2db2fe845381490256b54
+    last_write_checksum: sha1:46fb98c4aa63ef78e32beb06a97e17c659a4d5f5
+    pristine_git_object: a2a02e3f6c6c8d53d352e2268a9a7bd583791b35
   internal/sdk/models/components/stableagentupdaterequest.go:
     id: 0c3e00c95e61
     last_write_checksum: sha1:3ec9b9e917be76765fbbd3ef223fa34bc2bcff21
@@ -1980,6 +2016,30 @@ trackedFiles:
     id: 728edf87585e
     last_write_checksum: sha1:ad4d439f3c5dd77b4613d24f21c4af355c15ee8c
     pristine_git_object: f9383fd34f77f09d90bb900793c130062565e60c
+  internal/sdk/models/components/stableinstructionspatchrequest.go:
+    id: 1bbf67baa37b
+    last_write_checksum: sha1:657093c6c0e52ba1f5a21963613d12d78d1d274d
+    pristine_git_object: 1403e010b8d8e52399031ddaaf499debd7b94b06
+  internal/sdk/models/components/stableinstructionspatchresponse.go:
+    id: 34d6ce3bcc7f
+    last_write_checksum: sha1:70cae54c55122d6716c4640aea19b8405af9d0c4
+    pristine_git_object: 03d4c8742e809ca42136c90195cb7e29635f772a
+  internal/sdk/models/components/stableinstructionsreadresponse.go:
+    id: ed1f69697d6d
+    last_write_checksum: sha1:c6bd6c32358677223b96cac2dfa62f8b25f90993
+    pristine_git_object: b1ab8d6ce7522d6a30c470ae629a19023acb57be
+  internal/sdk/models/components/stableinstructionssearchmatch.go:
+    id: c6920c351479
+    last_write_checksum: sha1:f873224ad6675aa2f3bcaf6d7ce5f056b9f7ff70
+    pristine_git_object: da18ff3f38f68f560904a4fccb13c26c2bf12519
+  internal/sdk/models/components/stableinstructionssearchrequest.go:
+    id: 6e29531c50e4
+    last_write_checksum: sha1:89dca41e96cfbc77b6466634c4a521775384e399
+    pristine_git_object: 86ad3c9f4fa8d66513b17c1f8194ff36d4100190
+  internal/sdk/models/components/stableinstructionssearchresponse.go:
+    id: ceccc28e6e7e
+    last_write_checksum: sha1:49f7d61cceb9c7a23a45877b66ca885ab8492edb
+    pristine_git_object: f5fa08d576e9e5dc8327410660f9b21f89810583
   internal/sdk/models/components/stableintegration.go:
     id: 9669cf179d3b
     last_write_checksum: sha1:26ba2a0a73e6e2c68b5649c302f3cadfc977e66a
@@ -2044,10 +2104,18 @@ trackedFiles:
     id: 3aabff349e87
     last_write_checksum: sha1:9c38d7a6e068675a1a18c003026da9df5a6f2ccf
     pristine_git_object: 0f241890ea2a55fcc5cc640b41406c50306764b4
-  internal/sdk/models/components/stableplaybooklistresponse.go:
-    id: 9e358429fcf4
-    last_write_checksum: sha1:8531a53d37f910bcf56f5fd4068e24ad9dd12449
-    pristine_git_object: afb0da61eebf7aebcb383e6f65faf4910e9ab8f4
+  internal/sdk/models/components/stableplaybookread.go:
+    id: f63869aaafb5
+    last_write_checksum: sha1:879e85244aca56923215158d00cf05fcaae0ea46
+    pristine_git_object: 50e096cff91f4144723996a669963fb3423dbf10
+  internal/sdk/models/components/stableplaybookreadlistresponse.go:
+    id: ba5754ba4dea
+    last_write_checksum: sha1:ee4344c94895ff1dcc04c7823d8910b47602009f
+    pristine_git_object: acbc8fe11ea41141941e5e64fcd48329ea60b669
+  internal/sdk/models/components/stableplaybookreadresponse.go:
+    id: d4286672f755
+    last_write_checksum: sha1:8ff3c3326cdba43fa2f8c8c3f66b58f4ae77a6bf
+    pristine_git_object: 6c76f504bab7e1d78158414bd3e27bde1ccfb91b
   internal/sdk/models/components/stableplaybookresponse.go:
     id: 9a0bf083f324
     last_write_checksum: sha1:6477c45bcb9d64ddbc58091d1a8f444ca477eba2
@@ -2418,8 +2486,32 @@ trackedFiles:
     pristine_git_object: 092acd63639e9b1b351c12b15fcd1cb8638df364
   internal/sdk/models/operations/stableagentcontrollerget.go:
     id: 584c26101071
-    last_write_checksum: sha1:975625dd816d38ab67614ccd6406dc3f8f3392eb
-    pristine_git_object: 9f518bcc36c72748af95bf1a2a8593c6f93850a8
+    last_write_checksum: sha1:faedd3ae277d2dbaae783891753471ddd94d4b22
+    pristine_git_object: 2af93b1aa51017650229c98d9a8127d2c4504c6f
+  internal/sdk/models/operations/stableagentcontrollerpatchinstructions.go:
+    id: 987fe97e66bb
+    last_write_checksum: sha1:b92a05bc07303347c5fb7fa36244fa085e97cea1
+    pristine_git_object: ce12b0552c4f2c38af58aceda45b263bdf73cf74
+  internal/sdk/models/operations/stableagentcontrollerpatchprompt.go:
+    id: 1769b4c1b4ec
+    last_write_checksum: sha1:4801967a7d17dca89e9d4b33fa5bba6bd0ef2904
+    pristine_git_object: caba493eb832c861cb55dc473a420db9f118bbc1
+  internal/sdk/models/operations/stableagentcontrollerreadinstructions.go:
+    id: 77ed7a641651
+    last_write_checksum: sha1:5190726758a0b184d6e610d4276d473585a11f93
+    pristine_git_object: 1834399c0eb7e638401378a44845b9d525561020
+  internal/sdk/models/operations/stableagentcontrollerreadprompt.go:
+    id: a6e16c430c60
+    last_write_checksum: sha1:4f340a3535921d9fc453a2b55129806570d7885d
+    pristine_git_object: 403dedbe57152b62fa278c2a543a2f40f7659b94
+  internal/sdk/models/operations/stableagentcontrollersearchinstructions.go:
+    id: a57af3ade639
+    last_write_checksum: sha1:544b46927154420a52814fae6ffc4e890b38f6b8
+    pristine_git_object: 90383ec2874a980c7473aee94f1b5ce254ccc94a
+  internal/sdk/models/operations/stableagentcontrollersearchprompt.go:
+    id: 3f42cdc797e0
+    last_write_checksum: sha1:049bc933022303413410aa4020d5af1724fa6ac9
+    pristine_git_object: b0be31abaeca372ff97ad57ce00c1d821e3cac03
   internal/sdk/models/operations/stableagentcontrollerupdate.go:
     id: c47de4c415a0
     last_write_checksum: sha1:d71f171f1ced6679de39816dfb1a7e117b84db1c
@@ -2790,12 +2882,24 @@ trackedFiles:
     pristine_git_object: 7442d04d25b8db869a47a2c663a7c87396922ac9
   internal/sdk/models/operations/stableplaybookcontrollerget.go:
     id: abc7f9c47015
-    last_write_checksum: sha1:fcd8ff7f334e090d0bb83125c94a09f14bdb5249
-    pristine_git_object: 6ccd205369fde5a3170f0018594d29680285721c
+    last_write_checksum: sha1:936492ed33f5ffe5901a5c6ab074f7356c4b5cd6
+    pristine_git_object: 06287f3b53f23bb215fceb5ce475462d49cb0860
   internal/sdk/models/operations/stableplaybookcontrollerlist.go:
     id: 2f824ad4adea
-    last_write_checksum: sha1:b9f97ede563453a2c1a09dbfa9b4ab7dd81c92e9
-    pristine_git_object: b6960586ea4872762948537233593df492df6dbe
+    last_write_checksum: sha1:d6f4fd19e2f17374772911c13d3f320c1a8f8ab3
+    pristine_git_object: bd2625e779f0057914763a9c2075746cba14b9ab
+  internal/sdk/models/operations/stableplaybookcontrollerpatchinstructions.go:
+    id: bc65dfa738b6
+    last_write_checksum: sha1:a07dc6e1169f5299f6b78a7c8906e63ff2c6d43e
+    pristine_git_object: fcc02efdde532246c7675e911b35b6e5436ab219
+  internal/sdk/models/operations/stableplaybookcontrollerreadinstructions.go:
+    id: bbe774b29ebd
+    last_write_checksum: sha1:798f0547e4e28a2e678d21e0a278a8c46d77be6d
+    pristine_git_object: fbfc463580e8e2a54f61f9a93a3ad53d0979395c
+  internal/sdk/models/operations/stableplaybookcontrollersearchinstructions.go:
+    id: db46759d3b06
+    last_write_checksum: sha1:e85dfc6f4d2d06497408c40a6ac5f543e526723b
+    pristine_git_object: 574e818ffa967327216545d17d99fbf0b93411bd
   internal/sdk/models/operations/stableplaybookcontrollerupdate.go:
     id: 82042777a503
     last_write_checksum: sha1:7a6a9db995988aa0900a952df58756424fb4579d
@@ -3022,8 +3126,8 @@ trackedFiles:
     pristine_git_object: 664553c95ed5de8613693d56d6ecbab7152763a9
   internal/sdk/playbook.go:
     id: 0f4c3e0e4ee0
-    last_write_checksum: sha1:8549add688f2537a9feb179397dee13ea068e495
-    pristine_git_object: b7b772fc1e875f9e84ae161959c3417eb45d8c28
+    last_write_checksum: sha1:a5a577a27f858aab3623907786b38d2227057c4c
+    pristine_git_object: fe4a6fd88a84225b2d35a1ea3e36939851dcef3b
   internal/sdk/project.go:
     id: befa8e6a600c
     last_write_checksum: sha1:ea7beec46dbb9d8d81c1fae613cd9a8e3fe3c79b
@@ -3162,8 +3266,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:f8f63251dc7ba0f24dd1cbe711337cc40612b622
-    pristine_git_object: 85947c1b7d5a208b86179bba4ff87f52b7f02564
+    last_write_checksum: sha1:8330431dce918ffa7b12b2823c1dca014f862f50
+    pristine_git_object: 652002d458f6f5a53196a6c62f508539e01e1362
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -3418,9 +3522,10 @@ examples:
         query:
           projectID: "<id>"
           environmentAlias: "<value>"
+          includeInstructions: false
       responses:
         "200":
-          application/json: {"playbooks": [{"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2024-07-06T13:10:28.343Z", "updatedAt": "2026-06-11T04:30:14.931Z", "description": "uh-huh whose whoever happily whenever", "instructions": "[]", "pathToolOrder": [], "endTool": null, "cardTool": {"enabled": false, "description": "aha discontinue gah drat draft generally cornet sense sans"}, "buttonTool": {"enabled": true, "description": "immense executor winged consequently coin inspect given"}, "carouselTool": {"enabled": true, "description": "compassionate of mmm underneath joyfully deduction"}, "skipTurnTool": {"enabled": false, "description": "unless present quinoa duh wherever uh-huh"}, "webSearchTool": {"enabled": false}, "callForwardTool": {"enabled": true, "address": [], "description": "majestically hm tangible square since crystallize meanwhile pleasing ouch", "addressType": "phone"}, "knowledgeBaseTool": {"enabled": false, "description": "meal during while pension yuck"}}]}
+          application/json: {"playbooks": [{"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2024-07-06T13:10:28.343Z", "updatedAt": "2026-06-11T04:30:14.931Z", "description": "uh-huh whose whoever happily whenever", "instructions": "[]", "pathToolOrder": [], "endTool": null, "cardTool": {"enabled": false, "description": "aha discontinue gah drat draft generally cornet sense sans"}, "buttonTool": {"enabled": true, "description": "immense executor winged consequently coin inspect given"}, "carouselTool": {"enabled": true, "description": "compassionate of mmm underneath joyfully deduction"}, "skipTurnTool": {"enabled": false, "description": "unless present quinoa duh wherever uh-huh"}, "webSearchTool": {"enabled": false}, "callForwardTool": {"enabled": true, "address": [], "description": "majestically hm tangible square since crystallize meanwhile pleasing ouch", "addressType": "phone"}, "knowledgeBaseTool": {"enabled": false, "description": "meal during while pension yuck"}, "instructionsLineCount": 552561}]}
   StablePlaybookController_create:
     speakeasy-default-stable-playbook-controller-create:
       parameters:
@@ -3451,9 +3556,10 @@ examples:
         query:
           projectID: "<id>"
           environmentAlias: "<value>"
+          includeInstructions: false
       responses:
         "200":
-          application/json: {"playbook": {"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2026-04-13T16:42:55.048Z", "updatedAt": "2026-01-30T04:16:52.389Z", "description": "brr inquisitively faithfully secret", "instructions": "[]", "pathToolOrder": ["<value 1>", "<value 2>"], "endTool": null, "cardTool": {"enabled": true, "description": "sleepily woot yum authorized about pneumonia geez"}, "buttonTool": {"enabled": true, "description": "questionable scratch whereas"}, "carouselTool": {"enabled": true, "description": "instead uneven whoa vulgarise"}, "skipTurnTool": {"enabled": false, "description": "mouser inventory resort witty"}, "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "ugh unfit furthermore whack lack delightfully huzzah", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "to dress aw pace yawningly representation times instead over"}}}
+          application/json: {"playbook": {"id": "<id>", "name": "<value>", "settings": {}, "createdAt": "2026-04-13T16:42:55.048Z", "updatedAt": "2026-01-30T04:16:52.389Z", "description": "brr inquisitively faithfully secret", "pathToolOrder": ["<value 1>", "<value 2>"], "endTool": null, "cardTool": {"enabled": true, "description": "sleepily woot yum authorized about pneumonia geez"}, "buttonTool": {"enabled": true, "description": "questionable scratch whereas"}, "carouselTool": {"enabled": true, "description": "instead uneven whoa vulgarise"}, "skipTurnTool": {"enabled": false, "description": "mouser inventory resort witty"}, "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "ugh unfit furthermore whack lack delightfully huzzah", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "to dress aw pace yawningly representation times instead over"}, "instructionsLineCount": 760672}}
   StablePlaybookController_update:
     speakeasy-default-stable-playbook-controller-update:
       parameters:
@@ -4038,9 +4144,11 @@ examples:
         query:
           projectID: "<id>"
           environmentAlias: "<value>"
+          includeInstructions: false
+          includePrompt: false
       responses:
         "200":
-          application/json: {"agent": {"llm": {}, "prompt": "[{\"variableID\":\"<id>\"}]", "includeGuidelines": true, "playbooks": [{"description": null, "playbookID": "<id>"}], "workflows": [{"description": "about aboard upside-down dispose tattered since", "workflowID": "<id>"}], "endTool": {"enabled": false, "description": "solidly kissingly whoa gaseous wherever boggle wherever interestingly anaesthetise eek"}, "cardTool": {"enabled": true, "description": "knottily furthermore lox geez psst blue proud"}, "buttonTool": {"enabled": true, "description": "far mill outfit functional humor absent during forenenst mmm"}, "instructions": "[{\"variableID\":\"<id>\"}]", "carouselTool": {"enabled": true, "description": "chime incidentally override"}, "skipTurnTool": {"enabled": false, "description": "deeply who overreact from worth likewise abnegate"}, "pathToolOrder": ["<value 1>"], "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "sniff taro solvency story wordy oh although", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "pinstripe glittering wonderfully slow contravene wire hungry account until hence"}}}
+          application/json: {"agent": {"llm": {}, "includeGuidelines": true, "playbooks": [{"description": null, "playbookID": "<id>"}], "workflows": [{"description": "about aboard upside-down dispose tattered since", "workflowID": "<id>"}], "endTool": {"enabled": false, "description": "solidly kissingly whoa gaseous wherever boggle wherever interestingly anaesthetise eek"}, "cardTool": {"enabled": true, "description": "knottily furthermore lox geez psst blue proud"}, "buttonTool": {"enabled": true, "description": "far mill outfit functional humor absent during forenenst mmm"}, "carouselTool": {"enabled": true, "description": "chime incidentally override"}, "skipTurnTool": {"enabled": false, "description": "deeply who overreact from worth likewise abnegate"}, "pathToolOrder": ["<value 1>"], "webSearchTool": {"enabled": true}, "callForwardTool": {"enabled": false, "address": [], "description": "sniff taro solvency story wordy oh although", "addressType": "sip"}, "knowledgeBaseTool": {"enabled": true, "description": "pinstripe glittering wonderfully slow contravene wire hungry account until hence"}, "promptLineCount": 558090, "instructionsLineCount": 965082}}
   StableAgentController_update:
     speakeasy-default-stable-agent-controller-update:
       parameters:
@@ -4810,4 +4918,109 @@ examples:
       responses:
         "200":
           application/json: {"message": "<value>"}
+  StablePlaybookController_readInstructions:
+    speakeasy-default-stable-playbook-controller-read-instructions:
+      parameters:
+        path:
+          playbookID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+          offset: 1
+          limit: 400
+      responses:
+        "200":
+          application/json: {"content": "<value>", "offset": 715784, "returnedLines": 279160, "totalLines": 115050, "totalCharacters": 655178, "hasMore": true, "nextOffset": 618629}
+  StablePlaybookController_patchInstructions:
+    speakeasy-default-stable-playbook-controller-patch-instructions:
+      parameters:
+        path:
+          playbookID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"oldString": "<value>", "newString": "<value>", "replaceAll": false}
+      responses:
+        "200":
+          application/json: {"message": "<value>", "replacements": 33247, "diff": "<value>", "totalLines": 931662, "unresolvedReferences": ["<value 1>", "<value 2>", "<value 3>"], "unresolvedMentions": ["<value 1>", "<value 2>"]}
+  StablePlaybookController_searchInstructions:
+    speakeasy-default-stable-playbook-controller-search-instructions:
+      parameters:
+        path:
+          playbookID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"pattern": "<value>", "ignoreCase": false, "contextLines": 0, "limit": 50}
+      responses:
+        "200":
+          application/json: {"matches": [], "totalMatches": 724048, "matchingLines": 721635, "hasMore": true}
+  StableAgentController_readInstructions:
+    speakeasy-default-stable-agent-controller-read-instructions:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+          offset: 1
+          limit: 400
+      responses:
+        "200":
+          application/json: {"content": "<value>", "offset": 919160, "returnedLines": 838745, "totalLines": 398114, "totalCharacters": 525623, "hasMore": false, "nextOffset": 464266}
+  StableAgentController_patchInstructions:
+    speakeasy-default-stable-agent-controller-patch-instructions:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"oldString": "<value>", "newString": "<value>", "replaceAll": false}
+      responses:
+        "200":
+          application/json: {"message": "<value>", "replacements": 258721, "diff": "<value>", "totalLines": 284474, "unresolvedReferences": ["<value 1>", "<value 2>"], "unresolvedMentions": ["<value 1>", "<value 2>"]}
+  StableAgentController_searchInstructions:
+    speakeasy-default-stable-agent-controller-search-instructions:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"pattern": "<value>", "ignoreCase": false, "contextLines": 0, "limit": 50}
+      responses:
+        "200":
+          application/json: {"matches": [], "totalMatches": 615007, "matchingLines": 875762, "hasMore": true}
+  StableAgentController_readPrompt:
+    speakeasy-default-stable-agent-controller-read-prompt:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+          offset: 1
+          limit: 400
+      responses:
+        "200":
+          application/json: {"content": "<value>", "offset": 316218, "returnedLines": 502390, "totalLines": 328893, "totalCharacters": 146818, "hasMore": true, "nextOffset": 852270}
+  StableAgentController_patchPrompt:
+    speakeasy-default-stable-agent-controller-patch-prompt:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"oldString": "<value>", "newString": "<value>", "replaceAll": false}
+      responses:
+        "200":
+          application/json: {"message": "<value>", "replacements": 173165, "diff": "<value>", "totalLines": 277337, "unresolvedReferences": ["<value 1>", "<value 2>"], "unresolvedMentions": ["<value 1>", "<value 2>", "<value 3>"]}
+  StableAgentController_searchPrompt:
+    speakeasy-default-stable-agent-controller-search-prompt:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"pattern": "<value>", "ignoreCase": false, "contextLines": 0, "limit": 50}
+      responses:
+        "200":
+          application/json: {"matches": [], "totalMatches": 174215, "matchingLines": 963280, "hasMore": false}
 examplesVersion: 1.0.2
