@@ -9,9 +9,21 @@ import (
 )
 
 type StablePlaybookControllerGetRequest struct {
-	PlaybookID       string `pathParam:"style=simple,explode=false,name=playbookID"`
-	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
-	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	PlaybookID          string `pathParam:"style=simple,explode=false,name=playbookID"`
+	ProjectID           string `queryParam:"style=form,explode=true,name=projectID"`
+	EnvironmentAlias    string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	IncludeInstructions *bool  `default:"false" queryParam:"style=form,explode=true,name=includeInstructions"`
+}
+
+func (s StablePlaybookControllerGetRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookControllerGetRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookControllerGetRequest) GetPlaybookID() string {
@@ -35,9 +47,16 @@ func (s *StablePlaybookControllerGetRequest) GetEnvironmentAlias() string {
 	return s.EnvironmentAlias
 }
 
+func (s *StablePlaybookControllerGetRequest) GetIncludeInstructions() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.IncludeInstructions
+}
+
 type StablePlaybookControllerGetResponse struct {
-	HTTPMeta               components.HTTPMetadata `json:"-"`
-	StablePlaybookResponse *components.StablePlaybookResponse
+	HTTPMeta                   components.HTTPMetadata `json:"-"`
+	StablePlaybookReadResponse *components.StablePlaybookReadResponse
 }
 
 func (s StablePlaybookControllerGetResponse) MarshalJSON() ([]byte, error) {
@@ -58,9 +77,9 @@ func (s *StablePlaybookControllerGetResponse) GetHTTPMeta() components.HTTPMetad
 	return s.HTTPMeta
 }
 
-func (s *StablePlaybookControllerGetResponse) GetStablePlaybookResponse() *components.StablePlaybookResponse {
+func (s *StablePlaybookControllerGetResponse) GetStablePlaybookReadResponse() *components.StablePlaybookReadResponse {
 	if s == nil {
 		return nil
 	}
-	return s.StablePlaybookResponse
+	return s.StablePlaybookReadResponse
 }

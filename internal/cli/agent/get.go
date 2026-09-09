@@ -18,6 +18,8 @@ import (
 var getCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
+	{FlagName: "include-instructions", FieldPath: "IncludeInstructions", Kind: flagutil.FlagKindBool, Optional: true, HasDefault: true, Description: "boolean flag"},
+	{FlagName: "include-prompt", FieldPath: "IncludePrompt", Kind: flagutil.FlagKindBool, Optional: true, HasDefault: true, Description: "boolean flag"},
 }
 
 // initGetCmd initializes the get command.

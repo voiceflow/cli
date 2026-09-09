@@ -4,12 +4,12 @@
 package components
 
 type StableAgentResponse struct {
-	Agent StableAgent `json:"agent"`
+	Agent StableAgentRead `json:"agent"`
 }
 
-func (s *StableAgentResponse) GetAgent() StableAgent {
+func (s *StableAgentResponse) GetAgent() StableAgentRead {
 	if s == nil {
-		return StableAgent{}
+		return StableAgentRead{}
 	}
 	return s.Agent
 }
