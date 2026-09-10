@@ -57,8 +57,9 @@ func (e *CompletionTraceStateEnd) UnmarshalJSON(data []byte) error {
 }
 
 type CompletionTracePayloadEnd struct {
-	State CompletionTraceStateEnd `json:"state"`
-	Ref   *DebugTraceRef          `json:"ref,omitzero"`
+	State     CompletionTraceStateEnd `json:"state"`
+	Ref       *DebugTraceRef          `json:"ref,omitzero"`
+	MessageID *string                 `json:"messageID,omitzero"`
 }
 
 func (c CompletionTracePayloadEnd) MarshalJSON() ([]byte, error) {
@@ -135,6 +136,13 @@ func (c *CompletionTracePayloadEnd) GetRefMcpIntegrationTool() *DebugTraceMcpInt
 	return nil
 }
 
+func (c *CompletionTracePayloadEnd) GetMessageID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.MessageID
+}
+
 type CompletionTraceStateContent string
 
 const (
@@ -159,8 +167,9 @@ func (e *CompletionTraceStateContent) UnmarshalJSON(data []byte) error {
 }
 
 type CompletionTracePayloadContent struct {
-	State   CompletionTraceStateContent `json:"state"`
-	Content string                      `json:"content"`
+	State     CompletionTraceStateContent `json:"state"`
+	Content   string                      `json:"content"`
+	MessageID *string                     `json:"messageID,omitzero"`
 }
 
 func (c CompletionTracePayloadContent) MarshalJSON() ([]byte, error) {
@@ -186,6 +195,13 @@ func (c *CompletionTracePayloadContent) GetContent() string {
 		return ""
 	}
 	return c.Content
+}
+
+func (c *CompletionTracePayloadContent) GetMessageID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.MessageID
 }
 
 type CompletionTraceStateStart string
