@@ -9424,6 +9424,8 @@ components:
                     - CONTENT
                 content:
                   type: string
+                messageID:
+                  type: string
               required:
                 - state
                 - content
@@ -9438,6 +9440,8 @@ components:
                 ref:
                   allOf:
                     - $ref: '#/components/schemas/DebugTraceRef'
+                messageID:
+                  type: string
               required:
                 - state
       required:
