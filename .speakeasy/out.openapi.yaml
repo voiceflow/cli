@@ -2333,6 +2333,22 @@ paths:
           schema:
             type: string
             description: The ID of the project to operate on.
+        - name: filterConversation
+          required: false
+          in: query
+          schema:
+            description: When enabled, only `text`, `speak` and `live-agent-handoff` traces will be returned.
+            type: boolean
+        - name: customTraceTypes
+          required: false
+          in: query
+          schema:
+            description: Additional trace types to return when `filterConversation` is enabled.
+            anyOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
       responses:
         "200":
           description: ""
