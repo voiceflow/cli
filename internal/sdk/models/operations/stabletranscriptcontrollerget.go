@@ -4,13 +4,108 @@
 package operations
 
 import (
+	"errors"
+	"fmt"
 	"github.com/voiceflow/cli/internal/sdk/models/components"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+type CustomTraceTypesType string
+
+const (
+	CustomTraceTypesTypeStr        CustomTraceTypesType = "str"
+	CustomTraceTypesTypeArrayOfStr CustomTraceTypesType = "arrayOfStr"
+)
+
+// CustomTraceTypes - Additional trace types to return when `filterConversation` is enabled.
+type CustomTraceTypes struct {
+	Str        *string  `queryParam:"inline" union:"member"`
+	ArrayOfStr []string `queryParam:"inline" union:"member"`
+
+	Type CustomTraceTypesType
+}
+
+func CreateCustomTraceTypesStr(str string) CustomTraceTypes {
+	typ := CustomTraceTypesTypeStr
+
+	return CustomTraceTypes{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func CreateCustomTraceTypesArrayOfStr(arrayOfStr []string) CustomTraceTypes {
+	typ := CustomTraceTypesTypeArrayOfStr
+
+	return CustomTraceTypes{
+		ArrayOfStr: arrayOfStr,
+		Type:       typ,
+	}
+}
+
+func (u *CustomTraceTypes) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  CustomTraceTypesTypeStr,
+			Value: &str,
+		})
+	}
+
+	var arrayOfStr []string = []string{}
+	if err := utils.UnmarshalJSON(data, &arrayOfStr, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  CustomTraceTypesTypeArrayOfStr,
+			Value: arrayOfStr,
+		})
+	}
+
+	if len(candidates) == 0 {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for CustomTraceTypes", string(data))
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for CustomTraceTypes", string(data))
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(CustomTraceTypesType)
+	switch best.Type {
+	case CustomTraceTypesTypeStr:
+		u.Str = best.Value.(*string)
+		return nil
+	case CustomTraceTypesTypeArrayOfStr:
+		u.ArrayOfStr = best.Value.([]string)
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for CustomTraceTypes", string(data))
+}
+
+func (u CustomTraceTypes) MarshalJSON() ([]byte, error) {
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	if u.ArrayOfStr != nil {
+		return utils.MarshalJSON(u.ArrayOfStr, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type CustomTraceTypes: all fields are null")
+}
+
 type StableTranscriptControllerGetRequest struct {
-	TranscriptID string `pathParam:"style=simple,explode=false,name=transcriptID"`
-	ProjectID    string `queryParam:"style=form,explode=true,name=projectID"`
+	TranscriptID       string `pathParam:"style=simple,explode=false,name=transcriptID"`
+	ProjectID          string `queryParam:"style=form,explode=true,name=projectID"`
+	FilterConversation *bool  `queryParam:"style=form,explode=true,name=filterConversation"`
+	// Additional trace types to return when `filterConversation` is enabled.
+	CustomTraceTypes *CustomTraceTypes `queryParam:"style=form,explode=true,name=customTraceTypes"`
 }
 
 func (s *StableTranscriptControllerGetRequest) GetTranscriptID() string {
@@ -25,6 +120,20 @@ func (s *StableTranscriptControllerGetRequest) GetProjectID() string {
 		return ""
 	}
 	return s.ProjectID
+}
+
+func (s *StableTranscriptControllerGetRequest) GetFilterConversation() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FilterConversation
+}
+
+func (s *StableTranscriptControllerGetRequest) GetCustomTraceTypes() *CustomTraceTypes {
+	if s == nil {
+		return nil
+	}
+	return s.CustomTraceTypes
 }
 
 type StableTranscriptControllerGetResponse struct {

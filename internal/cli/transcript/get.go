@@ -18,6 +18,8 @@ import (
 var getCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "transcript-id", Shorthand: "t", FieldPath: "TranscriptID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
+	{FlagName: "filter-conversation", Shorthand: "f", FieldPath: "FilterConversation", Kind: flagutil.FlagKindBool, Optional: true, Description: "boolean flag"},
+	{FlagName: "custom-trace-types", Shorthand: "c", FieldPath: "CustomTraceTypes", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, Optional: true, TypeDescription: "JSON value (one of: string | array of string)"}},
 }
 
 // initGetCmd initializes the get command.
