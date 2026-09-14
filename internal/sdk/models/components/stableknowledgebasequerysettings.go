@@ -34,6 +34,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelGpt56Terra                StableKnowledgeBaseQuerySettingsModel = "gpt-5.6-terra"
 	StableKnowledgeBaseQuerySettingsModelGpt56Luna                 StableKnowledgeBaseQuerySettingsModel = "gpt-5.6-luna"
 	StableKnowledgeBaseQuerySettingsModelGptRealtime               StableKnowledgeBaseQuerySettingsModel = "gpt-realtime"
+	StableKnowledgeBaseQuerySettingsModelGptLive1                  StableKnowledgeBaseQuerySettingsModel = "gpt-live-1"
 	StableKnowledgeBaseQuerySettingsModelClaude4Opus               StableKnowledgeBaseQuerySettingsModel = "claude-4-opus"
 	StableKnowledgeBaseQuerySettingsModelClaude4Sonnet             StableKnowledgeBaseQuerySettingsModel = "claude-4-sonnet"
 	StableKnowledgeBaseQuerySettingsModelClaude45Sonnet            StableKnowledgeBaseQuerySettingsModel = "claude-4.5-sonnet"
@@ -136,6 +137,8 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "gpt-5.6-luna":
 		fallthrough
 	case "gpt-realtime":
+		fallthrough
+	case "gpt-live-1":
 		fallthrough
 	case "claude-4-opus":
 		fallthrough
