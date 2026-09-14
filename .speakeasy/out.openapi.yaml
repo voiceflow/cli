@@ -3577,7 +3577,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: list
@@ -3614,7 +3614,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: create
@@ -3659,7 +3659,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: get
@@ -3701,7 +3701,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: update
@@ -3749,13 +3749,13 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: delete
           operationDescription: |-
             WHAT — Remove an evaluation.
-            DO NOT — Try to delete a built-in default (CSAT, Deflection, Resolution) because they are used to drive analytics. Instead they can be disabled via update.
+            DO NOT — Try to delete a built-in default evaluation, because they are used to drive analytics. Instead they can be disabled via update.
         cli:
           command: evaluation delete
       x-speakeasy-group: evaluation
@@ -3792,7 +3792,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in defaults (CSAT, Deflection rate, Resolution rate) auto-run on every new transcript and can be disabled but not deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: run
