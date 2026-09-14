@@ -11722,6 +11722,7 @@ components:
         - gpt-5.6-terra
         - gpt-5.6-luna
         - gpt-realtime
+        - gpt-live-1
         - claude-4-opus
         - claude-4-sonnet
         - claude-4.5-sonnet
@@ -11793,6 +11794,7 @@ components:
         - GPT_5_6_TERRA
         - GPT_5_6_LUNA
         - GPT_REALTIME
+        - GPT_LIVE_1
         - CLAUDE_4_OPUS
         - CLAUDE_4_SONNET
         - CLAUDE_4_5_SONNET
@@ -19176,6 +19178,7 @@ components:
                 - gpt-5.6-terra
                 - gpt-5.6-luna
                 - gpt-realtime
+                - gpt-live-1
                 - claude-4-opus
                 - claude-4-sonnet
                 - claude-4.5-sonnet
@@ -19248,6 +19251,7 @@ components:
                 - GPT_5_6_TERRA
                 - GPT_5_6_LUNA
                 - GPT_REALTIME
+                - GPT_LIVE_1
                 - CLAUDE_4_OPUS
                 - CLAUDE_4_SONNET
                 - CLAUDE_4_5_SONNET
@@ -19448,6 +19452,7 @@ components:
             - gpt-5.6-terra
             - gpt-5.6-luna
             - gpt-realtime
+            - gpt-live-1
             - claude-4-opus
             - claude-4-sonnet
             - claude-4.5-sonnet
@@ -19519,6 +19524,7 @@ components:
             - GPT_5_6_TERRA
             - GPT_5_6_LUNA
             - GPT_REALTIME
+            - GPT_LIVE_1
             - CLAUDE_4_OPUS
             - CLAUDE_4_SONNET
             - CLAUDE_4_5_SONNET
