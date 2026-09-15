@@ -11740,6 +11740,7 @@ components:
         - bedrock-claude-4.8-opus
         - voiceflow-core-4.0
         - voiceflow-core-4.1
+        - voiceflow-core-4.2
         - voiceflow-flash-4.2
         - kimi-k3
         - gemini-2.5-pro
@@ -11812,6 +11813,7 @@ components:
         - BEDROCK_CLAUDE_4_8_OPUS
         - VOICEFLOW_CORE_4_0
         - VOICEFLOW_CORE_4_1
+        - VOICEFLOW_CORE_4_2
         - VOICEFLOW_FLASH_4_2
         - KIMI_K_3
         - GEMINI_2_5_PRO
@@ -19196,6 +19198,7 @@ components:
                 - bedrock-claude-4.8-opus
                 - voiceflow-core-4.0
                 - voiceflow-core-4.1
+                - voiceflow-core-4.2
                 - voiceflow-flash-4.2
                 - kimi-k3
                 - gemini-2.5-pro
@@ -19269,6 +19272,7 @@ components:
                 - BEDROCK_CLAUDE_4_8_OPUS
                 - VOICEFLOW_CORE_4_0
                 - VOICEFLOW_CORE_4_1
+                - VOICEFLOW_CORE_4_2
                 - VOICEFLOW_FLASH_4_2
                 - KIMI_K_3
                 - GEMINI_2_5_PRO
@@ -19470,6 +19474,7 @@ components:
             - bedrock-claude-4.8-opus
             - voiceflow-core-4.0
             - voiceflow-core-4.1
+            - voiceflow-core-4.2
             - voiceflow-flash-4.2
             - kimi-k3
             - gemini-2.5-pro
@@ -19542,6 +19547,7 @@ components:
             - BEDROCK_CLAUDE_4_8_OPUS
             - VOICEFLOW_CORE_4_0
             - VOICEFLOW_CORE_4_1
+            - VOICEFLOW_CORE_4_2
             - VOICEFLOW_FLASH_4_2
             - KIMI_K_3
             - GEMINI_2_5_PRO
