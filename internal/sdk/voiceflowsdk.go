@@ -51,22 +51,22 @@ func Pointer[T any](v T) *T { return &v }
 // VoiceflowSDK - Realtime: Realtime gateway API service
 type VoiceflowSDK struct {
 	SDKVersion    string
+	Agent         *Agent
+	Playbook      *Playbook
+	Tool          *Tool
 	Workspace     *Workspace
 	Project       *Project
 	Environment   *Environment
 	Variable      *Variable
-	Playbook      *Playbook
 	APITool       *APITool
 	Transcript    *Transcript
 	Function      *Function
 	Evaluation    *Evaluation
 	Document      *Document
-	Agent         *Agent
 	Integration   *Integration
 	McpServer     *McpServer
 	McpTool       *McpTool
 	Secret        *Secret
-	Tool          *Tool
 	KnowledgeBase *KnowledgeBase
 	Conversation  *Conversation
 	Analytics     *Analytics
@@ -164,22 +164,22 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 
 	sdk.sdkConfiguration = sdk.hooks.SDKInit(sdk.sdkConfiguration)
 
+	sdk.Agent = newAgent(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Playbook = newPlaybook(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Tool = newTool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Workspace = newWorkspace(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Project = newProject(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Environment = newEnvironment(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Variable = newVariable(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.Playbook = newPlaybook(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.APITool = newAPITool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Transcript = newTranscript(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Function = newFunction(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Evaluation = newEvaluation(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Document = newDocument(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.Agent = newAgent(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Integration = newIntegration(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.McpServer = newMcpServer(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.McpTool = newMcpTool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Secret = newSecret(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.Tool = newTool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.KnowledgeBase = newKnowledgeBase(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Conversation = newConversation(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Analytics = newAnalytics(sdk, sdk.sdkConfiguration, sdk.hooks)

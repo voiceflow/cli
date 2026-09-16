@@ -158,7 +158,7 @@ vf completion powershell | Out-String | Invoke-Expression
 ### Example
 
 ```bash
-vf workspace list --token 'Bearer test_token'
+vf agent get --token 'Bearer test_token' --project-id '<id>' --environment-alias '<value>' --include-instructions false --include-prompt false
 
 ```
 <!-- End CLI Example Usage [usage] -->
@@ -216,6 +216,36 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 <details open>
 <summary>Available commands</summary>
 
+### [agent](docs/vf_agent.md)
+
+* [`get`](docs/vf_agent_get.md) - Get agent
+* [`update`](docs/vf_agent_update.md) - Update agent
+* [`read-instructions`](docs/vf_agent_read-instructions.md) - Read agent instructions
+* [`patch-instructions`](docs/vf_agent_patch-instructions.md) - Patch agent instructions
+* [`search-instructions`](docs/vf_agent_search-instructions.md) - Search agent instructions
+* [`read-prompt`](docs/vf_agent_read-prompt.md) - Read the global prompt
+* [`patch-prompt`](docs/vf_agent_patch-prompt.md) - Patch the global prompt
+* [`search-prompt`](docs/vf_agent_search-prompt.md) - Search the global prompt
+
+### [playbook](docs/vf_playbook.md)
+
+* [`list`](docs/vf_playbook_list.md) - List playbooks
+* [`create`](docs/vf_playbook_create.md) - Create playbook
+* [`get`](docs/vf_playbook_get.md) - Get playbook
+* [`update`](docs/vf_playbook_update.md) - Update playbook
+* [`delete`](docs/vf_playbook_delete.md) - Delete playbook
+* [`read-instructions`](docs/vf_playbook_read-instructions.md) - Read playbook instructions
+* [`patch-instructions`](docs/vf_playbook_patch-instructions.md) - Patch playbook instructions
+* [`search-instructions`](docs/vf_playbook_search-instructions.md) - Search playbook instructions
+
+### [tool](docs/vf_tool.md)
+
+* [`list`](docs/vf_tool_list.md) - List tools
+* [`create`](docs/vf_tool_create.md) - Create tool
+* [`get`](docs/vf_tool_get.md) - Get tool
+* [`update`](docs/vf_tool_update.md) - Update tool
+* [`delete`](docs/vf_tool_delete.md) - Delete tool
+
 ### [workspace](docs/vf_workspace.md)
 
 * [`list`](docs/vf_workspace_list.md) - List workspaces
@@ -251,17 +281,6 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`get`](docs/vf_variable_get.md) - Get variable
 * [`update`](docs/vf_variable_update.md) - Update variable
 * [`delete`](docs/vf_variable_delete.md) - Delete variable
-
-### [playbook](docs/vf_playbook.md)
-
-* [`list`](docs/vf_playbook_list.md) - List playbooks
-* [`create`](docs/vf_playbook_create.md) - Create playbook
-* [`get`](docs/vf_playbook_get.md) - Get playbook
-* [`update`](docs/vf_playbook_update.md) - Update playbook
-* [`delete`](docs/vf_playbook_delete.md) - Delete playbook
-* [`read-instructions`](docs/vf_playbook_read-instructions.md) - Read playbook instructions
-* [`patch-instructions`](docs/vf_playbook_patch-instructions.md) - Patch playbook instructions
-* [`search-instructions`](docs/vf_playbook_search-instructions.md) - Search playbook instructions
 
 ### [api-tool](docs/vf_api-tool.md)
 
@@ -336,17 +355,6 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`update`](docs/vf_document_update.md) - Update document
 * [`delete`](docs/vf_document_delete.md) - Delete document
 
-### [agent](docs/vf_agent.md)
-
-* [`get`](docs/vf_agent_get.md) - Get agent
-* [`update`](docs/vf_agent_update.md) - Update agent
-* [`read-instructions`](docs/vf_agent_read-instructions.md) - Read agent instructions
-* [`patch-instructions`](docs/vf_agent_patch-instructions.md) - Patch agent instructions
-* [`search-instructions`](docs/vf_agent_search-instructions.md) - Search agent instructions
-* [`read-prompt`](docs/vf_agent_read-prompt.md) - Read the global prompt
-* [`patch-prompt`](docs/vf_agent_patch-prompt.md) - Patch the global prompt
-* [`search-prompt`](docs/vf_agent_search-prompt.md) - Search the global prompt
-
 ### [integration](docs/vf_integration.md)
 
 * [`list`](docs/vf_integration_list.md) - List integrations
@@ -374,14 +382,6 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`list-overrides`](docs/vf_secret_list-overrides.md) - List secret overrides
 * [`delete`](docs/vf_secret_delete.md) - Delete secret
 * [`set-value`](docs/vf_secret_set-value.md) - Set secret value
-
-### [tool](docs/vf_tool.md)
-
-* [`list`](docs/vf_tool_list.md) - List tools
-* [`create`](docs/vf_tool_create.md) - Create tool
-* [`get`](docs/vf_tool_get.md) - Get tool
-* [`update`](docs/vf_tool_update.md) - Update tool
-* [`delete`](docs/vf_tool_delete.md) - Delete tool
 
 ### [knowledge-base](docs/vf_knowledge-base.md)
 

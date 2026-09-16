@@ -67,6 +67,15 @@ func NewRootCommand() (*cobra.Command, error) {
 			return nil
 		},
 	}
+	if err := agent.InitAgentRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init agent: %w", err)
+	}
+	if err := playbook.InitPlaybookRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init playbook: %w", err)
+	}
+	if err := tool.InitToolRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init tool: %w", err)
+	}
 	if err := workspace.InitWorkspaceRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init workspace: %w", err)
 	}
@@ -78,9 +87,6 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := variable.InitVariableRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init variable: %w", err)
-	}
-	if err := playbook.InitPlaybookRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init playbook: %w", err)
 	}
 	if err := apitool.InitApiToolRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init api-tool: %w", err)
@@ -97,9 +103,6 @@ func NewRootCommand() (*cobra.Command, error) {
 	if err := document.InitDocumentRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init document: %w", err)
 	}
-	if err := agent.InitAgentRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init agent: %w", err)
-	}
 	if err := integration.InitIntegrationRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init integration: %w", err)
 	}
@@ -111,9 +114,6 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := secret.InitSecretRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init secret: %w", err)
-	}
-	if err := tool.InitToolRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init tool: %w", err)
 	}
 	if err := knowledgebase.InitKnowledgeBaseRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init knowledge-base: %w", err)
