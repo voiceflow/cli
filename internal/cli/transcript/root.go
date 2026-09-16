@@ -34,6 +34,10 @@ func InitTranscriptRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initFilesCmd(TranscriptCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(TranscriptCmd)
 	return nil
 }
