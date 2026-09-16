@@ -3230,6 +3230,49 @@ paths:
         - Transcript
       security:
         - token: []
+  /v1/stable/transcript/{transcriptID}/files:
+    get:
+      operationId: StableTranscriptController_files
+      x-vf:
+        mcp:
+          tool: voiceflow_transcript
+          toolDescription: |-
+            Read and search post-hoc transcripts of live conversations. Searchable by date range, tags, custom transcript properties, and evaluation results. The transcript surface is the heart of the iterate loop — it's where you see what actually happened so you can fix the build.
+            Predecessor: read the project first.
+            Successor: run evaluations on the selected transcripts; or head back to the build surfaces (playbooks, functions, and so on) once root cause is identified.
+          operation: files
+          operationDescription: |-
+            WHAT — List the files an end user attached during a transcript's conversation, each with a presigned download URL.
+            USE WHEN — You need the actual attachments (images, PDFs, and so on) from a conversation, not just its text logs.
+        cli:
+          command: transcript files
+      x-speakeasy-group: transcript
+      x-speakeasy-name-override: files
+      summary: List transcript files
+      description: List every file attached to the transcript that is stored on Voiceflow, each with a presigned GET URL for downloading it. Files referenced only by an external URL are not included.
+      parameters:
+        - name: transcriptID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTranscriptFilesResponse'
+      tags:
+        - Transcript
+      security:
+        - token: []
   /v1/stable/transcript-property:
     get:
       operationId: StableTranscriptPropertyController_list
@@ -19337,6 +19380,44 @@ components:
             - logs
       required:
         - transcript
+    StableTranscriptFile:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A stable, opaque identifier for the file. Unlike `url`, it does not change between requests.
+        filename:
+          description: The original name of the uploaded file, when recorded.
+          type: string
+        mimeType:
+          type: string
+          description: The MIME type of the file.
+        size:
+          description: The size of the file in bytes, when recorded.
+          type: number
+        url:
+          type: string
+          description: A presigned GET URL for downloading the file.
+        expiresAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          description: ISO 8601 timestamp after which the presigned `url` is no longer valid.
+      required:
+        - id
+        - mimeType
+        - url
+        - expiresAt
+    StableTranscriptFilesResponse:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTranscriptFile'
+          description: The files attached to the transcript that are stored on Voiceflow.
+      required:
+        - files
     StableEvaluation:
       allOf:
         - type: object

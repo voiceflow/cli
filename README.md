@@ -302,6 +302,7 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 
 * [`search`](docs/vf_transcript_search.md) - Search transcripts
 * [`get`](docs/vf_transcript_get.md) - Get transcript
+* [`files`](docs/vf_transcript_files.md) - List transcript files
 
 #### [property](docs/vf_transcript_property.md)
 
