@@ -37,6 +37,14 @@ func InitDocumentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initPreviewSitemapCmd(DocumentCmd); err != nil {
+		return err
+	}
+
+	if err := initCreateSitemapCmd(DocumentCmd); err != nil {
+		return err
+	}
+
 	if err := initGetCmd(DocumentCmd); err != nil {
 		return err
 	}

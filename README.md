@@ -352,6 +352,8 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`create-url`](docs/vf_document_create-url.md) - Create URL document
 * [`create-text`](docs/vf_document_create-text.md) - Create text document
 * [`create-table`](docs/vf_document_create-table.md) - Create table document
+* [`preview-sitemap`](docs/vf_document_preview-sitemap.md) - Preview sitemap URLs
+* [`create-sitemap`](docs/vf_document_create-sitemap.md) - Create documents from sitemap
 * [`get`](docs/vf_document_get.md) - Get document
 * [`update`](docs/vf_document_update.md) - Update document
 * [`delete`](docs/vf_document_delete.md) - Delete document

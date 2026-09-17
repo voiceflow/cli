@@ -4754,7 +4754,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -4799,15 +4800,17 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
           operation: create_url
           operationDescription: |-
-            WHAT — Add a web URL as a Knowledge Base source. System crawls the page (or follows the sitemap).
+            WHAT — Add one web page as a Knowledge Base source. System crawls that page.
             USE WHEN — Content that lives on the customer's public site and stays in sync via scheduled refresh.
             DO NOT — Re-upload the same URL via create_url to refresh content — it makes a duplicate document. To refresh an existing URL document, use the source's refresh mechanism instead of re-creating.
+            DO NOT — Pass a sitemap.xml, or a whole site, to this operation. It stores one document whose content is the XML index, not the pages. Run voiceflow_document.preview_sitemap then voiceflow_document.create_sitemap instead.
         cli:
           command: document create-url
       x-speakeasy-group: document
@@ -4942,7 +4945,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -5103,7 +5107,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -5240,6 +5245,178 @@ paths:
         - Document
       security:
         - token: []
+  /v1/stable/document/sitemap/preview:
+    post:
+      operationId: StableDocumentController_previewSitemap
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: preview_sitemap
+          operationDescription: |-
+            WHAT — Read a sitemap and return the page URLs an import would turn into documents, without creating anything. Reports the plan's per-import limit alongside them.
+            USE WHEN — Always, before voiceflow_document.create_sitemap, so the user can see and narrow the set first.
+            HOW — `exclude` drops a URL when any pattern matches it, case-insensitively and anywhere in the URL: `/blog/` drops every blog page, `*.pdf` drops PDFs. When `truncated` is true the sitemap holds more pages (`total`) than one import may create (`limit`), so narrow it with `exclude` before creating — creating over the limit is rejected outright.
+            DO NOT — Treat an empty `urls` list as an error to retry. When `excluded` is above zero your own patterns removed everything the sitemap had — loosen them and preview again. Only when `excluded` is zero did the sitemap itself list nothing, and then you should ask the user for the pages. `dropped` counts entries that were not usable URLs at all.
+        cli:
+          command: document preview-sitemap
+      x-speakeasy-group: document
+      x-speakeasy-name-override: preview-sitemap
+      summary: Preview sitemap URLs
+      description: Read a sitemap and return the URLs an import would create documents for.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableDocumentSitemapRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentSitemapPreviewResponse'
+      tags:
+        - Document
+      security:
+        - token: []
+  /v1/stable/document/sitemap:
+    post:
+      operationId: StableDocumentController_createSitemap
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: create_sitemap
+          operationDescription: |-
+            WHAT — Read a sitemap and create one URL document per page it lists. This is how a whole site becomes a Knowledge Base source.
+            USE WHEN — The user wants a site indexed, and voiceflow_document.preview_sitemap has already shown them which pages that means.
+            HOW — Same `sitemapURL` and `exclude` as the preview; `refreshRate` and `metadata` apply to every document created. A page already stored as a URL document is reused, not duplicated. The response repeats `excluded` and `dropped`: tell the user about them rather than reporting that the whole site was imported.
+            DO NOT — Call this without previewing first, and do not call it when the preview came back `truncated` — it is rejected above the limit, and the user has not seen what is about to be added.
+        cli:
+          command: document create-sitemap
+      x-speakeasy-group: document
+      x-speakeasy-name-override: create-sitemap
+      summary: Create documents from sitemap
+      description: Read a sitemap and create one URL document per page it lists.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: markdownConversion
+          required: false
+          in: query
+          schema:
+            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmBasedChunks
+          required: false
+          in: query
+          schema:
+            description: When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmGeneratedQ
+          required: false
+          in: query
+          schema:
+            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmContentSummarization
+          required: false
+          in: query
+          schema:
+            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmPrependContext
+          required: false
+          in: query
+          schema:
+            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableDocumentCreateSitemapRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentSitemapCreateResponse'
+      tags:
+        - Document
+      security:
+        - token: []
   /v1/stable/document/{documentID}:
     get:
       operationId: StableDocumentController_get
@@ -5247,7 +5424,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -5296,7 +5474,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -5352,7 +5531,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (web page or sitemap — system crawls), file (PDF/DOCX/TXT upload).
+            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
+            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -18702,6 +18882,125 @@ components:
         - name
         - items
         - schema
+      additionalProperties: false
+    StableDocumentSitemapPreviewResponse:
+      type: object
+      properties:
+        urls:
+          type: array
+          items:
+            type: string
+          description: The URLs that would be imported, in sitemap order, capped at `limit` entries.
+        total:
+          type: number
+          description: How many URLs the sitemap yields once `exclude` is applied, before the cap.
+        limit:
+          type: number
+          description: The most URL documents this plan allows in a single import.
+        truncated:
+          type: boolean
+          description: True when `total` is above `limit`, meaning `urls` is only part of what the sitemap holds.
+        excluded:
+          type: number
+          description: How many valid URLs the `exclude` patterns removed. Zero when no patterns were given.
+        dropped:
+          type: number
+          description: How many entries the sitemap listed that are not usable URLs and were skipped.
+      required:
+        - urls
+        - total
+        - limit
+        - truncated
+        - excluded
+        - dropped
+    StableDocumentSitemapRequest:
+      type: object
+      properties:
+        sitemapURL:
+          type: string
+          format: uri
+          description: The HTTPS URL of the sitemap to read. A bare site URL works too — when it does not end in `.xml`, `/sitemap.xml`, `/sitemap_index.xml` and `/sitemap/sitemap.xml` are probed in turn.
+        exclude:
+          description: 'Patterns that drop a URL from the import when any one of them matches. Matching is case-insensitive and unanchored: a pattern with no `*` matches any URL containing it as a substring (`/blog/`), while `*` matches any run of characters (`*/tag/*`, `*.pdf`).'
+          maxItems: 100
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+      required:
+        - sitemapURL
+      additionalProperties: false
+    StableDocumentSitemapCreateResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableDocument'
+        total:
+          type: number
+          description: How many documents the import produced, counting reused ones.
+        excluded:
+          type: number
+          description: How many valid URLs the `exclude` patterns removed. Zero when no patterns were given.
+        dropped:
+          type: number
+          description: How many entries the sitemap listed that are not usable URLs and were skipped.
+      required:
+        - documents
+        - total
+        - excluded
+        - dropped
+    StableDocumentCreateSitemapRequest:
+      type: object
+      properties:
+        sitemapURL:
+          type: string
+          format: uri
+          description: The HTTPS URL of the sitemap to read. A bare site URL works too — when it does not end in `.xml`, `/sitemap.xml`, `/sitemap_index.xml` and `/sitemap/sitemap.xml` are probed in turn.
+        exclude:
+          description: 'Patterns that drop a URL from the import when any one of them matches. Matching is case-insensitive and unanchored: a pattern with no `*` matches any URL containing it as a substring (`/blog/`), while `*` matches any run of characters (`*/tag/*`, `*.pdf`).'
+          maxItems: 100
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+        metadata:
+          default: []
+          description: Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                description: The name of the metadata field.
+              values:
+                type: array
+                items:
+                  type: string
+                description: The values assigned to this metadata field.
+            required:
+              - key
+              - values
+        refreshRate:
+          default: never
+          description: How often the URL is automatically re-crawled to refresh the document content.
+          type: string
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - never
+          x-enumNames:
+            - DAILY
+            - WEEKLY
+            - MONTHLY
+            - NEVER
+      required:
+        - sitemapURL
       additionalProperties: false
     StableDocumentDetails:
       type: object
