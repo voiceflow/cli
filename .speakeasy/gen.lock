@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 400145bab94d44b51e4de9d6dd0fde20
+  docChecksum: ed49144f28fd4aa71885947556d0817e
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.252
-  configChecksum: 448ec552dd04cbe71cfe4e8078a411db
+  releaseVersion: 0.2.253
+  configChecksum: d833fed3d2e014a84c915a34785b5d6b
 persistentEdits:
-  generation_id: 9747dd27-5eab-4bc6-965e-0e81b3bb9465
-  pristine_commit_hash: 0087cf3caea675387488afac795b08c513057016
-  pristine_tree_hash: 30dfd5d9721effae8c3e8249895625be1efc8f00
+  generation_id: b7b344cf-d52a-4adc-aebe-19fb68801c97
+  pristine_commit_hash: 018d2c9c626f73ab48adef1a2b04b75bcfef334f
+  pristine_tree_hash: 7b9c1069558b482641a5fd6ffc2a6500f58ad50c
 features:
   cli:
     additionalProperties: 0.0.1
@@ -140,6 +140,10 @@ trackedFiles:
     id: 88cef38f4f34
     last_write_checksum: sha1:51bc5cdcd0597fd390d2d03b1318c43ac0080695
     pristine_git_object: 0a820eb3495c2ed8006bababce836e989cc2da51
+  internal/cli/analytics/query/objectivemetrics.go:
+    id: 3deebed82876
+    last_write_checksum: sha1:1802c516f6b13ecaf899f135d9f71b5072da9592
+    pristine_git_object: e44dddb338e0e70cdfed87cbda73a00e742ead3e
   internal/cli/analytics/query/organizationtokenusage.go:
     id: d2746f4206e0
     last_write_checksum: sha1:a1dca723173782ede47ece20b8909cac7ad030a3
@@ -170,8 +174,8 @@ trackedFiles:
     pristine_git_object: 1dd940214b354faaff5e3d85959aa7a68bb6aa6b
   internal/cli/analytics/query/root.go:
     id: f2899b4319c7
-    last_write_checksum: sha1:48cdfdee5add57f11034e37a7217aeb3684ad06f
-    pristine_git_object: 3bdc8f4a0487034fa9e3822badaa20929b4d87e8
+    last_write_checksum: sha1:91acd5dd395bcf0cfdffcdbf7c787cfc19415e32
+    pristine_git_object: 4f74614b915768e7ffa73f28c6aa4242bea92d4b
   internal/cli/analytics/query/uniqueusercount.go:
     id: f127945e7793
     last_write_checksum: sha1:1e5cc70f2f19f8a3fb6b3c296342682717235a9c
@@ -790,8 +794,8 @@ trackedFiles:
     pristine_git_object: e51eb99b24a1dd7e48c36f152626a2defd7f3f74
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:0c5defc54dae92c80b2f02096044ebae293a2d66
-    pristine_git_object: dc4790884048f3ea069effc3439fd8b777ac1ab7
+    last_write_checksum: sha1:d35b3a765be951c6b23bea3ba1a7f98d11d8d27b
+    pristine_git_object: 695fbd70cdb343c17934987d1f9e8d7b1002a6b3
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:f642a16d98daf241dd4347d0e511cc473a8877d8
@@ -1460,6 +1464,10 @@ trackedFiles:
     id: 73f659332f36
     last_write_checksum: sha1:8e295d4b5ff4bbc7f00900719f301d495b11d8ff
     pristine_git_object: ab0d22b3b00ac8f54f9b5901aa2f53b14a7f6642
+  internal/sdk/models/components/objectivemetrics.go:
+    id: 750537eaf4e2
+    last_write_checksum: sha1:9341c9faa3e7132378db198c4d47b121d18a8e44
+    pristine_git_object: aba12945f99a924e78887470c72e2eec1a079952
   internal/sdk/models/components/pathrequest.go:
     id: 04c58ff65e1e
     last_write_checksum: sha1:a2be10d70f982fca4d70b06ffcb51f7b497bfcb5
@@ -1660,6 +1668,14 @@ trackedFiles:
     id: 177994c2d7f6
     last_write_checksum: sha1:842b547602b09383900fd9041480526010f0f118
     pristine_git_object: 78159f8d59b7550ffc1832a3e3f60edcb78c9ded
+  internal/sdk/models/components/stableanalyticsqueryobjectivemetricsrequest.go:
+    id: 2d19b3b5074d
+    last_write_checksum: sha1:97ced11b52c3627e6e2d629b54068bfa3cda1ed7
+    pristine_git_object: 28159fb9823cf5beeb513a8278a9817f60e95eb5
+  internal/sdk/models/components/stableanalyticsqueryobjectivemetricsresponse.go:
+    id: 45c75a20dff8
+    last_write_checksum: sha1:58b652c8ae61ef6bd5eff9cb131278a519e9195b
+    pristine_git_object: df8aeec8e04332cacfa1de6ee044727cf760fbd6
   internal/sdk/models/components/stableanalyticsqueryorganizationhourlytokenusageresponse.go:
     id: 2965a5d33dd5
     last_write_checksum: sha1:1b0d63a2e9dbca4eb3c8e3ebf069b17a0ae5750e
@@ -2580,6 +2596,10 @@ trackedFiles:
     id: c6a2e08ee882
     last_write_checksum: sha1:84b6fb5958bd2e8bd275a1d1f3b08fc769555a35
     pristine_git_object: c863bdb2d47eb55c5c7d46ba6fd74d0caefa4835
+  internal/sdk/models/operations/stableanalyticscontrollerqueryobjectivemetrics.go:
+    id: ce169329715d
+    last_write_checksum: sha1:a7765ba556b630114d61af428f2744beb15957a2
+    pristine_git_object: d8b70eb6e7a1f96e143f202dddb8e9fc7a0c92bb
   internal/sdk/models/operations/stableanalyticscontrollerqueryplaybookusage.go:
     id: 004104c131d9
     last_write_checksum: sha1:3f134e1f61b1e682285e921ec2a0ce4c86bd64a6
@@ -3154,8 +3174,8 @@ trackedFiles:
     pristine_git_object: 589972fcff144e2c32212b2d64472ebae94fc52c
   internal/sdk/query.go:
     id: 1ca150e74bd9
-    last_write_checksum: sha1:d5c191ee4451a3cb10c3818b9f495f1552fcc49b
-    pristine_git_object: 76ef357a6b4ca99b61818f02e778f5a2da19bd4d
+    last_write_checksum: sha1:2d74461fed003782c83488b52a6c35c8878d03cd
+    pristine_git_object: ba8f4e1cff075bb4416ecc09fbfadafaa81bede6
   internal/sdk/retry/config.go:
     id: 7ea5fa9128b6
     last_write_checksum: sha1:22068a7fd6e154053ff85678a7fdb6a0d02ac790
@@ -3282,8 +3302,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:b72c8d7b82e20708ec1a310a86368314a35c8037
-    pristine_git_object: 53a60f76a626aee7836d19ab1f4492edc2046eca
+    last_write_checksum: sha1:415dccfcbb0ec57b4e1e0f598d1342ee6166505b
+    pristine_git_object: 1956504561ca4e1b7473f2af7ed052edf1daa70b
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -5049,4 +5069,14 @@ examples:
       responses:
         "200":
           application/json: {"files": [{"id": "<id>", "mimeType": "<value>", "url": "https://impossible-bonnet.info", "expiresAt": "2025-09-18T14:45:12.061Z"}]}
+  StableAnalyticsController_queryObjectiveMetrics:
+    speakeasy-default-stable-analytics-controller-query-objective-metrics:
+      parameters:
+        path:
+          projectID: "<id>"
+      requestBody:
+        application/json: {"endDate": "<value>", "startDate": "<value>"}
+      responses:
+        "200":
+          application/json: {}
 examplesVersion: 1.0.2

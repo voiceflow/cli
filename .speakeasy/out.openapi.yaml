@@ -6532,7 +6532,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_call_count
@@ -6576,7 +6576,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_call_duration
@@ -6619,7 +6619,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_workspace_transcript_count
@@ -6662,7 +6662,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_project_transcript_count
@@ -6706,7 +6706,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_project_transcript_cost
@@ -6749,7 +6749,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_workspace_interaction_count
@@ -6792,7 +6792,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_project_interaction_count
@@ -6835,7 +6835,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_organization_token_usage
@@ -6878,7 +6878,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_workspace_token_usage
@@ -6921,7 +6921,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_project_token_usage
@@ -6964,7 +6964,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_hourly_organization_token_usage
@@ -7008,7 +7008,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_hourly_project_token_usage
@@ -7051,7 +7051,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_daily_token_usage
@@ -7095,7 +7095,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_entity_token_usage
@@ -7138,7 +7138,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_category_token_usage
@@ -7181,7 +7181,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_playbook_usage
@@ -7225,7 +7225,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_workflow_usage
@@ -7268,7 +7268,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_prompt_usage
@@ -7311,7 +7311,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_intent_usage
@@ -7354,7 +7354,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_function_usage
@@ -7397,7 +7397,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_api_tool_usage
@@ -7440,7 +7440,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_mcp_tool_usage
@@ -7483,7 +7483,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_knowledge_base_document_usage
@@ -7526,7 +7526,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_integration_usage
@@ -7569,7 +7569,7 @@ paths:
         mcp:
           tool: voiceflow_analytics
           toolDescription: |-
-            The Analytics dashboard surface — pre-defined widgets for resolution rate, CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
             Predecessor: select the project first.
             Successor: search transcripts to drill into the specific conversations behind a metric.
           operation: query_unique_user_count
@@ -7601,6 +7601,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableAnalyticsQueryUniqueUsersResponse'
+      tags:
+        - Analytics
+      security:
+        - token: []
+  /v1/stable/analytics/query/objective-metrics/project/{projectID}:
+    post:
+      operationId: StableAnalyticsController_queryObjectiveMetrics
+      x-vf:
+        mcp:
+          tool: voiceflow_analytics
+          toolDescription: |-
+            The Analytics dashboard surface — pre-defined widgets for the assistant's objective metric (conversion rate or resolution rate), CSAT, deflection, total chats, total interactions, unique users, latency, credits usage, playbook usage, tool usage, Knowledge Base document usage, time/dollars saved. Read-only.
+            Predecessor: select the project first.
+            Successor: search transcripts to drill into the specific conversations behind a metric.
+          operation: query_objective_metrics
+          operationDescription: |-
+            WHAT — How the assistant performs against the objective it is configured for, over a date range. Returns a `conversion` branch when the objective is conversion, a `resolution` branch when it is resolution, and an empty object when the assistant measures neither. Each branch carries the rate, the matched and evaluated session counts behind it, and a per-bucket breakdown of those two counts.
+            USE WHEN — Asked how an assistant is performing, whether it is meeting its goal or objective, what its conversion or resolution rate is, how many conversations converted or resolved, or how any of those moved between two periods. When no date range is given, default to the last 7 days.
+            DO NOT — Choose the metric: the assistant's configured objective decides which branch comes back, so never ask the user to pick one, and never call conversion data missing when `resolution` is returned. Do not report a null `rate` as 0% — null means nothing was evaluated, not that nothing converted or resolved. Do not read the `buckets` entries as percentages; they are counts, so divide `matchedSessions` by `evaluatedSessions` within a bucket to get that bucket's rate. Do not assume a bucket is a day — read `interval`, which widens to week or month on long ranges. On an empty response, say the assistant is not currently measuring a conversion or resolution objective rather than reporting zeros.
+            SCOPE — Published production traffic only. Draft and test sessions are excluded and cannot be requested. Ranges longer than 366 days are rejected; compare two periods with two calls instead.
+        cli:
+          command: analytics query objective-metrics
+      x-speakeasy-group: analytics.query
+      x-speakeasy-name-override: objective-metrics
+      summary: Query objective metrics
+      description: Query the metric for the assistant's configured objective over a date range.
+      parameters:
+        - name: projectID
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableAnalyticsQueryObjectiveMetricsRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableAnalyticsQueryObjectiveMetricsResponse'
       tags:
         - Analytics
       security:
@@ -17929,6 +17974,109 @@ components:
         - endDate
         - startDate
         - interval
+      additionalProperties: false
+    ObjectiveMetrics:
+      type: object
+      properties:
+        rate:
+          nullable: true
+          description: Percentage (0-100) of evaluated sessions that met the objective, rounded to one decimal. Null when no session was evaluated; never report a null as 0%.
+          type: number
+        matchedSessions:
+          type: number
+          description: Sessions that met the objective. The numerator of the rate.
+        evaluatedSessions:
+          type: number
+          description: Sessions evaluated against the objective. The denominator of the rate.
+        interval:
+          type: string
+          enum:
+            - hour
+            - day
+            - week
+            - month
+          description: 'The bucket size of every `buckets` entry, derived from the requested range: hour up to a day, day up to 31 days, week up to 56 days, month beyond that.'
+          x-enumNames:
+            - HOUR
+            - DAY
+            - WEEK
+            - MONTH
+        buckets:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+                pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+              matchedSessions:
+                type: number
+              evaluatedSessions:
+                type: number
+            required:
+              - date
+              - matchedSessions
+              - evaluatedSessions
+          description: Counts per `interval` bucket, not percentages. `date` is the start of the bucket. Divide within a bucket to get that bucket's rate.
+      required:
+        - rate
+        - matchedSessions
+        - evaluatedSessions
+        - interval
+        - buckets
+    StableAnalyticsQueryObjectiveMetricsResponse:
+      type: object
+      properties:
+        conversion:
+          description: Returned only when the assistant's objective is conversion.
+          allOf:
+            - $ref: '#/components/schemas/ObjectiveMetrics'
+        resolution:
+          description: Returned only when the assistant's objective is resolution.
+          allOf:
+            - $ref: '#/components/schemas/ObjectiveMetrics'
+    StableAnalyticsQueryObjectiveMetricsRequest:
+      type: object
+      properties:
+        endDate:
+          type: string
+          allOf:
+            - type: string
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            - type: string
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        startDate:
+          type: string
+          allOf:
+            - type: string
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            - type: string
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        timezone:
+          type: string
+        interfaces:
+          description: The channels to filter results by. Defaults to all channels.
+          minItems: 1
+          type: array
+          items:
+            type: string
+            enum:
+              - phone
+              - webchat
+              - api
+              - sms
+            x-enumNames:
+              - PHONE
+              - WEBCHAT
+              - API
+              - SMS
+        environmentAlias:
+          description: The ID or alias of the environment to filter results by. Defaults to all environments.
+          type: string
+      required:
+        - endDate
+        - startDate
       additionalProperties: false
     StableAPITool:
       type: object

@@ -428,6 +428,7 @@ Configuration is stored in `~/.config/vf/config.yaml`.
 * [`knowledge-base-document-usage`](docs/vf_analytics_query_knowledge-base-document-usage.md) - Query knowledge base document usage
 * [`integration-usage`](docs/vf_analytics_query_integration-usage.md) - Query integration usage
 * [`unique-user-count`](docs/vf_analytics_query_unique-user-count.md) - Query unique user count
+* [`objective-metrics`](docs/vf_analytics_query_objective-metrics.md) - Query objective metrics
 
 ### [test](docs/vf_test.md)
 
