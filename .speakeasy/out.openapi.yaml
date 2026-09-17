@@ -10618,12 +10618,14 @@ components:
         - kustomer
         - dixa
         - sunshine
+        - custom
       x-enumNames:
         - UJET
         - GENESYS
         - KUSTOMER
         - DIXA
         - SUNSHINE
+        - CUSTOM
     LiveAgentHandoffWidgetConfig:
       type: object
       properties:
@@ -20414,6 +20416,7 @@ components:
             - kustomer
             - dixa
             - sunshine
+            - custom_handoff
             - example
             - eleven_labs
           x-enumNames:
@@ -20431,6 +20434,7 @@ components:
             - KUSTOMER
             - DIXA
             - SUNSHINE
+            - CUSTOM_HANDOFF
             - EXAMPLE
             - ELEVEN_LABS
         name:
@@ -20477,6 +20481,7 @@ components:
         - kustomer
         - dixa
         - sunshine
+        - custom_handoff
         - example
         - eleven_labs
       x-enumNames:
@@ -20494,6 +20499,7 @@ components:
         - KUSTOMER
         - DIXA
         - SUNSHINE
+        - CUSTOM_HANDOFF
         - EXAMPLE
         - ELEVEN_LABS
     IntegrationConnectionType:
@@ -20626,6 +20632,30 @@ components:
         - keyId
         - keySecret
         - webhookSecret
+    CustomHandoffIntegrationCredentialsValue:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+          format: uri
+          description: Middleware root; we append the fixed paths.
+        authHeaderValue:
+          type: string
+          minLength: 1
+          description: Sent verbatim, opaque to us.
+        webhookSecret:
+          type: string
+          minLength: 32
+          description: HMAC-SHA256 key for inbound events.
+        authHeaderName:
+          default: Authorization
+          type: string
+          minLength: 1
+          pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$
+      required:
+        - baseUrl
+        - authHeaderValue
+        - webhookSecret
     StableIntegrationConnectRequest:
       oneOf:
         - type: object
@@ -20722,6 +20752,20 @@ components:
                 - SUNSHINE
             credentials:
               $ref: '#/components/schemas/SunshineIntegrationCredentialsValue'
+          required:
+            - integration
+            - credentials
+          additionalProperties: false
+        - type: object
+          properties:
+            integration:
+              type: string
+              enum:
+                - custom_handoff
+              x-enumNames:
+                - CUSTOM_HANDOFF
+            credentials:
+              $ref: '#/components/schemas/CustomHandoffIntegrationCredentialsValue'
           required:
             - integration
             - credentials

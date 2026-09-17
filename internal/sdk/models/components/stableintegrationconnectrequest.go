@@ -415,6 +415,59 @@ func (s *StableIntegrationConnectRequestZendesk) GetIntegration() IntegrationZen
 	return s.Integration
 }
 
+type IntegrationCustomHandoff string
+
+const (
+	IntegrationCustomHandoffCustomHandoff IntegrationCustomHandoff = "custom_handoff"
+)
+
+func (e IntegrationCustomHandoff) ToPointer() *IntegrationCustomHandoff {
+	return &e
+}
+func (e *IntegrationCustomHandoff) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "custom_handoff":
+		*e = IntegrationCustomHandoff(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for IntegrationCustomHandoff: %v", v)
+	}
+}
+
+type StableIntegrationConnectRequestCustomHandoff struct {
+	Integration IntegrationCustomHandoff                 `json:"integration"`
+	Credentials CustomHandoffIntegrationCredentialsValue `json:"credentials"`
+}
+
+func (s StableIntegrationConnectRequestCustomHandoff) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableIntegrationConnectRequestCustomHandoff) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableIntegrationConnectRequestCustomHandoff) GetIntegration() IntegrationCustomHandoff {
+	if s == nil {
+		return IntegrationCustomHandoff("")
+	}
+	return s.Integration
+}
+
+func (s *StableIntegrationConnectRequestCustomHandoff) GetCredentials() CustomHandoffIntegrationCredentialsValue {
+	if s == nil {
+		return CustomHandoffIntegrationCredentialsValue{}
+	}
+	return s.Credentials
+}
+
 type IntegrationSunshine string
 
 const (
@@ -789,41 +842,43 @@ func (s *StableIntegrationConnectRequestElevenLabs) GetCredentials() string {
 type StableIntegrationConnectRequestType string
 
 const (
-	StableIntegrationConnectRequestTypeElevenLabs   StableIntegrationConnectRequestType = "eleven_labs"
-	StableIntegrationConnectRequestTypeTwilio       StableIntegrationConnectRequestType = "twilio"
-	StableIntegrationConnectRequestTypeUjet         StableIntegrationConnectRequestType = "ujet"
-	StableIntegrationConnectRequestTypeGenesys      StableIntegrationConnectRequestType = "genesys"
-	StableIntegrationConnectRequestTypeKustomer     StableIntegrationConnectRequestType = "kustomer"
-	StableIntegrationConnectRequestTypeDixa         StableIntegrationConnectRequestType = "dixa"
-	StableIntegrationConnectRequestTypeSunshine     StableIntegrationConnectRequestType = "sunshine"
-	StableIntegrationConnectRequestTypeZendesk      StableIntegrationConnectRequestType = "zendesk"
-	StableIntegrationConnectRequestTypeSalesforce   StableIntegrationConnectRequestType = "salesforce"
-	StableIntegrationConnectRequestTypeShopify      StableIntegrationConnectRequestType = "shopify"
-	StableIntegrationConnectRequestTypeGoogleSheets StableIntegrationConnectRequestType = "google_sheets"
-	StableIntegrationConnectRequestTypeGoogleGmail  StableIntegrationConnectRequestType = "google_gmail"
-	StableIntegrationConnectRequestTypeAirtable     StableIntegrationConnectRequestType = "airtable"
-	StableIntegrationConnectRequestTypeMake         StableIntegrationConnectRequestType = "make"
-	StableIntegrationConnectRequestTypeHubspot      StableIntegrationConnectRequestType = "hubspot"
-	StableIntegrationConnectRequestTypeExample      StableIntegrationConnectRequestType = "example"
+	StableIntegrationConnectRequestTypeElevenLabs    StableIntegrationConnectRequestType = "eleven_labs"
+	StableIntegrationConnectRequestTypeTwilio        StableIntegrationConnectRequestType = "twilio"
+	StableIntegrationConnectRequestTypeUjet          StableIntegrationConnectRequestType = "ujet"
+	StableIntegrationConnectRequestTypeGenesys       StableIntegrationConnectRequestType = "genesys"
+	StableIntegrationConnectRequestTypeKustomer      StableIntegrationConnectRequestType = "kustomer"
+	StableIntegrationConnectRequestTypeDixa          StableIntegrationConnectRequestType = "dixa"
+	StableIntegrationConnectRequestTypeSunshine      StableIntegrationConnectRequestType = "sunshine"
+	StableIntegrationConnectRequestTypeCustomHandoff StableIntegrationConnectRequestType = "custom_handoff"
+	StableIntegrationConnectRequestTypeZendesk       StableIntegrationConnectRequestType = "zendesk"
+	StableIntegrationConnectRequestTypeSalesforce    StableIntegrationConnectRequestType = "salesforce"
+	StableIntegrationConnectRequestTypeShopify       StableIntegrationConnectRequestType = "shopify"
+	StableIntegrationConnectRequestTypeGoogleSheets  StableIntegrationConnectRequestType = "google_sheets"
+	StableIntegrationConnectRequestTypeGoogleGmail   StableIntegrationConnectRequestType = "google_gmail"
+	StableIntegrationConnectRequestTypeAirtable      StableIntegrationConnectRequestType = "airtable"
+	StableIntegrationConnectRequestTypeMake          StableIntegrationConnectRequestType = "make"
+	StableIntegrationConnectRequestTypeHubspot       StableIntegrationConnectRequestType = "hubspot"
+	StableIntegrationConnectRequestTypeExample       StableIntegrationConnectRequestType = "example"
 )
 
 type StableIntegrationConnectRequest struct {
-	StableIntegrationConnectRequestElevenLabs   *StableIntegrationConnectRequestElevenLabs   `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestTwilio       *StableIntegrationConnectRequestTwilio       `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestUjet         *StableIntegrationConnectRequestUjet         `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestGenesys      *StableIntegrationConnectRequestGenesys      `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestKustomer     *StableIntegrationConnectRequestKustomer     `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestDixa         *StableIntegrationConnectRequestDixa         `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestSunshine     *StableIntegrationConnectRequestSunshine     `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestZendesk      *StableIntegrationConnectRequestZendesk      `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestSalesforce   *StableIntegrationConnectRequestSalesforce   `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestShopify      *StableIntegrationConnectRequestShopify      `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestGoogleSheets *StableIntegrationConnectRequestGoogleSheets `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestGoogleGmail  *StableIntegrationConnectRequestGoogleGmail  `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestAirtable     *StableIntegrationConnectRequestAirtable     `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestMake         *StableIntegrationConnectRequestMake         `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestHubspot      *StableIntegrationConnectRequestHubspot      `queryParam:"inline" union:"member"`
-	StableIntegrationConnectRequestExample      *StableIntegrationConnectRequestExample      `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestElevenLabs    *StableIntegrationConnectRequestElevenLabs    `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestTwilio        *StableIntegrationConnectRequestTwilio        `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestUjet          *StableIntegrationConnectRequestUjet          `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestGenesys       *StableIntegrationConnectRequestGenesys       `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestKustomer      *StableIntegrationConnectRequestKustomer      `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestDixa          *StableIntegrationConnectRequestDixa          `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestSunshine      *StableIntegrationConnectRequestSunshine      `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestCustomHandoff *StableIntegrationConnectRequestCustomHandoff `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestZendesk       *StableIntegrationConnectRequestZendesk       `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestSalesforce    *StableIntegrationConnectRequestSalesforce    `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestShopify       *StableIntegrationConnectRequestShopify       `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestGoogleSheets  *StableIntegrationConnectRequestGoogleSheets  `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestGoogleGmail   *StableIntegrationConnectRequestGoogleGmail   `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestAirtable      *StableIntegrationConnectRequestAirtable      `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestMake          *StableIntegrationConnectRequestMake          `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestHubspot       *StableIntegrationConnectRequestHubspot       `queryParam:"inline" union:"member"`
+	StableIntegrationConnectRequestExample       *StableIntegrationConnectRequestExample       `queryParam:"inline" union:"member"`
 
 	Type StableIntegrationConnectRequestType
 }
@@ -909,6 +964,18 @@ func CreateStableIntegrationConnectRequestSunshine(sunshine StableIntegrationCon
 	return StableIntegrationConnectRequest{
 		StableIntegrationConnectRequestSunshine: &sunshine,
 		Type:                                    typ,
+	}
+}
+
+func CreateStableIntegrationConnectRequestCustomHandoff(customHandoff StableIntegrationConnectRequestCustomHandoff) StableIntegrationConnectRequest {
+	typ := StableIntegrationConnectRequestTypeCustomHandoff
+
+	typStr := IntegrationCustomHandoff(typ)
+	customHandoff.Integration = typStr
+
+	return StableIntegrationConnectRequest{
+		StableIntegrationConnectRequestCustomHandoff: &customHandoff,
+		Type: typ,
 	}
 }
 
@@ -1095,6 +1162,15 @@ func (u *StableIntegrationConnectRequest) UnmarshalJSON(data []byte) error {
 		u.StableIntegrationConnectRequestSunshine = stableIntegrationConnectRequestSunshine
 		u.Type = StableIntegrationConnectRequestTypeSunshine
 		return nil
+	case "custom_handoff":
+		stableIntegrationConnectRequestCustomHandoff := new(StableIntegrationConnectRequestCustomHandoff)
+		if err := utils.UnmarshalJSON(data, &stableIntegrationConnectRequestCustomHandoff, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Integration == custom_handoff) type StableIntegrationConnectRequestCustomHandoff within StableIntegrationConnectRequest: %w", string(data), err)
+		}
+
+		u.StableIntegrationConnectRequestCustomHandoff = stableIntegrationConnectRequestCustomHandoff
+		u.Type = StableIntegrationConnectRequestTypeCustomHandoff
+		return nil
 	case "zendesk":
 		stableIntegrationConnectRequestZendesk := new(StableIntegrationConnectRequestZendesk)
 		if err := utils.UnmarshalJSON(data, &stableIntegrationConnectRequestZendesk, "", true, nil); err != nil {
@@ -1208,6 +1284,10 @@ func (u StableIntegrationConnectRequest) MarshalJSON() ([]byte, error) {
 
 	if u.StableIntegrationConnectRequestSunshine != nil {
 		return utils.MarshalJSON(u.StableIntegrationConnectRequestSunshine, "", true)
+	}
+
+	if u.StableIntegrationConnectRequestCustomHandoff != nil {
+		return utils.MarshalJSON(u.StableIntegrationConnectRequestCustomHandoff, "", true)
 	}
 
 	if u.StableIntegrationConnectRequestZendesk != nil {
