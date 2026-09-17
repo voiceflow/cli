@@ -121,6 +121,10 @@ func InitQueryRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initObjectiveMetricsCmd(QueryCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(QueryCmd)
 	return nil
 }
