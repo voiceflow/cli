@@ -63,6 +63,10 @@ func (s *StableIntegrationControllerConnectRequest) GetBodySunshine() *component
 	return s.GetBody().StableIntegrationConnectRequestSunshine
 }
 
+func (s *StableIntegrationControllerConnectRequest) GetBodyCustomHandoff() *components.StableIntegrationConnectRequestCustomHandoff {
+	return s.GetBody().StableIntegrationConnectRequestCustomHandoff
+}
+
 func (s *StableIntegrationControllerConnectRequest) GetBodyZendesk() *components.StableIntegrationConnectRequestZendesk {
 	return s.GetBody().StableIntegrationConnectRequestZendesk
 }

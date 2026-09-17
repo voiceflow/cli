@@ -6,22 +6,23 @@ package components
 type ProjectIntegration string
 
 const (
-	ProjectIntegrationMake         ProjectIntegration = "make"
-	ProjectIntegrationZendesk      ProjectIntegration = "zendesk"
-	ProjectIntegrationShopify      ProjectIntegration = "shopify"
-	ProjectIntegrationAirtable     ProjectIntegration = "airtable"
-	ProjectIntegrationSalesforce   ProjectIntegration = "salesforce"
-	ProjectIntegrationHubspot      ProjectIntegration = "hubspot"
-	ProjectIntegrationGoogleGmail  ProjectIntegration = "google_gmail"
-	ProjectIntegrationGoogleSheets ProjectIntegration = "google_sheets"
-	ProjectIntegrationTwilio       ProjectIntegration = "twilio"
-	ProjectIntegrationUjet         ProjectIntegration = "ujet"
-	ProjectIntegrationGenesys      ProjectIntegration = "genesys"
-	ProjectIntegrationKustomer     ProjectIntegration = "kustomer"
-	ProjectIntegrationDixa         ProjectIntegration = "dixa"
-	ProjectIntegrationSunshine     ProjectIntegration = "sunshine"
-	ProjectIntegrationExample      ProjectIntegration = "example"
-	ProjectIntegrationElevenLabs   ProjectIntegration = "eleven_labs"
+	ProjectIntegrationMake          ProjectIntegration = "make"
+	ProjectIntegrationZendesk       ProjectIntegration = "zendesk"
+	ProjectIntegrationShopify       ProjectIntegration = "shopify"
+	ProjectIntegrationAirtable      ProjectIntegration = "airtable"
+	ProjectIntegrationSalesforce    ProjectIntegration = "salesforce"
+	ProjectIntegrationHubspot       ProjectIntegration = "hubspot"
+	ProjectIntegrationGoogleGmail   ProjectIntegration = "google_gmail"
+	ProjectIntegrationGoogleSheets  ProjectIntegration = "google_sheets"
+	ProjectIntegrationTwilio        ProjectIntegration = "twilio"
+	ProjectIntegrationUjet          ProjectIntegration = "ujet"
+	ProjectIntegrationGenesys       ProjectIntegration = "genesys"
+	ProjectIntegrationKustomer      ProjectIntegration = "kustomer"
+	ProjectIntegrationDixa          ProjectIntegration = "dixa"
+	ProjectIntegrationSunshine      ProjectIntegration = "sunshine"
+	ProjectIntegrationCustomHandoff ProjectIntegration = "custom_handoff"
+	ProjectIntegrationExample       ProjectIntegration = "example"
+	ProjectIntegrationElevenLabs    ProjectIntegration = "eleven_labs"
 )
 
 func (e ProjectIntegration) ToPointer() *ProjectIntegration {
@@ -32,7 +33,7 @@ func (e ProjectIntegration) ToPointer() *ProjectIntegration {
 func (e *ProjectIntegration) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "make", "zendesk", "shopify", "airtable", "salesforce", "hubspot", "google_gmail", "google_sheets", "twilio", "ujet", "genesys", "kustomer", "dixa", "sunshine", "example", "eleven_labs":
+		case "make", "zendesk", "shopify", "airtable", "salesforce", "hubspot", "google_gmail", "google_sheets", "twilio", "ujet", "genesys", "kustomer", "dixa", "sunshine", "custom_handoff", "example", "eleven_labs":
 			return true
 		}
 	}
