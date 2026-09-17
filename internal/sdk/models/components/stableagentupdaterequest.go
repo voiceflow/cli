@@ -1993,9 +1993,9 @@ type StableAgentUpdateRequest struct {
 	Prompt   *string                                                             `json:"prompt,omitzero"`
 	EndTool  optionalnullable.OptionalNullable[StableAgentUpdateRequestEndTool]  `json:"endTool,omitzero"`
 	CardTool optionalnullable.OptionalNullable[StableAgentUpdateRequestCardTool] `json:"cardTool,omitzero"`
-	// Playbooks available for the agent to invoke.
+	// Playbooks available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no playbooks AND no workflows registered cannot run - the runtime fails the conversation - so never send an empty list unless `workflows` still holds at least one.
 	Playbooks []StableAgentUpdateRequestPlaybook `json:"playbooks,omitzero"`
-	// Workflows available for the agent to invoke.
+	// Workflows available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no workflows AND no playbooks registered cannot run, so never send an empty list unless `playbooks` still holds at least one.
 	Workflows    []StableAgentUpdateRequestWorkflow                                      `json:"workflows,omitzero"`
 	ButtonTool   optionalnullable.OptionalNullable[StableAgentUpdateRequestButtonTool]   `json:"buttonTool,omitzero"`
 	CarouselTool optionalnullable.OptionalNullable[StableAgentUpdateRequestCarouselTool] `json:"carouselTool,omitzero"`
