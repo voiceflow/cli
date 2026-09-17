@@ -1801,9 +1801,9 @@ type StableAgentRead struct {
 	// Whether to append the default prompting guidelines to the global prompt.
 	IncludeGuidelines bool                  `json:"includeGuidelines"`
 	Voice             *VersionSettingsVoice `json:"voice,omitzero"`
-	// Playbooks available for the agent to invoke.
+	// Playbooks available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no playbooks AND no workflows registered cannot run - the runtime fails the conversation - so never send an empty list unless `workflows` still holds at least one.
 	Playbooks []StableAgentReadPlaybook `json:"playbooks"`
-	// Workflows available for the agent to invoke.
+	// Workflows available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no workflows AND no playbooks registered cannot run, so never send an empty list unless `playbooks` still holds at least one.
 	Workflows  []StableAgentReadWorkflow  `json:"workflows"`
 	EndTool    *StableAgentReadEndTool    `json:"endTool"`
 	CardTool   *StableAgentReadCardTool   `json:"cardTool"`

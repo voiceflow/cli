@@ -14177,7 +14177,7 @@ components:
             required:
               - description
               - playbookID
-          description: Playbooks available for the agent to invoke.
+          description: 'Playbooks available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no playbooks AND no workflows registered cannot run - the runtime fails the conversation - so never send an empty list unless `workflows` still holds at least one.'
         workflows:
           type: array
           items:
@@ -14199,7 +14199,7 @@ components:
             required:
               - description
               - workflowID
-          description: Workflows available for the agent to invoke.
+          description: 'Workflows available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no workflows AND no playbooks registered cannot run, so never send an empty list unless `playbooks` still holds at least one.'
         endTool:
           nullable: true
           allOf:
@@ -14317,7 +14317,7 @@ components:
             required:
               - description
               - playbookID
-          description: Playbooks available for the agent to invoke.
+          description: 'Playbooks available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no playbooks AND no workflows registered cannot run - the runtime fails the conversation - so never send an empty list unless `workflows` still holds at least one.'
         workflows:
           type: array
           items:
@@ -14339,7 +14339,7 @@ components:
             required:
               - description
               - workflowID
-          description: Workflows available for the agent to invoke.
+          description: 'Workflows available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no workflows AND no playbooks registered cannot run, so never send an empty list unless `playbooks` still holds at least one.'
         buttonTool:
           nullable: true
           allOf:
