@@ -11414,6 +11414,21 @@ components:
     AgentToolMessages:
       type: object
       properties:
+        generative:
+          type: object
+          properties:
+            delay:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
+            failure:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
+            execution:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
+            completion:
+              allOf:
+                - $ref: '#/components/schemas/ToolMessageGenerative'
         delayMessageID:
           nullable: true
           type: string
@@ -11429,21 +11444,6 @@ components:
         delayMessageSeconds:
           nullable: true
           type: number
-        generative:
-          type: object
-          properties:
-            execution:
-              allOf:
-                - $ref: '#/components/schemas/ToolMessageGenerative'
-            failure:
-              allOf:
-                - $ref: '#/components/schemas/ToolMessageGenerative'
-            delay:
-              allOf:
-                - $ref: '#/components/schemas/ToolMessageGenerative'
-            completion:
-              allOf:
-                - $ref: '#/components/schemas/ToolMessageGenerative'
       required:
         - delayMessageID
         - failureMessageID
