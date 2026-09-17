@@ -30,20 +30,20 @@ func (s *StableDocumentCreateURLRequestMetadatum) GetValues() []string {
 	return s.Values
 }
 
-// RefreshRate - How often the URL is automatically re-crawled to refresh the document content.
-type RefreshRate string
+// StableDocumentCreateURLRequestRefreshRate - How often the URL is automatically re-crawled to refresh the document content.
+type StableDocumentCreateURLRequestRefreshRate string
 
 const (
-	RefreshRateDaily   RefreshRate = "daily"
-	RefreshRateWeekly  RefreshRate = "weekly"
-	RefreshRateMonthly RefreshRate = "monthly"
-	RefreshRateNever   RefreshRate = "never"
+	StableDocumentCreateURLRequestRefreshRateDaily   StableDocumentCreateURLRequestRefreshRate = "daily"
+	StableDocumentCreateURLRequestRefreshRateWeekly  StableDocumentCreateURLRequestRefreshRate = "weekly"
+	StableDocumentCreateURLRequestRefreshRateMonthly StableDocumentCreateURLRequestRefreshRate = "monthly"
+	StableDocumentCreateURLRequestRefreshRateNever   StableDocumentCreateURLRequestRefreshRate = "never"
 )
 
-func (e RefreshRate) ToPointer() *RefreshRate {
+func (e StableDocumentCreateURLRequestRefreshRate) ToPointer() *StableDocumentCreateURLRequestRefreshRate {
 	return &e
 }
-func (e *RefreshRate) UnmarshalJSON(data []byte) error {
+func (e *StableDocumentCreateURLRequestRefreshRate) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -56,10 +56,10 @@ func (e *RefreshRate) UnmarshalJSON(data []byte) error {
 	case "monthly":
 		fallthrough
 	case "never":
-		*e = RefreshRate(v)
+		*e = StableDocumentCreateURLRequestRefreshRate(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for RefreshRate: %v", v)
+		return fmt.Errorf("invalid value for StableDocumentCreateURLRequestRefreshRate: %v", v)
 	}
 }
 
@@ -69,7 +69,7 @@ type StableDocumentCreateURLRequest struct {
 	// Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
 	Metadata []StableDocumentCreateURLRequestMetadatum `json:"metadata,omitzero"`
 	// How often the URL is automatically re-crawled to refresh the document content.
-	RefreshRate *RefreshRate `json:"refreshRate,omitzero"`
+	RefreshRate *StableDocumentCreateURLRequestRefreshRate `json:"refreshRate,omitzero"`
 }
 
 func (s StableDocumentCreateURLRequest) MarshalJSON() ([]byte, error) {
@@ -97,7 +97,7 @@ func (s *StableDocumentCreateURLRequest) GetMetadata() []StableDocumentCreateURL
 	return s.Metadata
 }
 
-func (s *StableDocumentCreateURLRequest) GetRefreshRate() *RefreshRate {
+func (s *StableDocumentCreateURLRequest) GetRefreshRate() *StableDocumentCreateURLRequestRefreshRate {
 	if s == nil {
 		return nil
 	}
