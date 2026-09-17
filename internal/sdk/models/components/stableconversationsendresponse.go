@@ -5,6 +5,8 @@ package components
 
 type StableConversationSendResponse struct {
 	Traces []AnyTrace `json:"traces"`
+	// When true, this turn ran against a stale prototype. Compile the environment and send again; do not treat these traces as proof the latest edits work.
+	NeedsRecompile bool `json:"needsRecompile"`
 }
 
 func (s *StableConversationSendResponse) GetTraces() []AnyTrace {
@@ -12,4 +14,11 @@ func (s *StableConversationSendResponse) GetTraces() []AnyTrace {
 		return []AnyTrace{}
 	}
 	return s.Traces
+}
+
+func (s *StableConversationSendResponse) GetNeedsRecompile() bool {
+	if s == nil {
+		return false
+	}
+	return s.NeedsRecompile
 }
