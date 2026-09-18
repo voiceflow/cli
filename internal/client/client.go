@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/config"
 	"github.com/voiceflow/cli/internal/flagutil"
+	"github.com/voiceflow/cli/internal/oauth"
 	"github.com/voiceflow/cli/internal/sdk"
 	"github.com/voiceflow/cli/internal/sdk/models/components"
 	"github.com/voiceflow/cli/internal/testclient"
@@ -64,7 +65,17 @@ func resolveStringFlag(cmd *cobra.Command, name string) string {
 // Priority: flag > env var > config file.
 func buildGlobalSecurity(cmd *cobra.Command) components.Security {
 	// Resolve security credentials: flag > env var > keyring > config file
-	token, _ := config.ResolveSecurityCredential(cmd, "token")
+	token, source := config.ResolveSecurityCredential(cmd, "token")
+
+	// An OAuth session from 'vf auth login' outranks a stored static token —
+	// it is refreshed on demand — while an explicit flag or environment
+	// variable still wins, so CI can override it. See internal/oauth.
+	if source != "flag" && source != "env" {
+		if sessionToken, err := oauth.AccessToken(cmd.Context()); err == nil && sessionToken != "" {
+			token = sessionToken
+		}
+	}
+
 	globalSecurity := components.Security{}
 	if token != "" {
 		globalSecurity.Token = token

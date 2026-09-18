@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/config"
+	"github.com/voiceflow/cli/internal/oauth"
 	"github.com/voiceflow/cli/internal/output"
 	"golang.org/x/term"
 	"os"
@@ -28,17 +29,22 @@ Subcommands:
 	}
 	parent.AddCommand(authCmd)
 
-	authCmd.AddCommand(&cobra.Command{
+	loginCmd := &cobra.Command{
 		Use:   "login",
-		Short: "Interactively configure authentication credentials",
-		Long: `Interactively configure authentication credentials for vf.
-Secret credentials are stored in the OS keychain when available,
-with a config file fallback.
+		Short: "Sign in through the browser or configure credentials",
+		Long: `Sign in to Voiceflow.
 
-All fields are optional — press Enter to skip any field you don't need.
-Use the configure command for both authentication and global parameters.`,
+By default this opens your browser to complete an OAuth2 authorization code
+flow, then stores the resulting access and refresh tokens in the OS keychain
+when available, with an owner-only file fallback.
+
+Use --token to store a bearer token non-interactively, or --manual to be
+prompted for one. Use the configure command for both authentication and global
+parameters.`,
 		RunE: runAuthLoginCmd,
-	})
+	}
+	oauth.AddLoginFlags(loginCmd) // browser login flags; see internal/oauth
+	authCmd.AddCommand(loginCmd)
 
 	authCmd.AddCommand(&cobra.Command{
 		Use:   "whoami",
@@ -81,6 +87,12 @@ func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 				fmt.Sprintf("Run '%s auth whoami' to verify current authentication", "vf"),
 			},
 		)
+	}
+
+	// Browser-based OAuth2 login is the default. --token, --manual, and
+	// --no-interactive fall through to the token-entry paths below.
+	if oauth.ShouldUseBrowserLogin(cmd) {
+		return oauth.RunLogin(cmd)
 	}
 
 	cfg := config.GetConfig()
@@ -161,11 +173,20 @@ func runAuthLogoutCmd(cmd *cobra.Command, args []string) error {
 	}
 	cfg.Security.Token = ""
 
+	// Clear the stored OAuth session as well; see internal/oauth.
+	hadSession, err := oauth.RunLogout()
+	if err != nil {
+		return fmt.Errorf("failed to clear OAuth session: %w", err)
+	}
+
 	if err := config.SaveConfig(cfg); err != nil {
 		return fmt.Errorf("failed to save configuration: %w", err)
 	}
 
 	out := cmd.OutOrStdout()
+	if hadSession {
+		fmt.Fprintln(out, "Signed out of the OAuth session.")
+	}
 	fmt.Fprintln(out, "All authentication credentials have been cleared.")
 	fmt.Fprintf(out, "Configuration saved to %s\n", config.GetConfigPath())
 	return nil
