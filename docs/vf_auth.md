@@ -38,6 +38,6 @@ Subcommands:
 ### SEE ALSO
 
 * [vf](vf.md)	 - Realtime: Realtime gateway API service
-* [vf auth login](vf_auth_login.md)	 - Interactively configure authentication credentials
+* [vf auth login](vf_auth_login.md)	 - Sign in through the browser or configure credentials
 * [vf auth logout](vf_auth_logout.md)	 - Clear all stored authentication credentials
 * [vf auth whoami](vf_auth_whoami.md)	 - Display current authentication configuration
