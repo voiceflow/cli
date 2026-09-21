@@ -1,20 +1,33 @@
 # Cuts a throwaway GitHub pre-release from a pull request, on demand.
 #
-# Add the "prerelease" label to a PR and this builds the exact same six
-# binaries `release.yaml` ships — same goreleaser invocation, same config —
-# but stamped with a prerelease version derived from the PR, and attaches them
-# to a GitHub pre-release. Reviewers get a downloadable `vf` for their platform
-# without waiting for the PR to merge and without a real version being burned.
+# Add the "prerelease" label to a PR and this builds the same six binaries
+# `release.yaml` ships — same goreleaser config, same targets — stamped with a
+# prerelease version derived from the PR, and attaches them to a GitHub
+# pre-release. Reviewers get a downloadable `vf` for their platform without
+# waiting for the PR to merge and without burning a real version.
 #
 # What it deliberately does NOT do: publish to npm. A prerelease here is for
 # manual verification; npm versions cannot be reused once taken, and the
-# registry is not a scratch pad. `npm/scripts/publish.mjs` would route any
-# version containing "-" to the "next" dist-tag if that ever changes.
+# registry is not a scratch pad.
 #
-# The tag it pushes (v0.255.0-pr.42.7) matches release.yaml's `v*` trigger.
-# Two things stop that from firing a real release: pushes authenticated with
-# GITHUB_TOKEN do not start new workflow runs, and release.yaml now refuses
-# any tag carrying a prerelease suffix. Neither alone is something to rely on.
+# The split into two jobs is a security boundary, not organisation.
+# ---------------------------------------------------------------------------
+# `build` runs PR-authored code: the Go compiler, `.goreleaser.yaml`, and its
+# `before` hooks, all of which the PR can rewrite. So it gets `contents: read`,
+# `persist-credentials: false` (otherwise actions/checkout leaves a usable
+# token in .git/config for any hook to read), and no GITHUB_TOKEN in any step
+# env. There is nothing in that job worth stealing.
+#
+# `publish` holds the write token and runs no PR code at all — no checkout, no
+# hooks, just `gh` against an artifact of archives. goreleaser's env pipe skips
+# its token check entirely when publishing is skipped (internal/pipe/env:
+# `checkErrors` returns nil on `skips.Any(ctx, skips.Publish)`), which is what
+# makes the tokenless build possible.
+#
+# This does not make a labelled PR safe to ignore. For `pull_request` events
+# GitHub runs the workflow file from the PR head, so a PR can still rewrite
+# THIS file, including the permissions above. The label is the trust gate; the
+# split only limits what a change nobody noticed in review can reach.
 
 name: Prerelease
 
@@ -26,41 +39,48 @@ concurrency:
   group: prerelease-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
-  goreleaser:
-    name: Build and publish prerelease
-    # Fork PRs get a read-only token and no secrets, so the tag push and the
-    # release would both fail late, after a full six-target build. Skip early.
+  build:
+    name: Build
+    # Fork PRs get a read-only token and no secrets, so `publish` would fail
+    # late, after a full six-target build. Skip early.
     if: >-
       github.event.label.name == 'prerelease' &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
-      # The PR head commit, not the synthetic merge commit: the tag has to
+      # The PR head commit, not the synthetic merge commit: the release has to
       # point at something that exists in the contributor's branch, and the
       # binary has to be built from what is actually under review.
       #
-      # fetch-depth: 0 for the tags — both the version bump below and
-      # goreleaser's changelog need the full history.
+      # fetch-depth: 0 for the tags, which the version bump below reads.
+      # persist-credentials: false so no token survives into .git/config where
+      # a `before` hook could read it.
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       # Bumps the minor, matching this repo's actual cadence (every release so
       # far is 0.x.0), so the prerelease sorts below the stable version it is
-      # previewing. run_number is monotonic across every run of this workflow,
-      # which keeps successive builds of the same PR ordered.
+      # previewing. run_number is monotonic across every run of this workflow
+      # and run_attempt distinguishes reruns, which together keep successive
+      # builds of the same PR ordered and uniquely named.
       - name: Compute prerelease version
         id: version
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_NUMBER: ${{ github.run_number }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
           set -euo pipefail
           latest=$(git tag --list 'v*' --sort=-v:refname \
@@ -68,23 +88,19 @@ jobs:
             | head -n1 || true)
           latest=${latest:-v0.0.0}
           IFS=. read -r major minor _patch <<< "${latest#v}"
-          version="${major}.$((minor + 1)).0-pr.${PR_NUMBER}.${RUN_NUMBER}"
+          version="${major}.$((minor + 1)).0-pr.${PR_NUMBER}.${RUN_NUMBER}.${RUN_ATTEMPT}"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=v${version}" >> "$GITHUB_OUTPUT"
           echo "::notice::Prerelease version ${version} (latest stable tag: ${latest})"
 
-      # goreleaser reads the version off the tag on HEAD, and it has to exist
-      # on the remote before the release references it. -f/--force so a re-run
-      # of this run number (same commit, same version) is not a hard failure.
-      - name: Tag the PR head
+      # Local only, never pushed: goreleaser reads the version off the tag on
+      # HEAD, and this is what gets it into `-X main.version` so the built
+      # binary reports the prerelease version rather than a snapshot string.
+      # `publish` creates the real tag later, from the trusted job.
+      - name: Tag HEAD locally
         env:
           TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          set -euo pipefail
-          git config user.name "Voiceflow"
-          git config user.email "serviceaccount@voiceflow.com"
-          git tag -f "$TAG"
-          git push -f origin "refs/tags/$TAG"
+        run: git tag "$TAG"
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -92,59 +108,119 @@ jobs:
           go-version-file: "go.mod"
           cache: true
 
-      # Byte-for-byte the release job's invocation. .goreleaser.yaml's
-      # `prerelease: auto` sees the "-pr." suffix and marks the GitHub release
-      # as a pre-release on its own — nothing here needs to override it.
+      # release.yaml's invocation minus the publishing half. Everything that
+      # produces a binary — builds, archives, checksums — is identical; only
+      # the GitHub upload is deferred to the job that holds the token.
+      #
+      # No GITHUB_TOKEN here, deliberately. See the header.
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          args: release --clean --skip=publish
 
       # Same check release.yaml runs against the staged npm package, applied to
       # the raw binary instead. Located through artifacts.json rather than by
-      # guessing goreleaser's per-target directory name.
+      # guessing goreleaser's per-target directory name; `jq -e` so an empty
+      # match fails the job instead of silently smoke-testing nothing.
       - name: Smoke test the linux-x64 binary
         run: |
           set -euo pipefail
           binary=$(jq -er '.[] | select(.type == "Binary" and .goos == "linux" and .goarch == "amd64") | .path' dist/artifacts.json | head -n1)
           "$binary" version
 
-      - name: Upload artifacts
+      # Only the distributables cross the job boundary — not the loose binaries
+      # or goreleaser's metadata. Every path is under dist/, so v4 roots the
+      # artifact there and `publish` gets them back at dist/<name>.
+      - name: Upload distributables
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: prerelease-artifacts-${{ steps.version.outputs.version }}
+          name: prerelease-${{ steps.version.outputs.version }}
           path: |
-            dist/
-            !dist/*.txt
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt
+          if-no-files-found: error
           retention-days: 14
+
+  publish:
+    name: Publish prerelease
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      TAG: ${{ needs.build.outputs.tag }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      # No checkout. `gh` is preinstalled and every call is --repo-scoped, so
+      # nothing the PR authored is ever on disk in this job.
+      - name: Download distributables
+        uses: actions/download-artifact@v4
+        with:
+          name: prerelease-${{ needs.build.outputs.version }}
+          path: dist
+
+      # A rerun reaches here with the same tag only if run_attempt collided,
+      # which it cannot — but a cancelled or half-finished earlier attempt can
+      # still leave a release behind, and .goreleaser.yaml's `mode: append`
+      # does not replace assets, so duplicate names would 422 on upload.
+      # Deleting first makes the path idempotent regardless of how it got here.
+      #
+      # This destroys a GitHub release, so it asserts the name is one of ours
+      # rather than trusting that it must be.
+      - name: Clear any previous release for this tag
+        run: |
+          set -euo pipefail
+          case "$TAG" in
+            v*.*.*-pr.[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "::error::Refusing to delete '$TAG' — not a PR prerelease tag."; exit 1 ;;
+          esac
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "Deleting stale release $TAG"
+            gh release delete "$TAG" --repo "$REPO" --yes --cleanup-tag
+          fi
+          # --cleanup-tag only fires when a release existed; a tag left over
+          # from an attempt that died between tagging and releasing needs this.
+          gh api -X DELETE "repos/${REPO}/git/refs/tags/${TAG}" >/dev/null 2>&1 || true
+
+      # --target creates the tag at the PR head as part of the release, so this
+      # is the only place a ref is written. Tags created with GITHUB_TOKEN do
+      # not start workflow runs, and release.yaml additionally refuses -pr.
+      # tags — a real npm publish should not rest on one platform behaviour.
+      - name: Create the GitHub pre-release
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --repo "$REPO" \
+            --target "$HEAD_SHA" \
+            --title "$TAG" \
+            --prerelease \
+            --notes "Prerelease build of #${PR_NUMBER} at \`${HEAD_SHA}\`. Not published to npm; delete once the PR merges." \
+            dist/*.tar.gz dist/*.zip dist/checksums.txt
 
       # printf, not a heredoc: a heredoc body indented to match the `run:`
       # block keeps its leading spaces, and four of them turn the whole comment
       # into a markdown code block.
       - name: Comment on the PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          TAG: ${{ steps.version.outputs.tag }}
-          SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+          url="https://github.com/${REPO}/releases/tag/${TAG}"
           printf '%s\n' \
-            "**Prerelease [\`${TAG}\`](${url})** built from \`${SHA:0:7}\`." \
+            "**Prerelease [\`${TAG}\`](${url})** built from \`${HEAD_SHA:0:7}\`." \
             "" \
             "Binaries for all six platforms are attached to the release. Not published to npm." \
             "" \
             '```sh' \
-            "gh release download ${TAG} --repo ${GITHUB_REPOSITORY} --pattern 'vf_Darwin_arm64.tar.gz'" \
+            "gh release download ${TAG} --repo ${REPO} --pattern 'vf_Darwin_arm64.tar.gz'" \
             "tar xzf vf_Darwin_arm64.tar.gz && ./vf version" \
             '```' \
             "" \
             "Re-add the \`prerelease\` label to build again after pushing a new commit." \
             > comment.md
-          gh pr comment "$PR_NUMBER" --body-file comment.md
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file comment.md
