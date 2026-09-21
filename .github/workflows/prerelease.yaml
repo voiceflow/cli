@@ -157,6 +157,10 @@ jobs:
       TAG: ${{ needs.build.outputs.tag }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
+      # From the github context, not the build job: these are what bind the
+      # untrusted TAG to this specific run in the guard below.
+      RUN_NUMBER: ${{ github.run_number }}
+      RUN_ATTEMPT: ${{ github.run_attempt }}
     steps:
       # No checkout. `gh` is preinstalled and every call is --repo-scoped, so
       # nothing the PR authored is ever on disk in this job.
@@ -166,28 +170,75 @@ jobs:
           name: prerelease-${{ needs.build.outputs.version }}
           path: dist
 
-      # A rerun reaches here with the same tag only if run_attempt collided,
-      # which it cannot — but a cancelled or half-finished earlier attempt can
-      # still leave a release behind, and .goreleaser.yaml's `mode: append`
-      # does not replace assets, so duplicate names would 422 on upload.
-      # Deleting first makes the path idempotent regardless of how it got here.
+      # A cancelled or half-finished earlier attempt can leave a release or a
+      # bare tag behind, and .goreleaser.yaml's `mode: append` does not replace
+      # assets, so duplicate names would 422 on upload. Clearing first makes
+      # this path idempotent regardless of how it got here.
       #
-      # This destroys a GitHub release, so it asserts the name is one of ours
-      # rather than trusting that it must be.
+      # TAG arrives from the PR-controlled build job, so it is untrusted input
+      # to a destructive call. It is not taken on trust: PR_NUMBER, RUN_NUMBER
+      # and RUN_ATTEMPT come from the github context, and the tag has to match
+      # this run exactly. A build job that named someone else's release — or
+      # this repo's stable tags — cannot get it deleted.
       - name: Clear any previous release for this tag
         run: |
           set -euo pipefail
-          case "$TAG" in
-            v*.*.*-pr.[0-9]*.[0-9]*.[0-9]*) ;;
-            *) echo "::error::Refusing to delete '$TAG' — not a PR prerelease tag."; exit 1 ;;
-          esac
+
+          # grep -xE, not a `case` glob: in a glob `[0-9]*` is one digit
+          # followed by arbitrary text, so a pattern like v*.*.*-pr.[0-9]* also
+          # accepts v1.0.0-pr.1junk.2junk.3junk. This is a real anchored regex,
+          # and the suffix is the literal identity of this run.
+          expected="v[0-9]+\.[0-9]+\.[0-9]+-pr\.${PR_NUMBER}\.${RUN_NUMBER}\.${RUN_ATTEMPT}"
+          if ! printf '%s' "$TAG" | grep -qxE "$expected"; then
+            echo "::error::Refusing to touch '${TAG}' — expected /${expected}/ for this run."
+            exit 1
+          fi
+
+          # Prints the HTTP status of the tag ref, or nothing if the call could
+          # not be made at all. Only a confirmed 404 is allowed to mean "absent".
+          tag_ref_status() {
+            local out
+            out=$(gh api "repos/${REPO}/git/ref/tags/${TAG}" --include --silent 2>&1 || true)
+            printf '%s\n' "$out" | sed -n '1s#^HTTP/[0-9.]* \([0-9][0-9][0-9]\).*#\1#p'
+          }
+
+          # Not fail-closed, deliberately, unlike the tag below: if a release
+          # survives, `gh release create` refuses to overwrite it and the job
+          # fails loudly. There is no silent-corruption path here.
           if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
             echo "Deleting stale release $TAG"
             gh release delete "$TAG" --repo "$REPO" --yes --cleanup-tag
           fi
-          # --cleanup-tag only fires when a release existed; a tag left over
-          # from an attempt that died between tagging and releasing needs this.
-          gh api -X DELETE "repos/${REPO}/git/refs/tags/${TAG}" >/dev/null 2>&1 || true
+
+          # --cleanup-tag only fires when a release existed; an attempt that
+          # died between tagging and releasing leaves a bare ref behind.
+          #
+          # Fail-closed on anything that is not a definite 404. A permission
+          # error, a transient 5xx, or no response at all must never be read as
+          # absence: `gh release create --target` ignores --target when the tag
+          # already exists ("Unused if the Git tag already exists"), so a
+          # surviving stale tag would publish this run's binaries under
+          # whatever commit that tag points at.
+          status=$(tag_ref_status)
+          case "$status" in
+            200)
+              echo "Deleting leftover tag $TAG"
+              gh api -X DELETE "repos/${REPO}/git/refs/tags/${TAG}" --silent
+              ;;
+            404) ;;
+            *)
+              echo "::error::Could not determine whether tag ${TAG} exists (HTTP '${status:-none}'). Refusing to publish."
+              exit 1
+              ;;
+          esac
+
+          # Post-condition. The delete can report success while the ref is still
+          # served, and the release step cannot detect that for itself.
+          status=$(tag_ref_status)
+          if [ "$status" != "404" ]; then
+            echo "::error::Tag ${TAG} still present after cleanup (HTTP '${status:-none}'). Refusing to publish under a possibly stale commit."
+            exit 1
+          fi
 
       # --target creates the tag at the PR head as part of the release, so this
       # is the only place a ref is written. Tags created with GITHUB_TOKEN do
