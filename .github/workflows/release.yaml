@@ -10,6 +10,16 @@ permissions:
 
 jobs:
   goreleaser:
+    # prerelease.yaml tags PR builds v0.255.0-pr.42.7.1, which matches the v*
+    # trigger above. Tags created with GITHUB_TOKEN do not start workflow runs,
+    # so this should never fire — but a real npm publish is not something to
+    # leave resting on one platform behaviour.
+    #
+    # Scoped to -pr. and not to every hyphen: npm/README.md (invariant 7) and
+    # publish.mjs's distTagFor both treat any version containing "-" as a
+    # prerelease bound for the `next` dist-tag, so a hand-cut v0.256.0-rc.1
+    # is a supported path through this workflow and must still reach it.
+    if: ${{ !contains(github.ref_name, '-pr.') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
