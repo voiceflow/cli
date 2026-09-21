@@ -1,0 +1,150 @@
+# Cuts a throwaway GitHub pre-release from a pull request, on demand.
+#
+# Add the "prerelease" label to a PR and this builds the exact same six
+# binaries `release.yaml` ships — same goreleaser invocation, same config —
+# but stamped with a prerelease version derived from the PR, and attaches them
+# to a GitHub pre-release. Reviewers get a downloadable `vf` for their platform
+# without waiting for the PR to merge and without a real version being burned.
+#
+# What it deliberately does NOT do: publish to npm. A prerelease here is for
+# manual verification; npm versions cannot be reused once taken, and the
+# registry is not a scratch pad. `npm/scripts/publish.mjs` would route any
+# version containing "-" to the "next" dist-tag if that ever changes.
+#
+# The tag it pushes (v0.255.0-pr.42.7) matches release.yaml's `v*` trigger.
+# Two things stop that from firing a real release: pushes authenticated with
+# GITHUB_TOKEN do not start new workflow runs, and release.yaml now refuses
+# any tag carrying a prerelease suffix. Neither alone is something to rely on.
+
+name: Prerelease
+
+on:
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: prerelease-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  goreleaser:
+    name: Build and publish prerelease
+    # Fork PRs get a read-only token and no secrets, so the tag push and the
+    # release would both fail late, after a full six-target build. Skip early.
+    if: >-
+      github.event.label.name == 'prerelease' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      # The PR head commit, not the synthetic merge commit: the tag has to
+      # point at something that exists in the contributor's branch, and the
+      # binary has to be built from what is actually under review.
+      #
+      # fetch-depth: 0 for the tags — both the version bump below and
+      # goreleaser's changelog need the full history.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # Bumps the minor, matching this repo's actual cadence (every release so
+      # far is 0.x.0), so the prerelease sorts below the stable version it is
+      # previewing. run_number is monotonic across every run of this workflow,
+      # which keeps successive builds of the same PR ordered.
+      - name: Compute prerelease version
+        id: version
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          latest=$(git tag --list 'v*' --sort=-v:refname \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+            | head -n1 || true)
+          latest=${latest:-v0.0.0}
+          IFS=. read -r major minor _patch <<< "${latest#v}"
+          version="${major}.$((minor + 1)).0-pr.${PR_NUMBER}.${RUN_NUMBER}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
+          echo "::notice::Prerelease version ${version} (latest stable tag: ${latest})"
+
+      # goreleaser reads the version off the tag on HEAD, and it has to exist
+      # on the remote before the release references it. -f/--force so a re-run
+      # of this run number (same commit, same version) is not a hard failure.
+      - name: Tag the PR head
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f "$TAG"
+          git push -f origin "refs/tags/$TAG"
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          cache: true
+
+      # Byte-for-byte the release job's invocation. .goreleaser.yaml's
+      # `prerelease: auto` sees the "-pr." suffix and marks the GitHub release
+      # as a pre-release on its own — nothing here needs to override it.
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Same check release.yaml runs against the staged npm package, applied to
+      # the raw binary instead. Located through artifacts.json rather than by
+      # guessing goreleaser's per-target directory name.
+      - name: Smoke test the linux-x64 binary
+        run: |
+          set -euo pipefail
+          binary=$(jq -er '.[] | select(.type == "Binary" and .goos == "linux" and .goarch == "amd64") | .path' dist/artifacts.json | head -n1)
+          "$binary" version
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prerelease-artifacts-${{ steps.version.outputs.version }}
+          path: |
+            dist/
+            !dist/*.txt
+          retention-days: 14
+
+      # printf, not a heredoc: a heredoc body indented to match the `run:`
+      # block keeps its leading spaces, and four of them turn the whole comment
+      # into a markdown code block.
+      - name: Comment on the PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TAG: ${{ steps.version.outputs.tag }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+          printf '%s\n' \
+            "**Prerelease [\`${TAG}\`](${url})** built from \`${SHA:0:7}\`." \
+            "" \
+            "Binaries for all six platforms are attached to the release. Not published to npm." \
+            "" \
+            '```sh' \
+            "gh release download ${TAG} --repo ${GITHUB_REPOSITORY} --pattern 'vf_Darwin_arm64.tar.gz'" \
+            "tar xzf vf_Darwin_arm64.tar.gz && ./vf version" \
+            '```' \
+            "" \
+            "Re-add the \`prerelease\` label to build again after pushing a new commit." \
+            > comment.md
+          gh pr comment "$PR_NUMBER" --body-file comment.md
