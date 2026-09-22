@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -374,6 +375,83 @@ func TestLoginUsesAPreRegisteredClientID(t *testing.T) {
 	}
 }
 
+func TestLoginRegistersTheConfiguredRedirectURI(t *testing.T) {
+	useTestStore(t, true)
+	useTestHTTPClient(t)
+	useFakeBrowser(t)
+	server := newFakeAuthServer(t)
+
+	redirectURI := freeLoopbackURI(t)
+	getenv := envFunc(map[string]string{
+		envIssuer:      server.URL,
+		envResource:    "https://realtime-api.test",
+		envRedirectURI: redirectURI,
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	if _, err := Login(ctx, getenv, LoginOptions{Timeout: 15 * time.Second}); err != nil {
+		t.Fatalf("Login: %v", err)
+	}
+
+	// The override has to reach both the registration and the redirect the
+	// authorization request asks for, or the server rejects the callback.
+	if got := server.lastAuthorizeRequest(t).Get("redirect_uri"); got != redirectURI {
+		t.Errorf("redirect_uri = %q, want the configured %q", got, redirectURI)
+	}
+	rec, err := loadClient(server.URL)
+	if err != nil {
+		t.Fatalf("loadClient: %v", err)
+	}
+	if rec == nil || len(rec.RedirectURIs) != 1 || rec.RedirectURIs[0] != redirectURI {
+		t.Errorf("registered redirect URIs = %v, want only the configured %q", rec, redirectURI)
+	}
+}
+
+func TestLoginReRegistersWhenTheCachedClientMissesTheRedirectURI(t *testing.T) {
+	useTestStore(t, true)
+	useTestHTTPClient(t)
+	useFakeBrowser(t)
+	server := newFakeAuthServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if _, err := Login(ctx, testEnv(server), LoginOptions{Timeout: 15 * time.Second}); err != nil {
+		t.Fatalf("first Login: %v", err)
+	}
+
+	// The cached registration covers the default ports only, so a login with a
+	// redirect URI override cannot reuse it.
+	redirectURI := freeLoopbackURI(t)
+	getenv := envFunc(map[string]string{
+		envIssuer:      server.URL,
+		envResource:    "https://realtime-api.test",
+		envRedirectURI: redirectURI,
+	})
+	if _, err := Login(ctx, getenv, LoginOptions{Timeout: 15 * time.Second}); err != nil {
+		t.Fatalf("second Login: %v", err)
+	}
+
+	if got := server.registrationCount(); got != 2 {
+		t.Errorf("registrations = %d, want a re-registration for the new redirect URI", got)
+	}
+}
+
+// freeLoopbackURI returns a loopback callback URI on a port that was free a
+// moment ago, for exercising the VF_OAUTH_REDIRECT_URI override.
+func freeLoopbackURI(t *testing.T) string {
+	t.Helper()
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("reserve a port: %v", err)
+	}
+	port := listener.Addr().(*net.TCPAddr).Port
+	listener.Close()
+	return redirectTarget{Host: "127.0.0.1", Port: port, Path: callbackPath}.uri()
+}
+
 func TestLoginTimesOutWaitingForTheBrowser(t *testing.T) {
 	useTestStore(t, true)
 	useTestHTTPClient(t)
@@ -518,6 +596,62 @@ func TestAccessTokenKeepsAValidTokenWhenRefreshFailsTransiently(t *testing.T) {
 	}
 	if token != "still-valid" {
 		t.Errorf("AccessToken = %q, want the still-valid token to be reused", token)
+	}
+}
+
+func TestNeedsRefreshWithoutAStatedLifetime(t *testing.T) {
+	// The SDK has no 401-to-refresh retry path, so a token the server gave no
+	// expires_in for still has to be refreshed on a schedule rather than
+	// reused forever.
+	now := time.Now()
+	fresh := &Session{AccessToken: "token", RefreshToken: "refresh", ObtainedAt: now.Add(-time.Minute)}
+	if fresh.needsRefresh(now) {
+		t.Error("a token obtained a minute ago should still be used as is")
+	}
+
+	stale := &Session{AccessToken: "token", RefreshToken: "refresh", ObtainedAt: now.Add(-2 * assumedTokenLifetime)}
+	if !stale.needsRefresh(now) {
+		t.Error("a token past the assumed lifetime should be refreshed")
+	}
+
+	// With nothing to refresh with, reusing the token is the only option.
+	noRefresh := &Session{AccessToken: "token", ObtainedAt: now.Add(-2 * assumedTokenLifetime)}
+	if noRefresh.needsRefresh(now) {
+		t.Error("a session with no refresh token should keep using its access token")
+	}
+}
+
+func TestAccessTokenRefreshesASessionWithNoStatedLifetime(t *testing.T) {
+	useTestStore(t, true)
+	useTestHTTPClient(t)
+	useFakeBrowser(t)
+	server := newFakeAuthServer(t)
+	server.accessTokenTTL = 0 // the server states no expires_in
+	server.rotateRefresh = true
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	session, err := Login(ctx, testEnv(server), LoginOptions{Timeout: 15 * time.Second})
+	if err != nil {
+		t.Fatalf("Login: %v", err)
+	}
+	if !session.Expiry.IsZero() {
+		t.Fatalf("expiry = %v, want none recorded without expires_in", session.Expiry)
+	}
+
+	// Age the session past the assumed lifetime.
+	session.ObtainedAt = time.Now().Add(-2 * assumedTokenLifetime)
+	if err := SaveSession(session); err != nil {
+		t.Fatalf("SaveSession: %v", err)
+	}
+
+	refreshed, err := AccessToken(context.Background())
+	if err != nil {
+		t.Fatalf("AccessToken: %v", err)
+	}
+	if refreshed == session.AccessToken {
+		t.Error("AccessToken reused a token that is past its assumed lifetime")
 	}
 }
 

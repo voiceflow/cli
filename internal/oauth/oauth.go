@@ -47,6 +47,9 @@ const (
 	// refreshWindow refreshes an access token this long before it expires,
 	// so a request is never sent with a token that expires mid-flight.
 	refreshWindow = 60 * time.Second
+	// assumedTokenLifetime is how long an access token whose response carried
+	// no expires_in is reused before it is refreshed anyway.
+	assumedTokenLifetime = time.Hour
 )
 
 // Environment overrides, mainly for non-production authorization servers.
@@ -153,7 +156,8 @@ type LoginOptions struct {
 	// the server advertises, falling back to defaultScopes.
 	Scopes []string
 	// NoBrowser prints the authorization URL instead of opening a browser,
-	// for SSH sessions and machines without a desktop.
+	// for machines without a desktop. Over SSH the callback still lands on the
+	// remote host's loopback interface, so the port has to be forwarded.
 	NoBrowser bool
 	// Timeout bounds the wait for the browser redirect. Zero means
 	// DefaultLoginTimeout.
@@ -266,11 +270,9 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 // resolveClient returns the OAuth client to authorize with: an explicitly
 // configured one, the cached dynamic registration, or a fresh registration.
 func resolveClient(ctx context.Context, md Metadata, cfg settings) (*clientRecord, error) {
+	redirectURIs := wantedRedirectURIs(cfg)
+
 	if cfg.ClientID != "" {
-		redirectURIs := []string{cfg.RedirectURI}
-		if cfg.RedirectURI == "" {
-			redirectURIs = defaultRedirectURIs()
-		}
 		return &clientRecord{Issuer: md.Issuer, ClientID: cfg.ClientID, RedirectURIs: redirectURIs}, nil
 	}
 
@@ -278,11 +280,13 @@ func resolveClient(ctx context.Context, md Metadata, cfg settings) (*clientRecor
 	if err != nil {
 		return nil, err
 	}
-	if cached != nil && len(cached.RedirectURIs) > 0 {
+	// A cached registration is only usable if it covers the redirect URIs this
+	// login needs; VF_OAUTH_REDIRECT_URI may have changed since it was cached.
+	if cached != nil && coversRedirectURIs(cached.RedirectURIs, redirectURIs) {
 		return cached, nil
 	}
 
-	registered, err := registerClient(ctx, httpClient, md, clientName, defaultRedirectURIs())
+	registered, err := registerClient(ctx, httpClient, md, clientName, redirectURIs)
 	if err != nil {
 		return nil, err
 	}
@@ -290,6 +294,33 @@ func resolveClient(ctx context.Context, md Metadata, cfg settings) (*clientRecor
 		return nil, fmt.Errorf("cache client registration: %w", err)
 	}
 	return registered, nil
+}
+
+// wantedRedirectURIs is the redirect URI list this login needs registered:
+// the VF_OAUTH_REDIRECT_URI override when set, otherwise the fixed loopback
+// ports.
+func wantedRedirectURIs(cfg settings) []string {
+	if cfg.RedirectURI != "" {
+		return []string{cfg.RedirectURI}
+	}
+	return defaultRedirectURIs()
+}
+
+// coversRedirectURIs reports whether every wanted URI is already registered.
+func coversRedirectURIs(registered, wanted []string) bool {
+	if len(wanted) == 0 {
+		return false
+	}
+	have := make(map[string]struct{}, len(registered))
+	for _, uri := range registered {
+		have[uri] = struct{}{}
+	}
+	for _, uri := range wanted {
+		if _, ok := have[uri]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
 func defaultRedirectURIs() []string {
@@ -324,6 +355,11 @@ func listen(ctx context.Context, md Metadata, cfg settings, client *clientRecord
 	if cfg.ClientID != "" {
 		// A pre-registered client cannot have new redirect URIs added here.
 		return nil, nil, err
+	}
+	if cfg.RedirectURI != "" {
+		// The caller pinned the callback address, so falling back to an
+		// ephemeral port would ignore what they configured.
+		return nil, nil, fmt.Errorf("%s is set to %s, which is not available: %w", envRedirectURI, cfg.RedirectURI, err)
 	}
 
 	// Ephemeral port, then register that exact URI.
@@ -376,6 +412,16 @@ func AccessToken(ctx context.Context) (string, error) {
 	refreshMu.Lock()
 	defer refreshMu.Unlock()
 
+	// CLI commands routinely run as parallel processes against one stored,
+	// rotating refresh token, so the whole load → refresh → save → cleanup
+	// sequence is serialised across processes too. Without it both processes
+	// load the same refresh token, and the loser's invalid_grant would delete
+	// the session the winner just stored. A lock that cannot be taken is not
+	// fatal: the refresh still runs, only without the cross-process guarantee.
+	if unlock, err := lockRefresh(ctx); err == nil {
+		defer unlock()
+	}
+
 	session, err := LoadSession()
 	if err != nil {
 		return "", err
@@ -426,13 +472,17 @@ func AccessToken(ctx context.Context) (string, error) {
 }
 
 // needsRefresh reports whether the access token is expired or close enough to
-// expiry to be refreshed first. A session with no known expiry is used as is.
+// expiry to be refreshed first.
 func (s *Session) needsRefresh(now time.Time) bool {
 	if s.AccessToken == "" {
 		return true
 	}
 	if s.Expiry.IsZero() {
-		return false
+		// The server stated no lifetime. The SDK has no 401-to-refresh retry
+		// path, so a token left alone here would be reused forever once it
+		// expires; refresh it on an assumed lifetime instead. With no refresh
+		// token there is nothing to do but keep using it.
+		return s.RefreshToken != "" && now.Sub(s.ObtainedAt) >= assumedTokenLifetime
 	}
 	return now.After(s.Expiry.Add(-refreshWindow))
 }

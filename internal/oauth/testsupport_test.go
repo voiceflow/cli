@@ -13,6 +13,7 @@ type fakeKeyring struct {
 	values    map[string]string
 	available bool
 	setErr    error
+	deleteErr error
 }
 
 func newFakeKeyring(available bool) *fakeKeyring {
@@ -38,6 +39,9 @@ func (f *fakeKeyring) set(key, value string) error {
 func (f *fakeKeyring) delete(key string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if f.deleteErr != nil {
+		return f.deleteErr
+	}
 	delete(f.values, key)
 	return nil
 }

@@ -88,6 +88,18 @@ func (c *callbackServer) RedirectURI() string { return c.redirectURI }
 func (c *callbackServer) handle(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 
+	// State is checked before anything else, including an error response: the
+	// loopback ports are predictable, so a stale or unsolicited request could
+	// otherwise win the race and abort a login that is still in flight. A
+	// mismatch is answered but never delivered, leaving the real callback free
+	// to arrive. The comparison is constant-time so the state value cannot
+	// leak through response timing.
+	gotState := query.Get("state")
+	if subtle.ConstantTimeCompare([]byte(gotState), []byte(c.state)) != 1 {
+		c.writePage(w, http.StatusBadRequest, "Login failed", "The login response did not match this session. Start over with 'vf auth login'.")
+		return
+	}
+
 	if errCode := query.Get("error"); errCode != "" {
 		description := query.Get("error_description")
 		message := errCode
@@ -96,15 +108,6 @@ func (c *callbackServer) handle(w http.ResponseWriter, r *http.Request) {
 		}
 		c.writePage(w, http.StatusOK, "Login failed", message)
 		c.deliver(callbackResult{err: fmt.Errorf("authorization denied (%s)", message)})
-		return
-	}
-
-	// Constant-time comparison keeps the state value from leaking through
-	// response timing; a mismatch means the redirect was not ours (CSRF).
-	gotState := query.Get("state")
-	if subtle.ConstantTimeCompare([]byte(gotState), []byte(c.state)) != 1 {
-		c.writePage(w, http.StatusBadRequest, "Login failed", "The login response did not match this session. Start over with 'vf auth login'.")
-		c.deliver(callbackResult{err: fmt.Errorf("state mismatch in authorization response")})
 		return
 	}
 

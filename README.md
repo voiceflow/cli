@@ -230,7 +230,7 @@ without another sign-in.
 | Command | What it does |
 |---------|--------------|
 | `vf auth login` | Sign in through the browser |
-| `vf auth login --no-browser` | Print the sign-in URL instead of opening a browser (SSH, headless) |
+| `vf auth login --no-browser` | Print the sign-in URL instead of opening a browser (headless machines) |
 | `vf auth login --token <value>` | Store a bearer token non-interactively, no browser |
 | `vf auth login --manual` | Prompt for a bearer token instead of signing in |
 | `vf auth whoami` | Show the configured credential and the current session |
@@ -239,6 +239,19 @@ without another sign-in.
 Other flags: `--scope` (repeatable) requests specific scopes instead of the
 ones the authorization server advertises, and `--login-timeout` bounds the wait
 for the browser (default 5m).
+
+**Signing in over SSH.** `--no-browser` only stops the CLI from launching a
+browser; the callback listener still runs on the *remote* host's loopback
+interface, so a URL opened on your workstation would redirect to your
+workstation instead. Forward the callback port to the remote host first:
+
+```bash
+ssh -L 51330:127.0.0.1:51330 remote-host
+vf auth login --no-browser   # then open the printed URL locally
+```
+
+The CLI binds the first free port of 51330-51333, so forward the port you
+intend it to use and keep the others occupied or unforwarded.
 
 **Where the tokens live.** Access and refresh tokens go to the OS keychain —
 macOS Keychain, Windows Credential Manager, Linux Secret Service — under

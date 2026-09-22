@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/voiceflow/cli/internal/config"
+	"github.com/zalando/go-keyring"
 )
 
 // ErrNoSession is returned when no OAuth session has been stored, or when the
@@ -98,6 +99,10 @@ func SaveSession(s *Session) error {
 		stored.AccessToken = ""
 		stored.RefreshToken = ""
 	}
+	// Report back where the secrets actually landed; callers render the
+	// storage location from the session they passed in.
+	s.Version = stored.Version
+	s.TokensInKeyring = stored.TokensInKeyring
 
 	return writeJSONFile(sessionFileName, &stored)
 }
@@ -151,10 +156,23 @@ func LoadSession() (*Session, error) {
 
 // ClearSession removes the stored session from both the keychain and disk. The
 // cached client registration is kept so the next login does not re-register.
+//
+// Every deletion is attempted, but a keychain failure is reported rather than
+// swallowed: dropping the session file while the keychain still holds usable
+// tokens would leave credentials behind with no record of where they are. The
+// file is kept in that case so a later logout can finish the job.
 func ClearSession() error {
+	var errs []error
 	if keyringAvailable() {
-		_ = keyringDelete(keyringAccessToken)
-		_ = keyringDelete(keyringRefreshToken)
+		for _, key := range []string{keyringAccessToken, keyringRefreshToken} {
+			// A missing entry is the desired end state, not a failure.
+			if err := keyringDelete(key); err != nil && !errors.Is(err, keyring.ErrNotFound) {
+				errs = append(errs, fmt.Errorf("remove %s from the OS keychain: %w", key, err))
+			}
+		}
+	}
+	if len(errs) > 0 {
+		return errors.Join(errs...)
 	}
 	return removeFile(sessionFileName)
 }

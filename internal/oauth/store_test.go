@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/zalando/go-keyring"
 )
 
 func sampleSession() *Session {
@@ -163,6 +165,75 @@ func TestClearSessionRemovesTokensButKeepsClientRegistration(t *testing.T) {
 	}
 	if rec == nil || rec.ClientID != "client-123" {
 		t.Error("client registration should survive logout so the next login can reuse it")
+	}
+}
+
+func TestClearSessionReportsAFailingKeychain(t *testing.T) {
+	// A locked keychain would otherwise leave usable tokens behind while
+	// logout removed the only record of where they are.
+	dir, ring := useTestStore(t, true)
+
+	if err := SaveSession(sampleSession()); err != nil {
+		t.Fatalf("SaveSession: %v", err)
+	}
+	ring.deleteErr = errors.New("keychain is locked")
+
+	err := ClearSession()
+	if err == nil || !strings.Contains(err.Error(), "keychain is locked") {
+		t.Fatalf("ClearSession error = %v, want the keychain failure reported", err)
+	}
+	// Both entries are attempted, not just the first.
+	if got := strings.Count(err.Error(), "keychain is locked"); got != 2 {
+		t.Errorf("error mentions %d keychain failures, want both attempted:\n%v", got, err)
+	}
+	if _, statErr := os.Stat(filepath.Join(dir, sessionFileName)); statErr != nil {
+		t.Errorf("session file was removed despite the keychain failure (err = %v)", statErr)
+	}
+}
+
+func TestClearSessionToleratesMissingKeychainEntries(t *testing.T) {
+	dir, ring := useTestStore(t, true)
+
+	if err := SaveSession(sampleSession()); err != nil {
+		t.Fatalf("SaveSession: %v", err)
+	}
+	// Nothing left to delete is the state logout is aiming for, not a failure.
+	ring.deleteErr = keyring.ErrNotFound
+
+	if err := ClearSession(); err != nil {
+		t.Fatalf("ClearSession: %v, want a missing entry treated as already gone", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, sessionFileName)); !os.IsNotExist(err) {
+		t.Errorf("session file still present after ClearSession (err = %v)", err)
+	}
+}
+
+func TestSaveSessionReportsWhereTheTokensLanded(t *testing.T) {
+	// 'vf auth login' prints the storage location from the session it passed
+	// in, so SaveSession has to say where the secrets actually went.
+	useTestStore(t, true)
+
+	session := sampleSession()
+	if err := SaveSession(session); err != nil {
+		t.Fatalf("SaveSession: %v", err)
+	}
+	if !session.TokensInKeyring {
+		t.Error("TokensInKeyring = false after a keychain-backed save")
+	}
+	if got := session.storageLocation(); got != "OS keychain" {
+		t.Errorf("storageLocation = %q, want the OS keychain", got)
+	}
+
+	fileBacked := sampleSession()
+	useTestStore(t, false)
+	if err := SaveSession(fileBacked); err != nil {
+		t.Fatalf("SaveSession: %v", err)
+	}
+	if fileBacked.TokensInKeyring {
+		t.Error("TokensInKeyring = true without a keychain")
+	}
+	if got := fileBacked.storageLocation(); !strings.HasSuffix(got, sessionFileName) {
+		t.Errorf("storageLocation = %q, want the session file", got)
 	}
 }
 

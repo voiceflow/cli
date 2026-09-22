@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -50,23 +51,65 @@ func TestCallbackServerReturnsCode(t *testing.T) {
 	}
 }
 
-func TestCallbackServerRejectsStateMismatch(t *testing.T) {
+func TestCallbackServerIgnoresAStateMismatch(t *testing.T) {
 	cb := startTestCallback(t, "the-state")
 
-	go http.Get(cb.RedirectURI() + "?code=the-code&state=forged")
+	// The loopback ports are predictable, so an unsolicited request must not
+	// be able to abort a login that is still waiting for the real redirect.
+	resp, err := http.Get(cb.RedirectURI() + "?code=the-code&state=forged")
+	if err != nil {
+		t.Fatalf("GET callback: %v", err)
+	}
+	io.Copy(io.Discard, resp.Body)
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("status = %d, want the mismatch rejected in the browser", resp.StatusCode)
+	}
+
+	go func() {
+		resp, err := http.Get(cb.RedirectURI() + "?code=the-code&state=the-state")
+		if err == nil {
+			io.Copy(io.Discard, resp.Body)
+			resp.Body.Close()
+		}
+	}()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if _, err := cb.Wait(ctx); err == nil || !strings.Contains(err.Error(), "state mismatch") {
-		t.Fatalf("Wait error = %v, want a state mismatch", err)
+	code, err := cb.Wait(ctx)
+	if err != nil {
+		t.Fatalf("Wait: %v, want the legitimate callback to still be accepted", err)
+	}
+	if code != "the-code" {
+		t.Errorf("code = %q, want the-code", code)
+	}
+}
+
+func TestCallbackServerIgnoresAnErrorWithTheWrongState(t *testing.T) {
+	cb := startTestCallback(t, "the-state")
+
+	// An error response is no more trusted than a success one: without a
+	// matching state it must not end the login either.
+	resp, err := http.Get(cb.RedirectURI() + "?error=access_denied&state=forged")
+	if err != nil {
+		t.Fatalf("GET callback: %v", err)
+	}
+	io.Copy(io.Discard, resp.Body)
+	resp.Body.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+
+	if _, err := cb.Wait(ctx); !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("Wait error = %v, want the login to still be waiting", err)
 	}
 }
 
 func TestCallbackServerSurfacesAuthorizationError(t *testing.T) {
 	cb := startTestCallback(t, "the-state")
 
-	go http.Get(cb.RedirectURI() + "?error=access_denied&error_description=user+said+no")
+	go http.Get(cb.RedirectURI() + "?state=the-state&error=access_denied&error_description=user+said+no")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -80,7 +123,7 @@ func TestCallbackServerSurfacesAuthorizationError(t *testing.T) {
 func TestCallbackServerEscapesServerSuppliedText(t *testing.T) {
 	cb := startTestCallback(t, "the-state")
 
-	resp, err := http.Get(cb.RedirectURI() + "?error=access_denied&error_description=" + "%3Cscript%3Ealert(1)%3C/script%3E")
+	resp, err := http.Get(cb.RedirectURI() + "?state=the-state&error=access_denied&error_description=" + "%3Cscript%3Ealert(1)%3C/script%3E")
 	if err != nil {
 		t.Fatalf("GET callback: %v", err)
 	}

@@ -3,6 +3,7 @@ package oauth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -83,6 +84,51 @@ func TestDiscoverRejectsAnIncompleteDocument(t *testing.T) {
 
 	if _, err := fetchMetadata(context.Background(), server.Client(), server.URL); err == nil {
 		t.Error("expected an error when the document names no endpoints")
+	}
+}
+
+func TestDiscoverRejectsAMismatchedIssuer(t *testing.T) {
+	// RFC 8414 §3.3: metadata naming a different issuer must not be trusted,
+	// even though every endpoint in it is well formed.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"issuer":"https://evil.example.com",` +
+			`"authorization_endpoint":"https://evil.example.com/authorize",` +
+			`"token_endpoint":"https://evil.example.com/token"}`))
+	}))
+	defer server.Close()
+
+	if _, err := fetchMetadata(context.Background(), server.Client(), server.URL); err == nil ||
+		!strings.Contains(err.Error(), "is for issuer") {
+		t.Errorf("fetchMetadata error = %v, want the issuer mismatch rejected", err)
+	}
+}
+
+func TestDiscoverRejectsAMissingIssuer(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"authorization_endpoint":"https://a.test/authorize","token_endpoint":"https://a.test/token"}`))
+	}))
+	defer server.Close()
+
+	if _, err := fetchMetadata(context.Background(), server.Client(), server.URL); err == nil ||
+		!strings.Contains(err.Error(), "states no issuer") {
+		t.Errorf("fetchMetadata error = %v, want the absent issuer rejected", err)
+	}
+}
+
+func TestDiscoverAcceptsATrailingSlashOnTheIssuer(t *testing.T) {
+	var issuer string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"issuer":%q,"authorization_endpoint":"%s/authorize","token_endpoint":"%s/token"}`,
+			issuer+"/", issuer, issuer)
+	}))
+	defer server.Close()
+	issuer = server.URL
+
+	if _, err := fetchMetadata(context.Background(), server.Client(), issuer); err != nil {
+		t.Errorf("fetchMetadata: %v, want a trailing slash to be tolerated", err)
 	}
 }
 

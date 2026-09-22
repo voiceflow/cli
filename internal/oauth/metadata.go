@@ -100,8 +100,15 @@ func fetchMetadata(ctx context.Context, hc *http.Client, issuer string) (Metadat
 	if md.AuthorizationEndpoint == "" || md.TokenEndpoint == "" {
 		return Metadata{}, fmt.Errorf("discovery document at %s is missing required endpoints", endpoint)
 	}
+	// RFC 8414 §3.3: the issuer in the document must be present and identical
+	// to the one the request was built from. Accepting a missing or different
+	// value would let one server's metadata be persisted as another's.
+	want := strings.TrimSuffix(issuer, "/")
 	if md.Issuer == "" {
-		md.Issuer = strings.TrimSuffix(issuer, "/")
+		return Metadata{}, fmt.Errorf("discovery document at %s states no issuer", endpoint)
+	}
+	if strings.TrimSuffix(md.Issuer, "/") != want {
+		return Metadata{}, fmt.Errorf("discovery document at %s is for issuer %q, not %q", endpoint, md.Issuer, want)
 	}
 	return md, nil
 }

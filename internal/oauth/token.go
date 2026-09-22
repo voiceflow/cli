@@ -124,7 +124,8 @@ func postToken(ctx context.Context, hc *http.Client, endpoint string, form url.V
 
 // expiry converts the response's relative lifetime into an absolute time.
 // A response without expires_in yields the zero time, which is treated as
-// "unknown lifetime" — the token is used until the API rejects it.
+// "unknown lifetime": the token is refreshed on assumedTokenLifetime instead.
+// See Session.needsRefresh.
 func (t *tokenResponse) expiry(now time.Time) time.Time {
 	if t.ExpiresIn <= 0 {
 		return time.Time{}
