@@ -1,15 +1,18 @@
 ## vf auth login
 
-Interactively configure authentication credentials
+Sign in through the browser or configure credentials
 
 ### Synopsis
 
-Interactively configure authentication credentials for vf.
-Secret credentials are stored in the OS keychain when available,
-with a config file fallback.
+Sign in to Voiceflow.
 
-All fields are optional — press Enter to skip any field you don't need.
-Use the configure command for both authentication and global parameters.
+By default this opens your browser to complete an OAuth2 authorization code
+flow, then stores the resulting access and refresh tokens in the OS keychain
+when available, with an owner-only file fallback.
+
+Use --token to store a bearer token non-interactively, or --manual to be
+prompted for one. Use the configure command for both authentication and global
+parameters.
 
 ```
 vf auth login [flags]
@@ -18,7 +21,11 @@ vf auth login [flags]
 ### Options
 
 ```
-  -h, --help   help for login
+  -h, --help                     help for login
+      --login-timeout duration   How long to wait for the browser to complete sign-in (default 5m0s)
+      --manual                   Prompt for a bearer token instead of signing in through the browser
+      --no-browser               Print the sign-in URL instead of opening a browser
+      --scope stringArray        OAuth scope to request (repeatable). Defaults to the scopes the authorization server advertises.
 ```
 
 ### Options inherited from parent commands

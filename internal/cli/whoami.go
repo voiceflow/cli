@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/config"
+	"github.com/voiceflow/cli/internal/oauth"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -50,6 +51,8 @@ func runWhoamiCmd(cmd *cobra.Command, args []string) error {
 		value, source := config.ResolveSecurityCredential(cmd, "token")
 		fmt.Fprintf(out, "  --%-25s [%-7s] %s\n", "token", source, maskSecret(value))
 	}
+
+	oauth.WriteStatus(out) // browser login session; see internal/oauth
 
 	return nil
 }

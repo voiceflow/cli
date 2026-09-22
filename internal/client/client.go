@@ -4,6 +4,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/config"
 	"github.com/voiceflow/cli/internal/flagutil"
+	"github.com/voiceflow/cli/internal/oauth"
 	"github.com/voiceflow/cli/internal/sdk"
 	"github.com/voiceflow/cli/internal/sdk/models/components"
 	"github.com/voiceflow/cli/internal/testclient"
@@ -22,7 +24,11 @@ import (
 // retry configuration, timeout, and test client injection.
 func NewClient(cmd *cobra.Command) (*sdk.VoiceflowSDK, error) {
 	var sdkOpts []sdk.SDKOption
-	sdkOpts = append(sdkOpts, sdk.WithSecurity(buildGlobalSecurity(cmd)))
+	security, err := buildGlobalSecurity(cmd)
+	if err != nil {
+		return nil, err
+	}
+	sdkOpts = append(sdkOpts, sdk.WithSecurity(security))
 	if serverURL := resolveStringFlag(cmd, "server-url"); serverURL != "" {
 		sdkOpts = append(sdkOpts, sdk.WithServerURL(serverURL))
 	} else if serverFlag, _ := flagutil.GetStringFlag(cmd, "server"); serverFlag != "" {
@@ -62,12 +68,29 @@ func resolveStringFlag(cmd *cobra.Command, name string) string {
 
 // buildGlobalSecurity reads security credentials from flags, env vars, and config file.
 // Priority: flag > env var > config file.
-func buildGlobalSecurity(cmd *cobra.Command) components.Security {
+func buildGlobalSecurity(cmd *cobra.Command) (components.Security, error) {
 	// Resolve security credentials: flag > env var > keyring > config file
-	token, _ := config.ResolveSecurityCredential(cmd, "token")
+	token, source := config.ResolveSecurityCredential(cmd, "token")
+
+	// An OAuth session from 'vf auth login' outranks a stored static token —
+	// it is refreshed on demand — while an explicit flag or environment
+	// variable still wins, so CI can override it. See internal/oauth.
+	if source != "flag" && source != "env" {
+		sessionToken, err := oauth.AccessToken(cmd.Context())
+		// Not being signed in is ordinary; a stored session that could not be
+		// renewed is not. Reporting that beats sending the request with a stale
+		// or missing token and surfacing an unrelated API auth failure.
+		if err != nil && !errors.Is(err, oauth.ErrNoSession) {
+			return components.Security{}, err
+		}
+		if sessionToken != "" {
+			token = sessionToken
+		}
+	}
+
 	globalSecurity := components.Security{}
 	if token != "" {
 		globalSecurity.Token = token
 	}
-	return globalSecurity
+	return globalSecurity, nil
 }

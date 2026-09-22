@@ -22,6 +22,7 @@ Realtime: Realtime gateway API service
   * [Shell Completion](#shell-completion)
   * [CLI Example Usage](#cli-example-usage)
   * [Authentication](#authentication)
+  * [Browser sign-in (OAuth2)](#browser-sign-in-oauth2)
   * [Available Commands](#available-commands)
   * [Request Body Input](#request-body-input)
   * [Server Selection](#server-selection)
@@ -75,7 +76,7 @@ Download pre-built binaries for your platform from the [releases page](https://g
 
 ## Quickstart: zero to a talking agent
 
-Runnable end to end by a person or by a coding agent. You need an access token and [`jq`](https://jqlang.org) (used only to pull IDs out of the JSON responses). Create a **personal access token** in Voiceflow under **Settings → Access tokens** (tokens start with `vfp_`; they expire, default 30 days), then:
+Runnable end to end by a person or by a coding agent. You need credentials and [`jq`](https://jqlang.org) (used only to pull IDs out of the JSON responses). At a terminal, `vf auth login` signs you in through the browser and stores the session for you (see [Browser sign-in](#browser-sign-in-oauth2)). For scripts, CI, and coding agents, create a **personal access token** in Voiceflow under **Settings → Access tokens** (tokens start with `vfp_`; they expire, default 30 days), then:
 
 ```bash
 export VF_TOKEN=vfp_...   # every command also accepts --token
@@ -209,6 +210,69 @@ vf configure
 
 Configuration is stored in `~/.config/vf/config.yaml`.
 <!-- End Authentication [security] -->
+
+<!-- The section below is hand-written; it sits outside the generated markers above so `speakeasy run` does not overwrite it. -->
+## Browser sign-in (OAuth2)
+
+Instead of pasting a personal access token, sign in through the browser:
+
+```bash
+vf auth login
+```
+
+This runs an OAuth2 authorization code flow with PKCE against
+`https://auth-api.voiceflow.com`: the CLI opens your browser, receives the
+authorization code on a loopback listener (`http://127.0.0.1:5133x/oauth/callback`),
+and exchanges it for an access and refresh token. Later commands refresh the
+access token automatically as it nears expiry, so the session keeps working
+without another sign-in.
+
+| Command | What it does |
+|---------|--------------|
+| `vf auth login` | Sign in through the browser |
+| `vf auth login --no-browser` | Print the sign-in URL instead of opening a browser (headless machines) |
+| `vf auth login --token <value>` | Store a bearer token non-interactively, no browser |
+| `vf auth login --manual` | Prompt for a bearer token instead of signing in |
+| `vf auth whoami` | Show the configured credential and the current session |
+| `vf auth logout` | Clear the session and every stored credential |
+
+Other flags: `--scope` (repeatable) requests specific scopes instead of the
+ones the authorization server advertises, and `--login-timeout` bounds the wait
+for the browser (default 5m).
+
+**Signing in over SSH.** `--no-browser` only stops the CLI from launching a
+browser; the callback listener still runs on the *remote* host's loopback
+interface, so a URL opened on your workstation would redirect to your
+workstation instead. Forward the callback port to the remote host first:
+
+```bash
+ssh -L 51330:127.0.0.1:51330 remote-host
+vf auth login --no-browser   # then open the printed URL locally
+```
+
+The CLI binds the first free port of 51330-51333, so forward the port you
+intend it to use and keep the others occupied or unforwarded.
+
+**Where the tokens live.** Access and refresh tokens go to the OS keychain —
+macOS Keychain, Windows Credential Manager, Linux Secret Service — under
+separate entries. On a machine with no keychain (headless Linux, containers)
+they fall back to `~/.config/vf/oauth.json`, written with owner-only
+permissions. Session metadata that is not secret (issuer, scopes, expiry, and
+the cached public client registration) is always kept in
+`~/.config/vf/oauth.json` and `~/.config/vf/oauth-client.json`.
+
+**Precedence.** An active browser session outranks a token stored by
+`vf configure` or `vf auth login --token`, because it is refreshed on demand.
+A `--token` flag or a `VF_TOKEN` environment variable still wins over both, so
+CI keeps behaving exactly as before and agent mode is unaffected —
+`vf auth login` is interactive and stays blocked there.
+
+**Pointing at another authorization server.** `VF_OAUTH_ISSUER`,
+`VF_OAUTH_CLIENT_ID`, `VF_OAUTH_RESOURCE`, `VF_OAUTH_SCOPES`, and
+`VF_OAUTH_REDIRECT_URI` override the defaults. With no `VF_OAUTH_CLIENT_ID`
+set, the CLI registers itself as a public client through the authorization
+server's dynamic client registration endpoint and caches the resulting
+`client_id` for later logins.
 
 <!-- Start Available Commands [operations] -->
 ## Available Commands
