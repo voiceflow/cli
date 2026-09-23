@@ -9464,7 +9464,6 @@ components:
         - voiceflow-core-4.1
         - voiceflow-core-4.2
         - voiceflow-flash-4.2
-        - kimi-k3
         - gemini-2.5-pro
         - gemini-2.5-flash
         - gemini-live-2.5-flash
@@ -9479,6 +9478,7 @@ components:
         - qwen3.6-27b
         - grok-4.6
         - voiceflow-flash-4.1
+        - kimi-k3
         - gemini-flash-2
         - gpt-4-turbo
         - claude-3.5-haiku
@@ -9539,7 +9539,6 @@ components:
         - VOICEFLOW_CORE_4_1
         - VOICEFLOW_CORE_4_2
         - VOICEFLOW_FLASH_4_2
-        - KIMI_K_3
         - GEMINI_2_5_PRO
         - GEMINI_2_5_FLASH
         - GEMINI_LIVE_2_5_FLASH
@@ -9554,6 +9553,7 @@ components:
         - QWEN_3_6_27_B
         - GROK_4_6
         - VOICEFLOW_FLASH_4_1
+        - KIMI_K_3
         - GEMINI_FLASH_2
         - GPT_4_TURBO
         - CLAUDE_3_5_HAIKU
@@ -21300,7 +21300,6 @@ components:
                 - voiceflow-core-4.1
                 - voiceflow-core-4.2
                 - voiceflow-flash-4.2
-                - kimi-k3
                 - gemini-2.5-pro
                 - gemini-2.5-flash
                 - gemini-live-2.5-flash
@@ -21315,6 +21314,7 @@ components:
                 - qwen3.6-27b
                 - grok-4.6
                 - voiceflow-flash-4.1
+                - kimi-k3
                 - gemini-flash-2
                 - gpt-4-turbo
                 - claude-3.5-haiku
@@ -21376,7 +21376,6 @@ components:
                 - VOICEFLOW_CORE_4_1
                 - VOICEFLOW_CORE_4_2
                 - VOICEFLOW_FLASH_4_2
-                - KIMI_K_3
                 - GEMINI_2_5_PRO
                 - GEMINI_2_5_FLASH
                 - GEMINI_LIVE_2_5_FLASH
@@ -21391,6 +21390,7 @@ components:
                 - QWEN_3_6_27_B
                 - GROK_4_6
                 - VOICEFLOW_FLASH_4_1
+                - KIMI_K_3
                 - GEMINI_FLASH_2
                 - GPT_4_TURBO
                 - CLAUDE_3_5_HAIKU
@@ -21580,7 +21580,6 @@ components:
             - voiceflow-core-4.1
             - voiceflow-core-4.2
             - voiceflow-flash-4.2
-            - kimi-k3
             - gemini-2.5-pro
             - gemini-2.5-flash
             - gemini-live-2.5-flash
@@ -21595,6 +21594,7 @@ components:
             - qwen3.6-27b
             - grok-4.6
             - voiceflow-flash-4.1
+            - kimi-k3
             - gemini-flash-2
             - gpt-4-turbo
             - claude-3.5-haiku
@@ -21655,7 +21655,6 @@ components:
             - VOICEFLOW_CORE_4_1
             - VOICEFLOW_CORE_4_2
             - VOICEFLOW_FLASH_4_2
-            - KIMI_K_3
             - GEMINI_2_5_PRO
             - GEMINI_2_5_FLASH
             - GEMINI_LIVE_2_5_FLASH
@@ -21670,6 +21669,7 @@ components:
             - QWEN_3_6_27_B
             - GROK_4_6
             - VOICEFLOW_FLASH_4_1
+            - KIMI_K_3
             - GEMINI_FLASH_2
             - GPT_4_TURBO
             - CLAUDE_3_5_HAIKU

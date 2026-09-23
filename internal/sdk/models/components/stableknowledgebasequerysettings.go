@@ -56,7 +56,6 @@ const (
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore41           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.1"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore42           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.2"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash42          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.2"
-	StableKnowledgeBaseQuerySettingsModelKimiK3                    StableKnowledgeBaseQuerySettingsModel = "kimi-k3"
 	StableKnowledgeBaseQuerySettingsModelGemini25Pro               StableKnowledgeBaseQuerySettingsModel = "gemini-2.5-pro"
 	StableKnowledgeBaseQuerySettingsModelGemini25Flash             StableKnowledgeBaseQuerySettingsModel = "gemini-2.5-flash"
 	StableKnowledgeBaseQuerySettingsModelGeminiLive25Flash         StableKnowledgeBaseQuerySettingsModel = "gemini-live-2.5-flash"
@@ -71,6 +70,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelQwen3627b                 StableKnowledgeBaseQuerySettingsModel = "qwen3.6-27b"
 	StableKnowledgeBaseQuerySettingsModelGrok46                    StableKnowledgeBaseQuerySettingsModel = "grok-4.6"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash41          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.1"
+	StableKnowledgeBaseQuerySettingsModelKimiK3                    StableKnowledgeBaseQuerySettingsModel = "kimi-k3"
 	StableKnowledgeBaseQuerySettingsModelGeminiFlash2              StableKnowledgeBaseQuerySettingsModel = "gemini-flash-2"
 	StableKnowledgeBaseQuerySettingsModelGpt4Turbo                 StableKnowledgeBaseQuerySettingsModel = "gpt-4-turbo"
 	StableKnowledgeBaseQuerySettingsModelClaude35Haiku             StableKnowledgeBaseQuerySettingsModel = "claude-3.5-haiku"
@@ -185,8 +185,6 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 		fallthrough
 	case "voiceflow-flash-4.2":
 		fallthrough
-	case "kimi-k3":
-		fallthrough
 	case "gemini-2.5-pro":
 		fallthrough
 	case "gemini-2.5-flash":
@@ -214,6 +212,8 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "grok-4.6":
 		fallthrough
 	case "voiceflow-flash-4.1":
+		fallthrough
+	case "kimi-k3":
 		fallthrough
 	case "gemini-flash-2":
 		fallthrough
