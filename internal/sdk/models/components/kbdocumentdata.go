@@ -21,6 +21,7 @@ const (
 	KBDocumentDataTypeCsv     KBDocumentDataType = "csv"
 	KBDocumentDataTypeXlsx    KBDocumentDataType = "xlsx"
 	KBDocumentDataTypeTable   KBDocumentDataType = "table"
+	KBDocumentDataTypeSitemap KBDocumentDataType = "sitemap"
 	KBDocumentDataTypeUnknown KBDocumentDataType = "UNKNOWN"
 )
 
@@ -33,6 +34,7 @@ type KBDocumentData struct {
 	KBDocumentCSVData      *KBDocumentCSVData      `queryParam:"inline" union:"member"`
 	KBDocumentXLSXData     *KBDocumentXLSXData     `queryParam:"inline" union:"member"`
 	KBDocumentTableData    *KBDocumentTableData    `queryParam:"inline" union:"member"`
+	KBDocumentSitemapData  *KBDocumentSitemapData  `queryParam:"inline" union:"member"`
 	UnknownRaw             json.RawMessage         `json:"-" union:"unknown"`
 
 	Type KBDocumentDataType
@@ -131,6 +133,18 @@ func CreateKBDocumentDataTable(table KBDocumentTableData) KBDocumentData {
 	return KBDocumentData{
 		KBDocumentTableData: &table,
 		Type:                typ,
+	}
+}
+
+func CreateKBDocumentDataSitemap(sitemap KBDocumentSitemapData) KBDocumentData {
+	typ := KBDocumentDataTypeSitemap
+
+	typStr := KBDocumentSitemapDataType(typ)
+	sitemap.Type = typStr
+
+	return KBDocumentData{
+		KBDocumentSitemapData: &sitemap,
+		Type:                  typ,
 	}
 }
 
@@ -240,6 +254,15 @@ func (u *KBDocumentData) UnmarshalJSON(data []byte) error {
 		u.KBDocumentTableData = kbDocumentTableData
 		u.Type = KBDocumentDataTypeTable
 		return nil
+	case "sitemap":
+		kbDocumentSitemapData := new(KBDocumentSitemapData)
+		if err := utils.UnmarshalJSON(data, &kbDocumentSitemapData, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == sitemap) type KBDocumentSitemapData within KBDocumentData: %w", string(data), err)
+		}
+
+		u.KBDocumentSitemapData = kbDocumentSitemapData
+		u.Type = KBDocumentDataTypeSitemap
+		return nil
 	default:
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = KBDocumentDataTypeUnknown
@@ -279,6 +302,10 @@ func (u KBDocumentData) MarshalJSON() ([]byte, error) {
 
 	if u.KBDocumentTableData != nil {
 		return utils.MarshalJSON(u.KBDocumentTableData, "", true)
+	}
+
+	if u.KBDocumentSitemapData != nil {
+		return utils.MarshalJSON(u.KBDocumentSitemapData, "", true)
 	}
 
 	if u.UnknownRaw != nil {

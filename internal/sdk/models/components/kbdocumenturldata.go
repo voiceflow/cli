@@ -6,6 +6,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
@@ -33,14 +34,15 @@ func (e *KBDocumentURLDataType) UnmarshalJSON(data []byte) error {
 }
 
 type KBDocumentURLData struct {
-	Type                  KBDocumentURLDataType                 `json:"type"`
-	Name                  string                                `json:"name"`
-	URL                   string                                `json:"url"`
-	RefreshRate           *KnowledgeBaseDocumentRefreshRate     `json:"refreshRate,omitzero"`
-	LastSuccessUpdate     *string                               `json:"lastSuccessUpdate,omitzero"`
-	AccessTokenID         *float64                              `json:"accessTokenID,omitzero"`
-	IntegrationExternalID *string                               `json:"integrationExternalID,omitzero"`
-	Source                *KnowledgeBaseDocumentIntegrationType `json:"source,omitzero"`
+	Type                  KBDocumentURLDataType                     `json:"type"`
+	Name                  string                                    `json:"name"`
+	URL                   string                                    `json:"url"`
+	RefreshRate           *KnowledgeBaseDocumentRefreshRate         `json:"refreshRate,omitzero"`
+	LastSuccessUpdate     *string                                   `json:"lastSuccessUpdate,omitzero"`
+	AccessTokenID         *float64                                  `json:"accessTokenID,omitzero"`
+	IntegrationExternalID *string                                   `json:"integrationExternalID,omitzero"`
+	Source                *KnowledgeBaseDocumentIntegrationType     `json:"source,omitzero"`
+	SitemapDocumentID     optionalnullable.OptionalNullable[string] `json:"sitemapDocumentID,omitzero"`
 }
 
 func (k KBDocumentURLData) MarshalJSON() ([]byte, error) {
@@ -108,4 +110,11 @@ func (k *KBDocumentURLData) GetSource() *KnowledgeBaseDocumentIntegrationType {
 		return nil
 	}
 	return k.Source
+}
+
+func (k *KBDocumentURLData) GetSitemapDocumentID() optionalnullable.OptionalNullable[string] {
+	if k == nil {
+		return nil
+	}
+	return k.SitemapDocumentID
 }

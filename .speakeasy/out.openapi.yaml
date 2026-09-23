@@ -9795,6 +9795,9 @@ components:
         source:
           allOf:
             - $ref: '#/components/schemas/KnowledgeBaseDocumentIntegrationType'
+        sitemapDocumentID:
+          nullable: true
+          type: string
       required:
         - type
         - name
@@ -9970,6 +9973,7 @@ components:
         - $ref: '#/components/schemas/KBDocumentCSVData'
         - $ref: '#/components/schemas/KBDocumentXLSXData'
         - $ref: '#/components/schemas/KBDocumentTableData'
+        - $ref: '#/components/schemas/KBDocumentSitemapData'
     KBDocumentTableData:
       type: object
       properties:
@@ -9990,6 +9994,73 @@ components:
         - type
         - name
         - rowsCount
+    KBDocumentSitemapData:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - sitemap
+          x-enumNames:
+            - SITEMAP
+        name:
+          type: string
+        url:
+          type: string
+        refreshRate:
+          allOf:
+            - $ref: '#/components/schemas/KnowledgeBaseDocumentRefreshRate'
+        lastSuccessUpdate:
+          type: string
+        patterns:
+          allOf:
+            - $ref: '#/components/schemas/KBDocumentSitemapPatterns'
+        sync:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/KBDocumentSitemapSync'
+      required:
+        - type
+        - name
+        - url
+    KBDocumentSitemapPatterns:
+      type: object
+      properties:
+        include:
+          type: array
+          items:
+            type: string
+        exclude:
+          type: array
+          items:
+            type: string
+      required:
+        - include
+        - exclude
+    KBDocumentSitemapSync:
+      type: object
+      properties:
+        syncedAt:
+          type: string
+        addedCount:
+          type: number
+        removedCount:
+          type: number
+        failure:
+          nullable: true
+          type: object
+          properties:
+            message:
+              type: string
+            at:
+              type: string
+          required:
+            - message
+            - at
+      required:
+        - syncedAt
+        - addedCount
+        - removedCount
     McpServerSpecification:
       type: string
       enum:
