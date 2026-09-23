@@ -9461,6 +9461,7 @@ components:
         - bedrock-claude-4.7-opus
         - bedrock-claude-4.8-opus
         - voiceflow-core-4.0
+        - voiceflow-core-4.1
         - voiceflow-core-4.2
         - voiceflow-flash-4.2
         - kimi-k3
@@ -9477,7 +9478,6 @@ components:
         - llama-3.3-versatile
         - qwen3.6-27b
         - grok-4.6
-        - voiceflow-core-4.1
         - voiceflow-flash-4.1
         - gemini-flash-2
         - gpt-4-turbo
@@ -9536,6 +9536,7 @@ components:
         - BEDROCK_CLAUDE_4_7_OPUS
         - BEDROCK_CLAUDE_4_8_OPUS
         - VOICEFLOW_CORE_4_0
+        - VOICEFLOW_CORE_4_1
         - VOICEFLOW_CORE_4_2
         - VOICEFLOW_FLASH_4_2
         - KIMI_K_3
@@ -9552,7 +9553,6 @@ components:
         - LLAMA_3_3_VERSATILE
         - QWEN_3_6_27_B
         - GROK_4_6
-        - VOICEFLOW_CORE_4_1
         - VOICEFLOW_FLASH_4_1
         - GEMINI_FLASH_2
         - GPT_4_TURBO
@@ -21226,6 +21226,7 @@ components:
                 - bedrock-claude-4.7-opus
                 - bedrock-claude-4.8-opus
                 - voiceflow-core-4.0
+                - voiceflow-core-4.1
                 - voiceflow-core-4.2
                 - voiceflow-flash-4.2
                 - kimi-k3
@@ -21242,7 +21243,6 @@ components:
                 - llama-3.3-versatile
                 - qwen3.6-27b
                 - grok-4.6
-                - voiceflow-core-4.1
                 - voiceflow-flash-4.1
                 - gemini-flash-2
                 - gpt-4-turbo
@@ -21302,6 +21302,7 @@ components:
                 - BEDROCK_CLAUDE_4_7_OPUS
                 - BEDROCK_CLAUDE_4_8_OPUS
                 - VOICEFLOW_CORE_4_0
+                - VOICEFLOW_CORE_4_1
                 - VOICEFLOW_CORE_4_2
                 - VOICEFLOW_FLASH_4_2
                 - KIMI_K_3
@@ -21318,7 +21319,6 @@ components:
                 - LLAMA_3_3_VERSATILE
                 - QWEN_3_6_27_B
                 - GROK_4_6
-                - VOICEFLOW_CORE_4_1
                 - VOICEFLOW_FLASH_4_1
                 - GEMINI_FLASH_2
                 - GPT_4_TURBO
@@ -21506,6 +21506,7 @@ components:
             - bedrock-claude-4.7-opus
             - bedrock-claude-4.8-opus
             - voiceflow-core-4.0
+            - voiceflow-core-4.1
             - voiceflow-core-4.2
             - voiceflow-flash-4.2
             - kimi-k3
@@ -21522,7 +21523,6 @@ components:
             - llama-3.3-versatile
             - qwen3.6-27b
             - grok-4.6
-            - voiceflow-core-4.1
             - voiceflow-flash-4.1
             - gemini-flash-2
             - gpt-4-turbo
@@ -21581,6 +21581,7 @@ components:
             - BEDROCK_CLAUDE_4_7_OPUS
             - BEDROCK_CLAUDE_4_8_OPUS
             - VOICEFLOW_CORE_4_0
+            - VOICEFLOW_CORE_4_1
             - VOICEFLOW_CORE_4_2
             - VOICEFLOW_FLASH_4_2
             - KIMI_K_3
@@ -21597,7 +21598,6 @@ components:
             - LLAMA_3_3_VERSATILE
             - QWEN_3_6_27_B
             - GROK_4_6
-            - VOICEFLOW_CORE_4_1
             - VOICEFLOW_FLASH_4_1
             - GEMINI_FLASH_2
             - GPT_4_TURBO
