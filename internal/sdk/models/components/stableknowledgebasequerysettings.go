@@ -53,6 +53,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude47Opus       StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.7-opus"
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude48Opus       StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.8-opus"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore40           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.0"
+	StableKnowledgeBaseQuerySettingsModelVoiceflowCore41           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.1"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowCore42           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.2"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash42          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.2"
 	StableKnowledgeBaseQuerySettingsModelKimiK3                    StableKnowledgeBaseQuerySettingsModel = "kimi-k3"
@@ -69,7 +70,6 @@ const (
 	StableKnowledgeBaseQuerySettingsModelLlama33Versatile          StableKnowledgeBaseQuerySettingsModel = "llama-3.3-versatile"
 	StableKnowledgeBaseQuerySettingsModelQwen3627b                 StableKnowledgeBaseQuerySettingsModel = "qwen3.6-27b"
 	StableKnowledgeBaseQuerySettingsModelGrok46                    StableKnowledgeBaseQuerySettingsModel = "grok-4.6"
-	StableKnowledgeBaseQuerySettingsModelVoiceflowCore41           StableKnowledgeBaseQuerySettingsModel = "voiceflow-core-4.1"
 	StableKnowledgeBaseQuerySettingsModelVoiceflowFlash41          StableKnowledgeBaseQuerySettingsModel = "voiceflow-flash-4.1"
 	StableKnowledgeBaseQuerySettingsModelGeminiFlash2              StableKnowledgeBaseQuerySettingsModel = "gemini-flash-2"
 	StableKnowledgeBaseQuerySettingsModelGpt4Turbo                 StableKnowledgeBaseQuerySettingsModel = "gpt-4-turbo"
@@ -179,6 +179,8 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 		fallthrough
 	case "voiceflow-core-4.0":
 		fallthrough
+	case "voiceflow-core-4.1":
+		fallthrough
 	case "voiceflow-core-4.2":
 		fallthrough
 	case "voiceflow-flash-4.2":
@@ -210,8 +212,6 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "qwen3.6-27b":
 		fallthrough
 	case "grok-4.6":
-		fallthrough
-	case "voiceflow-core-4.1":
 		fallthrough
 	case "voiceflow-flash-4.1":
 		fallthrough
