@@ -30,7 +30,7 @@ func initListCmd(parent *cobra.Command) error {
 		RunE:    runListCmd,
 	}
 	flagutil.RegisterFlags(cmd, listCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAPIToolControllerListRequest](listCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAPIToolControllerListV2Request](listCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for list: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -47,7 +47,7 @@ func runListCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAPIToolControllerListRequest](cmd, listCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableAPIToolControllerListV2Request](cmd, listCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

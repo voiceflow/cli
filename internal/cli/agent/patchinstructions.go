@@ -34,7 +34,7 @@ func initPatchInstructionsCmd(parent *cobra.Command) error {
 		Aliases: []string{"pi"},
 	}
 	flagutil.RegisterFlags(cmd, patchInstructionsCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAgentControllerPatchInstructionsRequest](patchInstructionsCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAgentControllerPatchInstructionsV2Request](patchInstructionsCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for patch-instructions: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -52,7 +52,7 @@ func runPatchInstructionsCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAgentControllerPatchInstructionsRequest](cmd, patchInstructionsCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAgentControllerPatchInstructionsV2Request](cmd, patchInstructionsCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

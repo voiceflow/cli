@@ -53,6 +53,18 @@ func InitAgentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initAddToolMessageCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initUpdateToolMessageCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initDeleteToolMessageCmd(AgentCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(AgentCmd)
 	return nil
 }

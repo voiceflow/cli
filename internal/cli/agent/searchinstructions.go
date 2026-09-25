@@ -35,7 +35,7 @@ func initSearchInstructionsCmd(parent *cobra.Command) error {
 		Aliases: []string{"si"},
 	}
 	flagutil.RegisterFlags(cmd, searchInstructionsCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAgentControllerSearchInstructionsRequest](searchInstructionsCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAgentControllerSearchInstructionsV2Request](searchInstructionsCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for search-instructions: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -53,7 +53,7 @@ func runSearchInstructionsCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAgentControllerSearchInstructionsRequest](cmd, searchInstructionsCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAgentControllerSearchInstructionsV2Request](cmd, searchInstructionsCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

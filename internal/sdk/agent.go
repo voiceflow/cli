@@ -33,7 +33,7 @@ func newAgent(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks *h
 
 // Get agent
 // Get agent configuration.
-func (s *Agent) Get(ctx context.Context, request operations.StableAgentControllerGetRequest, opts ...operations.Option) (*operations.StableAgentControllerGetResponse, error) {
+func (s *Agent) Get(ctx context.Context, request operations.StableAgentControllerGetV2Request, opts ...operations.Option) (*operations.StableAgentControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *Agent) Get(ctx context.Context, request operations.StableAgentControlle
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *Agent) Get(ctx context.Context, request operations.StableAgentControlle
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_get",
+		OperationID:      "StableAgentController_getV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *Agent) Get(ctx context.Context, request operations.StableAgentControlle
 		}
 	}
 
-	res := &operations.StableAgentControllerGetResponse{
+	res := &operations.StableAgentControllerGetV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *Agent) Get(ctx context.Context, request operations.StableAgentControlle
 					return nil, err
 				}
 
-				var out components.StableAgentResponse
+				var out components.StableAgentResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableAgentResponse = &out
+				res.StableAgentResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -182,7 +182,7 @@ func (s *Agent) Get(ctx context.Context, request operations.StableAgentControlle
 
 // Update agent
 // Update agent configuration.
-func (s *Agent) Update(ctx context.Context, request operations.StableAgentControllerUpdateRequest, opts ...operations.Option) (*operations.StableAgentControllerUpdateResponse, error) {
+func (s *Agent) Update(ctx context.Context, request operations.StableAgentControllerUpdateV2Request, opts ...operations.Option) (*operations.StableAgentControllerUpdateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *Agent) Update(ctx context.Context, request operations.StableAgentContro
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *Agent) Update(ctx context.Context, request operations.StableAgentContro
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_update",
+		OperationID:      "StableAgentController_updateV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *Agent) Update(ctx context.Context, request operations.StableAgentContro
 		}
 	}
 
-	res := &operations.StableAgentControllerUpdateResponse{
+	res := &operations.StableAgentControllerUpdateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *Agent) Update(ctx context.Context, request operations.StableAgentContro
 					return nil, err
 				}
 
-				var out components.StableUpdateResponse
+				var out components.StableMarkdownUpdateResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableUpdateResponse = &out
+				res.StableMarkdownUpdateResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -338,7 +338,7 @@ func (s *Agent) Update(ctx context.Context, request operations.StableAgentContro
 
 // ReadInstructions - Read agent instructions
 // Read a page of the main agent's routing instructions as numbered lines.
-func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableAgentControllerReadInstructionsRequest, opts ...operations.Option) (*operations.StableAgentControllerReadInstructionsResponse, error) {
+func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableAgentControllerReadInstructionsV2Request, opts ...operations.Option) (*operations.StableAgentControllerReadInstructionsV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -357,7 +357,7 @@ func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableA
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/instructions")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent/instructions")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -367,7 +367,7 @@ func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableA
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_readInstructions",
+		OperationID:      "StableAgentController_readInstructionsV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -430,7 +430,7 @@ func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableA
 		}
 	}
 
-	res := &operations.StableAgentControllerReadInstructionsResponse{
+	res := &operations.StableAgentControllerReadInstructionsV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -487,7 +487,7 @@ func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableA
 
 // PatchInstructions - Patch agent instructions
 // Replace an exact string in the main agent's instructions.
-func (s *Agent) PatchInstructions(ctx context.Context, request operations.StableAgentControllerPatchInstructionsRequest, opts ...operations.Option) (*operations.StableAgentControllerPatchInstructionsResponse, error) {
+func (s *Agent) PatchInstructions(ctx context.Context, request operations.StableAgentControllerPatchInstructionsV2Request, opts ...operations.Option) (*operations.StableAgentControllerPatchInstructionsV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -506,7 +506,7 @@ func (s *Agent) PatchInstructions(ctx context.Context, request operations.Stable
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/instructions")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent/instructions")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -516,7 +516,7 @@ func (s *Agent) PatchInstructions(ctx context.Context, request operations.Stable
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_patchInstructions",
+		OperationID:      "StableAgentController_patchInstructionsV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -586,7 +586,7 @@ func (s *Agent) PatchInstructions(ctx context.Context, request operations.Stable
 		}
 	}
 
-	res := &operations.StableAgentControllerPatchInstructionsResponse{
+	res := &operations.StableAgentControllerPatchInstructionsV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -603,12 +603,12 @@ func (s *Agent) PatchInstructions(ctx context.Context, request operations.Stable
 					return nil, err
 				}
 
-				var out components.StableInstructionsPatchResponse
+				var out components.StableInstructionsPatchResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableInstructionsPatchResponse = &out
+				res.StableInstructionsPatchResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -643,7 +643,7 @@ func (s *Agent) PatchInstructions(ctx context.Context, request operations.Stable
 
 // SearchInstructions - Search agent instructions
 // Search the main agent's instructions with a regular expression.
-func (s *Agent) SearchInstructions(ctx context.Context, request operations.StableAgentControllerSearchInstructionsRequest, opts ...operations.Option) (*operations.StableAgentControllerSearchInstructionsResponse, error) {
+func (s *Agent) SearchInstructions(ctx context.Context, request operations.StableAgentControllerSearchInstructionsV2Request, opts ...operations.Option) (*operations.StableAgentControllerSearchInstructionsV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -662,7 +662,7 @@ func (s *Agent) SearchInstructions(ctx context.Context, request operations.Stabl
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/instructions/search")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent/instructions/search")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -672,7 +672,7 @@ func (s *Agent) SearchInstructions(ctx context.Context, request operations.Stabl
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_searchInstructions",
+		OperationID:      "StableAgentController_searchInstructionsV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -742,7 +742,7 @@ func (s *Agent) SearchInstructions(ctx context.Context, request operations.Stabl
 		}
 	}
 
-	res := &operations.StableAgentControllerSearchInstructionsResponse{
+	res := &operations.StableAgentControllerSearchInstructionsV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -799,7 +799,7 @@ func (s *Agent) SearchInstructions(ctx context.Context, request operations.Stabl
 
 // ReadPrompt - Read the global prompt
 // Read a page of the global prompt as numbered lines.
-func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentControllerReadPromptRequest, opts ...operations.Option) (*operations.StableAgentControllerReadPromptResponse, error) {
+func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentControllerReadPromptV2Request, opts ...operations.Option) (*operations.StableAgentControllerReadPromptV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -818,7 +818,7 @@ func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentCo
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/prompt")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent/prompt")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -828,7 +828,7 @@ func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentCo
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_readPrompt",
+		OperationID:      "StableAgentController_readPromptV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -891,7 +891,7 @@ func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentCo
 		}
 	}
 
-	res := &operations.StableAgentControllerReadPromptResponse{
+	res := &operations.StableAgentControllerReadPromptV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -948,7 +948,7 @@ func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentCo
 
 // PatchPrompt - Patch the global prompt
 // Replace an exact string in the global prompt.
-func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentControllerPatchPromptRequest, opts ...operations.Option) (*operations.StableAgentControllerPatchPromptResponse, error) {
+func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentControllerPatchPromptV2Request, opts ...operations.Option) (*operations.StableAgentControllerPatchPromptV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -967,7 +967,7 @@ func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentC
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/prompt")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent/prompt")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -977,7 +977,7 @@ func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentC
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_patchPrompt",
+		OperationID:      "StableAgentController_patchPromptV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -1047,7 +1047,7 @@ func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentC
 		}
 	}
 
-	res := &operations.StableAgentControllerPatchPromptResponse{
+	res := &operations.StableAgentControllerPatchPromptV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -1064,12 +1064,12 @@ func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentC
 					return nil, err
 				}
 
-				var out components.StableInstructionsPatchResponse
+				var out components.StableInstructionsPatchResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableInstructionsPatchResponse = &out
+				res.StableInstructionsPatchResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -1104,7 +1104,7 @@ func (s *Agent) PatchPrompt(ctx context.Context, request operations.StableAgentC
 
 // SearchPrompt - Search the global prompt
 // Search the global prompt with a regular expression.
-func (s *Agent) SearchPrompt(ctx context.Context, request operations.StableAgentControllerSearchPromptRequest, opts ...operations.Option) (*operations.StableAgentControllerSearchPromptResponse, error) {
+func (s *Agent) SearchPrompt(ctx context.Context, request operations.StableAgentControllerSearchPromptV2Request, opts ...operations.Option) (*operations.StableAgentControllerSearchPromptV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -1123,7 +1123,7 @@ func (s *Agent) SearchPrompt(ctx context.Context, request operations.StableAgent
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/prompt/search")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/agent/prompt/search")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1133,7 +1133,7 @@ func (s *Agent) SearchPrompt(ctx context.Context, request operations.StableAgent
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAgentController_searchPrompt",
+		OperationID:      "StableAgentController_searchPromptV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -1203,7 +1203,7 @@ func (s *Agent) SearchPrompt(ctx context.Context, request operations.StableAgent
 		}
 	}
 
-	res := &operations.StableAgentControllerSearchPromptResponse{
+	res := &operations.StableAgentControllerSearchPromptV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -1226,6 +1226,467 @@ func (s *Agent) SearchPrompt(ctx context.Context, request operations.StableAgent
 				}
 
 				res.StableInstructionsSearchResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// AddToolMessage - Add agent tool message
+// Set a message on one of the agent's tools. Rejected when that message already exists.
+func (s *Agent) AddToolMessage(ctx context.Context, request operations.StableAgentControllerAddToolMessageRequest, opts ...operations.Option) (*operations.StableAgentControllerAddToolMessageResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/tool-message")
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableAgentController_addToolMessage",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableAgentControllerAddToolMessageResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableTextUpdateResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableTextUpdateResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// UpdateToolMessage - Update agent tool message
+// Replace a message on one of the agent's tools. Rejected when there is none to replace.
+func (s *Agent) UpdateToolMessage(ctx context.Context, request operations.StableAgentControllerUpdateToolMessageRequest, opts ...operations.Option) (*operations.StableAgentControllerUpdateToolMessageResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/tool-message")
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableAgentController_updateToolMessage",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "PATCH", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableAgentControllerUpdateToolMessageResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableTextUpdateResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableTextUpdateResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// DeleteToolMessage - Delete agent tool message
+// Remove a message from one of the agent's tools, in whichever form it is stored.
+func (s *Agent) DeleteToolMessage(ctx context.Context, request operations.StableAgentControllerDeleteToolMessageRequest, opts ...operations.Option) (*operations.StableAgentControllerDeleteToolMessageResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := url.JoinPath(baseURL, "/v1/stable/agent/tool-message")
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableAgentController_deleteToolMessage",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "DELETE", opURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableAgentControllerDeleteToolMessageResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableDeleteResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableDeleteResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

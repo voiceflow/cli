@@ -28,11 +28,11 @@ func initGetCmd(parent *cobra.Command) error {
 		Use:     "get",
 		Short:   "Get tool",
 		Long:    "Get a tool by ID.",
-		Example: "  vf tool get --tool-id <id> --project-id <id> --environment-alias <value> --type api",
+		Example: "  vf tool get --tool-id <id> --project-id <id> --environment-alias <value> --type integration",
 		RunE:    runGetCmd,
 	}
 	flagutil.RegisterFlags(cmd, getCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableToolControllerGetRequest](getCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableToolControllerGetV2Request](getCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for get: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -49,7 +49,7 @@ func runGetCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableToolControllerGetRequest](cmd, getCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableToolControllerGetV2Request](cmd, getCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

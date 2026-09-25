@@ -33,7 +33,7 @@ func newMcpServer(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hook
 
 // List MCP servers
 // List all MCP servers by project ID.
-func (s *McpServer) List(ctx context.Context, request operations.StableMCPServerControllerListRequest, opts ...operations.Option) (*operations.StableMCPServerControllerListResponse, error) {
+func (s *McpServer) List(ctx context.Context, request operations.StableMCPServerControllerListV2Request, opts ...operations.Option) (*operations.StableMCPServerControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *McpServer) List(ctx context.Context, request operations.StableMCPServer
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/mcp-server")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/mcp-server")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *McpServer) List(ctx context.Context, request operations.StableMCPServer
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableMCPServerController_list",
+		OperationID:      "StableMCPServerController_listV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *McpServer) List(ctx context.Context, request operations.StableMCPServer
 		}
 	}
 
-	res := &operations.StableMCPServerControllerListResponse{
+	res := &operations.StableMCPServerControllerListV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *McpServer) List(ctx context.Context, request operations.StableMCPServer
 					return nil, err
 				}
 
-				var out components.StableMCPServerListResponse
+				var out components.StableMCPServerListResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableMCPServerListResponse = &out
+				res.StableMCPServerListResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -181,8 +181,8 @@ func (s *McpServer) List(ctx context.Context, request operations.StableMCPServer
 }
 
 // Create MCP server
-// Create a new MCP server. Header values are Markup and may reference a secret by ID; MCP clients must send every header value as such a reference rather than as literal text.
-func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServerControllerCreateRequest, opts ...operations.Option) (*operations.StableMCPServerControllerCreateResponse, error) {
+// Create a new MCP server. The URL and header values may reference a project secret or variable by name with a {name} token; MCP clients must send every header value with at least one such token rather than as literal text.
+func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServerControllerCreateV2Request, opts ...operations.Option) (*operations.StableMCPServerControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServ
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/mcp-server")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/mcp-server")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServ
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableMCPServerController_create",
+		OperationID:      "StableMCPServerController_createV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServ
 		}
 	}
 
-	res := &operations.StableMCPServerControllerCreateResponse{
+	res := &operations.StableMCPServerControllerCreateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServ
 					return nil, err
 				}
 
-				var out components.StableMCPServerResponse
+				var out components.StableMCPServerResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableMCPServerResponse = &out
+				res.StableMCPServerResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -338,7 +338,7 @@ func (s *McpServer) Create(ctx context.Context, request operations.StableMCPServ
 
 // Get MCP server
 // Get an MCP server by ID.
-func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerControllerGetRequest, opts ...operations.Option) (*operations.StableMCPServerControllerGetResponse, error) {
+func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerControllerGetV2Request, opts ...operations.Option) (*operations.StableMCPServerControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -357,7 +357,7 @@ func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerC
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/mcp-server/{serverID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/mcp-server/{serverID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -367,7 +367,7 @@ func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerC
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableMCPServerController_get",
+		OperationID:      "StableMCPServerController_getV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -430,7 +430,7 @@ func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerC
 		}
 	}
 
-	res := &operations.StableMCPServerControllerGetResponse{
+	res := &operations.StableMCPServerControllerGetV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -447,12 +447,12 @@ func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerC
 					return nil, err
 				}
 
-				var out components.StableMCPServerResponse
+				var out components.StableMCPServerReadResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableMCPServerResponse = &out
+				res.StableMCPServerReadResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -486,8 +486,8 @@ func (s *McpServer) Get(ctx context.Context, request operations.StableMCPServerC
 }
 
 // Update MCP server
-// Update an MCP server by ID. As on create, MCP clients must send every header value as a secret reference rather than as literal text.
-func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServerControllerUpdateRequest, opts ...operations.Option) (*operations.StableMCPServerControllerUpdateResponse, error) {
+// Update an MCP server by ID. As on create, MCP clients must send every header value with at least one {name} token rather than as literal text.
+func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServerControllerUpdateV2Request, opts ...operations.Option) (*operations.StableMCPServerControllerUpdateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -506,7 +506,7 @@ func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServ
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/mcp-server/{serverID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/mcp-server/{serverID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -516,7 +516,7 @@ func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServ
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableMCPServerController_update",
+		OperationID:      "StableMCPServerController_updateV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -586,7 +586,7 @@ func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServ
 		}
 	}
 
-	res := &operations.StableMCPServerControllerUpdateResponse{
+	res := &operations.StableMCPServerControllerUpdateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -603,12 +603,12 @@ func (s *McpServer) Update(ctx context.Context, request operations.StableMCPServ
 					return nil, err
 				}
 
-				var out components.StableUpdateResponse
+				var out components.StableTextUpdateResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableUpdateResponse = &out
+				res.StableTextUpdateResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

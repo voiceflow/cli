@@ -34,7 +34,7 @@ func initPatchPromptCmd(parent *cobra.Command) error {
 		Aliases: []string{"pp"},
 	}
 	flagutil.RegisterFlags(cmd, patchPromptCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAgentControllerPatchPromptRequest](patchPromptCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAgentControllerPatchPromptV2Request](patchPromptCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for patch-prompt: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -52,7 +52,7 @@ func runPatchPromptCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAgentControllerPatchPromptRequest](cmd, patchPromptCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAgentControllerPatchPromptV2Request](cmd, patchPromptCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

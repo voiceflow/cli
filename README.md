@@ -290,6 +290,9 @@ server's dynamic client registration endpoint and caches the resulting
 * [`read-prompt`](docs/vf_agent_read-prompt.md) - Read the global prompt
 * [`patch-prompt`](docs/vf_agent_patch-prompt.md) - Patch the global prompt
 * [`search-prompt`](docs/vf_agent_search-prompt.md) - Search the global prompt
+* [`add-tool-message`](docs/vf_agent_add-tool-message.md) - Add agent tool message
+* [`update-tool-message`](docs/vf_agent_update-tool-message.md) - Update agent tool message
+* [`delete-tool-message`](docs/vf_agent_delete-tool-message.md) - Delete agent tool message
 
 ### [playbook](docs/vf_playbook.md)
 
@@ -301,6 +304,9 @@ server's dynamic client registration endpoint and caches the resulting
 * [`read-instructions`](docs/vf_playbook_read-instructions.md) - Read playbook instructions
 * [`patch-instructions`](docs/vf_playbook_patch-instructions.md) - Patch playbook instructions
 * [`search-instructions`](docs/vf_playbook_search-instructions.md) - Search playbook instructions
+* [`add-tool-message`](docs/vf_playbook_add-tool-message.md) - Add playbook tool message
+* [`update-tool-message`](docs/vf_playbook_update-tool-message.md) - Update playbook tool message
+* [`delete-tool-message`](docs/vf_playbook_delete-tool-message.md) - Delete playbook tool message
 
 ### [tool](docs/vf_tool.md)
 

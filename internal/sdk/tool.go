@@ -33,7 +33,7 @@ func newTool(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks *ho
 
 // List tools
 // List all tools for the agent or a specific playbook.
-func (s *Tool) List(ctx context.Context, request operations.StableToolControllerListRequest, opts ...operations.Option) (*operations.StableToolControllerListResponse, error) {
+func (s *Tool) List(ctx context.Context, request operations.StableToolControllerListV2Request, opts ...operations.Option) (*operations.StableToolControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/tool")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/tool")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableToolController_list",
+		OperationID:      "StableToolController_listV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 		}
 	}
 
-	res := &operations.StableToolControllerListResponse{
+	res := &operations.StableToolControllerListV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 					return nil, err
 				}
 
-				var out components.StableToolListResponse
+				var out components.StableToolListResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableToolListResponse = &out
+				res.StableToolListResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -182,7 +182,7 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 
 // Create tool
 // Create a new tool.
-func (s *Tool) Create(ctx context.Context, request operations.StableToolControllerCreateRequest, opts ...operations.Option) (*operations.StableToolControllerCreateResponse, error) {
+func (s *Tool) Create(ctx context.Context, request operations.StableToolControllerCreateV2Request, opts ...operations.Option) (*operations.StableToolControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *Tool) Create(ctx context.Context, request operations.StableToolControll
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/tool")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/tool")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *Tool) Create(ctx context.Context, request operations.StableToolControll
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableToolController_create",
+		OperationID:      "StableToolController_createV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *Tool) Create(ctx context.Context, request operations.StableToolControll
 		}
 	}
 
-	res := &operations.StableToolControllerCreateResponse{
+	res := &operations.StableToolControllerCreateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *Tool) Create(ctx context.Context, request operations.StableToolControll
 					return nil, err
 				}
 
-				var out components.StableToolResponse
+				var out components.StableToolResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableToolResponse = &out
+				res.StableToolResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -338,7 +338,7 @@ func (s *Tool) Create(ctx context.Context, request operations.StableToolControll
 
 // Get tool
 // Get a tool by ID.
-func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerGetRequest, opts ...operations.Option) (*operations.StableToolControllerGetResponse, error) {
+func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerGetV2Request, opts ...operations.Option) (*operations.StableToolControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -357,7 +357,7 @@ func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerG
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/tool/{toolID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/tool/{toolID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -367,7 +367,7 @@ func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerG
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableToolController_get",
+		OperationID:      "StableToolController_getV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -430,7 +430,7 @@ func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerG
 		}
 	}
 
-	res := &operations.StableToolControllerGetResponse{
+	res := &operations.StableToolControllerGetV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -447,12 +447,12 @@ func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerG
 					return nil, err
 				}
 
-				var out components.StableToolResponse
+				var out components.StableToolReadResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableToolResponse = &out
+				res.StableToolReadResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -487,7 +487,7 @@ func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerG
 
 // Update tool
 // Update a tool by ID.
-func (s *Tool) Update(ctx context.Context, request operations.StableToolControllerUpdateRequest, opts ...operations.Option) (*operations.StableToolControllerUpdateResponse, error) {
+func (s *Tool) Update(ctx context.Context, request operations.StableToolControllerUpdateV2Request, opts ...operations.Option) (*operations.StableToolControllerUpdateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -506,7 +506,7 @@ func (s *Tool) Update(ctx context.Context, request operations.StableToolControll
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/tool/{toolID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/tool/{toolID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -516,7 +516,7 @@ func (s *Tool) Update(ctx context.Context, request operations.StableToolControll
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableToolController_update",
+		OperationID:      "StableToolController_updateV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -586,7 +586,7 @@ func (s *Tool) Update(ctx context.Context, request operations.StableToolControll
 		}
 	}
 
-	res := &operations.StableToolControllerUpdateResponse{
+	res := &operations.StableToolControllerUpdateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -603,12 +603,12 @@ func (s *Tool) Update(ctx context.Context, request operations.StableToolControll
 					return nil, err
 				}
 
-				var out components.StableUpdateResponse
+				var out components.StableTextUpdateResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableUpdateResponse = &out
+				res.StableTextUpdateResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
