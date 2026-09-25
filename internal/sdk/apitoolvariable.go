@@ -33,7 +33,7 @@ func newAPIToolVariable(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration
 
 // List variables
 // List all variables by API tool ID.
-func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPIToolVariableControllerListRequest, opts ...operations.Option) (*operations.StableAPIToolVariableControllerListResponse, error) {
+func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPIToolVariableControllerListV2Request, opts ...operations.Option) (*operations.StableAPIToolVariableControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPI
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/api-tool-variable")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/api-tool-variable")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPI
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAPIToolVariableController_list",
+		OperationID:      "StableAPIToolVariableController_listV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPI
 		}
 	}
 
-	res := &operations.StableAPIToolVariableControllerListResponse{
+	res := &operations.StableAPIToolVariableControllerListV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPI
 					return nil, err
 				}
 
-				var out components.StableAPIToolVariableListResponse
+				var out components.StableAPIToolVariableListResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableAPIToolVariableListResponse = &out
+				res.StableAPIToolVariableListResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -182,7 +182,7 @@ func (s *APIToolVariable) List(ctx context.Context, request operations.StableAPI
 
 // Create variable
 // Create a new variable.
-func (s *APIToolVariable) Create(ctx context.Context, request operations.StableAPIToolVariableControllerCreateRequest, opts ...operations.Option) (*operations.StableAPIToolVariableControllerCreateResponse, error) {
+func (s *APIToolVariable) Create(ctx context.Context, request operations.StableAPIToolVariableControllerCreateV2Request, opts ...operations.Option) (*operations.StableAPIToolVariableControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *APIToolVariable) Create(ctx context.Context, request operations.StableA
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/api-tool-variable")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/api-tool-variable")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *APIToolVariable) Create(ctx context.Context, request operations.StableA
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAPIToolVariableController_create",
+		OperationID:      "StableAPIToolVariableController_createV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *APIToolVariable) Create(ctx context.Context, request operations.StableA
 		}
 	}
 
-	res := &operations.StableAPIToolVariableControllerCreateResponse{
+	res := &operations.StableAPIToolVariableControllerCreateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *APIToolVariable) Create(ctx context.Context, request operations.StableA
 					return nil, err
 				}
 
-				var out components.StableAPIToolVariableResponse
+				var out components.StableAPIToolVariableResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableAPIToolVariableResponse = &out
+				res.StableAPIToolVariableResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -337,8 +337,8 @@ func (s *APIToolVariable) Create(ctx context.Context, request operations.StableA
 }
 
 // Get variable
-// Get an variable by ID.
-func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIToolVariableControllerGetRequest, opts ...operations.Option) (*operations.StableAPIToolVariableControllerGetResponse, error) {
+// Get a variable by ID.
+func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIToolVariableControllerGetV2Request, opts ...operations.Option) (*operations.StableAPIToolVariableControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -357,7 +357,7 @@ func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIT
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/api-tool-variable/{variableID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/api-tool-variable/{variableID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -367,7 +367,7 @@ func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIT
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAPIToolVariableController_get",
+		OperationID:      "StableAPIToolVariableController_getV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -430,7 +430,7 @@ func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIT
 		}
 	}
 
-	res := &operations.StableAPIToolVariableControllerGetResponse{
+	res := &operations.StableAPIToolVariableControllerGetV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -447,12 +447,12 @@ func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIT
 					return nil, err
 				}
 
-				var out components.StableAPIToolVariableResponse
+				var out components.StableAPIToolVariableResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableAPIToolVariableResponse = &out
+				res.StableAPIToolVariableResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -486,8 +486,8 @@ func (s *APIToolVariable) Get(ctx context.Context, request operations.StableAPIT
 }
 
 // Update variable
-// Update an variable by ID.
-func (s *APIToolVariable) Update(ctx context.Context, request operations.StableAPIToolVariableControllerUpdateRequest, opts ...operations.Option) (*operations.StableAPIToolVariableControllerUpdateResponse, error) {
+// Update a variable by ID.
+func (s *APIToolVariable) Update(ctx context.Context, request operations.StableAPIToolVariableControllerUpdateV2Request, opts ...operations.Option) (*operations.StableAPIToolVariableControllerUpdateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -506,7 +506,7 @@ func (s *APIToolVariable) Update(ctx context.Context, request operations.StableA
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/api-tool-variable/{variableID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/api-tool-variable/{variableID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -516,7 +516,7 @@ func (s *APIToolVariable) Update(ctx context.Context, request operations.StableA
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableAPIToolVariableController_update",
+		OperationID:      "StableAPIToolVariableController_updateV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -586,7 +586,7 @@ func (s *APIToolVariable) Update(ctx context.Context, request operations.StableA
 		}
 	}
 
-	res := &operations.StableAPIToolVariableControllerUpdateResponse{
+	res := &operations.StableAPIToolVariableControllerUpdateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -642,7 +642,7 @@ func (s *APIToolVariable) Update(ctx context.Context, request operations.StableA
 }
 
 // Delete variable
-// Delete an variable by ID.
+// Delete a variable by ID.
 func (s *APIToolVariable) Delete(ctx context.Context, request operations.StableAPIToolVariableControllerDeleteRequest, opts ...operations.Option) (*operations.StableAPIToolVariableControllerDeleteResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{

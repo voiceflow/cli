@@ -22,7 +22,7 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "settings", FieldPath: "Body.Settings", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"settings,omitempty"`, Description: "JSON object"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A human-readable description of what the playbook does."},
-	{FlagName: "instructions", Shorthand: "i", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response."},
+	{FlagName: "instructions", Shorthand: "i", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "string value"},
 	{FlagName: "end-tool", FieldPath: "Body.EndTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"endTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "card-tool", FieldPath: "Body.CardTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"cardTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "button-tool", Shorthand: "b", FieldPath: "Body.ButtonTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"buttonTool,omitempty"`, Description: "JSON object"},
@@ -43,7 +43,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -61,7 +61,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

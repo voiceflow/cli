@@ -35,7 +35,7 @@ func initSearchPromptCmd(parent *cobra.Command) error {
 		Aliases: []string{"sp"},
 	}
 	flagutil.RegisterFlags(cmd, searchPromptCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAgentControllerSearchPromptRequest](searchPromptCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAgentControllerSearchPromptV2Request](searchPromptCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for search-prompt: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -53,7 +53,7 @@ func runSearchPromptCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAgentControllerSearchPromptRequest](cmd, searchPromptCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAgentControllerSearchPromptV2Request](cmd, searchPromptCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

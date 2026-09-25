@@ -26,7 +26,7 @@ func initDeleteCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete variable",
-		Long:    "Delete an variable by ID.",
+		Long:    "Delete a variable by ID.",
 		Example: "  vf api-tool-variable delete --variable-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runDeleteCmd,
 	}

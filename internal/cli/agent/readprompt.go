@@ -33,7 +33,7 @@ func initReadPromptCmd(parent *cobra.Command) error {
 		Aliases: []string{"rp"},
 	}
 	flagutil.RegisterFlags(cmd, readPromptCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAgentControllerReadPromptRequest](readPromptCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAgentControllerReadPromptV2Request](readPromptCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for read-prompt: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -50,7 +50,7 @@ func runReadPromptCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAgentControllerReadPromptRequest](cmd, readPromptCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableAgentControllerReadPromptV2Request](cmd, readPromptCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

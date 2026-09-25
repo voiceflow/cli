@@ -31,7 +31,7 @@ func initListCmd(parent *cobra.Command) error {
 		RunE:    runListCmd,
 	}
 	flagutil.RegisterFlags(cmd, listCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerListRequest](listCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerListV2Request](listCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for list: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -48,7 +48,7 @@ func runListCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerListRequest](cmd, listCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerListV2Request](cmd, listCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

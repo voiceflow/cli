@@ -100,6 +100,7 @@ type SimulationRunActionLog struct {
 	Type      SimulationRunActionLogType    `json:"type"`
 	Payload   SimulationRunActionLogPayload `json:"payload"`
 	CreatedAt time.Time                     `json:"createdAt"`
+	Seq       *int64                        `json:"seq,omitzero"`
 }
 
 func (s SimulationRunActionLog) MarshalJSON() ([]byte, error) {
@@ -139,4 +140,11 @@ func (s *SimulationRunActionLog) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return s.CreatedAt
+}
+
+func (s *SimulationRunActionLog) GetSeq() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.Seq
 }

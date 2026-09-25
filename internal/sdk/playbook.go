@@ -33,7 +33,7 @@ func newPlaybook(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks
 
 // List playbooks
 // List all playbooks by project ID.
-func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookControllerListRequest, opts ...operations.Option) (*operations.StablePlaybookControllerListResponse, error) {
+func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookControllerListV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookCo
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/playbook")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/playbook")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookCo
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_list",
+		OperationID:      "StablePlaybookController_listV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookCo
 		}
 	}
 
-	res := &operations.StablePlaybookControllerListResponse{
+	res := &operations.StablePlaybookControllerListV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookCo
 					return nil, err
 				}
 
-				var out components.StablePlaybookReadListResponse
+				var out components.StablePlaybookReadListResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StablePlaybookReadListResponse = &out
+				res.StablePlaybookReadListResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -182,7 +182,7 @@ func (s *Playbook) List(ctx context.Context, request operations.StablePlaybookCo
 
 // Create playbook
 // Create a new playbook.
-func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybookControllerCreateRequest, opts ...operations.Option) (*operations.StablePlaybookControllerCreateResponse, error) {
+func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybookControllerCreateV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybook
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/playbook")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/playbook")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybook
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_create",
+		OperationID:      "StablePlaybookController_createV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybook
 		}
 	}
 
-	res := &operations.StablePlaybookControllerCreateResponse{
+	res := &operations.StablePlaybookControllerCreateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybook
 					return nil, err
 				}
 
-				var out components.StablePlaybookResponse
+				var out components.StablePlaybookResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StablePlaybookResponse = &out
+				res.StablePlaybookResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -338,7 +338,7 @@ func (s *Playbook) Create(ctx context.Context, request operations.StablePlaybook
 
 // Get playbook
 // Get a playbook by ID.
-func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookControllerGetRequest, opts ...operations.Option) (*operations.StablePlaybookControllerGetResponse, error) {
+func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookControllerGetV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -357,7 +357,7 @@ func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookCon
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/playbook/{playbookID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -367,7 +367,7 @@ func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookCon
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_get",
+		OperationID:      "StablePlaybookController_getV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -430,7 +430,7 @@ func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookCon
 		}
 	}
 
-	res := &operations.StablePlaybookControllerGetResponse{
+	res := &operations.StablePlaybookControllerGetV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -447,12 +447,12 @@ func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookCon
 					return nil, err
 				}
 
-				var out components.StablePlaybookReadResponse
+				var out components.StablePlaybookReadResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StablePlaybookReadResponse = &out
+				res.StablePlaybookReadResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -487,7 +487,7 @@ func (s *Playbook) Get(ctx context.Context, request operations.StablePlaybookCon
 
 // Update playbook
 // Update a playbook by ID.
-func (s *Playbook) Update(ctx context.Context, request operations.StablePlaybookControllerUpdateRequest, opts ...operations.Option) (*operations.StablePlaybookControllerUpdateResponse, error) {
+func (s *Playbook) Update(ctx context.Context, request operations.StablePlaybookControllerUpdateV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerUpdateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -506,7 +506,7 @@ func (s *Playbook) Update(ctx context.Context, request operations.StablePlaybook
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/playbook/{playbookID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -516,7 +516,7 @@ func (s *Playbook) Update(ctx context.Context, request operations.StablePlaybook
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_update",
+		OperationID:      "StablePlaybookController_updateV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -586,7 +586,7 @@ func (s *Playbook) Update(ctx context.Context, request operations.StablePlaybook
 		}
 	}
 
-	res := &operations.StablePlaybookControllerUpdateResponse{
+	res := &operations.StablePlaybookControllerUpdateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -603,12 +603,12 @@ func (s *Playbook) Update(ctx context.Context, request operations.StablePlaybook
 					return nil, err
 				}
 
-				var out components.StableUpdateResponse
+				var out components.StableMarkdownUpdateResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableUpdateResponse = &out
+				res.StableMarkdownUpdateResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -792,7 +792,7 @@ func (s *Playbook) Delete(ctx context.Context, request operations.StablePlaybook
 
 // ReadInstructions - Read playbook instructions
 // Read a page of a playbook's instructions as numbered lines.
-func (s *Playbook) ReadInstructions(ctx context.Context, request operations.StablePlaybookControllerReadInstructionsRequest, opts ...operations.Option) (*operations.StablePlaybookControllerReadInstructionsResponse, error) {
+func (s *Playbook) ReadInstructions(ctx context.Context, request operations.StablePlaybookControllerReadInstructionsV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerReadInstructionsV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -811,7 +811,7 @@ func (s *Playbook) ReadInstructions(ctx context.Context, request operations.Stab
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}/instructions", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/playbook/{playbookID}/instructions", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -821,7 +821,7 @@ func (s *Playbook) ReadInstructions(ctx context.Context, request operations.Stab
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_readInstructions",
+		OperationID:      "StablePlaybookController_readInstructionsV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -884,7 +884,7 @@ func (s *Playbook) ReadInstructions(ctx context.Context, request operations.Stab
 		}
 	}
 
-	res := &operations.StablePlaybookControllerReadInstructionsResponse{
+	res := &operations.StablePlaybookControllerReadInstructionsV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -941,7 +941,7 @@ func (s *Playbook) ReadInstructions(ctx context.Context, request operations.Stab
 
 // PatchInstructions - Patch playbook instructions
 // Replace an exact string in a playbook's instructions.
-func (s *Playbook) PatchInstructions(ctx context.Context, request operations.StablePlaybookControllerPatchInstructionsRequest, opts ...operations.Option) (*operations.StablePlaybookControllerPatchInstructionsResponse, error) {
+func (s *Playbook) PatchInstructions(ctx context.Context, request operations.StablePlaybookControllerPatchInstructionsV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerPatchInstructionsV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -960,7 +960,7 @@ func (s *Playbook) PatchInstructions(ctx context.Context, request operations.Sta
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}/instructions", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/playbook/{playbookID}/instructions", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -970,7 +970,7 @@ func (s *Playbook) PatchInstructions(ctx context.Context, request operations.Sta
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_patchInstructions",
+		OperationID:      "StablePlaybookController_patchInstructionsV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -1040,7 +1040,7 @@ func (s *Playbook) PatchInstructions(ctx context.Context, request operations.Sta
 		}
 	}
 
-	res := &operations.StablePlaybookControllerPatchInstructionsResponse{
+	res := &operations.StablePlaybookControllerPatchInstructionsV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -1057,12 +1057,12 @@ func (s *Playbook) PatchInstructions(ctx context.Context, request operations.Sta
 					return nil, err
 				}
 
-				var out components.StableInstructionsPatchResponse
+				var out components.StableInstructionsPatchResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableInstructionsPatchResponse = &out
+				res.StableInstructionsPatchResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -1097,7 +1097,7 @@ func (s *Playbook) PatchInstructions(ctx context.Context, request operations.Sta
 
 // SearchInstructions - Search playbook instructions
 // Search a playbook's instructions with a regular expression.
-func (s *Playbook) SearchInstructions(ctx context.Context, request operations.StablePlaybookControllerSearchInstructionsRequest, opts ...operations.Option) (*operations.StablePlaybookControllerSearchInstructionsResponse, error) {
+func (s *Playbook) SearchInstructions(ctx context.Context, request operations.StablePlaybookControllerSearchInstructionsV2Request, opts ...operations.Option) (*operations.StablePlaybookControllerSearchInstructionsV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -1116,7 +1116,7 @@ func (s *Playbook) SearchInstructions(ctx context.Context, request operations.St
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}/instructions/search", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/playbook/{playbookID}/instructions/search", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1126,7 +1126,7 @@ func (s *Playbook) SearchInstructions(ctx context.Context, request operations.St
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StablePlaybookController_searchInstructions",
+		OperationID:      "StablePlaybookController_searchInstructionsV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -1196,7 +1196,7 @@ func (s *Playbook) SearchInstructions(ctx context.Context, request operations.St
 		}
 	}
 
-	res := &operations.StablePlaybookControllerSearchInstructionsResponse{
+	res := &operations.StablePlaybookControllerSearchInstructionsV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -1219,6 +1219,467 @@ func (s *Playbook) SearchInstructions(ctx context.Context, request operations.St
 				}
 
 				res.StableInstructionsSearchResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// AddToolMessage - Add playbook tool message
+// Set a message on one of the playbook's tools. Rejected when that message already exists.
+func (s *Playbook) AddToolMessage(ctx context.Context, request operations.StablePlaybookControllerAddToolMessageRequest, opts ...operations.Option) (*operations.StablePlaybookControllerAddToolMessageResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}/tool-message", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StablePlaybookController_addToolMessage",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StablePlaybookControllerAddToolMessageResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableTextUpdateResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableTextUpdateResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// UpdateToolMessage - Update playbook tool message
+// Replace a message on one of the playbook's tools. Rejected when there is none to replace.
+func (s *Playbook) UpdateToolMessage(ctx context.Context, request operations.StablePlaybookControllerUpdateToolMessageRequest, opts ...operations.Option) (*operations.StablePlaybookControllerUpdateToolMessageResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}/tool-message", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StablePlaybookController_updateToolMessage",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "PATCH", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StablePlaybookControllerUpdateToolMessageResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableTextUpdateResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableTextUpdateResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// DeleteToolMessage - Delete playbook tool message
+// Remove a message from one of the playbook's tools, in whichever form it is stored.
+func (s *Playbook) DeleteToolMessage(ctx context.Context, request operations.StablePlaybookControllerDeleteToolMessageRequest, opts ...operations.Option) (*operations.StablePlaybookControllerDeleteToolMessageResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/playbook/{playbookID}/tool-message", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StablePlaybookController_deleteToolMessage",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "DELETE", opURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StablePlaybookControllerDeleteToolMessageResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableDeleteResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableDeleteResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

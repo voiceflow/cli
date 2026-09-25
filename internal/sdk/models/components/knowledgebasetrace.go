@@ -100,39 +100,39 @@ func (m *Message) GetContent() string {
 	return m.Content
 }
 
-type KnowledgeBaseTraceQuery struct {
+type Query struct {
 	Messages []Message `json:"messages"`
 	Output   *string   `json:"output"`
 }
 
-func (k KnowledgeBaseTraceQuery) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(k, "", false)
+func (q Query) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(q, "", false)
 }
 
-func (k *KnowledgeBaseTraceQuery) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &k, "", false, nil); err != nil {
+func (q *Query) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &q, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (k *KnowledgeBaseTraceQuery) GetMessages() []Message {
-	if k == nil {
+func (q *Query) GetMessages() []Message {
+	if q == nil {
 		return []Message{}
 	}
-	return k.Messages
+	return q.Messages
 }
 
-func (k *KnowledgeBaseTraceQuery) GetOutput() *string {
-	if k == nil {
+func (q *Query) GetOutput() *string {
+	if q == nil {
 		return nil
 	}
-	return k.Output
+	return q.Output
 }
 
 type KnowledgeBaseTracePayload struct {
 	Chunks []KnowledgeBaseTraceChunk `json:"chunks"`
-	Query  *KnowledgeBaseTraceQuery  `json:"query,omitzero"`
+	Query  *Query                    `json:"query,omitzero"`
 }
 
 func (k KnowledgeBaseTracePayload) MarshalJSON() ([]byte, error) {
@@ -153,7 +153,7 @@ func (k *KnowledgeBaseTracePayload) GetChunks() []KnowledgeBaseTraceChunk {
 	return k.Chunks
 }
 
-func (k *KnowledgeBaseTracePayload) GetQuery() *KnowledgeBaseTraceQuery {
+func (k *KnowledgeBaseTracePayload) GetQuery() *Query {
 	if k == nil {
 		return nil
 	}

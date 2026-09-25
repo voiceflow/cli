@@ -31,7 +31,7 @@ func initGetCmd(parent *cobra.Command) error {
 		RunE:    runGetCmd,
 	}
 	flagutil.RegisterFlags(cmd, getCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAPIToolControllerGetRequest](getCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAPIToolControllerGetV2Request](getCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for get: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -48,7 +48,7 @@ func runGetCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAPIToolControllerGetRequest](cmd, getCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableAPIToolControllerGetV2Request](cmd, getCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

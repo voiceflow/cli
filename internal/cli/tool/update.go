@@ -19,11 +19,11 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", Shorthand: "t", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, captureInputVariables: object, type: string, asyncExecution: boolean, ... }, function: { description: string, captureInputVariables: object, type: string, asyncExecution: boolean, ... }, mcp: { description: string, captureInputVariables: object, type: string, inputVariables: object, ... }, integration: { description: string, captureInputVariables: object, type: string, inputVariables: object, ... })", Variants: []flagutil.UnionVariantMeta{
-		{DiscriminatorValue: "api", FlagName: "body-param.api", FieldName: "StableToolUpdateRequestAPI", CanExpand: false, Description: "StableToolUpdateRequest_API variant as JSON"},
-		{DiscriminatorValue: "function", FlagName: "body-param.function", FieldName: "StableToolUpdateRequestFunction", CanExpand: false, Description: "StableToolUpdateRequest_Function variant as JSON"},
-		{DiscriminatorValue: "mcp", FlagName: "body-param.mcp", FieldName: "StableToolUpdateRequestMcp", CanExpand: false, Description: "StableToolUpdateRequest_Mcp variant as JSON"},
-		{DiscriminatorValue: "integration", FlagName: "body-param.integration", FieldName: "StableToolUpdateRequestIntegration", CanExpand: false, Description: "StableToolUpdateRequest_Integration variant as JSON"},
+	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, captureInputVariables: object, messages: object, type: string, ... }, function: { description: string, captureInputVariables: object, messages: object, type: string, ... }, mcp: { description: string, captureInputVariables: object, messages: object, type: string, ... }, integration: { description: string, captureInputVariables: object, messages: object, type: string, ... })", Variants: []flagutil.UnionVariantMeta{
+		{DiscriminatorValue: "api", FlagName: "body-param.api", FieldName: "StableToolUpdateRequestV2API", CanExpand: false, Description: "StableToolUpdateRequestV2_API variant as JSON"},
+		{DiscriminatorValue: "function", FlagName: "body-param.function", FieldName: "StableToolUpdateRequestV2Function", CanExpand: false, Description: "StableToolUpdateRequestV2_Function variant as JSON"},
+		{DiscriminatorValue: "mcp", FlagName: "body-param.mcp", FieldName: "StableToolUpdateRequestV2Mcp", CanExpand: false, Description: "StableToolUpdateRequestV2_Mcp variant as JSON"},
+		{DiscriminatorValue: "integration", FlagName: "body-param.integration", FieldName: "StableToolUpdateRequestV2Integration", CanExpand: false, Description: "StableToolUpdateRequestV2_Integration variant as JSON"},
 	}}},
 }
 
@@ -37,7 +37,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableToolControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableToolControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -55,7 +55,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableToolControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableToolControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

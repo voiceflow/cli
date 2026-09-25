@@ -17,7 +17,7 @@ import (
 
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the secret. Must be unique within the project. [required]"},
+	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the secret. Letters, digits and underscores only, at most 64 characters — this is what a {token} in a default-value field binds to. Must be unique within the project. [required]"},
 	{FlagName: "default-value", FieldPath: "Body.DefaultValue", Kind: flagutil.FlagKindString, Optional: true, Description: "The project-level value. Omit to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI."},
 	{FlagName: "visibility", Shorthand: "v", FieldPath: "Body.Visibility", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "masked", EnumValues: []string{"restricted", "masked"}, Description: "Whether the value can be revealed in the Voiceflow UI. `restricted` secrets can never be read back by anyone. (options: restricted, masked)"},
 }
@@ -32,7 +32,7 @@ func initCreateCmd(parent *cobra.Command) error {
 		RunE:    runCreateCmd,
 	}
 	flagutil.RegisterFlags(cmd, createCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableSecretControllerCreateRequest](createCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableSecretControllerCreateV2Request](createCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for create: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -50,7 +50,7 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableSecretControllerCreateRequest](cmd, createCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableSecretControllerCreateV2Request](cmd, createCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

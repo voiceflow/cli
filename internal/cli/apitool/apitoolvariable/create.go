@@ -18,7 +18,7 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the variable, referenced within the API tool request. [required]"},
+	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the variable, referenced within the API tool request as {name}. Letters, digits and underscores only, at most 64 characters. [required]"},
 	{FlagName: "api-tool-id", Shorthand: "a", FieldPath: "Body.APIToolID", Kind: flagutil.FlagKindString, Required: true, Description: "The ID of the API tool this variable belongs to. [required]"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A description of the variable, used by the agent to determine what value to provide."},
 }
@@ -33,7 +33,7 @@ func initCreateCmd(parent *cobra.Command) error {
 		RunE:    runCreateCmd,
 	}
 	flagutil.RegisterFlags(cmd, createCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAPIToolVariableControllerCreateRequest](createCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAPIToolVariableControllerCreateV2Request](createCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for create: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -51,7 +51,7 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAPIToolVariableControllerCreateRequest](cmd, createCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAPIToolVariableControllerCreateV2Request](cmd, createCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

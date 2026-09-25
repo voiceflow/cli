@@ -22,7 +22,7 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A human-readable description of what the MCP server provides."},
 	{FlagName: "specification", FieldPath: "Body.Specification", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"2025-03-26", "2025-06-18"}, Description: "options: 2025-03-26, 2025-06-18"},
-	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"url,omitempty"`, Description: "list of values"},
+	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "headers", FieldPath: "Body.Headers", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"headers,omitempty"`, Description: "list of values"},
 }
 
@@ -31,12 +31,12 @@ func initUpdateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "update",
 		Short:   "Update MCP server",
-		Long:    "Update an MCP server by ID. As on create, MCP clients must send every header value as a secret reference rather than as literal text.",
+		Long:    "Update an MCP server by ID. As on create, MCP clients must send every header value with at least one {name} token rather than as literal text.",
 		Example: "  vf mcp-server update --server-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableMCPServerControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableMCPServerControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -54,7 +54,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableMCPServerControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableMCPServerControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

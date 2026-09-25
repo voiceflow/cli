@@ -34,7 +34,7 @@ func initReadInstructionsCmd(parent *cobra.Command) error {
 		Aliases: []string{"ri"},
 	}
 	flagutil.RegisterFlags(cmd, readInstructionsCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerReadInstructionsRequest](readInstructionsCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerReadInstructionsV2Request](readInstructionsCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for read-instructions: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -51,7 +51,7 @@ func runReadInstructionsCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerReadInstructionsRequest](cmd, readInstructionsCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerReadInstructionsV2Request](cmd, readInstructionsCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

@@ -19,12 +19,15 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", Shorthand: "t", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"url,omitempty"`, Description: "list of values"},
+	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"url,omitempty"`, Description: "string value"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
-	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body.Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", Optional: true, TypeDescription: "JSON value (variants: raw-input: { type: string, contentType: string, content: value[] }, form-data: { type: string, formData: object[] }, url-encoded: { type: string, params: object[] })", Variants: []flagutil.UnionVariantMeta{
-		{DiscriminatorValue: "raw-input", FlagName: "body-param.raw-input", FieldName: "StableAPIToolUpdateRequestAPIToolRawBody", CanExpand: false, Description: "StableAPIToolUpdateRequest_APIToolRawBody variant as JSON"},
-		{DiscriminatorValue: "form-data", FlagName: "body-param.form-data", FieldName: "StableAPIToolUpdateRequestAPIToolFormDataBody", CanExpand: false, Description: "StableAPIToolUpdateRequest_APIToolFormDataBody variant as JSON"},
-		{DiscriminatorValue: "url-encoded", FlagName: "body-param.url-encoded", FieldName: "StableAPIToolUpdateRequestAPIToolURLEncodedBody", CanExpand: false, Description: "StableAPIToolUpdateRequest_APIToolURLEncodedBody variant as JSON"},
+	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body.Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", Optional: true, TypeDescription: "JSON value (variants: raw-input: { type: string, contentType: string, content: string }, form-data: { type: string, formData: object[] }, url-encoded: { type: string, params: object[] })", Variants: []flagutil.UnionVariantMeta{
+		{DiscriminatorValue: "raw-input", FlagName: "body-param.raw-input", FieldName: "StableAPIToolUpdateRequestV2StableAPIToolRawBody", CanExpand: true, Description: "StableAPIToolUpdateRequestV2_StableAPIToolRawBody variant as JSON", Fields: []flagutil.FlagMeta{
+			{FlagName: "body-param.raw-input.content-type", FieldPath: "ContentType", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"text", "json", "xml"}, Description: "options: text, json, xml"},
+			{FlagName: "body-param.raw-input.content", FieldPath: "Content", Kind: flagutil.FlagKindString, Required: true, Description: "Plain text. {input_name} inserts one of THIS API tool's declared input variables — not a project variable and not a secret. {input_name.path} reads a field of that input; the declared input is the base name, so {order.id} declares an input named order. Escape a literal { or \\ with a backslash. A name matching no declared input declares one on this tool as part of the write. A bare 24-hex token is the residue of a deleted reference rather than a name: it declares nothing and is reported as resource-id. Until an attachment binds a default for it, a declared input is filled by the model at runtime. A credential reaches an API tool through the attachment's inputVariables[<name>].defaultValue. [required]"},
+		}},
+		{DiscriminatorValue: "form-data", FlagName: "body-param.form-data", FieldName: "StableAPIToolUpdateRequestV2StableAPIToolFormDataBody", CanExpand: false, Description: "StableAPIToolUpdateRequestV2_StableAPIToolFormDataBody variant as JSON"},
+		{DiscriminatorValue: "url-encoded", FlagName: "body-param.url-encoded", FieldName: "StableAPIToolUpdateRequestV2StableAPIToolURLEncodedBody", CanExpand: false, Description: "StableAPIToolUpdateRequestV2_StableAPIToolURLEncodedBody variant as JSON"},
 	}}},
 	{FlagName: "headers", FieldPath: "Body.Headers", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"headers,omitempty"`, Description: "list of values"},
 	{FlagName: "settings", Shorthand: "s", FieldPath: "Body.Settings", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"settings,omitempty"`, Description: "JSON object"},
@@ -43,7 +46,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAPIToolControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAPIToolControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -61,7 +64,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAPIToolControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAPIToolControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

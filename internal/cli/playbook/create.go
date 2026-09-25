@@ -20,7 +20,7 @@ var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "environment-alias", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A human-readable description of what the playbook does."},
-	{FlagName: "instructions", Shorthand: "i", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response."},
+	{FlagName: "instructions", Shorthand: "i", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "string value"},
 	{FlagName: "end-tool", FieldPath: "Body.EndTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"endTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "card-tool", FieldPath: "Body.CardTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"cardTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "button-tool", Shorthand: "b", FieldPath: "Body.ButtonTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"buttonTool,omitempty"`, Description: "JSON object"},
@@ -42,7 +42,7 @@ func initCreateCmd(parent *cobra.Command) error {
 		RunE:    runCreateCmd,
 	}
 	flagutil.RegisterFlags(cmd, createCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerCreateRequest](createCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StablePlaybookControllerCreateV2Request](createCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for create: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -60,7 +60,7 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerCreateRequest](cmd, createCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StablePlaybookControllerCreateV2Request](cmd, createCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

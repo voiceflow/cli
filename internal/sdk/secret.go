@@ -33,7 +33,7 @@ func newSecret(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks *
 
 // List secrets
 // List all secrets by project ID. Secret values are never returned.
-func (s *Secret) List(ctx context.Context, request operations.StableSecretControllerListRequest, opts ...operations.Option) (*operations.StableSecretControllerListResponse, error) {
+func (s *Secret) List(ctx context.Context, request operations.StableSecretControllerListV2Request, opts ...operations.Option) (*operations.StableSecretControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *Secret) List(ctx context.Context, request operations.StableSecretContro
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/secret")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/secret")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *Secret) List(ctx context.Context, request operations.StableSecretContro
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableSecretController_list",
+		OperationID:      "StableSecretController_listV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *Secret) List(ctx context.Context, request operations.StableSecretContro
 		}
 	}
 
-	res := &operations.StableSecretControllerListResponse{
+	res := &operations.StableSecretControllerListV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *Secret) List(ctx context.Context, request operations.StableSecretContro
 					return nil, err
 				}
 
-				var out components.StableSecretListResponse
+				var out components.StableSecretListResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableSecretListResponse = &out
+				res.StableSecretListResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -182,7 +182,7 @@ func (s *Secret) List(ctx context.Context, request operations.StableSecretContro
 
 // Create secret
 // Create a new secret. The value, if given, is written to the vault and never returned. MCP clients must omit the value and create the secret empty.
-func (s *Secret) Create(ctx context.Context, request operations.StableSecretControllerCreateRequest, opts ...operations.Option) (*operations.StableSecretControllerCreateResponse, error) {
+func (s *Secret) Create(ctx context.Context, request operations.StableSecretControllerCreateV2Request, opts ...operations.Option) (*operations.StableSecretControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *Secret) Create(ctx context.Context, request operations.StableSecretCont
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/secret")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/secret")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *Secret) Create(ctx context.Context, request operations.StableSecretCont
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableSecretController_create",
+		OperationID:      "StableSecretController_createV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *Secret) Create(ctx context.Context, request operations.StableSecretCont
 		}
 	}
 
-	res := &operations.StableSecretControllerCreateResponse{
+	res := &operations.StableSecretControllerCreateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *Secret) Create(ctx context.Context, request operations.StableSecretCont
 					return nil, err
 				}
 
-				var out components.StableSecretResponse
+				var out components.StableSecretResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableSecretResponse = &out
+				res.StableSecretResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

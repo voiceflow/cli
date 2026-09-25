@@ -33,7 +33,7 @@ func newVariable(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks
 
 // List variables
 // List all variables by project ID.
-func (s *Variable) List(ctx context.Context, request operations.StableVariableControllerListRequest, opts ...operations.Option) (*operations.StableVariableControllerListResponse, error) {
+func (s *Variable) List(ctx context.Context, request operations.StableVariableControllerListV2Request, opts ...operations.Option) (*operations.StableVariableControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -52,7 +52,7 @@ func (s *Variable) List(ctx context.Context, request operations.StableVariableCo
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/variable")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/variable")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,7 +62,7 @@ func (s *Variable) List(ctx context.Context, request operations.StableVariableCo
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableVariableController_list",
+		OperationID:      "StableVariableController_listV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -125,7 +125,7 @@ func (s *Variable) List(ctx context.Context, request operations.StableVariableCo
 		}
 	}
 
-	res := &operations.StableVariableControllerListResponse{
+	res := &operations.StableVariableControllerListV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -142,12 +142,12 @@ func (s *Variable) List(ctx context.Context, request operations.StableVariableCo
 					return nil, err
 				}
 
-				var out components.StableVariableListResponse
+				var out components.StableVariableListResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableVariableListResponse = &out
+				res.StableVariableListResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -182,7 +182,7 @@ func (s *Variable) List(ctx context.Context, request operations.StableVariableCo
 
 // Create variable
 // Create a new variable.
-func (s *Variable) Create(ctx context.Context, request operations.StableVariableControllerCreateRequest, opts ...operations.Option) (*operations.StableVariableControllerCreateResponse, error) {
+func (s *Variable) Create(ctx context.Context, request operations.StableVariableControllerCreateV2Request, opts ...operations.Option) (*operations.StableVariableControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -201,7 +201,7 @@ func (s *Variable) Create(ctx context.Context, request operations.StableVariable
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/stable/variable")
+	opURL, err := url.JoinPath(baseURL, "/v2/stable/variable")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -211,7 +211,7 @@ func (s *Variable) Create(ctx context.Context, request operations.StableVariable
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableVariableController_create",
+		OperationID:      "StableVariableController_createV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -281,7 +281,7 @@ func (s *Variable) Create(ctx context.Context, request operations.StableVariable
 		}
 	}
 
-	res := &operations.StableVariableControllerCreateResponse{
+	res := &operations.StableVariableControllerCreateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -298,12 +298,12 @@ func (s *Variable) Create(ctx context.Context, request operations.StableVariable
 					return nil, err
 				}
 
-				var out components.StableVariableResponse
+				var out components.StableVariableResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableVariableResponse = &out
+				res.StableVariableResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -338,7 +338,7 @@ func (s *Variable) Create(ctx context.Context, request operations.StableVariable
 
 // Get variable
 // Get a variable by ID.
-func (s *Variable) Get(ctx context.Context, request operations.StableVariableControllerGetRequest, opts ...operations.Option) (*operations.StableVariableControllerGetResponse, error) {
+func (s *Variable) Get(ctx context.Context, request operations.StableVariableControllerGetV2Request, opts ...operations.Option) (*operations.StableVariableControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -357,7 +357,7 @@ func (s *Variable) Get(ctx context.Context, request operations.StableVariableCon
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/variable/{variableID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/variable/{variableID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -367,7 +367,7 @@ func (s *Variable) Get(ctx context.Context, request operations.StableVariableCon
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableVariableController_get",
+		OperationID:      "StableVariableController_getV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -430,7 +430,7 @@ func (s *Variable) Get(ctx context.Context, request operations.StableVariableCon
 		}
 	}
 
-	res := &operations.StableVariableControllerGetResponse{
+	res := &operations.StableVariableControllerGetV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -447,12 +447,12 @@ func (s *Variable) Get(ctx context.Context, request operations.StableVariableCon
 					return nil, err
 				}
 
-				var out components.StableVariableResponse
+				var out components.StableVariableResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableVariableResponse = &out
+				res.StableVariableResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -487,7 +487,7 @@ func (s *Variable) Get(ctx context.Context, request operations.StableVariableCon
 
 // Update variable
 // Update a variable by ID.
-func (s *Variable) Update(ctx context.Context, request operations.StableVariableControllerUpdateRequest, opts ...operations.Option) (*operations.StableVariableControllerUpdateResponse, error) {
+func (s *Variable) Update(ctx context.Context, request operations.StableVariableControllerUpdateV2Request, opts ...operations.Option) (*operations.StableVariableControllerUpdateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -506,7 +506,7 @@ func (s *Variable) Update(ctx context.Context, request operations.StableVariable
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/variable/{variableID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/variable/{variableID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -516,7 +516,7 @@ func (s *Variable) Update(ctx context.Context, request operations.StableVariable
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableVariableController_update",
+		OperationID:      "StableVariableController_updateV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -586,7 +586,7 @@ func (s *Variable) Update(ctx context.Context, request operations.StableVariable
 		}
 	}
 
-	res := &operations.StableVariableControllerUpdateResponse{
+	res := &operations.StableVariableControllerUpdateV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,

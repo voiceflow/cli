@@ -18,14 +18,14 @@ import (
 var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "prompt", FieldPath: "Body.Prompt", Kind: flagutil.FlagKindString, Optional: true, Description: "Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response."},
+	{FlagName: "prompt", FieldPath: "Body.Prompt", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "end-tool", FieldPath: "Body.EndTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"endTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "card-tool", FieldPath: "Body.CardTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"cardTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "playbooks", FieldPath: "Body.Playbooks", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"playbooks,omitempty"`, Description: "Playbooks available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no playbooks AND no workflows registered cannot run - the runtime fails the conversation - so never send an empty list unless `workflows` still holds at least one."},
 	{FlagName: "workflows", FieldPath: "Body.Workflows", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"workflows,omitempty"`, Description: "Workflows available for the agent to invoke. This list REPLACES the registry: send the complete list you want, or omit the field to leave routing untouched. An agent with no workflows AND no playbooks registered cannot run, so never send an empty list unless `playbooks` still holds at least one."},
 	{FlagName: "button-tool", Shorthand: "b", FieldPath: "Body.ButtonTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"buttonTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "carousel-tool", FieldPath: "Body.CarouselTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"carouselTool,omitempty"`, Description: "JSON object"},
-	{FlagName: "instructions", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference; braced {name} resolves to a variable or entity reference. Tokens that do not resolve are stored as literal text and reported back in the response."},
+	{FlagName: "instructions", FieldPath: "Body.Instructions", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"instructions,omitempty"`, Description: "string value"},
 	{FlagName: "skip-turn-tool", Shorthand: "s", FieldPath: "Body.SkipTurnTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"skipTurnTool,omitempty"`, Description: "JSON object"},
 	{FlagName: "path-tool-order", FieldPath: "Body.PathToolOrder", Kind: flagutil.FlagKindStringArray, Optional: true, Description: "The ordered list of path tool IDs that controls the order of the agent exit paths."},
 	{FlagName: "web-search-tool", FieldPath: "Body.WebSearchTool", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"webSearchTool,omitempty"`, Description: "JSON object"},
@@ -46,7 +46,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAgentControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAgentControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -64,7 +64,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAgentControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAgentControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

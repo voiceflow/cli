@@ -26,12 +26,12 @@ func initGetCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "get",
 		Short:   "Get variable",
-		Long:    "Get an variable by ID.",
+		Long:    "Get a variable by ID.",
 		Example: "  vf api-tool-variable get --variable-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runGetCmd,
 	}
 	flagutil.RegisterFlags(cmd, getCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAPIToolVariableControllerGetRequest](getCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAPIToolVariableControllerGetV2Request](getCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for get: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -48,7 +48,7 @@ func runGetCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAPIToolVariableControllerGetRequest](cmd, getCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableAPIToolVariableControllerGetV2Request](cmd, getCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

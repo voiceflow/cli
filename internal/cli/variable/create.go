@@ -18,7 +18,7 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
+	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the variable. Letters, digits and underscores only, at most 64 characters — this is what a {token} in a text field binds to. Must not already be used by a variable or an entity in this environment. When updating, omit this field unless you are renaming: a variable stored before this rule can hold a name outside the grammar, and echoing that name back would be rejected. [required]"},
 	{FlagName: "color-param", Shorthand: "c", FieldPath: "Body.Color", Kind: flagutil.FlagKindString, Required: true, Description: "The display color of the variable in the Voiceflow editor. [required]"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A short description of what the variable stores."},
 	{FlagName: "default-value", FieldPath: "Body.DefaultValue", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"defaultValue,omitempty"`, Description: "The initial value of the variable at the start of a conversation."},
@@ -30,11 +30,11 @@ func initCreateCmd(parent *cobra.Command) error {
 		Use:     "create",
 		Short:   "Create variable",
 		Long:    "Create a new variable.",
-		Example: "  vf variable create --project-id <id> --environment-alias <value> --name <value> --color-param grey",
+		Example: "  vf variable create --project-id <id> --environment-alias <value> --name <value> --color-param black",
 		RunE:    runCreateCmd,
 	}
 	flagutil.RegisterFlags(cmd, createCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableVariableControllerCreateRequest](createCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableVariableControllerCreateV2Request](createCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for create: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -52,7 +52,7 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableVariableControllerCreateRequest](cmd, createCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableVariableControllerCreateV2Request](cmd, createCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

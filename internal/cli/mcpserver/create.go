@@ -20,7 +20,7 @@ var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, HasDefault: true, DefaultStr: "null", Annotations: `default:"null" json:"description"`, Description: "A human-readable description of what the MCP server provides."},
-	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"url"`, Description: "[required]"},
+	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindString, Required: true, Description: "Plain text resolved at runtime and never shown to a model. {variable_name} inserts a variable or entity, {secret_name} a project secret, {variable_name.path} a field of a variable. Escape a literal { or \\ with a backslash. When a name is both a variable and a secret, the secret wins. A name matching none is stored as literal text and reported in unresolvedReferences. Where the field is sent to an upstream system, an unresolved placeholder may be sent as literal text; on an MCP server it is re-resolved by name at connect time, so a literal that matches a real secret binds. [required]"},
 	{FlagName: "headers", FieldPath: "Body.Headers", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"headers,omitempty"`, Description: "list of values"},
 	{FlagName: "specification", Shorthand: "s", FieldPath: "Body.Specification", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "2025-06-18", EnumValues: []string{"2025-03-26", "2025-06-18"}, Description: "options: 2025-03-26, 2025-06-18"},
 }
@@ -30,12 +30,12 @@ func initCreateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "create",
 		Short:   "Create MCP server",
-		Long:    "Create a new MCP server. Header values are Markup and may reference a secret by ID; MCP clients must send every header value as such a reference rather than as literal text.",
-		Example: "  vf mcp-server create --project-id <id> --environment-alias <value> --name <value> --url '[]'",
+		Long:    "Create a new MCP server. The URL and header values may reference a project secret or variable by name with a {name} token; MCP clients must send every header value with at least one such token rather than as literal text.",
+		Example: "  vf mcp-server create --project-id <id> --environment-alias <value> --name <value> --url https://deep-subexpression.biz/",
 		RunE:    runCreateCmd,
 	}
 	flagutil.RegisterFlags(cmd, createCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableMCPServerControllerCreateRequest](createCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableMCPServerControllerCreateV2Request](createCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for create: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -53,7 +53,7 @@ func runCreateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableMCPServerControllerCreateRequest](cmd, createCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableMCPServerControllerCreateV2Request](cmd, createCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

@@ -19,7 +19,7 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "variable-id", Shorthand: "v", FieldPath: "VariableID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "The name of the variable, referenced within the API tool request."},
+	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "The name of the variable, referenced within the API tool request as {name}. Letters, digits and underscores only, at most 64 characters."},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "A description of the variable, used by the agent to determine what value to provide."},
 }
 
@@ -28,12 +28,12 @@ func initUpdateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "update",
 		Short:   "Update variable",
-		Long:    "Update an variable by ID.",
+		Long:    "Update a variable by ID.",
 		Example: "  vf api-tool-variable update --variable-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableAPIToolVariableControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableAPIToolVariableControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -51,7 +51,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableAPIToolVariableControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableAPIToolVariableControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}
