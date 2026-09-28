@@ -176,40 +176,40 @@ func (i *Input) GetSampleRate() *float64 {
 	return i.SampleRate
 }
 
-type Output struct {
+type RealtimeAgentTraceOutput struct {
 	Encoding   AudioEncoding `json:"encoding"`
 	SampleRate *float64      `json:"sampleRate,omitzero"`
 }
 
-func (o Output) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(o, "", false)
+func (r RealtimeAgentTraceOutput) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(r, "", false)
 }
 
-func (o *Output) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &o, "", false, nil); err != nil {
+func (r *RealtimeAgentTraceOutput) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *Output) GetEncoding() AudioEncoding {
-	if o == nil {
+func (r *RealtimeAgentTraceOutput) GetEncoding() AudioEncoding {
+	if r == nil {
 		return AudioEncoding("")
 	}
-	return o.Encoding
+	return r.Encoding
 }
 
-func (o *Output) GetSampleRate() *float64 {
-	if o == nil {
+func (r *RealtimeAgentTraceOutput) GetSampleRate() *float64 {
+	if r == nil {
 		return nil
 	}
-	return o.SampleRate
+	return r.SampleRate
 }
 
 type RealtimeAgentTracePayloadStart struct {
-	Action ActionStart `json:"action"`
-	Input  Input       `json:"input"`
-	Output Output      `json:"output"`
+	Action ActionStart              `json:"action"`
+	Input  Input                    `json:"input"`
+	Output RealtimeAgentTraceOutput `json:"output"`
 }
 
 func (r RealtimeAgentTracePayloadStart) MarshalJSON() ([]byte, error) {
@@ -237,9 +237,9 @@ func (r *RealtimeAgentTracePayloadStart) GetInput() Input {
 	return r.Input
 }
 
-func (r *RealtimeAgentTracePayloadStart) GetOutput() Output {
+func (r *RealtimeAgentTracePayloadStart) GetOutput() RealtimeAgentTraceOutput {
 	if r == nil {
-		return Output{}
+		return RealtimeAgentTraceOutput{}
 	}
 	return r.Output
 }

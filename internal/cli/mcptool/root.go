@@ -30,6 +30,14 @@ func InitMcpToolRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initGetSchemaCmd(McpToolCmd); err != nil {
+		return err
+	}
+
+	if err := initExecuteCmd(McpToolCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(McpToolCmd)
 	return nil
 }

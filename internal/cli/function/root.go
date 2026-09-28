@@ -50,6 +50,14 @@ func InitFunctionRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initGetSchemaCmd(FunctionCmd); err != nil {
+		return err
+	}
+
+	if err := initExecuteCmd(FunctionCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(FunctionCmd)
 	return nil
 }

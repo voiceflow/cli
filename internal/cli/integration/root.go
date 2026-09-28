@@ -33,6 +33,14 @@ func InitIntegrationRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initGetSchemaCmd(IntegrationCmd); err != nil {
+		return err
+	}
+
+	if err := initExecuteCmd(IntegrationCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(IntegrationCmd)
 	return nil
 }

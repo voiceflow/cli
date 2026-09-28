@@ -47,6 +47,14 @@ func InitApiToolRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initGetSchemaCmd(ApiToolCmd); err != nil {
+		return err
+	}
+
+	if err := initExecuteCmd(ApiToolCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(ApiToolCmd)
 	return nil
 }
