@@ -18,7 +18,7 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the secret. Letters, digits and underscores only, at most 64 characters — this is what a {token} in a default-value field binds to. Must be unique within the project. [required]"},
-	{FlagName: "default-value", FieldPath: "Body.DefaultValue", Kind: flagutil.FlagKindString, Optional: true, Description: "The project-level value. Omit to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI."},
+	{FlagName: "default-value", FieldPath: "Body.DefaultValue", Kind: flagutil.FlagKindString, Optional: true, Description: "The secret's value, written to the `main` environment's published version, the one serving live traffic. It cannot be empty. Omit it to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI."},
 	{FlagName: "visibility", Shorthand: "v", FieldPath: "Body.Visibility", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "masked", EnumValues: []string{"restricted", "masked"}, Description: "Whether the value can be revealed in the Voiceflow UI. `restricted` secrets can never be read back by anyone. (options: restricted, masked)"},
 }
 

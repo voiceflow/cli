@@ -19,8 +19,8 @@ var setValueCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "secret-id", Shorthand: "s", FieldPath: "SecretID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "value", FieldPath: "Body.Value", Kind: flagutil.FlagKindString, Required: true, Description: "The secret value to store. Write-only — it can never be read back through this API. [required]"},
-	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "Body.EnvironmentAlias", Kind: flagutil.FlagKindString, Optional: true, Description: "Set the value as an override on this environment (e.g. `main`) instead of as the project-wide default."},
-	{FlagName: "version-variant", FieldPath: "Body.VersionVariant", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"draft", "published"}, Description: "Which version of the environment the override applies to. Defaults to `draft`. Ignored without `environmentAlias`. (options: draft, published)"},
+	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "Body.EnvironmentAlias", Kind: flagutil.FlagKindString, Optional: true, Description: "The alias of the environment to write (e.g. `staging`). Without it the value goes to the `main` environment. Requires `versionVariant`."},
+	{FlagName: "version-variant", FieldPath: "Body.VersionVariant", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"draft", "published"}, Description: "Which version of the environment to write: `published`, the version serving live traffic, or `draft`, the one used when testing. Required with `environmentAlias`. Without `environmentAlias` it defaults to `published`, and `draft` writes the `main` environment's draft version; a project with no `main` environment has no draft version, so the request is then handled as if `versionVariant` were omitted. (options: draft, published)"},
 }
 
 // initSetValueCmd initializes the set-value command.
@@ -28,7 +28,7 @@ func initSetValueCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "set-value",
 		Short:   "Set secret value",
-		Long:    "Set a secret value — the project-wide default, or an override on one environment version. Not available to MCP clients.",
+		Long:    "Set a secret's value on one version of an environment. Without `environmentAlias` it writes the `main` environment's published version, or its draft version when `versionVariant` is `draft`. With `environmentAlias`, `versionVariant` is required and names the version to write. Not available to MCP clients.",
 		Example: "  vf secret set-value --secret-id <id> --project-id <id> --value <value>",
 		RunE:    runSetValueCmd,
 		Aliases: []string{"sv"},

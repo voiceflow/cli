@@ -6,9 +6,9 @@ package components
 type StableSecretValueRequest struct {
 	// The secret value to store. Write-only — it can never be read back through this API.
 	Value string `json:"value"`
-	// Set the value as an override on this environment (e.g. `main`) instead of as the project-wide default.
+	// The alias of the environment to write (e.g. `staging`). Without it the value goes to the `main` environment. Requires `versionVariant`.
 	EnvironmentAlias *string `json:"environmentAlias,omitzero"`
-	// Which version of the environment the override applies to. Defaults to `draft`. Ignored without `environmentAlias`.
+	// Which version of the environment to write: `published`, the version serving live traffic, or `draft`, the one used when testing. Required with `environmentAlias`. Without `environmentAlias` it defaults to `published`, and `draft` writes the `main` environment's draft version; a project with no `main` environment has no draft version, so the request is then handled as if `versionVariant` were omitted.
 	VersionVariant *VersionVariant `json:"versionVariant,omitzero"`
 }
 

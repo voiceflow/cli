@@ -486,7 +486,7 @@ func (s *Secret) ListOverrides(ctx context.Context, request operations.StableSec
 }
 
 // Delete secret
-// Delete a secret by ID. Removes the project value and every environment override.
+// Delete a secret by ID, along with every value stored for it, on every version of every environment.
 func (s *Secret) Delete(ctx context.Context, request operations.StableSecretControllerDeleteRequest, opts ...operations.Option) (*operations.StableSecretControllerDeleteResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -635,7 +635,7 @@ func (s *Secret) Delete(ctx context.Context, request operations.StableSecretCont
 }
 
 // SetValue - Set secret value
-// Set a secret value — the project-wide default, or an override on one environment version. Not available to MCP clients.
+// Set a secret's value on one version of an environment. Without `environmentAlias` it writes the `main` environment's published version, or its draft version when `versionVariant` is `draft`. With `environmentAlias`, `versionVariant` is required and names the version to write. Not available to MCP clients.
 func (s *Secret) SetValue(ctx context.Context, request operations.StableSecretControllerSetValueRequest, opts ...operations.Option) (*operations.StableSecretControllerSetValueResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -752,12 +752,12 @@ func (s *Secret) SetValue(ctx context.Context, request operations.StableSecretCo
 					return nil, err
 				}
 
-				var out components.StableUpdateResponse
+				var out components.StableSecretValueResponse
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableUpdateResponse = &out
+				res.StableSecretValueResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

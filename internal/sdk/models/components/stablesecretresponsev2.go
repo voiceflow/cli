@@ -5,6 +5,10 @@ package components
 
 type StableSecretResponseV2 struct {
 	Secret StableSecretV2 `json:"secret"`
+	// Present when a `defaultValue` was sent: the alias of the environment that now serves the value (`main`). Omitted when no value was sent, or when the project has no `main` environment to name, such as a project that predates environments.
+	EnvironmentAlias *string `json:"environmentAlias,omitzero"`
+	// Present along with `environmentAlias`: the version of that environment that now serves the value, always `published`, the version serving live traffic.
+	VersionVariant *VersionVariant `json:"versionVariant,omitzero"`
 }
 
 func (s *StableSecretResponseV2) GetSecret() StableSecretV2 {
@@ -12,6 +16,20 @@ func (s *StableSecretResponseV2) GetSecret() StableSecretV2 {
 		return StableSecretV2{}
 	}
 	return s.Secret
+}
+
+func (s *StableSecretResponseV2) GetEnvironmentAlias() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EnvironmentAlias
+}
+
+func (s *StableSecretResponseV2) GetVersionVariant() *VersionVariant {
+	if s == nil {
+		return nil
+	}
+	return s.VersionVariant
 }
 
 // #region class-body-stablesecretresponsev2
