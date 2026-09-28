@@ -57,6 +57,8 @@ type VoiceflowSDK struct {
 	Workspace     *Workspace
 	Project       *Project
 	Environment   *Environment
+	Message       *Message
+	Prompt        *Prompt
 	Variable      *Variable
 	APITool       *APITool
 	Transcript    *Transcript
@@ -170,6 +172,8 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Workspace = newWorkspace(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Project = newProject(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Environment = newEnvironment(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Message = newMessage(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Prompt = newPrompt(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Variable = newVariable(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.APITool = newAPITool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Transcript = newTranscript(sdk, sdk.sdkConfiguration, sdk.hooks)

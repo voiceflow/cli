@@ -19,8 +19,10 @@ import (
 	"github.com/voiceflow/cli/internal/cli/knowledgebase"
 	"github.com/voiceflow/cli/internal/cli/mcpserver"
 	"github.com/voiceflow/cli/internal/cli/mcptool"
+	"github.com/voiceflow/cli/internal/cli/message"
 	"github.com/voiceflow/cli/internal/cli/playbook"
 	"github.com/voiceflow/cli/internal/cli/project"
+	"github.com/voiceflow/cli/internal/cli/prompt"
 	"github.com/voiceflow/cli/internal/cli/secret"
 	"github.com/voiceflow/cli/internal/cli/test"
 	"github.com/voiceflow/cli/internal/cli/tool"
@@ -83,6 +85,12 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := environment.InitEnvironmentRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init environment: %w", err)
+	}
+	if err := message.InitMessageRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init message: %w", err)
+	}
+	if err := prompt.InitPromptRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init prompt: %w", err)
 	}
 	if err := variable.InitVariableRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init variable: %w", err)
