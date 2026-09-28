@@ -2582,7 +2582,8 @@ paths:
             Successor: run a test conversation after a clone, or publish to ship the draft.
           operation: export
           operationDescription: |-
-            WHAT — Dumps the complete Project structure as JSON (often 100KB+). Rich text is rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a response message, a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash; a prompt leaf carries markdown; every other leaf (a URL, a header, query or body value, a default value, a condition operand, a set value, code, an utterance) is plain text with no marks and no escapes. Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id.
+            WHAT — Dumps the complete Project structure as JSON (often 100KB+). Rich text is rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash; a prompt leaf carries markdown; every other leaf (a URL, a header, query or body value, a default value, a condition operand, a set value, code, an utterance) is plain text with no marks and no escapes. Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id.
+            messages[] and prompts[] carry the same objects voiceflow_message.get and voiceflow_prompt.get return, rendered the same way.
             USE WHEN — Last-resort diagnostic — you suspect something is attached but can't find it via targeted reads (most common cause: Integrations like Gmail / Salesforce, which don't surface cleanly via other tools).
             DO NOT — Use as a default read path. The full export is expensive to parse and mostly duplicates what targeted reads return.
             DO NOT — Assume every diagrams{}.nodes{}.data field is a string. Only the node types whose data carries rich text are rendered; every other node type ships its stored object form.
@@ -2762,6 +2763,757 @@ paths:
                 $ref: '#/components/schemas/StableEnvironmentPublishResponse'
       tags:
         - Environment
+      security:
+        - token: []
+  /v1/stable/message/get-many:
+    post:
+      operationId: StableMessageController_getMany
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: get_many
+          operationDescription: |-
+            WHAT — Up to 50 messages in one call, each with its variants in runtime order. IDs that match nothing come back in missing.
+            USE WHEN — reading the message slots of a tool together.
+            DO NOT — treat missing as your own error; that slot points at a message that no longer exists, so tell the user.
+        cli:
+          command: message get-many
+      x-speakeasy-group: message
+      x-speakeasy-name-override: get-many
+      summary: Get many messages
+      description: Get up to 50 messages by ID. IDs that match nothing are listed in missing.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableMessageGetManyRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableMessageReadManyResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+  /v1/stable/message/{messageID}:
+    get:
+      operationId: StableMessageController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: get
+          operationDescription: |-
+            WHAT — One message with its variants in runtime order: text, delay in milliseconds, condition, timestamps and user IDs.
+            USE WHEN — a read gave you a message ID and you need its text.
+            DO NOT — invent an ID; there is no list.
+        cli:
+          command: message get
+      x-speakeasy-group: message
+      x-speakeasy-name-override: get
+      summary: Get message
+      description: Get a message and its variants by ID.
+      parameters:
+        - name: messageID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableMessageReadResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+    delete:
+      operationId: StableMessageController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: delete
+          operationDescription: |-
+            WHAT — Deletes the message and all its variants. Owners are not checked. A tool slot, step or step reprompt that holds the ID keeps it and says nothing at runtime. A required entity's reprompt is cleared. Duplicating or importing the owning agent or playbook copies the slot without the ID; an environment clone or a .vf import keeps the dangling ID.
+            BEFORE — clear every owner you can. Clear a tool slot with voiceflow_agent.delete_tool_message or voiceflow_playbook.delete_tool_message, or point it at another message with voiceflow_agent.update_tool_message or voiceflow_playbook.update_tool_message.
+            DO NOT — delete the scripted message of a slot whose messages.generative[slot].enabled is true. Both slot writes turn the generated text off, and no operation removes only the inactive ID.
+        cli:
+          command: message delete
+      x-speakeasy-group: message
+      x-speakeasy-name-override: delete
+      summary: Delete message
+      description: Delete a message and all its variants.
+      parameters:
+        - name: messageID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+    patch:
+      operationId: StableMessageController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: update
+          operationDescription: |-
+            WHAT — Reorders the variants. Send every variant ID exactly once, in the new order.
+            BEFORE — voiceflow_message.get for the current variant IDs.
+            DO NOT — use it to change text; use voiceflow_message.update_variant. A variant with a condition cannot be first.
+        cli:
+          command: message update
+      x-speakeasy-group: message
+      x-speakeasy-name-override: update
+      summary: Reorder message variants
+      description: Put the variants of a message in a new order.
+      parameters:
+        - name: messageID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableMessageUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+  /v1/stable/message:
+    post:
+      operationId: StableMessageController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: create
+          operationDescription: |-
+            WHAT — Creates a message with its variants and returns it with its ID. It is attached to nothing.
+            AFTER — attach it to a tool slot with type: scripted and this messageID, through voiceflow_agent.add_tool_message or voiceflow_playbook.add_tool_message; when the slot already holds a message, use voiceflow_agent.update_tool_message or voiceflow_playbook.update_tool_message.
+            DO NOT — leave it unattached; the weekly cleanup proposes an unattached message for deletion. Do not give the first variant a condition.
+        cli:
+          command: message create
+      x-speakeasy-group: message
+      x-speakeasy-name-override: create
+      summary: Create message
+      description: Create a message with its variants. The new message is attached to nothing.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableMessageCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableMessageCreateResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+  /v1/stable/message/{messageID}/variant:
+    post:
+      operationId: StableMessageController_addVariant
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: add_variant
+          operationDescription: |-
+            WHAT — Adds a variant as the last one and returns it with its ID.
+            BEFORE — voiceflow_message.get to see the current variants.
+            AFTER — voiceflow_message.update to move it.
+        cli:
+          command: message add-variant
+      x-speakeasy-group: message
+      x-speakeasy-name-override: add-variant
+      summary: Add message variant
+      description: Add a variant as the last variant of a message.
+      parameters:
+        - name: messageID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableMessageVariantCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableMessageVariantCreateResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+  /v1/stable/message/{messageID}/variant/{variantID}:
+    patch:
+      operationId: StableMessageController_updateVariant
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: update_variant
+          operationDescription: |-
+            WHAT — Changes one variant's text, delay or condition. Fields you leave out keep their value; condition: null removes the condition.
+            BEFORE — voiceflow_message.get for the variant IDs.
+            DO NOT — set a condition on the first variant; add the conditional text as another variant with voiceflow_message.add_variant.
+        cli:
+          command: message update-variant
+      x-speakeasy-group: message
+      x-speakeasy-name-override: update-variant
+      summary: Update message variant
+      description: Change one variant's text, delay or condition.
+      parameters:
+        - name: messageID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: variantID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableMessageVariantUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTextUpdateResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+    delete:
+      operationId: StableMessageController_deleteVariant
+      x-vf:
+        mcp:
+          tool: voiceflow_message
+          toolDescription: |-
+            Messages are the fixed text a tool says when it starts, finishes, fails or is delayed. A message is an ordered list of variants. Each variant has text, an optional delay in milliseconds and an optional condition, and the first variant cannot be given a condition. The runtime receives every variant in this order. There is no list: each message belongs to the tool that holds its ID.
+            A condition that reads null is either no condition or a stored prompt condition, which this API cannot show, so do not tell the user that such a variant has no condition.
+            Predecessor: read the owner. A tool reports the ID as messages.executionMessageID, completionMessageID, failureMessageID or delayMessageID on voiceflow_tool.get, voiceflow_agent.get or voiceflow_playbook.get.
+            Successor: recompile the environment, then run a test conversation.
+          operation: delete_variant
+          operationDescription: |-
+            WHAT — Removes one variant. When you delete the first variant and the next one has a condition, that condition is cleared, because the first variant cannot carry one; the response says so.
+            BEFORE — voiceflow_message.get, so you can tell the user which condition a first-variant delete clears.
+            DO NOT — delete the last variant; delete the message with voiceflow_message.delete instead.
+        cli:
+          command: message delete-variant
+      x-speakeasy-group: message
+      x-speakeasy-name-override: delete-variant
+      summary: Delete message variant
+      description: Remove one variant from a message.
+      parameters:
+        - name: messageID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: variantID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Message
+      security:
+        - token: []
+  /v1/stable/prompt/get-many:
+    post:
+      operationId: StablePromptController_getMany
+      x-vf:
+        mcp:
+          tool: voiceflow_prompt
+          toolDescription: |-
+            A prompt is a system text and model settings that a canvas step or a condition sends to an LLM. It is not the agent's Global Prompt, which voiceflow_agent.read_prompt and voiceflow_agent.patch_prompt edit. There is no list: each prompt belongs to the step or condition that holds its ID, and voiceflow_analytics.query_prompt_usage also reports prompt IDs. The system text is plain text with {variable} tokens, and markdown is not interpreted. A missing model, max tokens or temperature falls back to the project default at compile.
+            Predecessor: take the prompt ID from a voiceflow_analytics.query_prompt_usage row. No read of a step or condition returns one. As a last resort, voiceflow_environment.export lists this environment's prompts in prompts[], and its step data holds the prompt IDs the steps use. By default analytics spans every environment and version, while the prompt reads look only at this environment's draft, so an ID from analytics can be missing here.
+            Successor: recompile the environment, then run a test conversation.
+          operation: get_many
+          operationDescription: |-
+            WHAT — Up to 50 prompts in one call. IDs that match nothing come back in missing.
+            USE WHEN — analytics rows or the environment export gave you several prompt IDs.
+            DO NOT — treat missing as your own error. A missing ID is not found in this environment's draft; an analytics ID can belong to another environment or version. Tell the user.
+        cli:
+          command: prompt get-many
+      x-speakeasy-group: prompt
+      x-speakeasy-name-override: get-many
+      summary: Get many prompts
+      description: Get up to 50 prompts by ID. IDs that match nothing are listed in missing.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePromptGetManyRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePromptReadManyResponse'
+      tags:
+        - Prompt
+      security:
+        - token: []
+  /v1/stable/prompt/{promptID}:
+    get:
+      operationId: StablePromptController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_prompt
+          toolDescription: |-
+            A prompt is a system text and model settings that a canvas step or a condition sends to an LLM. It is not the agent's Global Prompt, which voiceflow_agent.read_prompt and voiceflow_agent.patch_prompt edit. There is no list: each prompt belongs to the step or condition that holds its ID, and voiceflow_analytics.query_prompt_usage also reports prompt IDs. The system text is plain text with {variable} tokens, and markdown is not interpreted. A missing model, max tokens or temperature falls back to the project default at compile.
+            Predecessor: take the prompt ID from a voiceflow_analytics.query_prompt_usage row. No read of a step or condition returns one. As a last resort, voiceflow_environment.export lists this environment's prompts in prompts[], and its step data holds the prompt IDs the steps use. By default analytics spans every environment and version, while the prompt reads look only at this environment's draft, so an ID from analytics can be missing here.
+            Successor: recompile the environment, then run a test conversation.
+          operation: get
+          operationDescription: |-
+            WHAT — One prompt: name, system text, settings, timestamps and user IDs. The system text is the first message the prompt holds. A prompt made in a non-agentic project can hold more, and this read neither shows them nor says they exist. Settings are stored as they are, and an empty object means the project defaults.
+            USE WHEN — an analytics row or, as a last resort, the environment export gave you a prompt ID.
+            DO NOT — invent an ID; there is no list operation.
+        cli:
+          command: prompt get
+      x-speakeasy-group: prompt
+      x-speakeasy-name-override: get
+      summary: Get prompt
+      description: Get a prompt with its system text and settings by ID.
+      parameters:
+        - name: promptID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePromptReadResponse'
+      tags:
+        - Prompt
+      security:
+        - token: []
+    patch:
+      operationId: StablePromptController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_prompt
+          toolDescription: |-
+            A prompt is a system text and model settings that a canvas step or a condition sends to an LLM. It is not the agent's Global Prompt, which voiceflow_agent.read_prompt and voiceflow_agent.patch_prompt edit. There is no list: each prompt belongs to the step or condition that holds its ID, and voiceflow_analytics.query_prompt_usage also reports prompt IDs. The system text is plain text with {variable} tokens, and markdown is not interpreted. A missing model, max tokens or temperature falls back to the project default at compile.
+            Predecessor: take the prompt ID from a voiceflow_analytics.query_prompt_usage row. No read of a step or condition returns one. As a last resort, voiceflow_environment.export lists this environment's prompts in prompts[], and its step data holds the prompt IDs the steps use. By default analytics spans every environment and version, while the prompt reads look only at this environment's draft, so an ID from analytics can be missing here.
+            Successor: recompile the environment, then run a test conversation.
+          operation: update
+          operationDescription: |-
+            WHAT — Changes the name, the system text or the whole settings object. settings replaces what is stored, and {} returns to the project defaults.
+            USE WHEN — the system text changes, or the settings must be reset.
+            DO NOT — use it to change one setting; use voiceflow_prompt.update_settings. A prompt with more than one message is refused; edit it in the Voiceflow editor.
+        cli:
+          command: prompt update
+      x-speakeasy-group: prompt
+      x-speakeasy-name-override: update
+      summary: Update prompt
+      description: Change the name, the system text or the whole settings object of a prompt.
+      parameters:
+        - name: promptID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StablePromptUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTextUpdateResponse'
+      tags:
+        - Prompt
+      security:
+        - token: []
+    delete:
+      operationId: StablePromptController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_prompt
+          toolDescription: |-
+            A prompt is a system text and model settings that a canvas step or a condition sends to an LLM. It is not the agent's Global Prompt, which voiceflow_agent.read_prompt and voiceflow_agent.patch_prompt edit. There is no list: each prompt belongs to the step or condition that holds its ID, and voiceflow_analytics.query_prompt_usage also reports prompt IDs. The system text is plain text with {variable} tokens, and markdown is not interpreted. A missing model, max tokens or temperature falls back to the project default at compile.
+            Predecessor: take the prompt ID from a voiceflow_analytics.query_prompt_usage row. No read of a step or condition returns one. As a last resort, voiceflow_environment.export lists this environment's prompts in prompts[], and its step data holds the prompt IDs the steps use. By default analytics spans every environment and version, while the prompt reads look only at this environment's draft, so an ID from analytics can be missing here.
+            Successor: recompile the environment, then run a test conversation.
+          operation: delete
+          operationDescription: |-
+            WHAT — Deletes the prompt and its messages. Owners are not checked: a step or condition that holds the ID keeps it and sends nothing at runtime.
+            BEFORE — search voiceflow_environment.export for the ID; no targeted read shows which steps use a prompt. A message variant can also hold the ID in a prompt condition, which every read, the export included, shows as condition: null. No read can prove that the prompt is unused, so tell the user that before you delete.
+        cli:
+          command: prompt delete
+      x-speakeasy-group: prompt
+      x-speakeasy-name-override: delete
+      summary: Delete prompt
+      description: Delete a prompt and its messages.
+      parameters:
+        - name: promptID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Prompt
+      security:
+        - token: []
+  /v1/stable/prompt:
+    post:
+      operationId: StablePromptController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_prompt
+          toolDescription: |-
+            A prompt is a system text and model settings that a canvas step or a condition sends to an LLM. It is not the agent's Global Prompt, which voiceflow_agent.read_prompt and voiceflow_agent.patch_prompt edit. There is no list: each prompt belongs to the step or condition that holds its ID, and voiceflow_analytics.query_prompt_usage also reports prompt IDs. The system text is plain text with {variable} tokens, and markdown is not interpreted. A missing model, max tokens or temperature falls back to the project default at compile.
+            Predecessor: take the prompt ID from a voiceflow_analytics.query_prompt_usage row. No read of a step or condition returns one. As a last resort, voiceflow_environment.export lists this environment's prompts in prompts[], and its step data holds the prompt IDs the steps use. By default analytics spans every environment and version, while the prompt reads look only at this environment's draft, so an ID from analytics can be missing here.
+            Successor: recompile the environment, then run a test conversation.
+          operation: create
+          operationDescription: |-
+            WHAT — Creates a prompt with one system message and returns it with its ID. It is attached to nothing. Leave settings out to use the project defaults.
+            USE WHEN — the user asks for a new standalone prompt. To change what a step's prompt says, update the prompt that step already uses with voiceflow_prompt.update.
+            AFTER — tell the user that the prompt is attached to nothing and that no stable operation can attach it. In a non-agentic project they can pick it in a step's prompt select in the editor. In an agentic project the editor creates its own prompt for each step and, apart from older data, offers no way to pick an existing one. Until something uses the prompt, compile leaves it out and the weekly cleanup proposes it for deletion.
+            DO NOT — report the prompt as in use.
+        cli:
+          command: prompt create
+      x-speakeasy-group: prompt
+      x-speakeasy-name-override: create
+      summary: Create prompt
+      description: Create a prompt with one system message. The new prompt is attached to nothing.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePromptCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePromptCreateResponse'
+      tags:
+        - Prompt
+      security:
+        - token: []
+  /v1/stable/prompt/{promptID}/settings:
+    patch:
+      operationId: StablePromptController_updateSettings
+      x-vf:
+        mcp:
+          tool: voiceflow_prompt
+          toolDescription: |-
+            A prompt is a system text and model settings that a canvas step or a condition sends to an LLM. It is not the agent's Global Prompt, which voiceflow_agent.read_prompt and voiceflow_agent.patch_prompt edit. There is no list: each prompt belongs to the step or condition that holds its ID, and voiceflow_analytics.query_prompt_usage also reports prompt IDs. The system text is plain text with {variable} tokens, and markdown is not interpreted. A missing model, max tokens or temperature falls back to the project default at compile.
+            Predecessor: take the prompt ID from a voiceflow_analytics.query_prompt_usage row. No read of a step or condition returns one. As a last resort, voiceflow_environment.export lists this environment's prompts in prompts[], and its step data holds the prompt IDs the steps use. By default analytics spans every environment and version, while the prompt reads look only at this environment's draft, so an ID from analytics can be missing here.
+            Successor: recompile the environment, then run a test conversation.
+          operation: update_settings
+          operationDescription: |-
+            WHAT — Sets the settings keys you send and keeps the others.
+            USE WHEN — only settings change, such as the model or the temperature.
+            DO NOT — send null to clear a key; send the full settings object to voiceflow_prompt.update instead. A prompt with more than one message is refused.
+        cli:
+          command: prompt update-settings
+      x-speakeasy-group: prompt
+      x-speakeasy-name-override: update-settings
+      summary: Update prompt settings
+      description: Set some settings keys of a prompt and keep the others.
+      parameters:
+        - name: promptID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        description: The settings keys to set. Keys you leave out keep their stored value. null is not accepted; to clear a key, send the whole settings object through update.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StablePromptUpdateSettingsRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Prompt
       security:
         - token: []
   /v2/stable/variable:
@@ -10151,63 +10903,6 @@ components:
         - NUMBER
         - BOOLEAN
         - STRING
-    Response:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          type: number
-        assistantID:
-          type: string
-        environmentID:
-          type: string
-        folderID:
-          nullable: true
-          type: string
-        createdByID:
-          type: number
-        name:
-          type: string
-          maxLength: 255
-        type:
-          default: null
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/ResponseType'
-        draft:
-          default: null
-          nullable: true
-          type: boolean
-      required:
-        - id
-        - createdAt
-        - updatedAt
-        - updatedByID
-        - folderID
-        - createdByID
-        - name
-    ResponseType:
-      type: string
-      enum:
-        - prompt
-        - message
-      x-enumNames:
-        - PROMPT
-        - MESSAGE
-    PromptConditionAssertionLhs:
-      type: object
-      properties:
-        path:
-          type: string
     ConditionOperation:
       type: string
       enum:
@@ -10246,49 +10941,6 @@ components:
           type: string
       required:
         - variableID
-    ResponseDiscriminator:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          nullable: true
-          type: number
-        assistantID:
-          type: string
-        environmentID:
-          type: string
-        channel:
-          $ref: '#/components/schemas/Channel'
-        language:
-          $ref: '#/components/schemas/Language'
-        responseID:
-          type: string
-        variantOrder:
-          type: array
-          items:
-            type: string
-      required:
-        - id
-        - createdAt
-        - channel
-        - language
-        - responseID
-        - variantOrder
-    Channel:
-      type: string
-      enum:
-        - default
-      x-enumNames:
-        - DEFAULT
     Language:
       type: string
       enum:
@@ -11108,57 +11760,6 @@ components:
       required:
         - path
         - variableOrEntityID
-    Prompt:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          type: number
-        assistantID:
-          type: string
-        environmentID:
-          type: string
-        name:
-          type: string
-          maxLength: 255
-        folderID:
-          nullable: true
-          type: string
-        createdByID:
-          type: number
-        draft:
-          default: null
-          nullable: true
-          type: boolean
-        settings:
-          $ref: '#/components/schemas/PromptSettings'
-        description:
-          nullable: true
-          type: string
-        messageOrder:
-          type: array
-          items:
-            type: string
-      required:
-        - id
-        - createdAt
-        - updatedAt
-        - updatedByID
-        - name
-        - folderID
-        - createdByID
-        - settings
-        - description
-        - messageOrder
     PromptSettings:
       type: object
       properties:
@@ -11177,24 +11778,6 @@ components:
             - $ref: '#/components/schemas/AIReasoningEffort'
         useStructuredOutput:
           type: boolean
-    PromptMessageType:
-      type: string
-      enum:
-        - role
-        - variable
-      x-enumNames:
-        - ROLE
-        - VARIABLE
-    PromptMessageRole:
-      type: string
-      enum:
-        - system
-        - agent
-        - user
-      x-enumNames:
-        - SYSTEM
-        - AGENT
-        - USER
     Flow:
       type: object
       properties:
@@ -26262,6 +26845,360 @@ components:
       required:
         - metadata
       additionalProperties: false
+    StableMessage:
+      type: object
+      properties:
+        id:
+          type: string
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableMessageVariant'
+          description: Every variant, in the order the runtime receives them. The first variant cannot be given a condition.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        createdByID:
+          type: number
+          description: The user who created the message.
+        updatedByID:
+          type: number
+          description: The user who last changed the message or one of its variants.
+      required:
+        - id
+        - variants
+        - createdAt
+        - updatedAt
+        - createdByID
+        - updatedByID
+    StableMessageVariant:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          $ref: '#/components/schemas/MarkdownLikeString'
+        delay:
+          nullable: true
+          description: Milliseconds to wait before this variant is sent.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        condition:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableMessageVariantCondition'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedByID:
+          nullable: true
+          description: The user who last changed this variant.
+          type: number
+      required:
+        - id
+        - text
+        - delay
+        - condition
+        - createdAt
+        - updatedAt
+        - updatedByID
+    StableMessageVariantCondition:
+      oneOf:
+        - $ref: '#/components/schemas/StableExpressionCondition'
+        - $ref: '#/components/schemas/StableScriptCondition'
+      description: When the runtime may use this variant. `value-variable` compares variables with values; `script` runs code in which {variable_name} reads a variable.
+    StableScriptCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - script
+          x-enumNames:
+            - SCRIPT
+        code:
+          $ref: '#/components/schemas/VariableReferenceString'
+      required:
+        - type
+        - code
+    StableMessageReadManyResponse:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableMessage'
+          description: The messages found, in request order.
+        missing:
+          type: array
+          items:
+            type: string
+          description: Requested IDs that match no message in this environment, in request order.
+      required:
+        - messages
+        - missing
+    StableMessageGetManyRequest:
+      type: object
+      properties:
+        ids:
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Message IDs to read. Duplicates are ignored; at most 50 distinct IDs.
+      required:
+        - ids
+      additionalProperties: false
+    StableMessageReadResponse:
+      type: object
+      properties:
+        message:
+          $ref: '#/components/schemas/StableMessage'
+      required:
+        - message
+    StableMessageCreateResponse:
+      type: object
+      properties:
+        message:
+          $ref: '#/components/schemas/StableMessage'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - message
+    StableMessageVariantCreateRequest:
+      type: object
+      properties:
+        text:
+          $ref: '#/components/schemas/MarkdownLikeString'
+        delay:
+          description: Milliseconds to wait before this variant is sent.
+          nullable: true
+          type: integer
+          minimum: 0
+          maximum: 2.147483647e+09
+        condition:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableMessageVariantCondition'
+      required:
+        - text
+      additionalProperties: false
+    StableMessageCreateRequest:
+      type: object
+      properties:
+        variants:
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/StableMessageVariantCreateRequest'
+          description: The variants in the order the runtime receives them. The first variant cannot carry a condition.
+      required:
+        - variants
+      additionalProperties: false
+    StableMessageVariantCreateResponse:
+      type: object
+      properties:
+        variant:
+          $ref: '#/components/schemas/StableMessageVariant'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - variant
+    StableMessageVariantUpdateRequest:
+      type: object
+      properties:
+        text:
+          allOf:
+            - $ref: '#/components/schemas/MarkdownLikeString'
+        delay:
+          description: Milliseconds to wait before this variant is sent. null removes the delay.
+          nullable: true
+          type: integer
+          minimum: 0
+          maximum: 2.147483647e+09
+        condition:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableMessageVariantCondition'
+      additionalProperties: false
+    StableMessageUpdateRequest:
+      type: object
+      properties:
+        variantOrder:
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Every variant ID of the message, each exactly once, in the new order.
+      required:
+        - variantOrder
+      additionalProperties: false
+    StablePrompt:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        system:
+          $ref: '#/components/schemas/VariableReferenceString'
+        settings:
+          $ref: '#/components/schemas/PromptSettings'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        createdByID:
+          type: number
+          description: The user who created the prompt.
+        updatedByID:
+          type: number
+          description: The user who last changed the prompt, its settings or its system text.
+      required:
+        - id
+        - name
+        - system
+        - settings
+        - createdAt
+        - updatedAt
+        - createdByID
+        - updatedByID
+    StablePromptReadManyResponse:
+      type: object
+      properties:
+        prompts:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePrompt'
+          description: The prompts found, in request order.
+        missing:
+          type: array
+          items:
+            type: string
+          description: Requested IDs that match no prompt in this environment, in request order.
+      required:
+        - prompts
+        - missing
+    StablePromptGetManyRequest:
+      type: object
+      properties:
+        ids:
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Prompt IDs to read. Duplicates are ignored; at most 50 distinct IDs.
+      required:
+        - ids
+      additionalProperties: false
+    StablePromptReadResponse:
+      type: object
+      properties:
+        prompt:
+          $ref: '#/components/schemas/StablePrompt'
+      required:
+        - prompt
+    StablePromptCreateResponse:
+      type: object
+      properties:
+        prompt:
+          $ref: '#/components/schemas/StablePrompt'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - prompt
+    StablePromptSettingsRequest:
+      type: object
+      properties:
+        model:
+          allOf:
+            - $ref: '#/components/schemas/AIModel'
+        maxTokens:
+          type: number
+        temperature:
+          type: number
+        responseFormat:
+          type: string
+        reasoningEffort:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIReasoningEffort'
+        useStructuredOutput:
+          type: boolean
+      additionalProperties: false
+    StablePromptCreateRequest:
+      type: object
+      properties:
+        name:
+          description: Defaults to "Untitled prompt", as the editor names one.
+          type: string
+          minLength: 1
+          maxLength: 255
+        system:
+          $ref: '#/components/schemas/VariableReferenceString'
+        settings:
+          allOf:
+            - $ref: '#/components/schemas/StablePromptSettingsRequest'
+      required:
+        - system
+      additionalProperties: false
+    StablePromptUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        system:
+          allOf:
+            - $ref: '#/components/schemas/VariableReferenceString'
+        settings:
+          allOf:
+            - $ref: '#/components/schemas/StablePromptSettingsRequest'
+      additionalProperties: false
+    StablePromptUpdateSettingsRequest:
+      type: object
+      properties:
+        model:
+          allOf:
+            - $ref: '#/components/schemas/AIModel'
+        maxTokens:
+          type: number
+        temperature:
+          type: number
+        responseFormat:
+          type: string
+        reasoningEffort:
+          allOf:
+            - $ref: '#/components/schemas/AIReasoningEffort'
+        useStructuredOutput:
+          type: boolean
+      additionalProperties: false
+      description: The settings keys to set. Keys you leave out keep their stored value. null is not accepted; to clear a key, send the whole settings object through update.
     StableEnvironment:
       type: object
       properties:
@@ -26604,7 +27541,7 @@ components:
           type: boolean
     ExportTextString:
       type: string
-      description: 'Rich text rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a response message, a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash, as a message read does. A prompt leaf (instructions, persona, guidelines, content) carries markdown. Every other leaf is plain text with {name} references, no marks and no escapes: a URL, a header, query or body value, a default value, a condition operand, a set value, a code leaf, and an utterance leaf (entity references only). Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id. A secret inside a prompt-kind leaf renders as its id rather than its name, matching the dedicated agent read. The export is read-only. Inside diagrams{}.nodes{}.data only the node types whose data carries rich text are rendered; every other node type ships in its stored object form.'
+      description: 'Rich text rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash, as a message read does. A prompt leaf (instructions, persona, guidelines) carries markdown. Every other leaf is plain text with {name} references, no marks and no escapes: a URL, a header, query or body value, a default value, a condition operand, a set value, a code leaf, and an utterance leaf (entity references only). Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id. A secret inside a prompt-kind leaf renders as its id rather than its name, matching the dedicated agent read. The export is read-only. Inside diagrams{}.nodes{}.data only the node types whose data carries rich text are rendered; every other node type ships in its stored object form.'
     StableExportVersionSettingsCostControl:
       type: object
       properties:
@@ -27436,101 +28373,6 @@ components:
         - text
         - language
         - intentID
-    StableExportResponseMessage:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          nullable: true
-          type: number
-        assistantID:
-          type: string
-        environmentID:
-          type: string
-        text:
-          $ref: '#/components/schemas/ExportTextString'
-        delay:
-          nullable: true
-          type: number
-        condition:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableExportAnyCondition'
-        discriminatorID:
-          type: string
-      required:
-        - id
-        - createdAt
-        - text
-        - delay
-        - condition
-        - discriminatorID
-    StableExportAnyCondition:
-      anyOf:
-        - $ref: '#/components/schemas/StableExportScriptCondition'
-        - $ref: '#/components/schemas/StableExportPromptCondition'
-        - $ref: '#/components/schemas/StableExportExpressionCondition'
-    StableExportScriptCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - script
-          x-enumNames:
-            - SCRIPT
-        code:
-          $ref: '#/components/schemas/ExportTextString'
-      required:
-        - type
-        - code
-    StableExportPromptCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - prompt
-          x-enumNames:
-            - PROMPT
-        matchAll:
-          type: boolean
-        promptID:
-          type: string
-        assertions:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableExportConditionPromptAssertion'
-      required:
-        - type
-        - matchAll
-        - assertions
-    StableExportConditionPromptAssertion:
-      type: object
-      properties:
-        key:
-          type: string
-        lhs:
-          allOf:
-            - $ref: '#/components/schemas/PromptConditionAssertionLhs'
-        rhs:
-          $ref: '#/components/schemas/ExportTextString'
-        operation:
-          default: is
-          allOf:
-            - $ref: '#/components/schemas/ConditionOperation'
-      required:
-        - key
-        - rhs
     StableExportAgent:
       type: object
       properties:
@@ -28217,52 +29059,6 @@ components:
             - $ref: '#/components/schemas/ToolNodeCaptureType'
       required:
         - mcpIntegrationVariableName
-    StableExportPromptMessage:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          nullable: true
-          type: number
-        assistantID:
-          type: string
-        environmentID:
-          type: string
-        type:
-          $ref: '#/components/schemas/PromptMessageType'
-        data:
-          $ref: '#/components/schemas/StableExportPromptMessageData'
-        pairID:
-          nullable: true
-          type: string
-        promptID:
-          type: string
-      required:
-        - id
-        - createdAt
-        - type
-        - data
-        - pairID
-        - promptID
-    StableExportPromptMessageData:
-      type: object
-      properties:
-        role:
-          $ref: '#/components/schemas/PromptMessageRole'
-        content:
-          $ref: '#/components/schemas/ExportTextString'
-      required:
-        - role
-        - content
     StableExportAPITool:
       type: object
       properties:
@@ -28540,7 +29336,7 @@ components:
         - id
         - key
         - value
-    StableExportAssistantExportData:
+    StableExportAssistantExportDataV2:
       type: object
       properties:
         secrets:
@@ -29593,18 +30389,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RequiredEntity'
-        responses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Response'
-        responseMessages:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableExportResponseMessage'
-        responseDiscriminators:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResponseDiscriminator'
         functions:
           type: array
           items:
@@ -29678,14 +30462,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Folder'
-        prompts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Prompt'
-        promptMessages:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableExportPromptMessage'
         apiTools:
           type: array
           items:
@@ -29821,14 +30597,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/KBDocumentMetadataM2MBackup'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableMessage'
+        prompts:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePrompt'
       required:
         - project
         - version
         - diagrams
+        - messages
+        - prompts
     StableEnvironmentExportResponseV2:
-      description: 'A full export of the environment. Rich text is rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a response message, a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash, as a message read does. A prompt leaf (instructions, persona, guidelines, content) carries markdown. Every other leaf is plain text with {name} references, no marks and no escapes: a URL, a header, query or body value, a default value, a condition operand, a set value, a code leaf, and an utterance leaf (entity references only). Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id. A secret inside a prompt-kind leaf renders as its id rather than its name, matching the dedicated agent read. Inside diagrams{}.nodes{}.data only the node types whose data carries rich text are rendered; every other node type ships in its stored object form. Read-only.'
+      description: 'A full export of the environment. Rich text is rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash, as a message read does. A prompt leaf (instructions, persona, guidelines) carries markdown. Every other leaf is plain text with {name} references, no marks and no escapes: a URL, a header, query or body value, a default value, a condition operand, a set value, a code leaf, and an utterance leaf (entity references only). Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id. A secret inside a prompt-kind leaf renders as its id rather than its name, matching the dedicated agent read. Inside diagrams{}.nodes{}.data only the node types whose data carries rich text are rendered; every other node type ships in its stored object form. messages[] and prompts[] carry the same objects the message and prompt get reads return, rendered the same way, so the text fields of an item can be written back unchanged. The whole item cannot: the write schemas refuse its id, timestamps and user IDs. Read-only.'
       allOf:
-        - $ref: '#/components/schemas/StableExportAssistantExportData'
+        - $ref: '#/components/schemas/StableExportAssistantExportDataV2'
     StableEnvironmentCompileResponse:
       type: object
       properties:

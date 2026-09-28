@@ -3,9 +3,24 @@
 
 package components
 
+import (
+	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
+)
+
 type ConditionAssertionLHS struct {
 	VariableID *string `json:"variableID"`
 	Path       *string `json:"path,omitzero"`
+}
+
+func (c ConditionAssertionLHS) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *ConditionAssertionLHS) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *ConditionAssertionLHS) GetVariableID() *string {

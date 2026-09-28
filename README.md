@@ -344,6 +344,26 @@ server's dynamic client registration endpoint and caches the resulting
 * [`clone`](docs/vf_environment_clone.md) - Clone environment
 * [`publish`](docs/vf_environment_publish.md) - Publish environment
 
+### [message](docs/vf_message.md)
+
+* [`get-many`](docs/vf_message_get-many.md) - Get many messages
+* [`get`](docs/vf_message_get.md) - Get message
+* [`delete`](docs/vf_message_delete.md) - Delete message
+* [`update`](docs/vf_message_update.md) - Reorder message variants
+* [`create`](docs/vf_message_create.md) - Create message
+* [`add-variant`](docs/vf_message_add-variant.md) - Add message variant
+* [`update-variant`](docs/vf_message_update-variant.md) - Update message variant
+* [`delete-variant`](docs/vf_message_delete-variant.md) - Delete message variant
+
+### [prompt](docs/vf_prompt.md)
+
+* [`get-many`](docs/vf_prompt_get-many.md) - Get many prompts
+* [`get`](docs/vf_prompt_get.md) - Get prompt
+* [`update`](docs/vf_prompt_update.md) - Update prompt
+* [`delete`](docs/vf_prompt_delete.md) - Delete prompt
+* [`create`](docs/vf_prompt_create.md) - Create prompt
+* [`update-settings`](docs/vf_prompt_update-settings.md) - Update prompt settings
+
 ### [variable](docs/vf_variable.md)
 
 * [`list`](docs/vf_variable_list.md) - List variables
