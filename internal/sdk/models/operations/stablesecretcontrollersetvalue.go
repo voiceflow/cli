@@ -36,8 +36,8 @@ func (s *StableSecretControllerSetValueRequest) GetBody() components.StableSecre
 }
 
 type StableSecretControllerSetValueResponse struct {
-	HTTPMeta             components.HTTPMetadata `json:"-"`
-	StableUpdateResponse *components.StableUpdateResponse
+	HTTPMeta                  components.HTTPMetadata `json:"-"`
+	StableSecretValueResponse *components.StableSecretValueResponse
 }
 
 func (s StableSecretControllerSetValueResponse) MarshalJSON() ([]byte, error) {
@@ -58,9 +58,9 @@ func (s *StableSecretControllerSetValueResponse) GetHTTPMeta() components.HTTPMe
 	return s.HTTPMeta
 }
 
-func (s *StableSecretControllerSetValueResponse) GetStableUpdateResponse() *components.StableUpdateResponse {
+func (s *StableSecretControllerSetValueResponse) GetStableSecretValueResponse() *components.StableSecretValueResponse {
 	if s == nil {
 		return nil
 	}
-	return s.StableUpdateResponse
+	return s.StableSecretValueResponse
 }

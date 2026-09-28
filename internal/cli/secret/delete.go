@@ -25,7 +25,7 @@ func initDeleteCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete secret",
-		Long:    "Delete a secret by ID. Removes the project value and every environment override.",
+		Long:    "Delete a secret by ID, along with every value stored for it, on every version of every environment.",
 		Example: "  vf secret delete --secret-id <id> --project-id <id>",
 		RunE:    runDeleteCmd,
 	}

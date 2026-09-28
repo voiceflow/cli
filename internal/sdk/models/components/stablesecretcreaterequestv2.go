@@ -39,7 +39,7 @@ func (e *Visibility) UnmarshalJSON(data []byte) error {
 type StableSecretCreateRequestV2 struct {
 	// The name of the secret. Letters, digits and underscores only, at most 64 characters — this is what a {token} in a default-value field binds to. Must be unique within the project.
 	Name string `json:"name"`
-	// The project-level value. Omit to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI.
+	// The secret's value, written to the `main` environment's published version, the one serving live traffic. It cannot be empty. Omit it to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI.
 	DefaultValue *string `json:"defaultValue,omitzero"`
 	// Whether the value can be revealed in the Voiceflow UI. `restricted` secrets can never be read back by anyone.
 	Visibility *Visibility `default:"masked" json:"visibility"`

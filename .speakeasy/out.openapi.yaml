@@ -7202,7 +7202,7 @@ paths:
           operation: list_overrides
           operationDescription: |-
             WHAT — List which secrets are overridden per environment, and on which version of that environment (`draft` or `published`). Only IDs are returned, never values.
-            USE WHEN — A tool behaves differently between environments and you need to know whether the environment overrides the secret rather than falling back to the project default.
+            USE WHEN — A tool behaves differently between environments and you need to know which environment versions hold a value of their own for the secret.
             BEFORE — Run voiceflow_secret.list to map the returned secret IDs back to names.
         cli:
           command: secret list-overrides
@@ -7240,14 +7240,14 @@ paths:
             Successor: reference the secret from a tool input default (`defaultValue`) so the tool fills the credential at runtime. The list and create operations give the form the reference takes.
           operation: delete
           operationDescription: |-
-            WHAT — Permanently delete a secret, its project value and every environment override.
+            WHAT — Permanently delete a secret and every value stored for it, on every version of every environment.
             BEFORE — Check every field that can reference a secret: tool attachment input defaults, knowledge-base filter defaults, and MCP server URLs and header values. Those references break at runtime once the secret is gone.
         cli:
           command: secret delete
       x-speakeasy-group: secret
       x-speakeasy-name-override: delete
       summary: Delete secret
-      description: Delete a secret by ID. Removes the project value and every environment override.
+      description: Delete a secret by ID, along with every value stored for it, on every version of every environment.
       parameters:
         - name: secretID
           required: true
@@ -7283,7 +7283,7 @@ paths:
             Successor: reference the secret from a tool input default (`defaultValue`) so the tool fills the credential at runtime. The list and create operations give the form the reference takes.
           operation: set_value
           operationDescription: |-
-            WHAT — Set a secret's value: the project default, or an override on one environment version.
+            WHAT — Set a secret's value on one environment version: `main`'s published version unless `environmentAlias` (which requires `versionVariant`) or `versionVariant` say otherwise.
             DO NOT — Call this. Secret values cannot be set from an MCP client and the request will be refused. Tell the user to set the value in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
         cli:
           command: secret set-value
@@ -7294,7 +7294,7 @@ paths:
           - mcp
         guidance: Secret values cannot be set from an MCP client. Set the value in the Voiceflow UI (Agent settings → Secrets), with the Voiceflow CLI, or through the Voiceflow REST API.
       summary: Set secret value
-      description: Set a secret value — the project-wide default, or an override on one environment version. Not available to MCP clients.
+      description: Set a secret's value on one version of an environment. Without `environmentAlias` it writes the `main` environment's published version, or its draft version when `versionVariant` is `draft`. With `environmentAlias`, `versionVariant` is required and names the version to write. Not available to MCP clients.
       parameters:
         - name: secretID
           required: true
@@ -7319,7 +7319,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableUpdateResponse'
+                $ref: '#/components/schemas/StableSecretValueResponse'
       tags:
         - Secret
       security:
@@ -33036,6 +33036,13 @@ components:
       properties:
         secret:
           $ref: '#/components/schemas/StableSecretV2'
+        environmentAlias:
+          description: 'Present when a `defaultValue` was sent: the alias of the environment that now serves the value (`main`). Omitted when no value was sent, or when the project has no `main` environment to name, such as a project that predates environments.'
+          type: string
+        versionVariant:
+          description: 'Present along with `environmentAlias`: the version of that environment that now serves the value, always `published`, the version serving live traffic.'
+          allOf:
+            - $ref: '#/components/schemas/VersionVariant'
       required:
         - secret
     StableSecretCreateRequestV2:
@@ -33046,8 +33053,9 @@ components:
           pattern: ^\w{1,64}$
           description: The name of the secret. Letters, digits and underscores only, at most 64 characters — this is what a {token} in a default-value field binds to. Must be unique within the project.
         defaultValue:
-          description: The project-level value. Omit to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI.
+          description: The secret's value, written to the `main` environment's published version, the one serving live traffic. It cannot be empty. Omit it to create the secret as a placeholder with no value — a teammate can fill it in later through the Voiceflow UI or CLI.
           type: string
+          minLength: 1
         visibility:
           default: masked
           description: Whether the value can be revealed in the Voiceflow UI. `restricted` secrets can never be read back by anyone.
@@ -33056,6 +33064,21 @@ components:
       required:
         - name
       additionalProperties: false
+    StableSecretValueResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message confirming the update.
+        environmentAlias:
+          description: 'The alias of the environment that now serves the value (e.g. `main`). Omitted only when there is no environment to name: the project predates environments, or no `environmentAlias` was given and the project has no `main` environment.'
+          type: string
+        versionVariant:
+          description: 'Which version of that environment now serves the value: `published`, the version serving live traffic, or `draft`, the one used when testing.'
+          allOf:
+            - $ref: '#/components/schemas/VersionVariant'
+      required:
+        - message
     StableSecretValueRequest:
       type: object
       properties:
@@ -33064,11 +33087,11 @@ components:
           minLength: 1
           description: The secret value to store. Write-only — it can never be read back through this API.
         environmentAlias:
-          description: Set the value as an override on this environment (e.g. `main`) instead of as the project-wide default.
+          description: The alias of the environment to write (e.g. `staging`). Without it the value goes to the `main` environment. Requires `versionVariant`.
           type: string
           minLength: 1
         versionVariant:
-          description: Which version of the environment the override applies to. Defaults to `draft`. Ignored without `environmentAlias`.
+          description: 'Which version of the environment to write: `published`, the version serving live traffic, or `draft`, the one used when testing. Required with `environmentAlias`. Without `environmentAlias` it defaults to `published`, and `draft` writes the `main` environment''s draft version; a project with no `main` environment has no draft version, so the request is then handled as if `versionVariant` were omitted.'
           allOf:
             - $ref: '#/components/schemas/VersionVariant'
       required:
