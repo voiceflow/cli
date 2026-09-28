@@ -359,6 +359,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_api-tool_get.md) - Get API tool
 * [`update`](docs/vf_api-tool_update.md) - Update API tool
 * [`delete`](docs/vf_api-tool_delete.md) - Delete API tool
+* [`get-schema`](docs/vf_api-tool_get-schema.md) - Get API tool schema
+* [`execute`](docs/vf_api-tool_execute.md) - Execute API tool
 
 #### [api-tool-variable](docs/vf_api-tool_api-tool-variable.md)
 
@@ -390,6 +392,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_function_get.md) - Get function
 * [`update`](docs/vf_function_update.md) - Update function
 * [`delete`](docs/vf_function_delete.md) - Delete function
+* [`get-schema`](docs/vf_function_get-schema.md) - Get function schema
+* [`execute`](docs/vf_function_execute.md) - Execute function
 
 #### [function-variable](docs/vf_function_function-variable.md)
 
@@ -433,6 +437,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`list`](docs/vf_integration_list.md) - List integrations
 * [`connect`](docs/vf_integration_connect.md) - Connect integration
 * [`disconnect`](docs/vf_integration_disconnect.md) - Disconnect integration
+* [`get-schema`](docs/vf_integration_get-schema.md) - Get integration tool schemas
+* [`execute`](docs/vf_integration_execute.md) - Execute integration tool
 
 ### [mcp-server](docs/vf_mcp-server.md)
 
@@ -447,6 +453,8 @@ server's dynamic client registration endpoint and caches the resulting
 
 * [`list`](docs/vf_mcp-tool_list.md) - List MCP tools
 * [`get`](docs/vf_mcp-tool_get.md) - Get MCP tool
+* [`get-schema`](docs/vf_mcp-tool_get-schema.md) - Get MCP tool schema
+* [`execute`](docs/vf_mcp-tool_execute.md) - Execute MCP tool
 
 ### [secret](docs/vf_secret.md)
 

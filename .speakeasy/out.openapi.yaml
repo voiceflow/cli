@@ -1549,7 +1549,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: list
           operationDescription: |-
@@ -1622,7 +1622,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create
           operationDescription: |-
@@ -1676,7 +1676,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create_many
           operationDescription: |-
@@ -1731,7 +1731,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: get
           operationDescription: |-
@@ -1797,7 +1797,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: update
           operationDescription: |-
@@ -1856,7 +1856,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: delete
           operationDescription: |-
@@ -3078,7 +3078,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: list
           operationDescription: |-
             WHAT — List all API tools in the project.
@@ -3122,7 +3122,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: create
           operationDescription: |-
             WHAT — Create a new API tool with name, description (WHAT/WHEN format — LLM-routing field), method, URL, headers, body, and declared input variables.
@@ -3174,7 +3174,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: create_many
           operationDescription: |-
             WHAT — Create multiple API tools in one call.
@@ -3226,7 +3226,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: get
           operationDescription: |-
             WHAT — Fetch one API tool's full config: method, URL, headers, body, declared input variables.
@@ -3275,7 +3275,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: update
           operationDescription: |-
             WHAT — Patch an API tool's config. Partial PATCH.
@@ -3334,7 +3334,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: delete
           operationDescription: |-
             WHAT — Remove an API tool.
@@ -3374,6 +3374,114 @@ paths:
         - API Tool
       security:
         - token: []
+  /v1/stable/api-tool/{toolID}/schema:
+    get:
+      operationId: StableAPIToolController_getSchema
+      x-vf:
+        mcp:
+          tool: voiceflow_api_tool
+          toolDescription: |-
+            Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
+            The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
+            Predecessor: select the project and environment first.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
+          operation: get_schema
+          operationDescription: |-
+            WHAT — The inputs execute takes for one API tool: its declared input variables, each a required string.
+            USE WHEN — Before voiceflow_api_tool.execute.
+        cli:
+          command: api-tool get-schema
+      x-speakeasy-group: api-tool
+      x-speakeasy-name-override: get-schema
+      summary: Get API tool schema
+      description: List the inputs an API tool takes, as execute takes them.
+      parameters:
+        - name: toolID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableAPIToolSchemaReadResponse'
+      tags:
+        - API Tool
+      security:
+        - token: []
+  /v1/stable/api-tool/{toolID}/execute:
+    post:
+      operationId: StableAPIToolController_execute
+      x-vf:
+        mcp:
+          tool: voiceflow_api_tool
+          toolDescription: |-
+            Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
+            The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
+            Predecessor: select the project and environment first.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
+          operation: execute
+          operationDescription: |-
+            WHAT — Send the saved request once. Your inputs fill its {input_name} placeholders in the URL, headers, query and body. Returns the status, headers and body, with no compile and no conversation. The request stops at the tool's timeout or at 18 seconds, whichever is shorter, even where a conversation would wait longer.
+            USE WHEN — Checking an endpoint answers, and seeing the body a captureResponse path will read.
+            BEFORE — voiceflow_api_tool.get_schema for the input names. Every declared input needs a value.
+            DO NOT — Paste a credential into inputs. Write {secret_name} in the value, for example "Bearer {stripe_key}"; the server fills it in, and it reads [secret] in the result. Do not send a POST, PUT, PATCH or DELETE to a live system without asking the user first. The request is real.
+        cli:
+          command: api-tool execute
+      x-speakeasy-group: api-tool
+      x-speakeasy-name-override: execute
+      summary: Execute API tool
+      description: Send the saved request of an API tool once with the given inputs, without a conversation.
+      parameters:
+        - name: toolID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableAPIToolExecuteRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableAPIToolExecuteResponse'
+      tags:
+        - API Tool
+      security:
+        - token: []
   /v2/stable/api-tool-variable:
     get:
       operationId: StableAPIToolVariableController_listV2
@@ -3384,7 +3492,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: list_variables
           operationDescription: WHAT — List the input variables declared on an API tool (path params, query params, body fields, auth headers as placeholders).
         cli:
@@ -3432,7 +3540,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: create_variable
           operationDescription: |-
             WHAT — Declare a new input variable on an API tool.
@@ -3483,7 +3591,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: create_many_variables
           operationDescription: WHAT — Declare multiple input variables in one call.
         cli:
@@ -3533,7 +3641,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: get_variable
           operationDescription: WHAT — Fetch a single input variable's detail.
         cli:
@@ -3580,7 +3688,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: update_variable
           operationDescription: WHAT — Modify an input variable's name or description.
         cli:
@@ -3635,7 +3743,7 @@ paths:
             Saved outbound HTTP requests — URL, method, headers, query params, body. Use for plain request-and-capture flows ("call this REST endpoint"). Reach for a Function instead when you need custom code on top: transforms, parsing, multi-call chains, conditional logic.
             The API tool's description is LLM-facing — the LLM reads it when deciding whether to call the tool. Write it in WHAT/WHEN format: WHAT the API does AND WHEN the LLM should call it. Skipping the WHEN clause leads to under- or over-use.
             Predecessor: select the project and environment first.
-            Successor: attach the API tool at agent level, then run a test conversation.
+            Successor: run the API tool once with the execute operation (get_schema lists its inputs) to check the response, then attach it at agent level and run a test conversation.
           operation: delete_variable
           operationDescription: |-
             WHAT — Remove an input variable.
@@ -4097,7 +4205,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: list
           operationDescription: |-
             WHAT — List all functions in the project.
@@ -4141,7 +4249,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: create
           operationDescription: |-
             WHAT — Create a new function.
@@ -4215,7 +4323,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: create_many
           operationDescription: |-
             WHAT — Create multiple functions in one call.
@@ -4267,7 +4375,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: get
           operationDescription: |-
             WHAT — Fetch one function's full detail: code, declared input/output variables, exit paths.
@@ -4316,7 +4424,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: update
           operationDescription: |-
             WHAT — Patch a function's code or metadata. Partial PATCH — only fields you pass are changed.
@@ -4375,7 +4483,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: delete
           operationDescription: |-
             WHAT — Remove a function.
@@ -4416,6 +4524,114 @@ paths:
         - Function
       security:
         - token: []
+  /v1/stable/function/{functionID}/schema:
+    get:
+      operationId: StableFunctionController_getSchema
+      x-vf:
+        mcp:
+          tool: voiceflow_function
+          toolDescription: |-
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
+            Predecessor: select the project and environment first; create any project variables the function reads or writes.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
+          operation: get_schema
+          operationDescription: |-
+            WHAT — The inputs execute takes (each a required string), the output variables and the exit paths of one function, from the environment's draft.
+            USE WHEN — Before voiceflow_function.execute, to learn the input names and what a run can return.
+        cli:
+          command: function get-schema
+      x-speakeasy-group: function
+      x-speakeasy-name-override: get-schema
+      summary: Get function schema
+      description: List the inputs, output variables and exit paths of a function, as execute takes and returns them.
+      parameters:
+        - name: functionID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableFunctionSchemaReadResponse'
+      tags:
+        - Function
+      security:
+        - token: []
+  /v1/stable/function/{functionID}/execute:
+    post:
+      operationId: StableFunctionController_execute
+      x-vf:
+        mcp:
+          tool: voiceflow_function
+          toolDescription: |-
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
+            Predecessor: select the project and environment first; create any project variables the function reads or writes.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
+          operation: execute
+          operationDescription: |-
+            WHAT — Run one function once with the inputs you give. Returns its output variables, its exit path and its traces. It runs the saved draft of this environment directly: no compile, no conversation, and nothing is saved. A run stops at the function's timeout or at 18 seconds, whichever is shorter, even where a conversation would wait longer.
+            USE WHEN — Checking that a new or edited function works before you attach it or test the agent, or reproducing a failure with specific inputs.
+            BEFORE — voiceflow_function.get_schema for the input names. Every declared input needs a value.
+            DO NOT — Paste a credential into inputs. Write {secret_name} in the value instead, for example "Bearer {stripe_key}"; the server fills in the secret, and it reads [secret] wherever it appears in the result. Do not write a variable token such as {customer_id}: a run has no conversation to read it from, so it is refused; pass the value itself. Do not run code that changes anything outside Voiceflow without asking the user first. The call is real.
+        cli:
+          command: function execute
+      x-speakeasy-group: function
+      x-speakeasy-name-override: execute
+      summary: Execute function
+      description: Run a function once with the given inputs, without a conversation.
+      parameters:
+        - name: functionID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableFunctionExecuteRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableFunctionExecuteResponse'
+      tags:
+        - Function
+      security:
+        - token: []
   /v1/stable/function-variable:
     get:
       operationId: StableFunctionVariableController_list
@@ -4426,7 +4642,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: list_variables
           operationDescription: |-
             WHAT — List the function's declared input and output variables, each with name and type.
@@ -4476,7 +4692,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: create_variable
           operationDescription: |-
             WHAT — Declare a new input or output variable on a function. Type is direction (input | output), not data type — data types are inferred from value shape at runtime.
@@ -4528,7 +4744,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: create_many_variables
           operationDescription: |-
             WHAT — Create multiple function variables in one call.
@@ -4580,7 +4796,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: get_variable
           operationDescription: |-
             WHAT — Fetch a single function variable's detail.
@@ -4629,7 +4845,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: update_variable
           operationDescription: |-
             WHAT — Modify a function variable's name or description.
@@ -4685,7 +4901,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: delete_variable
           operationDescription: |-
             WHAT — Remove a function variable.
@@ -4735,7 +4951,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: list_paths
           operationDescription: |-
             WHAT — List the named exit paths on a function (success, error, custom branches).
@@ -4785,7 +5001,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: create_path
           operationDescription: |-
             WHAT — Add a new exit path to a function (e.g. not_found, retry_needed, partial_match).
@@ -4836,7 +5052,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: create_many_paths
           operationDescription: |-
             WHAT — Add multiple exit paths in one call.
@@ -4888,7 +5104,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: get_path
           operationDescription: |-
             WHAT — Fetch a single exit path's detail.
@@ -4937,7 +5153,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: update_path
           operationDescription: WHAT — Modify an existing path's name or label.
         cli:
@@ -4991,7 +5207,7 @@ paths:
             Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
-            Successor: attach the function at agent level, recompile the environment, then run a test conversation to verify the function's declared outputs actually populate.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
           operation: delete_path
           operationDescription: |-
             WHAT — Remove a path from a function.
@@ -6130,9 +6346,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
           operation: list
           operationDescription: |-
             WHAT — List the full integration catalog with a connected flag per integration. Never returns credential values.
@@ -6169,9 +6385,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
           operation: connect
           operationDescription: |-
             WHAT — Store credentials for an api-key integration.
@@ -6221,9 +6437,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
           operation: disconnect
           operationDescription: |-
             WHAT — Clear every stored credential slot an integration owns on this project.
@@ -6254,6 +6470,112 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Integration
+      security:
+        - token: []
+  /v1/stable/integration/{integration}/schema:
+    get:
+      operationId: StableIntegrationController_getSchema
+      x-vf:
+        mcp:
+          tool: voiceflow_integration
+          toolDescription: |-
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Predecessor: select the project first.
+            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+          operation: get_schema
+          operationDescription: |-
+            WHAT — The tools one integration offers, each with its inputs, its catalog toolName and the integrationToolID it has in this environment (null until it is added), plus whether the project has credentials stored for the integration.
+            USE WHEN — Before voiceflow_integration.execute, or to see which tools an integration can add to the agent.
+        cli:
+          command: integration get-schema
+      x-speakeasy-group: integration
+      x-speakeasy-name-override: get-schema
+      summary: Get integration tool schemas
+      description: List the tools an integration offers, their inputs, and whether each is added to this environment.
+      parameters:
+        - name: integration
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableIntegrationSchemaReadResponse'
+      tags:
+        - Integration
+      security:
+        - token: []
+  /v1/stable/integration/{integration}/execute:
+    post:
+      operationId: StableIntegrationController_execute
+      x-vf:
+        mcp:
+          tool: voiceflow_integration
+          toolDescription: |-
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Predecessor: select the project first.
+            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+          operation: execute
+          operationDescription: |-
+            WHAT — Run one integration tool, named by its catalog toolName, once with the inputs you give and the project's stored connection. Returns what the tool returned. A top-level string input may hold {secret_name}, which the server fills in; it reads [secret] in the result. Inside a nested object or array, {secret_name} is sent as written and no secret is filled in.
+            USE WHEN — Checking that a connection works and a tool returns what you expect.
+            BEFORE — voiceflow_integration.get_schema for the tool names and their inputs.
+            DO NOT — Run a tool that changes anything outside Voiceflow, such as sending an email or updating a ticket, without asking the user first. The call acts on the real account. On missing or expired credentials, offer the connection card instead of retrying.
+        cli:
+          command: integration execute
+      x-speakeasy-group: integration
+      x-speakeasy-name-override: execute
+      summary: Execute integration tool
+      description: Run one integration tool once with the project's stored connection, without a conversation.
+      parameters:
+        - name: integration
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableIntegrationExecuteRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableIntegrationExecuteResponse'
       tags:
         - Integration
       security:
@@ -6584,7 +6906,7 @@ paths:
           toolDescription: |-
             Discover tools registered on known MCP servers.
             Predecessor: register the MCP server first.
-            Successor: attach the MCP tool at agent level, then run a test conversation.
+            Successor: run the MCP tool once with the execute operation (get_schema lists its arguments) to check the server answers, then attach it at agent level and run a test conversation.
           operation: list
           operationDescription: |-
             WHAT — List configured MCP tools across all servers in this project.
@@ -6634,7 +6956,7 @@ paths:
           toolDescription: |-
             Discover tools registered on known MCP servers.
             Predecessor: register the MCP server first.
-            Successor: attach the MCP tool at agent level, then run a test conversation.
+            Successor: run the MCP tool once with the execute operation (get_schema lists its arguments) to check the server answers, then attach it at agent level and run a test conversation.
           operation: get
           operationDescription: WHAT — Fetch a single configured MCP tool.
         cli:
@@ -6668,6 +6990,112 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableMCPToolResponse'
+      tags:
+        - MCP Tool
+      security:
+        - token: []
+  /v1/stable/mcp-tool/{toolID}/schema:
+    get:
+      operationId: StableMCPToolController_getSchema
+      x-vf:
+        mcp:
+          tool: voiceflow_mcp_tool
+          toolDescription: |-
+            Discover tools registered on known MCP servers.
+            Predecessor: register the MCP server first.
+            Successor: run the MCP tool once with the execute operation (get_schema lists its arguments) to check the server answers, then attach it at agent level and run a test conversation.
+          operation: get_schema
+          operationDescription: |-
+            WHAT — The arguments one MCP tool takes: a flat list of its top-level arguments plus its full JSON Schema.
+            USE WHEN — Before voiceflow_mcp_tool.execute.
+        cli:
+          command: mcp-tool get-schema
+      x-speakeasy-group: mcp-tool
+      x-speakeasy-name-override: get-schema
+      summary: Get MCP tool schema
+      description: List the arguments an MCP tool takes, as a flat list and as its JSON Schema.
+      parameters:
+        - name: toolID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableMCPToolSchemaReadResponse'
+      tags:
+        - MCP Tool
+      security:
+        - token: []
+  /v1/stable/mcp-tool/{toolID}/execute:
+    post:
+      operationId: StableMCPToolController_execute
+      x-vf:
+        mcp:
+          tool: voiceflow_mcp_tool
+          toolDescription: |-
+            Discover tools registered on known MCP servers.
+            Predecessor: register the MCP server first.
+            Successor: run the MCP tool once with the execute operation (get_schema lists its arguments) to check the server answers, then attach it at agent level and run a test conversation.
+          operation: execute
+          operationDescription: |-
+            WHAT — Call one MCP tool once on its server, with the arguments you give and the server's saved URL, headers and authorization. Returns what the server returned.
+            USE WHEN — Checking the server answers and the tool returns what you expect before you attach it.
+            BEFORE — voiceflow_mcp_tool.get_schema; argument names and types come from the tool's JSON Schema.
+            DO NOT — Paste a credential into an argument. A top-level string argument may hold {secret_name}, which the server fills in; it reads [secret] in the result. Inside a nested object or array, {secret_name} is sent as written and no secret is filled in. Do not call a tool that changes data outside Voiceflow without asking the user first.
+        cli:
+          command: mcp-tool execute
+      x-speakeasy-group: mcp-tool
+      x-speakeasy-name-override: execute
+      summary: Execute MCP tool
+      description: Call one MCP tool once on its server with the given arguments, without a conversation.
+      parameters:
+        - name: toolID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableMCPToolExecuteRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableMCPToolExecuteResponse'
       tags:
         - MCP Tool
       security:
@@ -22585,6 +23013,100 @@ components:
           items:
             $ref: '#/components/schemas/StableAPIQueryParameterV2'
       additionalProperties: false
+    StableExecuteInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The input name, used as its key in `inputs` when executing.
+        type:
+          type: string
+          description: The JSON type the value must have, such as `string`, `number` or `boolean`. Always `string` for a function or an API tool, and `any` when an MCP tool does not say.
+        required:
+          type: boolean
+          description: Whether execute needs a value for this input.
+        description:
+          nullable: true
+          description: What the input holds, as the tool describes it.
+          type: string
+      required:
+        - name
+        - type
+        - required
+        - description
+    StableAPIToolSchemaReadResponse:
+      type: object
+      properties:
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableExecuteInput'
+          description: The inputs execute takes, one per input variable, sorted by name. Every one is a required string. A credential input usually gets its secret from the attachment's default; write that secret's name as {secret_name} in the value.
+      required:
+        - inputs
+    StableAPIToolExecuteOutput:
+      type: object
+      properties:
+        status:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: The HTTP status the endpoint returned. 408 when it did not answer within the tool's timeout or 18 seconds, whichever is shorter.
+        statusText:
+          type: string
+          description: The HTTP status text the endpoint returned.
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: The response headers. Secret values read `[secret]`.
+        body:
+          description: The response body, parsed as JSON when the endpoint returned JSON. Secret values read `[secret]`.
+      required:
+        - status
+        - statusText
+        - headers
+        - body
+    StableAPIToolExecuteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the tool ran and reported no error.
+        latencyMs:
+          type: number
+          description: How long the run took, in milliseconds, measured by this API around the call.
+        error:
+          nullable: true
+          description: Why the run failed when `success` is false, otherwise null. Secret values read `[secret]`.
+          type: string
+        truncated:
+          type: boolean
+          description: Whether a returned payload was over 64 KB and was cut to its first 64 KB of JSON text, which then arrives as a string.
+        output:
+          nullable: true
+          description: What the endpoint returned. Null only when general-runtime did not answer in time.
+          allOf:
+            - $ref: '#/components/schemas/StableAPIToolExecuteOutput'
+      required:
+        - success
+        - latencyMs
+        - error
+        - truncated
+        - output
+    ExecuteInputString:
+      type: string
+      description: 'A value sent to a tool for one run, never stored. Plain text. {secret_name} inserts a project secret: the server fills in the value this environment would use in a conversation, and the value reads [secret] wherever it appears in the result. Brace text is a token when the text between the braces has no space at either end and holds only letters, digits, underscores, inner spaces, ., [, ], $ or -. A token that names no project secret, such as {customer_id} or {var name}, is refused before the tool runs, because a single run has no conversation to read a variable from: pass the value itself. Any other brace text is sent as written, so code, JSON and GraphQL such as query { user { id } } run as they are. Compact brace text such as {id} still reads as a token: write { id } to send it as text. A secret whose name is not letters, digits and underscores cannot be referenced. A {secret_name} token is filled in only in a top-level string value of inputs. Inside a nested object or array it is sent as written, and no secret is filled in.'
+    StableAPIToolExecuteRequest:
+      type: object
+      properties:
+        inputs:
+          default: {}
+          description: A value for each of the API tool's input variables, keyed by input name. Each value replaces the tool's {input_name} placeholder in the URL, headers, query and body. Every declared input needs a value, and a name the tool does not declare is refused. List them with get_schema.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExecuteInputString'
+      additionalProperties: false
     StableAPIToolVariableV2:
       type: object
       properties:
@@ -30682,6 +31204,109 @@ components:
           description: A human-readable description of what the function does.
           type: string
       additionalProperties: false
+    StableFunctionSchemaOutput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The output variable name, a key of `outputVars`.
+        description:
+          nullable: true
+          description: What the output variable holds, as written on the function.
+          type: string
+      required:
+        - name
+        - description
+    StableFunctionSchemaReadResponse:
+      type: object
+      properties:
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableExecuteInput'
+          description: The inputs execute takes, one per input variable, sorted by name. Every one is a required string.
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableFunctionSchemaOutput'
+          description: The output variables the function may return, sorted by name.
+        paths:
+          type: array
+          items:
+            type: string
+          description: 'The exit path names the function may return with `next: { path }`, in path order.'
+      required:
+        - inputs
+        - outputs
+        - paths
+    StableFunctionExecuteOutput:
+      type: object
+      properties:
+        outputVars:
+          type: object
+          additionalProperties: {}
+          description: The output variables the function returned, keyed by name. At runtime only string, number and boolean values reach a variable.
+        path:
+          nullable: true
+          description: 'The exit path the function chose with `next: { path }`, or null when it chose none.'
+          type: string
+        traces:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableFunctionExecuteTrace'
+          description: The traces the function emitted, in order. A failed run may carry a `debug` trace that says why, but not always.
+      required:
+        - outputVars
+        - path
+        - traces
+    StableFunctionExecuteTrace:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The trace type, such as `text`, `speak`, `choice`, `cardV2` or `debug`.
+        payload:
+          description: The trace payload as the function emitted it. Secret values read `[secret]`.
+      required:
+        - type
+        - payload
+    StableFunctionExecuteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the tool ran and reported no error.
+        latencyMs:
+          type: number
+          description: How long the run took, in milliseconds, measured by this API around the call.
+        error:
+          nullable: true
+          description: Why the run failed when `success` is false, otherwise null. Secret values read `[secret]`.
+          type: string
+        truncated:
+          type: boolean
+          description: Whether a returned payload was over 64 KB and was cut to its first 64 KB of JSON text, which then arrives as a string.
+        output:
+          nullable: true
+          description: What the function returned, on failure too. Null only when general-runtime did not answer in time.
+          allOf:
+            - $ref: '#/components/schemas/StableFunctionExecuteOutput'
+      required:
+        - success
+        - latencyMs
+        - error
+        - truncated
+        - output
+    StableFunctionExecuteRequest:
+      type: object
+      properties:
+        inputs:
+          default: {}
+          description: A value for each of the function's input variables, keyed by input name. Every declared input needs a value, and a name the function does not declare is refused. List them with get_schema.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ExecuteInputString'
+      additionalProperties: false
     StableFunctionVariable:
       type: object
       properties:
@@ -31264,6 +31889,235 @@ components:
           required:
             - integration
           additionalProperties: false
+    StableIntegrationSchemaTool:
+      type: object
+      properties:
+        toolName:
+          description: The catalog name to pass as `toolName` when executing.
+          allOf:
+            - $ref: '#/components/schemas/IntegrationToolName'
+          enum:
+            - example_dynamic_schema
+            - zendesk_find_user
+            - zendesk_find_group
+            - zendesk_find_ticket
+            - zendesk_create_ticket
+            - zendesk_update_ticket
+            - zendesk_add_ticket_comment
+            - zendesk_update_organization
+            - zendesk_find_latest_comment
+            - salesforce_create_lead
+            - salesforce_update_lead
+            - salesforce_create_contact
+            - salesforce_update_contact
+            - salesforce_create_case
+            - salesforce_update_case
+            - salesforce_add_comment_to_case
+            - shopify_get_products
+            - shopify_get_order
+            - shopify_cancel_order
+            - shopify_update_order
+            - google_sheets_create_spreadsheet
+            - google_sheets_update_spreadsheet
+            - google_sheets_read_spreadsheet
+            - google_sheets_append_spreadsheet
+            - google_sheets_read_row
+            - google_gmail_send_email
+            - airtable_create_records
+            - airtable_delete_records
+            - airtable_get_record
+            - airtable_list_records
+            - airtable_update_records
+            - make_run_scenario
+            - twilio_send_sms
+            - hubspot_create_contact
+            - hubspot_create_lead
+            - hubspot_create_ticket
+          x-enumNames:
+            - EXAMPLE_DYNAMIC_SCHEMA
+            - ZENDESK_FIND_USER
+            - ZENDESK_FIND_GROUP
+            - ZENDESK_FIND_TICKET
+            - ZENDESK_CREATE_TICKET
+            - ZENDESK_UPDATE_TICKET
+            - ZENDESK_ADD_TICKET_COMMENT
+            - ZENDESK_UPDATE_ORGANIZATION
+            - ZENDESK_FIND_LATEST_TICKET_COMMENT
+            - SALESFORCE_CREATE_LEAD
+            - SALESFORCE_UPDATE_LEAD
+            - SALESFORCE_CREATE_CONTACT
+            - SALESFORCE_UPDATE_CONTACT
+            - SALESFORCE_CREATE_CASE
+            - SALESFORCE_UPDATE_CASE
+            - SALESFORCE_ADD_COMMENT_TO_CASE
+            - SHOPIFY_GET_PRODUCTS
+            - SHOPIFY_GET_ORDER
+            - SHOPIFY_CANCEL_ORDER
+            - SHOPIFY_UPDATE_ORDER
+            - GOOGLE_SHEETS_CREATE_SPREADSHEET
+            - GOOGLE_SHEETS_UPDATE_SPREADSHEET
+            - GOOGLE_SHEETS_READ_SPREADSHEET
+            - GOOGLE_SHEETS_APPEND_SPREADSHEET
+            - GOOGLE_SHEETS_READ_ROW
+            - GOOGLE_GMAIL_SEND_EMAIL
+            - AIRTABLE_CREATE_RECORDS
+            - AIRTABLE_DELETE_RECORDS
+            - AIRTABLE_GET_RECORD
+            - AIRTABLE_LIST_RECORDS
+            - AIRTABLE_UPDATE_RECORDS
+            - MAKE_RUN_SCENARIO
+            - TWILIO_SEND_SMS
+            - HUBSPOT_CREATE_CONTACT
+            - HUBSPOT_CREATE_LEAD
+            - HUBSPOT_CREATE_TICKET
+        name:
+          type: string
+          description: The human-readable name of the tool.
+        description:
+          type: string
+          description: What the tool does, from the catalog, and which optional inputs a run needs at least one of.
+        integrationToolID:
+          nullable: true
+          description: The ID attachments use for this tool in this environment, or null when the tool has not been added to it yet.
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableExecuteInput'
+          description: The inputs execute takes for this tool.
+      required:
+        - toolName
+        - name
+        - description
+        - integrationToolID
+        - inputs
+    StableIntegrationSchemaReadResponse:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: Whether the project has credentials stored for the integration, as the integration list reports it. A connection saved only in the draft may read false and still run.
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableIntegrationSchemaTool'
+          description: Every tool the integration offers, attached or not. Empty for an integration with no tools, such as ElevenLabs.
+      required:
+        - connected
+        - tools
+    StableIntegrationExecuteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the tool ran and reported no error.
+        latencyMs:
+          type: number
+          description: How long the run took, in milliseconds, measured by this API around the call.
+        error:
+          nullable: true
+          description: Why the run failed when `success` is false, otherwise null. Secret values read `[secret]`.
+          type: string
+        truncated:
+          type: boolean
+          description: Whether a returned payload was over 64 KB and was cut to its first 64 KB of JSON text, which then arrives as a string.
+        output:
+          description: What the integration tool returned, or null when the run failed. Secret values read `[secret]`.
+      required:
+        - success
+        - latencyMs
+        - error
+        - truncated
+        - output
+    StableIntegrationExecuteRequest:
+      type: object
+      properties:
+        toolName:
+          description: The catalog tool to run, as get_schema lists it, such as `zendesk_find_ticket`. It must belong to the integration in the path.
+          allOf:
+            - $ref: '#/components/schemas/IntegrationToolName'
+          enum:
+            - example_dynamic_schema
+            - zendesk_find_user
+            - zendesk_find_group
+            - zendesk_find_ticket
+            - zendesk_create_ticket
+            - zendesk_update_ticket
+            - zendesk_add_ticket_comment
+            - zendesk_update_organization
+            - zendesk_find_latest_comment
+            - salesforce_create_lead
+            - salesforce_update_lead
+            - salesforce_create_contact
+            - salesforce_update_contact
+            - salesforce_create_case
+            - salesforce_update_case
+            - salesforce_add_comment_to_case
+            - shopify_get_products
+            - shopify_get_order
+            - shopify_cancel_order
+            - shopify_update_order
+            - google_sheets_create_spreadsheet
+            - google_sheets_update_spreadsheet
+            - google_sheets_read_spreadsheet
+            - google_sheets_append_spreadsheet
+            - google_sheets_read_row
+            - google_gmail_send_email
+            - airtable_create_records
+            - airtable_delete_records
+            - airtable_get_record
+            - airtable_list_records
+            - airtable_update_records
+            - make_run_scenario
+            - twilio_send_sms
+            - hubspot_create_contact
+            - hubspot_create_lead
+            - hubspot_create_ticket
+          x-enumNames:
+            - EXAMPLE_DYNAMIC_SCHEMA
+            - ZENDESK_FIND_USER
+            - ZENDESK_FIND_GROUP
+            - ZENDESK_FIND_TICKET
+            - ZENDESK_CREATE_TICKET
+            - ZENDESK_UPDATE_TICKET
+            - ZENDESK_ADD_TICKET_COMMENT
+            - ZENDESK_UPDATE_ORGANIZATION
+            - ZENDESK_FIND_LATEST_TICKET_COMMENT
+            - SALESFORCE_CREATE_LEAD
+            - SALESFORCE_UPDATE_LEAD
+            - SALESFORCE_CREATE_CONTACT
+            - SALESFORCE_UPDATE_CONTACT
+            - SALESFORCE_CREATE_CASE
+            - SALESFORCE_UPDATE_CASE
+            - SALESFORCE_ADD_COMMENT_TO_CASE
+            - SHOPIFY_GET_PRODUCTS
+            - SHOPIFY_GET_ORDER
+            - SHOPIFY_CANCEL_ORDER
+            - SHOPIFY_UPDATE_ORDER
+            - GOOGLE_SHEETS_CREATE_SPREADSHEET
+            - GOOGLE_SHEETS_UPDATE_SPREADSHEET
+            - GOOGLE_SHEETS_READ_SPREADSHEET
+            - GOOGLE_SHEETS_APPEND_SPREADSHEET
+            - GOOGLE_SHEETS_READ_ROW
+            - GOOGLE_GMAIL_SEND_EMAIL
+            - AIRTABLE_CREATE_RECORDS
+            - AIRTABLE_DELETE_RECORDS
+            - AIRTABLE_GET_RECORD
+            - AIRTABLE_LIST_RECORDS
+            - AIRTABLE_UPDATE_RECORDS
+            - MAKE_RUN_SCENARIO
+            - TWILIO_SEND_SMS
+            - HUBSPOT_CREATE_CONTACT
+            - HUBSPOT_CREATE_LEAD
+            - HUBSPOT_CREATE_TICKET
+        inputs:
+          default: {}
+          description: 'The tool''s inputs, keyed by input name and typed as get_schema says. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.'
+          type: object
+          additionalProperties: {}
+      required:
+        - toolName
+      additionalProperties: false
     StableKnowledgeBaseQueryResponse:
       type: object
       properties:
@@ -31967,6 +32821,58 @@ components:
           $ref: '#/components/schemas/StableMCPTool'
       required:
         - mcpTool
+    StableMCPToolSchemaReadResponse:
+      type: object
+      properties:
+        serverID:
+          type: string
+          description: The ID of the MCP server the tool belongs to.
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableExecuteInput'
+          description: The tool's top-level arguments, read from its JSON Schema.
+        inputSchema:
+          type: object
+          additionalProperties: {}
+          description: The tool's full JSON Schema, for nested arguments the flat list cannot show.
+      required:
+        - serverID
+        - inputs
+        - inputSchema
+    StableMCPToolExecuteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the tool ran and reported no error.
+        latencyMs:
+          type: number
+          description: How long the run took, in milliseconds, measured by this API around the call.
+        error:
+          nullable: true
+          description: Why the run failed when `success` is false, otherwise null. Secret values read `[secret]`.
+          type: string
+        truncated:
+          type: boolean
+          description: Whether a returned payload was over 64 KB and was cut to its first 64 KB of JSON text, which then arrives as a string.
+        output:
+          description: 'What the MCP server returned. A result with `isError: true` fails the run and keeps this output. Null when the call itself failed or did not answer in time. Secret values read `[secret]`.'
+      required:
+        - success
+        - latencyMs
+        - error
+        - truncated
+        - output
+    StableMCPToolExecuteRequest:
+      type: object
+      properties:
+        inputs:
+          default: {}
+          description: 'The tool''s arguments, keyed by argument name and typed as its JSON Schema says; see get_schema. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.'
+          type: object
+          additionalProperties: {}
+      additionalProperties: false
     StableProject:
       type: object
       properties:
