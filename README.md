@@ -253,6 +253,15 @@ vf auth login --no-browser   # then open the printed URL locally
 The CLI binds the first free port of 51330-51333, so forward the port you
 intend it to use and keep the others occupied or unforwarded.
 
+**Signing in from an AI coding agent.** In agent mode `vf auth login` never
+launches a browser, because the agent is not the one signing in. It prints the
+authorization URL as a JSON event on stderr as soon as the URL exists, for the
+agent to hand to the user, then keeps waiting for them to finish and prints a
+second event once the session is stored — so run it in the background and read
+its output. The callback still lands on this host's loopback interface, so the
+same-host rule above applies: an agent running remotely needs the callback port
+forwarded, or the wait times out.
+
 **Where the tokens live.** Access and refresh tokens go to the OS keychain —
 macOS Keychain, Windows Credential Manager, Linux Secret Service — under
 separate entries. On a machine with no keychain (headless Linux, containers)
@@ -264,8 +273,8 @@ the cached public client registration) is always kept in
 **Precedence.** An active browser session outranks a token stored by
 `vf configure` or `vf auth login --token`, because it is refreshed on demand.
 A `--token` flag or a `VF_TOKEN` environment variable still wins over both, so
-CI keeps behaving exactly as before and agent mode is unaffected —
-`vf auth login` is interactive and stays blocked there.
+CI keeps behaving exactly as before, and a token in the environment also
+outranks a session an agent-mode login just stored.
 
 **Pointing at another authorization server.** `VF_OAUTH_ISSUER`,
 `VF_OAUTH_CLIENT_ID`, `VF_OAUTH_RESOURCE`, `VF_OAUTH_SCOPES`, and

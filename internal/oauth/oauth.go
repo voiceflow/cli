@@ -164,7 +164,19 @@ type LoginOptions struct {
 	Timeout time.Duration
 	// Out receives progress messages. Nil discards them.
 	Out io.Writer
+	// OnAuthURL, when set, replaces the prose that announces the
+	// authorization URL on Out. It runs before login starts waiting for the
+	// redirect, so a caller reporting progress in a machine-readable form
+	// (agent mode) can hand the URL on while the flow is still in flight.
+	// It does not affect whether a browser is opened; that stays NoBrowser's.
+	OnAuthURL func(authURL string)
 }
+
+// ErrStoreSession reports that authorization completed but the resulting
+// session could not be persisted. The tokens are live either way, and the
+// keychain half may already hold them, so callers must not tell the user that
+// nothing was stored.
+var ErrStoreSession = errors.New("store session")
 
 // Login runs the authorization code flow and stores the resulting session.
 func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (*Session, error) {
@@ -223,14 +235,24 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 
 	authURL := authorizationURL(md, client.ClientID, callback.RedirectURI(), state, verifier.challenge, scopes, cfg.Resource)
 
-	if opts.NoBrowser {
-		fmt.Fprintf(out, "Open this URL to sign in:\n\n  %s\n\n", authURL)
-	} else if err := browserOpener(authURL); err != nil {
-		fmt.Fprintf(out, "Could not open a browser (%v).\nOpen this URL to sign in:\n\n  %s\n\n", err, authURL)
-	} else {
-		fmt.Fprintf(out, "Opening your browser to sign in.\nIf it did not open, use this URL:\n\n  %s\n\n", authURL)
+	var browserErr error
+	if !opts.NoBrowser {
+		browserErr = browserOpener(authURL)
 	}
-	fmt.Fprintln(out, "Waiting for the browser to complete sign-in...")
+
+	if opts.OnAuthURL != nil {
+		opts.OnAuthURL(authURL)
+	} else {
+		switch {
+		case opts.NoBrowser:
+			fmt.Fprintf(out, "Open this URL to sign in:\n\n  %s\n\n", authURL)
+		case browserErr != nil:
+			fmt.Fprintf(out, "Could not open a browser (%v).\nOpen this URL to sign in:\n\n  %s\n\n", browserErr, authURL)
+		default:
+			fmt.Fprintf(out, "Opening your browser to sign in.\nIf it did not open, use this URL:\n\n  %s\n\n", authURL)
+		}
+		fmt.Fprintln(out, "Waiting for the browser to complete sign-in...")
+	}
 
 	waitCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -262,7 +284,10 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 		RefreshToken:  tok.RefreshToken,
 	}
 	if err := SaveSession(session); err != nil {
-		return nil, fmt.Errorf("store session: %w", err)
+		// Sign-in itself succeeded here, and SaveSession writes the keychain
+		// before the session file, so tokens may already be stored. Mark the
+		// failure so callers do not report it as "nothing was stored".
+		return nil, fmt.Errorf("%w: %w", ErrStoreSession, err)
 	}
 	return session, nil
 }

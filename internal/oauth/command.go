@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/config"
+	"github.com/voiceflow/cli/internal/output"
 )
 
 // Flag names added to 'vf auth login'.
@@ -22,7 +23,7 @@ const (
 func AddLoginFlags(cmd *cobra.Command) {
 	flags := cmd.Flags()
 	flags.Bool(flagManual, false, "Prompt for a bearer token instead of signing in through the browser")
-	flags.Bool(flagNoBrowser, false, "Print the sign-in URL instead of opening a browser")
+	flags.Bool(flagNoBrowser, false, "Print the sign-in URL instead of opening a browser (always on in agent mode)")
 	flags.StringArray(flagScope, nil, "OAuth scope to request (repeatable). Defaults to the scopes the authorization server advertises.")
 	flags.Duration(flagLoginTimeout, DefaultLoginTimeout, "How long to wait for the browser to complete sign-in")
 
@@ -51,6 +52,12 @@ func ShouldUseBrowserLogin(cmd *cobra.Command) bool {
 // resulting session. Progress goes to stderr, matching the rest of the auth
 // commands, so piped output stays clean.
 func RunLogin(cmd *cobra.Command) error {
+	// Agent mode reports the same flow as JSON events, starting with the
+	// authorization URL the agent hands to the user; see agent.go.
+	if output.IsAgentMode() {
+		return runAgentLogin(cmd)
+	}
+
 	out := cmd.OutOrStderr()
 
 	noBrowser, _ := cmd.Flags().GetBool(flagNoBrowser)
