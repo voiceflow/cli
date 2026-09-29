@@ -14,6 +14,10 @@ Use --token to store a bearer token non-interactively, or --manual to be
 prompted for one. Use the configure command for both authentication and global
 parameters.
 
+In agent mode no browser is opened. The sign-in URL is printed as a JSON event
+as soon as it exists, for the agent to hand to the user, and the command keeps
+waiting for them to finish — run it in the background and read its output.
+
 ```
 vf auth login [flags]
 ```
@@ -24,7 +28,7 @@ vf auth login [flags]
   -h, --help                     help for login
       --login-timeout duration   How long to wait for the browser to complete sign-in (default 5m0s)
       --manual                   Prompt for a bearer token instead of signing in through the browser
-      --no-browser               Print the sign-in URL instead of opening a browser
+      --no-browser               Print the sign-in URL instead of opening a browser (always on in agent mode)
       --scope stringArray        OAuth scope to request (repeatable). Defaults to the scopes the authorization server advertises.
 ```
 

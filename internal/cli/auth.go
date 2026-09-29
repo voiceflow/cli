@@ -40,7 +40,11 @@ when available, with an owner-only file fallback.
 
 Use --token to store a bearer token non-interactively, or --manual to be
 prompted for one. Use the configure command for both authentication and global
-parameters.`,
+parameters.
+
+In agent mode no browser is opened. The sign-in URL is printed as a JSON event
+as soon as it exists, for the agent to hand to the user, and the command keeps
+waiting for them to finish — run it in the background and read its output.`,
 		RunE: runAuthLoginCmd,
 	}
 	oauth.AddLoginFlags(loginCmd) // browser login flags; see internal/oauth
@@ -76,21 +80,10 @@ This removes all credentials previously set via auth login or configure.`,
 
 // runAuthLoginCmd executes the auth login command using huh forms.
 func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
-	// Agent mode: reject interactive auth login — agents should use env vars/flags.
-	if output.IsAgentMode() {
-		return output.AgentModeError(cmd,
-			"auth_login_blocked",
-			"the 'auth login' command is interactive and cannot be used in agent mode",
-			[]string{
-				fmt.Sprintf("Set credentials via environment variables (prefix: %s_)", "VF"),
-				"Pass credentials directly as CLI flags for each command",
-				fmt.Sprintf("Run '%s auth whoami' to verify current authentication", "vf"),
-			},
-		)
-	}
-
-	// Browser-based OAuth2 login is the default. --token, --manual, and
-	// --no-interactive fall through to the token-entry paths below.
+	// Browser-based OAuth2 login is the default, in agent mode too: there it
+	// hands the agent the sign-in URL to pass to the user instead of opening a
+	// browser. --token, --manual, and --no-interactive fall through to the
+	// token-entry paths below.
 	if oauth.ShouldUseBrowserLogin(cmd) {
 		return oauth.RunLogin(cmd)
 	}
@@ -102,7 +95,28 @@ func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 
 	keychainStored := false
 
-	if noInteractive, _ := cmd.Flags().GetBool("no-interactive"); noInteractive {
+	noInteractive, _ := cmd.Flags().GetBool("no-interactive")
+
+	// Agent mode reaches here only via --manual, --no-interactive, or --token,
+	// since the browser flow above covers everything else. A form prompt has
+	// nobody to answer it, so a token has to arrive on the flag.
+	if output.IsAgentMode() {
+		if f := cmd.Flags().Lookup("token"); f == nil || !f.Changed {
+			return output.AgentModeError(cmd,
+				"auth_login_interactive",
+				"'auth login' cannot prompt for a bearer token in agent mode",
+				[]string{
+					fmt.Sprintf("Run '%s auth login' without --manual/--no-interactive to get a browser sign-in URL to give the user", "vf"),
+					fmt.Sprintf("Pass the token directly: '%s auth login --token <token>'", "vf"),
+					fmt.Sprintf("Set credentials via environment variables (prefix: %s_)", "VF"),
+					fmt.Sprintf("Run '%s auth whoami' to verify current authentication", "vf"),
+				},
+			)
+		}
+		noInteractive = true
+	}
+
+	if noInteractive {
 		// Non-interactive: store any explicitly-set flags without prompting
 		changed := false
 		if f := cmd.Flags().Lookup("token"); f != nil && f.Changed {
