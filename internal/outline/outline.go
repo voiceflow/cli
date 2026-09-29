@@ -21,6 +21,7 @@ import (
 const (
 	maxPlaybooks     = 20
 	maxFunctions     = 20
+	maxAgentTools    = 15
 	maxWorkflows     = 10
 	maxVariables     = 30
 	maxMCPServers    = 10
@@ -29,7 +30,7 @@ const (
 	maxConversations = 5
 
 	nameChars    = 60
-	summaryChars = 140
+	summaryChars = 120
 	previewChars = 300
 )
 
@@ -58,7 +59,7 @@ type Outline struct {
 	Counts              Counts         `json:"counts"`
 	Playbooks           []Playbook     `json:"playbooks"`
 	Functions           []Function     `json:"functions"`
-	AgentToolsByType    map[string]int `json:"agentToolsByType"`
+	AgentTools          []Tool         `json:"agentTools"`
 	Variables           []string       `json:"variables"`
 	KnowledgeBase       KnowledgeBase  `json:"knowledgeBase"`
 	MCPServers          []Named        `json:"mcpServers"`
@@ -132,6 +133,15 @@ type Playbook struct {
 	Summary          string    `json:"summary"`
 	InstructionLines int64     `json:"instructionLines"`
 	UpdatedAt        time.Time `json:"updatedAt"`
+}
+
+// Tool is one of the agent's own tools, named after what it calls: a function
+// tool by its function's name, any other by its description.
+type Tool struct {
+	ID        string    `json:"id"`
+	Type      string    `json:"type"`
+	Name      string    `json:"name"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type Function struct {
@@ -213,7 +223,7 @@ func Build(in Inputs) Outline {
 		},
 		Playbooks:           playbooks(in.Playbooks, in.Agent.Playbooks),
 		Functions:           functions(in.Functions),
-		AgentToolsByType:    toolsByType(tools),
+		AgentTools:          agentTools(tools, functionNames),
 		Variables:           variableNames(in.Variables),
 		KnowledgeBase:       knowledgeBase(in.Documents),
 		MCPServers:          mcpServers(in.MCPServers),
@@ -309,7 +319,7 @@ func playbooks(list []components.StablePlaybookReadV2, routes []components.Stabl
 		routing[r.PlaybookID] = deref(r.Description)
 	}
 	out := []Playbook{}
-	for i, p := range list {
+	for i, p := range newestFirst(list, func(p components.StablePlaybookReadV2) time.Time { return p.UpdatedAt }) {
 		if i == maxPlaybooks {
 			break
 		}
@@ -332,7 +342,7 @@ func playbooks(list []components.StablePlaybookReadV2, routes []components.Stabl
 
 func functions(list []components.StableFunction) []Function {
 	out := []Function{}
-	for i, f := range list {
+	for i, f := range newestFirst(list, func(f components.StableFunction) time.Time { return f.UpdatedAt }) {
 		if i == maxFunctions {
 			break
 		}
@@ -366,12 +376,27 @@ func decodeTools(list []components.StableToolV2) []tool {
 	return out
 }
 
-func toolsByType(tools []tool) map[string]int {
-	counts := map[string]int{}
+func agentTools(tools []tool, functionNames map[string]string) []Tool {
+	out := []Tool{}
 	for _, t := range tools {
-		counts[t.Type]++
+		out = append(out, Tool{ID: t.ID, Type: t.Type, Name: clip(toolName(t, functionNames), nameChars), UpdatedAt: t.UpdatedAt})
 	}
-	return counts
+	sort.SliceStable(out, func(i, j int) bool { return out[i].UpdatedAt.After(out[j].UpdatedAt) })
+	if len(out) > maxAgentTools {
+		out = out[:maxAgentTools]
+	}
+	return out
+}
+
+// toolName is what a tool calls: its function's name, else its description.
+func toolName(t tool, functionNames map[string]string) string {
+	if name := functionNames[t.FunctionID]; name != "" {
+		return name
+	}
+	if t.Description != "" {
+		return t.Description
+	}
+	return t.ID
 }
 
 // countOf is len(list), or nil when the list was never fetched. A fetched
@@ -458,11 +483,7 @@ func recentChanges(in Inputs, tools []tool, functionNames map[string]string) []C
 		all = append(all, Change{Type: "function", Name: f.Name, ID: f.ID, UpdatedAt: f.UpdatedAt})
 	}
 	for _, t := range tools {
-		name := functionNames[t.FunctionID]
-		if name == "" {
-			name = clip(t.Description, 40)
-		}
-		all = append(all, Change{Type: t.Type + " tool", Name: name, ID: t.ID, UpdatedAt: t.UpdatedAt})
+		all = append(all, Change{Type: t.Type + " tool", Name: toolName(t, functionNames), ID: t.ID, UpdatedAt: t.UpdatedAt})
 	}
 	for _, v := range in.Variables {
 		if !v.IsSystem {
@@ -498,6 +519,14 @@ func conversations(list []components.StableTranscript) []Conversation {
 		out = out[:maxConversations]
 	}
 	return out
+}
+
+// newestFirst returns a copy of list sorted by updatedAt, newest first, so a
+// capped list always keeps the most recently changed entries.
+func newestFirst[T any](list []T, updatedAt func(T) time.Time) []T {
+	sorted := append([]T(nil), list...)
+	sort.SliceStable(sorted, func(i, j int) bool { return updatedAt(sorted[i]).After(updatedAt(sorted[j])) })
+	return sorted
 }
 
 // clip collapses whitespace and cuts s to at most n runes, marking a cut

@@ -129,8 +129,10 @@ func TestBuildSummarizesTheProject(t *testing.T) {
 	if o.Playbooks[1].Summary != "General support." || o.Playbooks[1].Routed {
 		t.Errorf("an unrouted playbook falls back to its own description: %+v", o.Playbooks[1])
 	}
-	if o.AgentToolsByType["function"] != 1 || o.AgentToolsByType["api"] != 1 {
-		t.Errorf("agent tools by type: %+v", o.AgentToolsByType)
+	if len(o.AgentTools) != 2 ||
+		o.AgentTools[0] != (Tool{ID: "tool-1", Type: "function", Name: "lookupOrder", UpdatedAt: at(1)}) ||
+		o.AgentTools[1] != (Tool{ID: "tool-2", Type: "api", Name: "Look up an order", UpdatedAt: at(900)}) {
+		t.Errorf("agent tools, named after what they call, newest first: %+v", o.AgentTools)
 	}
 	if strings.Join(o.Variables, ",") != "customer_name,order_id" {
 		t.Errorf("variables are the project's own, sorted: %v", o.Variables)
@@ -244,6 +246,12 @@ func TestWorstCaseStaysWithinTheBudget(t *testing.T) {
 	}
 	if *o.Counts.Playbooks != 100 || *o.Counts.Documents != 100 {
 		t.Errorf("counts must report the true totals: %+v", o.Counts)
+	}
+	// Capped lists keep the most recently changed entries: at(0) is the newest.
+	newest := fmt.Sprintf("%024d", 0)
+	if o.Functions[0].ID != newest || o.Playbooks[0].ID != newest || o.AgentTools[0].ID != newest {
+		t.Errorf("capped lists must lead with the newest entry: functions %s, playbooks %s, tools %s",
+			o.Functions[0].ID, o.Playbooks[0].ID, o.AgentTools[0].ID)
 	}
 
 	encoded, err := gotoon.Encode(o)

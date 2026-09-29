@@ -145,7 +145,7 @@ describe('vf context', () => {
       expect.objectContaining({ name: 'Refunds', routed: true, summary: 'Use when the customer asks for a refund.' }),
     ]);
     expect(outline.counts).toEqual({ playbooks: 1, workflows: 0, functions: 1, agentTools: 1, variables: 1, documents: 2, mcpServers: 0, tests: 0 });
-    expect(outline.agentToolsByType).toEqual({ function: 1 });
+    expect(outline.agentTools).toEqual([expect.objectContaining({ id: 'tool-1', type: 'function', name: 'lookupOrder' })]);
     expect(outline.knowledgeBase).toEqual({ documents: 2, byType: { url: 1, pdf: 1 }, examples: ['FAQ', 'Returns policy'] });
     expect(outline.variables).toEqual(['order_id']);
     expect(outline.recentChanges.map((c: { type: string; name: string }) => `${c.type}:${c.name}`)).toEqual([
