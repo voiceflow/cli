@@ -94,12 +94,17 @@ func runAgentLogin(cmd *cobra.Command) error {
 // storage fail in opposite ways: a failed authorization stored nothing and is
 // worth retrying, while a failed store means the user already signed in and the
 // tokens may be half-written, so retrying the whole flow is the wrong advice.
+//
+// A store failure is always a filesystem failure. SaveSession takes the keychain
+// write as best-effort — writeSecrets swallows its errors and reports false, and
+// the tokens ride along in oauth.json instead — so the only thing that can
+// surface as ErrStoreSession is writeJSONFile failing on ~/.config/vf.
 func loginFailureHints(err error) []string {
 	if errors.Is(err, ErrStoreSession) {
 		return []string{
 			"The user finished signing in, but the session could not be stored, so some credentials may still be on this machine",
 			"Run 'vf auth whoami' to see what was stored, and 'vf auth logout' to clear it before trying again",
-			"Storing usually fails because the keychain is locked or ~/.config/vf is not writable; fix that, then run 'vf auth login' again",
+			"Storing fails when ~/.config/vf cannot be written — bad permissions, a full disk, a read-only mount; fix that, then run 'vf auth login' again",
 		}
 	}
 	return []string{

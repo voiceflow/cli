@@ -189,6 +189,11 @@ func TestLoginFailureHintsSeparateAuthorizationFromStorage(t *testing.T) {
 	if !strings.Contains(joined, "vf auth whoami") {
 		t.Errorf("hints for a failed store = %q, want them to point at whoami", storeFailure)
 	}
+	// SaveSession treats the keychain as best-effort, so it can never be the
+	// cause here; naming it would send the agent to fix the wrong thing.
+	if strings.Contains(strings.ToLower(joined), "keychain") {
+		t.Errorf("hints for a failed store = %q, want them not to blame the keychain", storeFailure)
+	}
 }
 
 func TestProseLinesDropsBlankLines(t *testing.T) {
