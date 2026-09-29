@@ -44,7 +44,10 @@ parameters.
 
 In agent mode no browser is opened. The sign-in URL is printed as a JSON event
 as soon as it exists, for the agent to hand to the user, and the command keeps
-waiting for them to finish — run it in the background and read its output.`,
+waiting for them to finish — run it in the background and read its output. The
+URL redirects to a listener on this machine's loopback interface, so the browser
+that opens it has to reach this host: if the CLI runs remotely (SSH, container),
+forward the callback port first — see "Signing in over SSH" in the README.`,
 		RunE: runAuthLoginCmd,
 	}
 	oauth.AddLoginFlags(loginCmd) // browser login flags; see internal/oauth

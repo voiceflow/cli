@@ -12,6 +12,7 @@ package oauth
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -54,6 +55,7 @@ func runAgentLogin(cmd *cobra.Command) error {
 				"hints": []string{
 					"Give the authorization_url to the user and ask them to open it in their browser",
 					"This command blocks until they finish signing in, so run it in the background and read its output",
+					"The URL redirects to a loopback listener on this machine, so the browser that opens it has to reach this host; if you are running remotely (SSH, container), the callback port has to be forwarded or sign-in will time out",
 					"Nothing is stored until sign-in completes; 'vf auth whoami' reports the stored session",
 				},
 			}
@@ -64,15 +66,7 @@ func runAgentLogin(cmd *cobra.Command) error {
 		},
 	})
 	if err != nil {
-		return output.AgentModeError(cmd,
-			"auth_login_failed",
-			err.Error(),
-			[]string{
-				"Sign-in did not complete, so no credentials were stored",
-				"Run 'vf auth login' again to get a fresh authorization_url for the user",
-				"To authenticate without a browser, set VF_TOKEN or pass --token <token>",
-			},
-		)
+		return output.AgentModeError(cmd, "auth_login_failed", err.Error(), loginFailureHints(err))
 	}
 
 	event := map[string]any{
@@ -94,6 +88,25 @@ func runAgentLogin(cmd *cobra.Command) error {
 	}
 	writeLoginEvent(out, event)
 	return nil
+}
+
+// loginFailureHints describes what the agent should do next. Authorization and
+// storage fail in opposite ways: a failed authorization stored nothing and is
+// worth retrying, while a failed store means the user already signed in and the
+// tokens may be half-written, so retrying the whole flow is the wrong advice.
+func loginFailureHints(err error) []string {
+	if errors.Is(err, ErrStoreSession) {
+		return []string{
+			"The user finished signing in, but the session could not be stored, so some credentials may still be on this machine",
+			"Run 'vf auth whoami' to see what was stored, and 'vf auth logout' to clear it before trying again",
+			"Storing usually fails because the keychain is locked or ~/.config/vf is not writable; fix that, then run 'vf auth login' again",
+		}
+	}
+	return []string{
+		"Sign-in did not complete, so no credentials were stored",
+		"Run 'vf auth login' again to get a fresh authorization_url for the user",
+		"To authenticate without a browser, set VF_TOKEN or pass --token <token>",
+	}
 }
 
 // writeLoginEvent prints one login event as indented JSON, matching the shape

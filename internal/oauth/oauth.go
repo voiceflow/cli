@@ -172,6 +172,12 @@ type LoginOptions struct {
 	OnAuthURL func(authURL string)
 }
 
+// ErrStoreSession reports that authorization completed but the resulting
+// session could not be persisted. The tokens are live either way, and the
+// keychain half may already hold them, so callers must not tell the user that
+// nothing was stored.
+var ErrStoreSession = errors.New("store session")
+
 // Login runs the authorization code flow and stores the resulting session.
 func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (*Session, error) {
 	out := opts.Out
@@ -278,7 +284,10 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 		RefreshToken:  tok.RefreshToken,
 	}
 	if err := SaveSession(session); err != nil {
-		return nil, fmt.Errorf("store session: %w", err)
+		// Sign-in itself succeeded here, and SaveSession writes the keychain
+		// before the session file, so tokens may already be stored. Mark the
+		// failure so callers do not report it as "nothing was stored".
+		return nil, fmt.Errorf("%w: %w", ErrStoreSession, err)
 	}
 	return session, nil
 }
