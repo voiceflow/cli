@@ -194,6 +194,27 @@ func TestTOONKeysArePlain(t *testing.T) {
 	}
 }
 
+func TestUnexplainedChange(t *testing.T) {
+	changes := []Change{{Type: "function", Name: "lookupOrder", UpdatedAt: at(600)}}
+	release := &Release{Name: "v2", CreatedAt: at(300)}
+
+	if got := unexplainedChange(at(10), changes, release); !strings.Contains(got, at(10).Format(time.RFC3339)) || !strings.Contains(got, "cannot be identified") {
+		t.Errorf("a project update long after every dated change must be reported as unexplained: %q", got)
+	}
+	if got := unexplainedChange(at(300).Add(30*time.Second), changes, release); got != "" {
+		t.Errorf("a project update within a minute of the last release is explained by it: %q", got)
+	}
+	if got := unexplainedChange(at(700), changes, release); got != "" {
+		t.Errorf("a project update older than the newest change is explained: %q", got)
+	}
+	if got := unexplainedChange(at(10), nil, nil); got == "" {
+		t.Error("with nothing dated at all, a project update is unexplained")
+	}
+	if got := unexplainedChange(time.Time{}, changes, release); got != "" {
+		t.Errorf("an unknown project timestamp reports nothing: %q", got)
+	}
+}
+
 func TestClip(t *testing.T) {
 	cases := map[string]struct {
 		in   string

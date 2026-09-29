@@ -159,6 +159,8 @@ describe('vf context', () => {
     expect(outline.recentConversations).toEqual([expect.objectContaining({ id: 't-new', ended: true })]);
     expect(outline.rules.join(' ')).toContain('vf environment compile');
     expect(outline.warnings).toEqual([]);
+    // The project record is older than the newest change, so nothing is unexplained.
+    expect(outline.unexplainedChange).toBe('');
 
     // Eleven reads, all for the linked project; the agent's tools are asked for explicitly.
     expect(requests).toHaveLength(11);

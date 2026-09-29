@@ -64,6 +64,7 @@ type Outline struct {
 	KnowledgeBase       KnowledgeBase  `json:"knowledgeBase"`
 	MCPServers          []Named        `json:"mcpServers"`
 	RecentChanges       []Change       `json:"recentChanges"`
+	UnexplainedChange   string         `json:"unexplainedChange"`
 	RecentConversations []Conversation `json:"recentConversations"`
 	Rules               []string       `json:"rules"`
 	DrillDown           []string       `json:"drillDown"`
@@ -200,7 +201,35 @@ var DrillDown = []string{
 // Notes say what the outline cannot know.
 var Notes = []string{
 	"recentChanges says when something changed, not who changed it: the API does not report an editor for these resources.",
-	"The agent's own instructions and global prompt carry no timestamp, so their edits do not appear in recentChanges. A project.updatedAt later than every entry there means something changed that this outline cannot see.",
+	"The agent's own instructions and global prompt carry no timestamp, so their edits never appear in recentChanges.",
+}
+
+// sameEditWindow absorbs the gap between a resource's own timestamp and the
+// project record's, which an ordinary edit or publish moves moments later.
+const sameEditWindow = time.Minute
+
+// unexplainedChange answers "what changed most recently?" when the answer is
+// not knowable, so an agent reports it instead of searching resource by
+// resource: the project record moved after everything the outline can date,
+// and nothing in vf can say what the change was.
+func unexplainedChange(projectUpdated time.Time, changes []Change, lastRelease *Release) string {
+	if projectUpdated.IsZero() {
+		return ""
+	}
+	var newest time.Time
+	if len(changes) > 0 {
+		newest = changes[0].UpdatedAt
+	}
+	if lastRelease != nil && lastRelease.CreatedAt.After(newest) {
+		newest = lastRelease.CreatedAt
+	}
+	if !projectUpdated.After(newest.Add(sameEditWindow)) {
+		return ""
+	}
+	return "The project record changed at " + projectUpdated.UTC().Format(time.RFC3339) +
+		", after everything in recentChanges and the last release. The API does not timestamp the instructions, " +
+		"the global prompt or agent settings, and vf has no history or diff command, so what changed cannot be " +
+		"identified. Report it as unexplained rather than searching for it."
 }
 
 // Build condenses in into an Outline.
@@ -241,6 +270,7 @@ func Build(in Inputs) Outline {
 	if out.Warnings == nil {
 		out.Warnings = []string{}
 	}
+	out.UnexplainedChange = unexplainedChange(out.Project.UpdatedAt, out.RecentChanges, out.Environment.LastRelease)
 	return out
 }
 
