@@ -186,6 +186,7 @@ func runLinkCmd(cmd *cobra.Command, args []string) error {
 // by getting them wrong.
 func agentInstructions(l link.Link) string {
 	return fmt.Sprintf(`This directory is linked to the Voiceflow project %q (%s), environment %q. vf commands run here use them by default, so leave out --project-id and --environment-alias.
+- Start with 'vf context': one call returns what the agent is, what changed recently, and the latest conversations.
 - Changes take effect only after 'vf environment compile'. Test the draft with --version-param draft.
 - Publishing ('vf environment publish') ships to real users. Ask before running it.`,
 		l.ProjectName, l.ProjectID, l.EnvironmentAlias)

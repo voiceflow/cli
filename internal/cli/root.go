@@ -151,7 +151,8 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	initExploreCmd(rootCmd)
 	initDocsCmd(rootCmd)
-	initLinkCmd(rootCmd) // vf link / vf unlink; see link.go
+	initLinkCmd(rootCmd)    // vf link / vf unlink; see link.go
+	initContextCmd(rootCmd) // vf context; see context.go
 
 	// Global output format flag
 	rootCmd.PersistentFlags().StringP("output-format", "o", "pretty", "Specify the output format. Options: pretty, json, yaml, table, toon.")
