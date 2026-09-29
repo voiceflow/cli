@@ -134,7 +134,9 @@ describe('vf context', () => {
     expect(result.exitCode, result.stderr).toBe(0);
     const outline = JSON.parse(result.stdout);
 
-    expect(outline.project).toEqual({ id: PROJECT_ID, name: 'Returns bot', workspaceID: 'VzElNm0wjL', updatedAt: minutesAgo(10) });
+    expect(outline.project).toEqual({ id: PROJECT_ID, name: 'Returns bot', workspaceID: 'VzElNm0wjL', updatedAt: expect.any(String) });
+    // Compare instants: Go writes 11:50:00Z where JavaScript writes 11:50:00.000Z.
+    expect(Date.parse(outline.project.updatedAt)).toBe(Date.parse(minutesAgo(10)));
     expect(outline.environment).toMatchObject({ alias: 'main', isMain: true, lastRelease: { name: 'V1.2' } });
     expect(outline.agent).toMatchObject({
       model: 'voiceflow-core-4.1',
