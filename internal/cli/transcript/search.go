@@ -25,6 +25,7 @@ var searchCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "session-id", FieldPath: "Body.SessionID", Kind: flagutil.FlagKindString, Optional: true, Description: "When provided, only transcripts from this conversation session are returned."},
 	{FlagName: "start-date", FieldPath: "Body.StartDate", Kind: flagutil.FlagKindDateTime, Optional: true, Description: "When provided, only transcripts created at or after this ISO 8601 timestamp are returned."},
 	{FlagName: "environment-alias", FieldPath: "Body.EnvironmentAlias", Kind: flagutil.FlagKindString, Optional: true, Description: "When provided, only transcripts from the environment with this alias are returned."},
+	{FlagName: "release-name", Shorthand: "r", FieldPath: "Body.ReleaseName", Kind: flagutil.FlagKindString, Optional: true, Description: "When provided, only transcripts from the release with this exact name (e.g. `V1.02`) are returned, as listed in the `releases` of the environment. When several releases share the name, transcripts from all of them are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted. Cannot be combined with `version: \"draft\"`."},
 }
 
 // initSearchCmd initializes the search command.
