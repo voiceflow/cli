@@ -258,7 +258,12 @@ func Result(cmd *cobra.Command, res interface{}) error {
 			return err
 		}
 	case "toon":
-		toonStr, err := gotoon.Encode(content)
+		// Encode the JSON form, not the Go value; see jsonValue.
+		value, err := jsonValue(content)
+		if err != nil {
+			return err
+		}
+		toonStr, err := gotoon.Encode(value)
 		if err != nil {
 			return fmt.Errorf("failed to encode response as TOON: %w", err)
 		}
@@ -269,6 +274,30 @@ func Result(cmd *cobra.Command, res interface{}) error {
 		}
 	}
 	return nil
+}
+
+// jsonValue returns content exactly as the json output format renders it,
+// decoded into plain maps, slices and scalars.
+//
+// Encoders that walk Go values by reflection get the SDK's types wrong.
+// gotoon uses a json tag verbatim as the key ("instructions,omitzero"),
+// ignores omitempty and omitzero, turns an optional-nullable field (a
+// map[bool]*T) into null even when it is set, and prints a union's Go wrapper
+// fields instead of the member the API returned. The SDK's own JSON marshaling
+// gets all of these right, so encoders work from its output.
+func jsonValue(content interface{}) (interface{}, error) {
+	if content == nil {
+		return nil, nil
+	}
+	data, err := marshalJSON(content)
+	if err != nil {
+		return nil, err
+	}
+	var value interface{}
+	if err := json.Unmarshal(data, &value); err != nil {
+		return nil, fmt.Errorf("failed to decode response JSON: %w", err)
+	}
+	return value, nil
 }
 
 // Error handles SDK errors, outputting structured JSON when --output-format=json,
@@ -633,15 +662,9 @@ func injectHeaders(data interface{}, headers http.Header) interface{} {
 // in json, yaml, toon, and jq output modes.
 func outputWithHeaders(out io.Writer, content interface{}, headers http.Header, format, jqExpr string, colorize bool) error {
 	// Marshal content to JSON for a uniform representation
-	var parsed interface{}
-	if content != nil {
-		data, err := marshalJSON(content)
-		if err != nil {
-			return err
-		}
-		if err := json.Unmarshal(data, &parsed); err != nil {
-			return err
-		}
+	parsed, err := jsonValue(content)
+	if err != nil {
+		return err
 	}
 
 	merged := injectHeaders(parsed, headers)
