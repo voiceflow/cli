@@ -53,6 +53,8 @@ type StableTranscriptSearchRequest struct {
 	StartDate *time.Time `json:"startDate,omitzero"`
 	// When provided, only transcripts from the environment with this alias are returned.
 	EnvironmentAlias *string `json:"environmentAlias,omitzero"`
+	// When provided, only transcripts from the release with this exact name (e.g. `V1.02`) are returned, as listed in the `releases` of the environment. When several releases share the name, transcripts from all of them are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted. Cannot be combined with `version: "draft"`.
+	ReleaseName *string `json:"releaseName,omitzero"`
 }
 
 func (s StableTranscriptSearchRequest) MarshalJSON() ([]byte, error) {
@@ -120,4 +122,11 @@ func (s *StableTranscriptSearchRequest) GetEnvironmentAlias() *string {
 		return nil
 	}
 	return s.EnvironmentAlias
+}
+
+func (s *StableTranscriptSearchRequest) GetReleaseName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ReleaseName
 }

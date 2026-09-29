@@ -31132,6 +31132,10 @@ components:
         environmentAlias:
           description: When provided, only transcripts from the environment with this alias are returned.
           type: string
+        releaseName:
+          description: 'When provided, only transcripts from the release with this exact name (e.g. `V1.02`) are returned, as listed in the `releases` of the environment. When several releases share the name, transcripts from all of them are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted. Cannot be combined with `version: "draft"`.'
+          type: string
+          minLength: 1
       additionalProperties: false
     StableTranscriptWithLogsResponse:
       type: object
