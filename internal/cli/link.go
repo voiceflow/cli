@@ -23,6 +23,7 @@ import (
 	"github.com/voiceflow/cli/internal/sdk"
 	"github.com/voiceflow/cli/internal/sdk/models/operations"
 	"github.com/voiceflow/cli/internal/sdk/models/sdkerrors"
+	"github.com/voiceflow/cli/internal/usage"
 )
 
 // initLinkCmd registers `vf link` and `vf unlink`.
@@ -45,7 +46,13 @@ The project id is in Creator under the agent's Settings → General (Metadata).
 A Creator page URL will not do: the id in it is a version id.`,
 		Example: `  vf link 6a67842584dac97c7626ebaa
   vf link 6a67842584dac97c7626ebaa --environment-alias dev`,
-		Args: cobra.ExactArgs(1),
+		// --usage prints the schema and needs no project id.
+		Args: func(cmd *cobra.Command, args []string) error {
+			if usage.UsageRequested(cmd) {
+				return nil
+			}
+			return cobra.ExactArgs(1)(cmd, args)
+		},
 		// vf link decides the defaults; it must not receive the old ones.
 		Annotations: map[string]string{link.SkipDefaultsAnnotation: "true"},
 		RunE:        runLinkCmd,
@@ -62,6 +69,14 @@ the one here, or the nearest one above. Commands then need --project-id and
 		Args: cobra.NoArgs,
 		RunE: runUnlinkCmd,
 	})
+
+	usage.RegisterCommand("link", `cmd "link" help="Pin a project and environment to this directory" {
+  arg "<project-id>" help="The project to link: the Project ID in Creator, under the agent's Settings → General (Metadata)"
+  flag "-e --environment-alias <environment_alias>" help="Environment to link" default="main"
+}
+`)
+	usage.RegisterCommand("unlink", `cmd "unlink" help="Remove the project link that applies to this directory"
+`)
 }
 
 // linkResult wraps the summary for output.Result, which renders the first
@@ -81,6 +96,9 @@ type linkSummary struct {
 }
 
 func runLinkCmd(cmd *cobra.Command, args []string) error {
+	if usage.UsageRequested(cmd) {
+		return usage.EmitSchema(cmd, cmd.OutOrStdout())
+	}
 	projectID, err := link.ParseProjectID(args[0])
 	if err != nil {
 		return linkError(cmd, "invalid_project_id", err.Error(),
@@ -212,6 +230,9 @@ func environmentNotFound(cmd *cobra.Command, envs *sdk.Environment, projectID, a
 }
 
 func runUnlinkCmd(cmd *cobra.Command, args []string) error {
+	if usage.UsageRequested(cmd) {
+		return usage.EmitSchema(cmd, cmd.OutOrStdout())
+	}
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("find the current directory: %w", err)
@@ -225,6 +246,12 @@ func runUnlinkCmd(cmd *cobra.Command, args []string) error {
 			return output.Result(cmd, unlinkResult{Unlink: unlinkSummary{}})
 		}
 		fmt.Fprintln(cmd.OutOrStdout(), "Nothing to unlink: no .voiceflow/project.json here or in any directory above.")
+		return nil
+	}
+
+	// --dry-run promises no changes: say what would go, and leave it.
+	if client.IsDryRun(cmd) {
+		fmt.Fprintf(cmd.ErrOrStderr(), "[DRY-RUN] Would remove %s\n", path)
 		return nil
 	}
 

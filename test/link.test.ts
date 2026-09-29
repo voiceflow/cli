@@ -220,6 +220,27 @@ describe('commands in a linked directory', () => {
   });
 });
 
+describe('--usage', () => {
+  it('prints the schema for vf link and vf unlink, and changes nothing', async () => {
+    writeLink({ projectID: PROJECT_ID, projectName: 'Returns bot' });
+
+    for (const args of [['link', PROJECT_ID, '--usage'], ['link', '--usage'], ['unlink', '--usage']]) {
+      const result = await run([...args, '--server-url', serverURL]);
+      expect(result.exitCode, `${args.join(' ')}: ${result.stderr}`).toBe(0);
+      expect(result.stdout).toContain(`cmd "${args[0]}"`);
+    }
+    expect(requests).toEqual([]);
+    expect(readLink().projectName).toBe('Returns bot'); // not replaced, not removed
+  });
+
+  it('lists vf link and vf unlink in the root schema', async () => {
+    const result = await run(['--usage']);
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stdout).toContain('cmd "link"');
+    expect(result.stdout).toContain('cmd "unlink"');
+  });
+});
+
 describe('a damaged link', () => {
   beforeEach(() => {
     fs.mkdirSync(path.join(cwd, '.voiceflow'), { recursive: true });
@@ -277,5 +298,14 @@ describe('vf unlink', () => {
     const again = await run(['unlink'], { dir: deep });
     expect(again.exitCode, again.stderr).toBe(0);
     expect(again.stdout).toContain('Nothing to unlink');
+  });
+
+  it('only previews on --dry-run', async () => {
+    writeLink({ projectID: PROJECT_ID, projectName: 'Returns bot' });
+
+    const result = await run(['unlink', '--dry-run']);
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stderr).toContain(`[DRY-RUN] Would remove ${linkFile()}`);
+    expect(fs.existsSync(linkFile())).toBe(true);
   });
 });
