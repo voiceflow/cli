@@ -180,11 +180,16 @@ type Conversation struct {
 	Ended     bool      `json:"ended"`
 }
 
-// Rules are the working rules an agent otherwise learns by breaking them.
+// Rules are how the platform behaves in the ways an agent otherwise learns by
+// breaking something. They are stated as facts, not instructions: agents are
+// right to distrust instructions that arrive in tool output, and a cold agent
+// in testing double-checked one before acting on it. The instructions that
+// follow from these facts belong in the snippet `vf link` prints for the
+// user's own instructions file.
 var Rules = []string{
 	"Changes take effect only after 'vf environment compile'; until then the agent keeps serving the previous build.",
-	"Test what you are editing with --version-param draft; published serves the last release.",
-	"Publishing ('vf environment publish') ships to real users. Ask before running it.",
+	"--version-param draft runs what is being edited; published runs the last release.",
+	"'vf environment publish' ships the draft to real users.",
 }
 
 // DrillDown lists the commands that return what the outline leaves out.
@@ -201,7 +206,7 @@ var DrillDown = []string{
 // Notes say what the outline cannot know.
 var Notes = []string{
 	"recentChanges says when something changed, not who changed it: the API does not report an editor for these resources.",
-	"The agent's own instructions and global prompt carry no timestamp, so their edits never appear in recentChanges.",
+	"The instructions, global prompt, agent settings and knowledge-base documents carry no edit time, so their changes never appear in recentChanges.",
 }
 
 // sameEditWindow absorbs the gap between a resource's own timestamp and the
@@ -209,9 +214,9 @@ var Notes = []string{
 const sameEditWindow = time.Minute
 
 // unexplainedChange answers "what changed most recently?" when the answer is
-// not knowable, so an agent reports it instead of searching resource by
-// resource: the project record moved after everything the outline can date,
-// and nothing in vf can say what the change was.
+// not knowable: the project record moved after everything the outline can
+// date, and nothing in vf can say what the change was. It lists every kind of
+// resource that carries no edit time, so an agent has nothing left to check.
 func unexplainedChange(projectUpdated time.Time, changes []Change, lastRelease *Release) string {
 	if projectUpdated.IsZero() {
 		return ""
@@ -227,9 +232,9 @@ func unexplainedChange(projectUpdated time.Time, changes []Change, lastRelease *
 		return ""
 	}
 	return "The project record changed at " + projectUpdated.UTC().Format(time.RFC3339) +
-		", after everything in recentChanges and the last release. The API does not timestamp the instructions, " +
-		"the global prompt or agent settings, and vf has no history or diff command, so what changed cannot be " +
-		"identified. Report it as unexplained rather than searching for it."
+		", after everything in recentChanges and the last release. The instructions, global prompt, agent " +
+		"settings and knowledge-base documents carry no edit time, and vf has no history or diff command, so " +
+		"this change cannot be identified with vf."
 }
 
 // Build condenses in into an Outline.
