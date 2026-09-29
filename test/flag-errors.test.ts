@@ -16,7 +16,7 @@
 
 import { execa } from 'execa';
 import * as path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 const VF = path.resolve(__dirname, '..', 'vf');
 
@@ -119,29 +119,82 @@ describe('structured flags still reject raw text', () => {
   });
 });
 
+/** Collapses whitespace runs, since help indents a description's later lines. */
+const squash = (text: string) => text.replace(/\s+/g, ' ');
+
+/** A flag whose description, as the spec wrote it, uses backticks. */
+interface BacktickedFlag {
+  command: string[];
+  name: string;
+  description: string;
+}
+
+/**
+ * Every flag whose description uses backticks, read from `vf --usage`: the KDL
+ * schema keeps each description exactly as the spec wrote it, where --help
+ * shows it after the CLI has rewritten it.
+ */
+async function backtickedFlags(): Promise<BacktickedFlag[]> {
+  const { stdout } = await run(['--usage']);
+  const flags: BacktickedFlag[] = [];
+  const blocks: Array<string | null> = []; // one per open { }, null when it is not a command
+  for (const line of stdout.split('\n')) {
+    if (/^\s*\}\s*$/.test(line)) {
+      blocks.pop();
+      continue;
+    }
+    const flag = line.match(/^\s*flag "[^"]*--([\w-]+)[^"]*" help="((?:[^"\\]|\\.)*)"/);
+    const [, name, help] = flag ?? [];
+    if (name && help?.includes('`')) {
+      flags.push({
+        command: blocks.filter((block): block is string => block !== null),
+        name,
+        // KDL escapes a string the way JSON does.
+        description: JSON.parse(`"${help}"`),
+      });
+    }
+    if (/\{\s*$/.test(line)) blocks.push(line.match(/^\s*cmd "([^"]+)"/)?.[1] ?? null);
+  }
+  return flags;
+}
+
 describe('help shows the flag type, not a word from its description', () => {
   // pflag reads the first back-quoted word in a usage string as the value
-  // placeholder. Descriptions come from the OpenAPI spec, where backticks are
-  // prose emphasis, so --instructions used to render as `--instructions Name`.
-  const cases: Array<[cmd: string[], flag: string, wrong: string]> = [
-    [['agent', 'update'], 'instructions', 'Name'],
-    [['agent', 'update'], 'prompt', 'Name'],
-    [['transcript', 'search'], 'version-param', 'environmentAlias'],
-  ];
+  // placeholder, and strips that pair of backticks from the prose. Descriptions
+  // come from the OpenAPI spec, where backticks are emphasis, so flags rendered
+  // as `--version-param environmentAlias` with the quotes gone from the sentence.
+  //
+  // The flags come from `vf --usage` rather than a hand-picked list. The list
+  // went stale on a regeneration: the spec dropped the backticks from its
+  // flags' descriptions, and its checks kept passing on flags that no longer had
+  // anything to check.
+  let flags: BacktickedFlag[] = [];
 
-  for (const [cmd, flag, wrong] of cases) {
-    it(`${cmd.join(' ')} --${flag} is labelled string, not ${wrong}`, async () => {
-      const r = await run([...cmd, '--help']);
-      const line = (r.stdout + r.stderr).split('\n').find((l) => l.includes(`--${flag} `));
-      expect(line, `no help line for --${flag}`).toBeDefined();
-      expect(line).toContain(`--${flag} string`);
-      expect(line).not.toContain(`--${flag} ${wrong}`);
-    });
-  }
+  beforeAll(async () => {
+    flags = await backtickedFlags();
+  });
 
-  it('keeps the description prose readable after backticks are neutralized', async () => {
-    const r = await run(['agent', 'update', '--help']);
-    expect(r.stdout + r.stderr).toContain("Backticked 'Name' resolves to");
+  it('finds flags whose descriptions use backticks', () => {
+    // Zero would leave the next case passing without checking anything. If the
+    // spec really has stopped using backticks, this block can go.
+    expect(flags.length).toBeGreaterThan(0);
+  });
+
+  it('renders every one of them with its backticks as quotes, so pflag lifts no word', async () => {
+    // One check covers both halves: had pflag lifted a word, that word would
+    // appear bare in the sentence, and the description below would not match.
+    const problems: string[] = [];
+    for (const command of new Set(flags.map((flag) => flag.command.join(' ')))) {
+      const { stdout, stderr } = await run([...command.split(' ').filter(Boolean), '--help']);
+      const help = stdout + stderr;
+      for (const { name, description } of flags.filter((flag) => flag.command.join(' ') === command)) {
+        const line = help.split('\n').find((l) => new RegExp(`^\\s+(?:-\\w, )?--${name} `).test(l));
+        if (line === undefined || !squash(help).includes(squash(description.replaceAll('`', "'")))) {
+          problems.push(`vf ${command} --${name}: ${line?.trim() ?? 'no help line'}`);
+        }
+      }
+    }
+    expect(problems).toEqual([]);
   });
 });
 
