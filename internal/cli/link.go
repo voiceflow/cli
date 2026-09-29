@@ -75,7 +75,7 @@ type linkSummary struct {
 	WorkspaceID       string `json:"workspaceID"`
 	EnvironmentAlias  string `json:"environmentAlias"`
 	File              string `json:"file"`
-	ReplacedProjectID string `json:"replacedProjectID,omitempty"`
+	ReplacedProjectID string `json:"replacedProjectID"`
 	AgentInstructions string `json:"agentInstructions"`
 }
 
@@ -254,9 +254,9 @@ type unlinkResult struct {
 
 type unlinkSummary struct {
 	Removed     bool   `json:"removed"`
-	ProjectID   string `json:"projectID,omitempty"`
-	ProjectName string `json:"projectName,omitempty"`
-	File        string `json:"file,omitempty"`
+	ProjectID   string `json:"projectID"`
+	ProjectName string `json:"projectName"`
+	File        string `json:"file"`
 }
 
 // applyLinkDefaults fills --project-id, --environment-alias and

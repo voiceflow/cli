@@ -235,6 +235,21 @@ describe('a damaged link', () => {
   });
 });
 
+describe('agent-mode output', () => {
+  // TOON, agent mode's default, prints a json tag verbatim, so a tag option
+  // like omitempty would become part of the key.
+  it('uses plain keys for vf link and vf unlink', async () => {
+    const linked = await run(['link', PROJECT_ID, '--server-url', serverURL], { agentMode: true });
+    expect(linked.exitCode, linked.stderr).toBe(0);
+    expect(linked.stdout).not.toContain(',omit');
+
+    const unlinked = await run(['unlink'], { agentMode: true });
+    expect(unlinked.exitCode, unlinked.stderr).toBe(0);
+    expect(unlinked.stdout).toContain('removed');
+    expect(unlinked.stdout).not.toContain(',omit');
+  });
+});
+
 describe('vf unlink', () => {
   it('removes the link that applies here, even from a subdirectory, and is safe to repeat', async () => {
     writeLink({ projectID: PROJECT_ID, projectName: 'Returns bot' });
