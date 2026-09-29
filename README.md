@@ -297,7 +297,8 @@ vf link 6a67842584dac97c7626ebaa --environment-alias dev
 `vf link` checks that the project and environment exist, then writes
 `.voiceflow/project.json`: ids, the project name and the environment alias,
 nothing secret. Commands run in that directory, or in any directory below it,
-use the link, and an explicit flag always wins. `vf whoami` shows the link in
+use the link. A linked value is only a fallback: an explicit flag, or a value in
+`--body` or stdin, always wins. `vf whoami` shows the link in
 effect, and `vf unlink` removes it.
 
 - **Deletes always name their target.** A link never fills in the project,

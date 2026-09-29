@@ -19,6 +19,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+
+	"github.com/voiceflow/cli/internal/flagutil"
 )
 
 const (
@@ -217,8 +219,12 @@ func isDeleteTarget(cmd *cobra.Command, flag string) bool {
 }
 
 // ApplyDefaults fills the project, environment and workspace flags that cmd
-// has but was not given, from the nearest link at or above dir. An explicit
-// flag always wins. It returns the link it used, or nil when none applied.
+// has but was not given, from the nearest link at or above dir. It returns
+// the link it used, or nil when none applied.
+//
+// A linked value is a fallback, never an override: an explicit flag wins,
+// and so does a value in --body or stdin. The flags are not marked as set;
+// see flagutil.SetLinkDefault.
 //
 // The link file is only read when the command can use it, so commands that
 // take no project (auth, docs, version) never fail on a damaged link.
@@ -247,7 +253,7 @@ func ApplyDefaults(cmd *cobra.Command, dir string) (*Found, error) {
 		if value == "" {
 			continue
 		}
-		if err := cmd.Flags().Set(name, value); err != nil {
+		if err := flagutil.SetLinkDefault(cmd, name, value); err != nil {
 			return nil, fmt.Errorf("apply --%s from %s: %w", name, found.Path, err)
 		}
 	}

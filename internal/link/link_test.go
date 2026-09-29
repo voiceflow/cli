@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+
+	"github.com/voiceflow/cli/internal/flagutil"
 )
 
 const testProjectID = "0123456789abcdef01234567"
@@ -190,18 +192,21 @@ func flagValue(t *testing.T, cmd *cobra.Command, name string) (string, bool) {
 	return f.Value.String(), f.Changed
 }
 
-func TestApplyDefaultsFillsFlagsTheCommandHas(t *testing.T) {
+// TestApplyDefaultsFillsFlagsAsFallbacks: the linked values are in the flags
+// but the flags are not marked as set, so BuildRequest lets --body and stdin
+// win over them (see flagutil.SetLinkDefault).
+func TestApplyDefaultsFillsFlagsAsFallbacks(t *testing.T) {
 	cmd := commandTree("playbook", "list", projectIDFlag, environmentAliasFlag)
 
 	found, err := ApplyDefaults(cmd, linkedDir(t))
 	if err != nil || found == nil {
 		t.Fatalf("got %+v %v", found, err)
 	}
-	if v, changed := flagValue(t, cmd, projectIDFlag); v != testProjectID || !changed {
-		t.Errorf("project-id = %q (changed %v)", v, changed)
-	}
-	if v, changed := flagValue(t, cmd, environmentAliasFlag); v != "dev" || !changed {
-		t.Errorf("environment-alias = %q (changed %v)", v, changed)
+	for name, want := range map[string]string{projectIDFlag: testProjectID, environmentAliasFlag: "dev"} {
+		v, changed := flagValue(t, cmd, name)
+		if v != want || changed || !flagutil.HasLinkDefault(cmd, name) {
+			t.Errorf("--%s = %q, changed %v, linked %v: want %q, not changed, linked", name, v, changed, flagutil.HasLinkDefault(cmd, name), want)
+		}
 	}
 }
 
@@ -233,8 +238,8 @@ func TestApplyDefaultsNeverFillsWhatADeleteDestroys(t *testing.T) {
 		if _, err := ApplyDefaults(cmd, linkedDir(t)); err != nil {
 			t.Fatal(err)
 		}
-		if _, changed := flagValue(t, cmd, c.keep); changed {
-			t.Errorf("%s delete: --%s must be named explicitly", c.group, c.keep)
+		if v, _ := flagValue(t, cmd, c.keep); v != "" || flagutil.HasLinkDefault(cmd, c.keep) {
+			t.Errorf("%s delete: --%s must be named explicitly, got %q from the link", c.group, c.keep, v)
 		}
 	}
 
@@ -255,8 +260,8 @@ func TestApplyDefaultsSkipsAnnotatedCommands(t *testing.T) {
 	if err != nil || found != nil {
 		t.Fatalf("got %+v %v", found, err)
 	}
-	if _, changed := flagValue(t, cmd, environmentAliasFlag); changed {
-		t.Error("annotated command received a default")
+	if v, _ := flagValue(t, cmd, environmentAliasFlag); v != "" || flagutil.HasLinkDefault(cmd, environmentAliasFlag) {
+		t.Errorf("annotated command received a default: %q", v)
 	}
 }
 

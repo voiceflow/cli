@@ -205,6 +205,19 @@ describe('commands in a linked directory', () => {
     expect(result.stdout).toContain(`Returns bot (${PROJECT_ID})`);
     expect(result.stdout).toContain(linkFile());
   });
+
+  // transcript search carries the environment in its JSON body, not in the
+  // query: a linked value must not replace one the user wrote there.
+  it('let a value in --body win over the link', async () => {
+    const withBody = await run(['transcript', 'search', '--body', '{"environmentAlias":"production"}', '--dry-run']);
+    expect(withBody.exitCode, withBody.stderr).toBe(0);
+    expect(withBody.stderr).toContain('"environmentAlias": "production"');
+    expect(dryRunURL(withBody.stderr).searchParams.get('projectID')).toBe(PROJECT_ID);
+
+    const withoutBody = await run(['transcript', 'search', '--dry-run']);
+    expect(withoutBody.exitCode, withoutBody.stderr).toBe(0);
+    expect(withoutBody.stderr).toContain('"environmentAlias": "dev"');
+  });
 });
 
 describe('a damaged link', () => {

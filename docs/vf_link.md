@@ -7,9 +7,10 @@ Pin a project and environment to this directory
 Pin a Voiceflow project and environment to the current directory.
 
 Every vf command run here, or in any directory below, then uses them by
-default, so --project-id and --environment-alias can be left out. An explicit
-flag always wins. Deleting a project, environment or workspace always needs
-its flag: a link never fills in what a delete destroys.
+default, so --project-id and --environment-alias can be left out. A linked
+value is only a fallback: an explicit flag, or a value in --body or stdin,
+always wins. Deleting a project, environment or workspace always needs its
+flag: a link never fills in what a delete destroys.
 
 The link is .voiceflow/project.json. It holds ids, the project name and the
 environment alias — nothing secret. Remove it with 'vf unlink'.
