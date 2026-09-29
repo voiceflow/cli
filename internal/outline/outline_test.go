@@ -71,7 +71,7 @@ func sampleInputs(t *testing.T) Inputs {
 	agentInstructions.Workflows = []components.StableAgentReadV2Workflow{{WorkflowID: "wf-auth", Description: ptr("Verify the caller before anything else.")}}
 
 	return Inputs{
-		Project: components.StableProject{ID: "p1", Name: "Returns bot", WorkspaceID: "VzElNm0wjL"},
+		Project: components.StableProject{ID: "p1", Name: "Returns bot", WorkspaceID: "VzElNm0wjL", UpdatedAt: at(2)},
 		Environment: &components.StableEnvironment{
 			Alias: "main", Name: "Production", IsMain: true, TrafficPercentage: 100,
 			Releases: []components.StableEnvironmentRelease{{Name: "v1", CreatedAt: at(5000)}, {Name: "v2", CreatedAt: at(100)}},
@@ -100,7 +100,7 @@ func sampleInputs(t *testing.T) Inputs {
 func TestBuildSummarizesTheProject(t *testing.T) {
 	o := Build(sampleInputs(t))
 
-	if o.Project != (Project{ID: "p1", Name: "Returns bot", WorkspaceID: "VzElNm0wjL"}) {
+	if o.Project != (Project{ID: "p1", Name: "Returns bot", WorkspaceID: "VzElNm0wjL", UpdatedAt: at(2)}) {
 		t.Errorf("project: %+v", o.Project)
 	}
 	if o.Environment.Alias != "main" || o.Environment.LastRelease == nil || o.Environment.LastRelease.Name != "v2" {

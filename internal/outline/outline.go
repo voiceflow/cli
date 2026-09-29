@@ -71,10 +71,14 @@ type Outline struct {
 	Warnings            []string       `json:"warnings"`
 }
 
+// Project's UpdatedAt is the project record's own timestamp. When it is later
+// than everything in recentChanges, something changed that the outline cannot
+// see.
 type Project struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	WorkspaceID string `json:"workspaceID"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	WorkspaceID string    `json:"workspaceID"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type Environment struct {
@@ -196,7 +200,7 @@ var DrillDown = []string{
 // Notes say what the outline cannot know.
 var Notes = []string{
 	"recentChanges says when something changed, not who changed it: the API does not report an editor for these resources.",
-	"The agent's own instructions and global prompt carry no timestamp, so their edits do not appear in recentChanges.",
+	"The agent's own instructions and global prompt carry no timestamp, so their edits do not appear in recentChanges. A project.updatedAt later than every entry there means something changed that this outline cannot see.",
 }
 
 // Build condenses in into an Outline.
@@ -208,7 +212,7 @@ func Build(in Inputs) Outline {
 	tools := decodeTools(in.Tools)
 
 	out := Outline{
-		Project:     Project{ID: in.Project.ID, Name: in.Project.Name, WorkspaceID: in.Project.WorkspaceID},
+		Project:     Project{ID: in.Project.ID, Name: in.Project.Name, WorkspaceID: in.Project.WorkspaceID, UpdatedAt: in.Project.UpdatedAt},
 		Environment: environment(in.Environment),
 		Agent:       agent(in.Agent),
 		Counts: Counts{
