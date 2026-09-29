@@ -5,6 +5,7 @@
 package output
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -258,8 +259,8 @@ func Result(cmd *cobra.Command, res interface{}) error {
 			return err
 		}
 	case "toon":
-		// Encode the JSON form, not the Go value; see jsonValue.
-		value, err := jsonValue(content)
+		// Encode the JSON form, not the Go value; see toonValue.
+		value, err := toonValue(content)
 		if err != nil {
 			return err
 		}
@@ -276,8 +277,9 @@ func Result(cmd *cobra.Command, res interface{}) error {
 	return nil
 }
 
-// jsonValue returns content exactly as the json output format renders it,
-// decoded into plain maps, slices and scalars.
+// jsonValue returns content in the form the json output format renders it,
+// decoded into plain maps, slices and scalars. Numbers decode to float64, as
+// encoding/json decodes them.
 //
 // Encoders that walk Go values by reflection get the SDK's types wrong.
 // gotoon uses a json tag verbatim as the key ("instructions,omitzero"),
@@ -298,6 +300,70 @@ func jsonValue(content interface{}) (interface{}, error) {
 		return nil, fmt.Errorf("failed to decode response JSON: %w", err)
 	}
 	return value, nil
+}
+
+// toonValue is jsonValue for the TOON encoder, which holds every number as a
+// float64. A float64 cannot hold every integer beyond ±(2^53−1): 2^53+1
+// silently becomes 2^53. The TOON spec requires encode then decode to return
+// the same value, and for integers outside the encoder's numeric domain it
+// prescribes a quoted decimal string (Appendix E), so those keep every digit
+// as a string instead of being rounded.
+func toonValue(content interface{}) (interface{}, error) {
+	if content == nil {
+		return nil, nil
+	}
+	data, err := marshalJSON(content)
+	if err != nil {
+		return nil, err
+	}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.UseNumber()
+	var value interface{}
+	if err := decoder.Decode(&value); err != nil {
+		return nil, fmt.Errorf("failed to decode response JSON: %w", err)
+	}
+	return toonNumbers(value), nil
+}
+
+// maxSafeInteger is the largest integer n for which n and every integer below
+// it have an exact float64: 2^53−1, JavaScript's Number.MAX_SAFE_INTEGER.
+const maxSafeInteger = 1<<53 - 1
+
+// toonNumbers replaces each json.Number in a decoded JSON tree with the value
+// the TOON encoder can represent exactly.
+func toonNumbers(value interface{}) interface{} {
+	switch v := value.(type) {
+	case map[string]interface{}:
+		for key, item := range v {
+			v[key] = toonNumbers(item)
+		}
+		return v
+	case []interface{}:
+		for i, item := range v {
+			v[i] = toonNumbers(item)
+		}
+		return v
+	case json.Number:
+		return toonNumber(v)
+	}
+	return value
+}
+
+// toonNumber is a safe integer as a float64, an integer beyond that range as
+// its exact decimal digits, and any other number as the float64 it was
+// marshaled from.
+func toonNumber(n json.Number) interface{} {
+	literal := n.String()
+	if !strings.ContainsAny(literal, ".eE") {
+		if i, err := strconv.ParseInt(literal, 10, 64); err == nil && i >= -maxSafeInteger && i <= maxSafeInteger {
+			return float64(i)
+		}
+		return literal
+	}
+	if f, err := n.Float64(); err == nil {
+		return f
+	}
+	return literal
 }
 
 // Error handles SDK errors, outputting structured JSON when --output-format=json,
@@ -661,8 +727,13 @@ func injectHeaders(data interface{}, headers http.Header) interface{} {
 // and outputs in the specified format. This is the common path for --include-headers
 // in json, yaml, toon, and jq output modes.
 func outputWithHeaders(out io.Writer, content interface{}, headers http.Header, format, jqExpr string, colorize bool) error {
-	// Marshal content to JSON for a uniform representation
-	parsed, err := jsonValue(content)
+	// Marshal content to JSON for a uniform representation. TOON decodes
+	// numbers its own way; see toonValue.
+	decode := jsonValue
+	if format == "toon" && jqExpr == "" {
+		decode = toonValue
+	}
+	parsed, err := decode(content)
 	if err != nil {
 		return err
 	}
