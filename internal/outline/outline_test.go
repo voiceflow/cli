@@ -194,6 +194,33 @@ func TestTOONKeysArePlain(t *testing.T) {
 	}
 }
 
+// TestNoUnexplainedChangeWhenADatedPartFailed: a part that could not be read
+// may be what explains the project record's timestamp, so the outline makes
+// no claim.
+func TestNoUnexplainedChangeWhenADatedPartFailed(t *testing.T) {
+	in := sampleInputs(t)
+	in.Project.UpdatedAt = base.Add(time.Hour) // after every dated change
+	if Build(in).UnexplainedChange == "" {
+		t.Fatal("with every part read, a later project timestamp is unexplained")
+	}
+	for name, drop := range map[string]func(*Inputs){
+		"environment": func(in *Inputs) { in.Environment = nil },
+		"playbooks":   func(in *Inputs) { in.Playbooks = nil },
+		"functions":   func(in *Inputs) { in.Functions = nil },
+		"tools":       func(in *Inputs) { in.Tools = nil },
+		"variables":   func(in *Inputs) { in.Variables = nil },
+		"MCP servers": func(in *Inputs) { in.MCPServers = nil },
+		"tests":       func(in *Inputs) { in.Tests = nil },
+	} {
+		partial := sampleInputs(t)
+		partial.Project.UpdatedAt = base.Add(time.Hour)
+		drop(&partial)
+		if got := Build(partial).UnexplainedChange; got != "" {
+			t.Errorf("%s not read: the outline must not claim the change is unexplained: %q", name, got)
+		}
+	}
+}
+
 func TestUnexplainedChange(t *testing.T) {
 	changes := []Change{{Type: "function", Name: "lookupOrder", UpdatedAt: at(600)}}
 	release := &Release{Name: "v2", CreatedAt: at(300)}

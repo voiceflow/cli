@@ -275,8 +275,21 @@ func Build(in Inputs) Outline {
 	if out.Warnings == nil {
 		out.Warnings = []string{}
 	}
-	out.UnexplainedChange = unexplainedChange(out.Project.UpdatedAt, out.RecentChanges, out.Environment.LastRelease)
+	// The claim that a change cannot be identified holds only when every dated
+	// part was read: a part that failed may be exactly what explains the
+	// project record's timestamp. warnings names what is missing.
+	if datedPartsRead(in) {
+		out.UnexplainedChange = unexplainedChange(out.Project.UpdatedAt, out.RecentChanges, out.Environment.LastRelease)
+	}
 	return out
+}
+
+// datedPartsRead reports whether every part that feeds recentChanges and the
+// last release was read. A part that could not be read is nil; one that was
+// read and is empty is an empty, non-nil slice.
+func datedPartsRead(in Inputs) bool {
+	return in.Environment != nil && in.Playbooks != nil && in.Functions != nil && in.Tools != nil &&
+		in.Variables != nil && in.MCPServers != nil && in.Tests != nil
 }
 
 func environment(env *components.StableEnvironment) Environment {
