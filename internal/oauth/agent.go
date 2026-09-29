@@ -56,7 +56,7 @@ func runAgentLogin(cmd *cobra.Command) error {
 					"Give the authorization_url to the user and ask them to open it in their browser",
 					"This command blocks until they finish signing in, so run it in the background and read its output",
 					"The URL redirects to a loopback listener on this machine, so the browser that opens it has to reach this host; if you are running remotely (SSH, container), the callback port has to be forwarded or sign-in will time out",
-					"Nothing is stored until sign-in completes; 'vf auth whoami' reports the stored session",
+					"No credentials are stored until sign-in completes; 'vf auth whoami' reports the stored session",
 				},
 			}
 			if warnings := proseLines(prose.String()); len(warnings) > 0 {
