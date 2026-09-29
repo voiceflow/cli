@@ -4,7 +4,9 @@
 //
 // Build is pure: the command fetches, this package summarizes. Every list is
 // capped and every text is clipped, so the outline stays small however large
-// the project is; the true totals are always reported in Counts.
+// the project is; the true totals are always reported in Counts. A capped list
+// keeps its newest entries. Workflows carry no timestamp, so they keep the
+// agent's routing order.
 package outline
 
 import (
@@ -475,20 +477,20 @@ func countUserVariables(list []components.StableVariableV2) *int {
 }
 
 // variableNames lists the project's own variables, not the built-in ones,
-// sorted so the outline is stable between calls.
+// newest first, so a capped list keeps the most recently changed.
 func variableNames(list []components.StableVariableV2) []string {
-	names := []string{}
+	own := []components.StableVariableV2{}
 	for _, v := range list {
 		if !v.IsSystem {
-			names = append(names, v.Name)
+			own = append(own, v)
 		}
 	}
-	sort.Strings(names)
-	if len(names) > maxVariables {
-		names = names[:maxVariables]
-	}
-	for i := range names {
-		names[i] = clip(names[i], nameChars)
+	names := []string{}
+	for i, v := range newestFirst(own, func(v components.StableVariableV2) time.Time { return v.UpdatedAt }) {
+		if i == maxVariables {
+			break
+		}
+		names = append(names, clip(v.Name, nameChars))
 	}
 	return names
 }
@@ -514,9 +516,11 @@ func knowledgeBase(docs []components.StableDocument) KnowledgeBase {
 	return out
 }
 
+// mcpServers lists the project's MCP servers newest first, so a capped list
+// keeps the most recently changed.
 func mcpServers(list []components.StableMCPServerV2) []Named {
 	out := []Named{}
-	for i, s := range list {
+	for i, s := range newestFirst(list, func(s components.StableMCPServerV2) time.Time { return s.UpdatedAt }) {
 		if i == maxMCPServers {
 			break
 		}

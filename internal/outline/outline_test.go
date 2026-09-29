@@ -134,8 +134,8 @@ func TestBuildSummarizesTheProject(t *testing.T) {
 		o.AgentTools[1] != (Tool{ID: "tool-2", Type: "api", Name: "Look up an order", UpdatedAt: at(900)}) {
 		t.Errorf("agent tools, named after what they call, newest first: %+v", o.AgentTools)
 	}
-	if strings.Join(o.Variables, ",") != "customer_name,order_id" {
-		t.Errorf("variables are the project's own, sorted: %v", o.Variables)
+	if strings.Join(o.Variables, ",") != "order_id,customer_name" {
+		t.Errorf("variables are the project's own, newest first: %v", o.Variables)
 	}
 	if o.KnowledgeBase.Documents != 3 || o.KnowledgeBase.ByType["url"] != 2 || o.KnowledgeBase.ByType["pdf"] != 1 {
 		t.Errorf("knowledge base: %+v", o.KnowledgeBase)
@@ -191,6 +191,28 @@ func TestTOONKeysArePlain(t *testing.T) {
 	}
 	if strings.Contains(encoded, ",omit") {
 		t.Fatalf("a key carries a tag option:\n%s", encoded)
+	}
+}
+
+// TestCappedListsKeepTheNewest: past a cap, the entries that go are the
+// oldest, whatever order the API returned them in or their names sort to.
+func TestCappedListsKeepTheNewest(t *testing.T) {
+	in := sampleInputs(t)
+	in.Variables, in.MCPServers = nil, nil
+	for i := 0; i < 40; i++ {
+		in.Variables = append(in.Variables, components.StableVariableV2{ID: fmt.Sprint(i), Name: fmt.Sprintf("a%02d", i), UpdatedAt: at(1000 + i)})
+		in.MCPServers = append(in.MCPServers, components.StableMCPServerV2{ID: fmt.Sprint(i), Name: fmt.Sprintf("server%02d", i), UpdatedAt: at(1000 + i)})
+	}
+	// The newest of each comes last in API order, and last alphabetically.
+	in.Variables = append(in.Variables, components.StableVariableV2{ID: "new", Name: "zzz_newest", UpdatedAt: at(0)})
+	in.MCPServers = append(in.MCPServers, components.StableMCPServerV2{ID: "new", Name: "zzz_newest", UpdatedAt: at(0)})
+
+	o := Build(in)
+	if len(o.Variables) != maxVariables || o.Variables[0] != "zzz_newest" {
+		t.Errorf("variables must keep the newest, first: got %d, first %q", len(o.Variables), o.Variables[0])
+	}
+	if len(o.MCPServers) != maxMCPServers || o.MCPServers[0].Name != "zzz_newest" {
+		t.Errorf("MCP servers must keep the newest, first: got %d, first %+v", len(o.MCPServers), o.MCPServers[0])
 	}
 }
 
