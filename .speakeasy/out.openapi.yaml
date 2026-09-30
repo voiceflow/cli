@@ -876,7 +876,7 @@ paths:
           operation: create_many
           operationDescription: |-
             WHAT — Create multiple playbooks in one call.
-            USE WHEN — Scaffolding a new agent with several task playbooks at once (e.g. Schedule + Cancel + FAQ on first build).
+            USE WHEN — The user explicitly asked for several playbooks at once (e.g. "add Schedule, Cancel and FAQ playbooks"). When building step by step, create one playbook, let the user try it, then add the next.
             DO NOT — Read a clean response as "every reference bound": unresolvedReferences and unresolvedMentions name each miss at its element path (playbooks[2].instructions), and a batch playbook can mention an existing playbook or a sibling created in the same call, but not a tool or a workflow — no playbook has grants yet.
         cli:
           command: playbook create-many
@@ -3678,7 +3678,7 @@ paths:
           operation: get
           operationDescription: |-
             WHAT — Fetch one variable's full detail including current default.
-              USE WHEN — Before update.
+            USE WHEN — Before update.
         cli:
           command: variable get
       x-speakeasy-group: variable
@@ -3727,7 +3727,7 @@ paths:
           operation: update
           operationDescription: |-
             WHAT — Patch variable metadata.
-              DO NOT — Rename a variable referenced by a voiceflow_tool attachment's captureResponse or inputVariables map, a function's args.inputVars destructuring, or a prompt's {var_name} substitution — the variableID stays stable but every human-readable reference breaks.
+            DO NOT — Rename a variable referenced by a voiceflow_tool attachment's captureResponse or inputVariables map, a function's args.inputVars destructuring, or a prompt's {var_name} substitution — the variableID stays stable but every human-readable reference breaks.
         cli:
           command: variable update
       x-speakeasy-group: variable
@@ -3784,7 +3784,7 @@ paths:
           operation: delete
           operationDescription: |-
             WHAT — Remove a variable.
-              DO NOT — Delete a variable referenced by any captureResponse map, defaultValue, or prompt substitution — runtime calls will start silently defaulting to 0 wherever the variable was used.
+            DO NOT — Delete a variable referenced by any captureResponse map, defaultValue, or prompt substitution — runtime calls will start silently defaulting to 0 wherever the variable was used.
         cli:
           command: variable delete
       x-speakeasy-group: variable
@@ -19817,1650 +19817,6 @@ components:
           description: A human-readable message confirming the deletion.
       required:
         - message
-    StablePlaybookReadV2:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        settings:
-          $ref: '#/components/schemas/AgentSettings'
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        description:
-          nullable: true
-          description: A human-readable description of what the playbook does.
-          type: string
-        instructions:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/MarkdownText'
-        pathToolOrder:
-          type: array
-          items:
-            type: string
-          description: The IDs of the playbook's path tools, in display order.
-        endTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableEndTool'
-        cardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        buttonTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableButtonTool'
-        carouselTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        webSearchTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableWebSearchTool'
-        callForwardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCallForwardTool'
-        knowledgeBaseTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
-        skipTurnTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AgentSkipTurnTool'
-        instructionsLineCount:
-          type: integer
-          minimum: -9.007199254740991e+15
-          maximum: 9.007199254740991e+15
-          description: How many lines the instructions have, so a caller can decide whether to page through them.
-      required:
-        - id
-        - name
-        - settings
-        - createdAt
-        - updatedAt
-        - description
-        - pathToolOrder
-        - endTool
-        - cardTool
-        - buttonTool
-        - carouselTool
-        - webSearchTool
-        - callForwardTool
-        - knowledgeBaseTool
-        - skipTurnTool
-        - instructionsLineCount
-    StablePlaybookReadListResponseV2:
-      type: object
-      properties:
-        playbooks:
-          type: array
-          items:
-            $ref: '#/components/schemas/StablePlaybookReadV2'
-      required:
-        - playbooks
-    StablePlaybookV2:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        settings:
-          $ref: '#/components/schemas/AgentSettings'
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        description:
-          nullable: true
-          description: A human-readable description of what the playbook does.
-          type: string
-        instructions:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/MarkdownText'
-        pathToolOrder:
-          type: array
-          items:
-            type: string
-          description: The IDs of the playbook's path tools, in display order.
-        endTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableEndTool'
-        cardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        buttonTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableButtonTool'
-        carouselTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        webSearchTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableWebSearchTool'
-        callForwardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCallForwardTool'
-        knowledgeBaseTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
-        skipTurnTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AgentSkipTurnTool'
-      required:
-        - id
-        - name
-        - settings
-        - createdAt
-        - updatedAt
-        - description
-        - instructions
-        - pathToolOrder
-        - endTool
-        - cardTool
-        - buttonTool
-        - carouselTool
-        - webSearchTool
-        - callForwardTool
-        - knowledgeBaseTool
-        - skipTurnTool
-    StablePlaybookResponseV2:
-      type: object
-      properties:
-        playbook:
-          $ref: '#/components/schemas/StablePlaybookV2'
-        unresolvedReferences:
-          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedReference'
-        unresolvedMentions:
-          description: Backticked `name` mentions that matched no attached tool, playbook or workflow and were stored as inline code. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedMention'
-      required:
-        - playbook
-    StablePlaybookCreateRequestV2:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          nullable: true
-          description: A human-readable description of what the playbook does.
-          type: string
-        instructions:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/MarkdownText'
-        endTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableEndTool'
-        cardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        buttonTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableButtonTool'
-        carouselTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        skipTurnTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AgentSkipTurnTool'
-        webSearchTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableWebSearchTool'
-        callForwardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCallForwardTool'
-        knowledgeBaseTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
-        settings:
-          default: {}
-          allOf:
-            - $ref: '#/components/schemas/AgentSettings'
-      required:
-        - name
-      additionalProperties: false
-    StablePlaybookListResponseV2:
-      type: object
-      properties:
-        playbooks:
-          type: array
-          items:
-            $ref: '#/components/schemas/StablePlaybookV2'
-        unresolvedReferences:
-          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedReference'
-        unresolvedMentions:
-          description: Backticked `name` mentions that matched no attached tool, playbook or workflow and were stored as inline code. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedMention'
-      required:
-        - playbooks
-    StablePlaybookCreateManyRequestV2:
-      type: object
-      properties:
-        playbooks:
-          type: array
-          items:
-            $ref: '#/components/schemas/StablePlaybookCreateRequestV2'
-      required:
-        - playbooks
-    StablePlaybookReadResponseV2:
-      type: object
-      properties:
-        playbook:
-          $ref: '#/components/schemas/StablePlaybookReadV2'
-      required:
-        - playbook
-    StablePlaybookUpdateRequestV2:
-      type: object
-      properties:
-        name:
-          type: string
-        settings:
-          allOf:
-            - $ref: '#/components/schemas/AgentSettings'
-        description:
-          nullable: true
-          description: A human-readable description of what the playbook does.
-          type: string
-        instructions:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/MarkdownText'
-        endTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableEndTool'
-        cardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        buttonTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableButtonTool'
-        carouselTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCardTool'
-        skipTurnTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AgentSkipTurnTool'
-        webSearchTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableWebSearchTool'
-        callForwardTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableCallForwardTool'
-        knowledgeBaseTool:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
-      additionalProperties: false
-    StableToolV2:
-      oneOf:
-        - type: object
-          properties:
-            id:
-              type: string
-            createdAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            updatedAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            type:
-              type: string
-              enum:
-                - api
-              description: Discriminator indicating this tool executes a saved API request.
-              x-enumNames:
-                - API
-            apiToolID:
-              type: string
-              description: The ID of the API resource this tool executes.
-            asyncExecution:
-              type: boolean
-              description: When enabled, the tool runs in the background without blocking the conversation.
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  apiToolInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - apiToolInputVariableID
-                  - required
-              description: A map of input names to the values the agent supplies when calling the tool.
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - id
-            - createdAt
-            - updatedAt
-            - messages
-            - description
-            - captureInputVariables
-            - type
-            - apiToolID
-            - asyncExecution
-            - inputVariables
-            - captureResponse
-        - type: object
-          properties:
-            id:
-              type: string
-            createdAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            updatedAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            type:
-              type: string
-              enum:
-                - function
-              description: Discriminator indicating this tool executes a custom function.
-              x-enumNames:
-                - FUNCTION
-            functionID:
-              type: string
-              description: The ID of the function resource this tool executes.
-            asyncExecution:
-              type: boolean
-              description: When enabled, the tool runs in the background without blocking the conversation.
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  functionInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - functionInputVariableID
-                  - required
-              description: A map of input names to the values the agent supplies when calling the tool.
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - id
-            - createdAt
-            - updatedAt
-            - messages
-            - description
-            - captureInputVariables
-            - type
-            - functionID
-            - asyncExecution
-            - inputVariables
-            - captureResponse
-        - type: object
-          properties:
-            id:
-              type: string
-            createdAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            updatedAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            type:
-              type: string
-              enum:
-                - mcp
-              description: Discriminator indicating this tool calls a tool from an MCP server.
-              x-enumNames:
-                - MCP
-            mcpToolID:
-              type: string
-              description: The ID of the MCP tool resource this tool calls.
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  mcpIntegrationVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - mcpIntegrationVariableName
-                  - required
-              description: A map of input names to the values the agent supplies when calling the tool.
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - id
-            - createdAt
-            - updatedAt
-            - messages
-            - description
-            - captureInputVariables
-            - type
-            - mcpToolID
-            - inputVariables
-            - captureResponse
-        - type: object
-          properties:
-            id:
-              type: string
-            createdAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            updatedAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            type:
-              type: string
-              enum:
-                - integration
-              description: Discriminator indicating this tool calls a connected first-party integration.
-              x-enumNames:
-                - INTEGRATION
-            integrationToolID:
-              type: string
-              description: The ID of the integration tool resource this tool calls.
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  integrationToolVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - integrationToolVariableName
-                  - required
-              description: A map of input names to the values the agent supplies when calling the tool.
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - id
-            - createdAt
-            - updatedAt
-            - messages
-            - description
-            - captureInputVariables
-            - type
-            - integrationToolID
-            - inputVariables
-            - captureResponse
-    StableToolListResponseV2:
-      type: object
-      properties:
-        tools:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableToolV2'
-      required:
-        - tools
-    StableToolTarget:
-      type: object
-      properties:
-        global:
-          description: Target the agent. Cannot be used with playbookID.
-          type: boolean
-        playbookID:
-          description: Target a specific playbook. Cannot be used with global.
-          type: string
-      additionalProperties: false
-    StableToolResponseV2:
-      type: object
-      properties:
-        tool:
-          $ref: '#/components/schemas/StableToolV2'
-        unresolvedReferences:
-          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedReference'
-      required:
-        - tool
-    StableToolCreateRequestV2:
-      oneOf:
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            asyncExecution:
-              default: false
-              description: When enabled, the tool runs in the background without blocking the conversation.
-              type: boolean
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  apiToolInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - apiToolInputVariableID
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - api
-              description: Discriminator indicating this tool executes a saved API request.
-              x-enumNames:
-                - API
-            apiToolID:
-              type: string
-              description: The ID of the API resource this tool executes.
-          required:
-            - target
-            - type
-            - apiToolID
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            asyncExecution:
-              default: false
-              description: When enabled, the tool runs in the background without blocking the conversation.
-              type: boolean
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  functionInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - functionInputVariableID
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - function
-              description: Discriminator indicating this tool executes a custom function.
-              x-enumNames:
-                - FUNCTION
-            functionID:
-              type: string
-              description: The ID of the function resource this tool executes.
-          required:
-            - target
-            - type
-            - functionID
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  mcpIntegrationVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - mcpIntegrationVariableName
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - mcp
-              description: Discriminator indicating this tool calls a tool from an MCP server.
-              x-enumNames:
-                - MCP
-            mcpToolID:
-              type: string
-              description: The ID of the MCP tool resource this tool calls.
-          required:
-            - target
-            - type
-            - mcpToolID
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  integrationToolVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - integrationToolVariableName
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - integration
-              description: Discriminator indicating this tool calls a connected first-party integration.
-              x-enumNames:
-                - INTEGRATION
-            integrationToolID:
-              type: string
-              description: The ID of the integration tool resource this tool calls.
-          required:
-            - target
-            - type
-            - integrationToolID
-          additionalProperties: false
-    StableToolCreateManyResponse:
-      type: object
-      properties:
-        tools:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableToolV2'
-        unresolvedReferences:
-          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedReference'
-      required:
-        - tools
-    StableToolCreateManyRequestV2:
-      oneOf:
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - api
-              description: Discriminator indicating that API tools are being created.
-              x-enumNames:
-                - API
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            tools:
-              type: array
-              items:
-                type: object
-                properties:
-                  description:
-                    nullable: true
-                    description: A description of what the tool does, used by the agent to decide when to call it.
-                    type: string
-                  messages:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/StableToolMessages'
-                  captureInputVariables:
-                    default: {}
-                    nullable: true
-                    description: A map of tool input names to the variables or entities whose values are captured into them.
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  asyncExecution:
-                    default: false
-                    description: When enabled, the tool runs in the background without blocking the conversation.
-                    type: boolean
-                  inputVariables:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        description:
-                          default: null
-                          nullable: true
-                          type: string
-                        defaultValue:
-                          default: null
-                          nullable: true
-                          allOf:
-                            - $ref: '#/components/schemas/DefaultValueString'
-                        apiToolInputVariableID:
-                          type: string
-                        captureType:
-                          allOf:
-                            - $ref: '#/components/schemas/ToolNodeCaptureType'
-                        required:
-                          type: boolean
-                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                      required:
-                        - apiToolInputVariableID
-                  captureResponse:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
-                    description: A map of variable names to the parts of the tool response captured into them.
-                  apiToolID:
-                    type: string
-                    description: The ID of the API resource this tool executes.
-                required:
-                  - apiToolID
-                additionalProperties: false
-          required:
-            - type
-            - target
-            - tools
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - function
-              description: Discriminator indicating that function tools are being created.
-              x-enumNames:
-                - FUNCTION
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            tools:
-              type: array
-              items:
-                type: object
-                properties:
-                  description:
-                    nullable: true
-                    description: A description of what the tool does, used by the agent to decide when to call it.
-                    type: string
-                  messages:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/StableToolMessages'
-                  captureInputVariables:
-                    default: {}
-                    nullable: true
-                    description: A map of tool input names to the variables or entities whose values are captured into them.
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  asyncExecution:
-                    default: false
-                    description: When enabled, the tool runs in the background without blocking the conversation.
-                    type: boolean
-                  inputVariables:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        description:
-                          default: null
-                          nullable: true
-                          type: string
-                        defaultValue:
-                          default: null
-                          nullable: true
-                          allOf:
-                            - $ref: '#/components/schemas/DefaultValueString'
-                        functionInputVariableID:
-                          type: string
-                        captureType:
-                          allOf:
-                            - $ref: '#/components/schemas/ToolNodeCaptureType'
-                        required:
-                          type: boolean
-                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                      required:
-                        - functionInputVariableID
-                  captureResponse:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
-                    description: A map of variable names to the parts of the tool response captured into them.
-                  functionID:
-                    type: string
-                    description: The ID of the function resource this tool executes.
-                required:
-                  - functionID
-                additionalProperties: false
-          required:
-            - type
-            - target
-            - tools
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - mcp
-              description: Discriminator indicating that MCP tools are being created.
-              x-enumNames:
-                - MCP
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            tools:
-              type: array
-              items:
-                type: object
-                properties:
-                  description:
-                    nullable: true
-                    description: A description of what the tool does, used by the agent to decide when to call it.
-                    type: string
-                  messages:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/StableToolMessages'
-                  captureInputVariables:
-                    default: {}
-                    nullable: true
-                    description: A map of tool input names to the variables or entities whose values are captured into them.
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  inputVariables:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        description:
-                          default: null
-                          nullable: true
-                          type: string
-                        defaultValue:
-                          default: null
-                          nullable: true
-                          allOf:
-                            - $ref: '#/components/schemas/DefaultValueString'
-                        mcpIntegrationVariableName:
-                          type: string
-                        captureType:
-                          allOf:
-                            - $ref: '#/components/schemas/ToolNodeCaptureType'
-                        required:
-                          type: boolean
-                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                      required:
-                        - mcpIntegrationVariableName
-                  captureResponse:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
-                    description: A map of variable names to the parts of the tool response captured into them.
-                  mcpToolID:
-                    type: string
-                    description: The ID of the MCP tool resource this tool calls.
-                required:
-                  - mcpToolID
-                additionalProperties: false
-          required:
-            - type
-            - target
-            - tools
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - integration
-              description: Discriminator indicating that integration tools are being created.
-              x-enumNames:
-                - INTEGRATION
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            tools:
-              type: array
-              items:
-                type: object
-                properties:
-                  description:
-                    nullable: true
-                    description: A description of what the tool does, used by the agent to decide when to call it.
-                    type: string
-                  messages:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/StableToolMessages'
-                  captureInputVariables:
-                    default: {}
-                    nullable: true
-                    description: A map of tool input names to the variables or entities whose values are captured into them.
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  inputVariables:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        description:
-                          default: null
-                          nullable: true
-                          type: string
-                        defaultValue:
-                          default: null
-                          nullable: true
-                          allOf:
-                            - $ref: '#/components/schemas/DefaultValueString'
-                        integrationToolVariableName:
-                          type: string
-                        captureType:
-                          allOf:
-                            - $ref: '#/components/schemas/ToolNodeCaptureType'
-                        required:
-                          type: boolean
-                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                      required:
-                        - integrationToolVariableName
-                  captureResponse:
-                    default: {}
-                    type: object
-                    additionalProperties:
-                      $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
-                    description: A map of variable names to the parts of the tool response captured into them.
-                  integrationToolID:
-                    type: string
-                    description: The ID of the integration tool resource this tool calls.
-                required:
-                  - integrationToolID
-                additionalProperties: false
-          required:
-            - type
-            - target
-            - tools
-    StableToolReadResponse:
-      type: object
-      properties:
-        tool:
-          $ref: '#/components/schemas/StableToolV2'
-      required:
-        - tool
-    StableToolUpdateRequestV2:
-      oneOf:
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            type:
-              type: string
-              enum:
-                - api
-              description: Discriminator indicating this tool executes a saved API request.
-              x-enumNames:
-                - API
-            asyncExecution:
-              type: boolean
-              description: When enabled, the tool runs in the background without blocking the conversation.
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  apiToolInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - apiToolInputVariableID
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - type
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            type:
-              type: string
-              enum:
-                - function
-              description: Discriminator indicating this tool executes a custom function.
-              x-enumNames:
-                - FUNCTION
-            asyncExecution:
-              type: boolean
-              description: When enabled, the tool runs in the background without blocking the conversation.
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  functionInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - functionInputVariableID
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - type
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            type:
-              type: string
-              enum:
-                - mcp
-              description: Discriminator indicating this tool calls a tool from an MCP server.
-              x-enumNames:
-                - MCP
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  mcpIntegrationVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - mcpIntegrationVariableName
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - type
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            messages:
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            type:
-              type: string
-              enum:
-                - integration
-              description: Discriminator indicating this tool calls a connected first-party integration.
-              x-enumNames:
-                - INTEGRATION
-            inputVariables:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  integrationToolVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - integrationToolVariableName
-            captureResponse:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-          required:
-            - type
-          additionalProperties: false
-    SimulationRunLog:
-      oneOf:
-        - $ref: '#/components/schemas/SimulationRunEndLog'
-        - $ref: '#/components/schemas/SimulationRunTraceLog'
-        - $ref: '#/components/schemas/SimulationRunActionLog'
-    SimulationRunEndLog:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - end
-          x-enumNames:
-            - END
-        payload:
-          type: object
-          properties:
-            reason:
-              type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        seq:
-          type: integer
-          minimum: 0
-          maximum: 9.007199254740991e+15
-      required:
-        - id
-        - type
-        - payload
-        - createdAt
-    SimulationRunTraceLog:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - trace
-          x-enumNames:
-            - TRACE
-        payload:
-          type: object
-          properties:
-            type:
-              type: string
-            paths:
-              type: array
-              items:
-                $ref: '#/components/schemas/TracePath'
-            defaultPath:
-              type: number
-            time:
-              type: number
-            turnID:
-              type: string
-            handleID:
-              type: string
-          required:
-            - type
-          additionalProperties: {}
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        seq:
-          type: integer
-          minimum: 0
-          maximum: 9.007199254740991e+15
-      required:
-        - id
-        - type
-        - payload
-        - createdAt
-    TracePath:
-      type: object
-      properties:
-        label:
-          type: string
-        event:
-          allOf:
-            - $ref: '#/components/schemas/BaseRequest'
-    BaseRequest:
-      type: object
-      properties:
-        type:
-          type: string
-        payload: {}
-        diagramID:
-          type: string
-        time:
-          type: number
-        metadata:
-          type: object
-          additionalProperties: {}
-      required:
-        - type
-    SimulationRunActionLog:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-            - action
-          x-enumNames:
-            - ACTION
-        payload:
-          type: object
-          properties:
-            type:
-              type: string
-            payload: {}
-            diagramID:
-              type: string
-            time:
-              type: number
-            metadata:
-              type: object
-              additionalProperties: {}
-          required:
-            - type
-          additionalProperties: {}
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        seq:
-          type: integer
-          minimum: 0
-          maximum: 9.007199254740991e+15
-      required:
-        - id
-        - type
-        - payload
-        - createdAt
     StableAnalyticsQueryCallCountResponse:
       type: object
       properties:
@@ -23890,6 +22246,29 @@ components:
       required:
         - type
         - payload
+    TracePath:
+      type: object
+      properties:
+        label:
+          type: string
+        event:
+          allOf:
+            - $ref: '#/components/schemas/BaseRequest'
+    BaseRequest:
+      type: object
+      properties:
+        type:
+          type: string
+        payload: {}
+        diagramID:
+          type: string
+        time:
+          type: number
+        metadata:
+          type: object
+          additionalProperties: {}
+      required:
+        - type
     AudioEncoding:
       type: string
       enum:
@@ -33685,6 +32064,331 @@ components:
           type: object
           additionalProperties: {}
       additionalProperties: false
+    StablePlaybookReadV2:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/AgentSettings'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          nullable: true
+          description: A human-readable description of what the playbook does.
+          type: string
+        instructions:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/MarkdownText'
+        pathToolOrder:
+          type: array
+          items:
+            type: string
+          description: The IDs of the playbook's path tools, in display order.
+        endTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableEndTool'
+        cardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        buttonTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableButtonTool'
+        carouselTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        webSearchTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableWebSearchTool'
+        callForwardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCallForwardTool'
+        knowledgeBaseTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
+        skipTurnTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentSkipTurnTool'
+        instructionsLineCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many lines the instructions have, so a caller can decide whether to page through them.
+      required:
+        - id
+        - name
+        - settings
+        - createdAt
+        - updatedAt
+        - description
+        - pathToolOrder
+        - endTool
+        - cardTool
+        - buttonTool
+        - carouselTool
+        - webSearchTool
+        - callForwardTool
+        - knowledgeBaseTool
+        - skipTurnTool
+        - instructionsLineCount
+    StablePlaybookReadListResponseV2:
+      type: object
+      properties:
+        playbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePlaybookReadV2'
+      required:
+        - playbooks
+    StablePlaybookV2:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/AgentSettings'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          nullable: true
+          description: A human-readable description of what the playbook does.
+          type: string
+        instructions:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/MarkdownText'
+        pathToolOrder:
+          type: array
+          items:
+            type: string
+          description: The IDs of the playbook's path tools, in display order.
+        endTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableEndTool'
+        cardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        buttonTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableButtonTool'
+        carouselTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        webSearchTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableWebSearchTool'
+        callForwardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCallForwardTool'
+        knowledgeBaseTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
+        skipTurnTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentSkipTurnTool'
+      required:
+        - id
+        - name
+        - settings
+        - createdAt
+        - updatedAt
+        - description
+        - instructions
+        - pathToolOrder
+        - endTool
+        - cardTool
+        - buttonTool
+        - carouselTool
+        - webSearchTool
+        - callForwardTool
+        - knowledgeBaseTool
+        - skipTurnTool
+    StablePlaybookResponseV2:
+      type: object
+      properties:
+        playbook:
+          $ref: '#/components/schemas/StablePlaybookV2'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+        unresolvedMentions:
+          description: Backticked `name` mentions that matched no attached tool, playbook or workflow and were stored as inline code. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedMention'
+      required:
+        - playbook
+    StablePlaybookCreateRequestV2:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          nullable: true
+          description: A human-readable description of what the playbook does.
+          type: string
+        instructions:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/MarkdownText'
+        endTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableEndTool'
+        cardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        buttonTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableButtonTool'
+        carouselTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        skipTurnTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentSkipTurnTool'
+        webSearchTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableWebSearchTool'
+        callForwardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCallForwardTool'
+        knowledgeBaseTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
+        settings:
+          default: {}
+          allOf:
+            - $ref: '#/components/schemas/AgentSettings'
+      required:
+        - name
+      additionalProperties: false
+    StablePlaybookListResponseV2:
+      type: object
+      properties:
+        playbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePlaybookV2'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+        unresolvedMentions:
+          description: Backticked `name` mentions that matched no attached tool, playbook or workflow and were stored as inline code. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedMention'
+      required:
+        - playbooks
+    StablePlaybookCreateManyRequestV2:
+      type: object
+      properties:
+        playbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePlaybookCreateRequestV2'
+      required:
+        - playbooks
+    StablePlaybookReadResponseV2:
+      type: object
+      properties:
+        playbook:
+          $ref: '#/components/schemas/StablePlaybookReadV2'
+      required:
+        - playbook
+    StablePlaybookUpdateRequestV2:
+      type: object
+      properties:
+        name:
+          type: string
+        settings:
+          allOf:
+            - $ref: '#/components/schemas/AgentSettings'
+        description:
+          nullable: true
+          description: A human-readable description of what the playbook does.
+          type: string
+        instructions:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/MarkdownText'
+        endTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableEndTool'
+        cardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        buttonTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableButtonTool'
+        carouselTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCardTool'
+        skipTurnTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AgentSkipTurnTool'
+        webSearchTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableWebSearchTool'
+        callForwardTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCallForwardTool'
+        knowledgeBaseTool:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableKnowledgeBaseTool'
+      additionalProperties: false
     StableProject:
       type: object
       properties:
@@ -34287,6 +32991,124 @@ components:
           required:
             - type
           additionalProperties: false
+    SimulationRunLog:
+      oneOf:
+        - $ref: '#/components/schemas/SimulationRunEndLog'
+        - $ref: '#/components/schemas/SimulationRunTraceLog'
+        - $ref: '#/components/schemas/SimulationRunActionLog'
+    SimulationRunEndLog:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - end
+          x-enumNames:
+            - END
+        payload:
+          type: object
+          properties:
+            reason:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        seq:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+      required:
+        - id
+        - type
+        - payload
+        - createdAt
+    SimulationRunTraceLog:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - trace
+          x-enumNames:
+            - TRACE
+        payload:
+          type: object
+          properties:
+            type:
+              type: string
+            paths:
+              type: array
+              items:
+                $ref: '#/components/schemas/TracePath'
+            defaultPath:
+              type: number
+            time:
+              type: number
+            turnID:
+              type: string
+            handleID:
+              type: string
+          required:
+            - type
+          additionalProperties: {}
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        seq:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+      required:
+        - id
+        - type
+        - payload
+        - createdAt
+    SimulationRunActionLog:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - action
+          x-enumNames:
+            - ACTION
+        payload:
+          type: object
+          properties:
+            type:
+              type: string
+            payload: {}
+            diagramID:
+              type: string
+            time:
+              type: number
+            metadata:
+              type: object
+              additionalProperties: {}
+          required:
+            - type
+          additionalProperties: {}
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        seq:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+      required:
+        - id
+        - type
+        - payload
+        - createdAt
     StableTestRun:
       type: object
       properties:
@@ -34947,6 +33769,1184 @@ components:
                 - variableStates
                 - successCriteria
               additionalProperties: false
+          required:
+            - type
+          additionalProperties: false
+    StableToolV2:
+      oneOf:
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating this tool executes a saved API request.
+              x-enumNames:
+                - API
+            apiToolID:
+              type: string
+              description: The ID of the API resource this tool executes.
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  apiToolInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - apiToolInputVariableID
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - apiToolID
+            - asyncExecution
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating this tool executes a custom function.
+              x-enumNames:
+                - FUNCTION
+            functionID:
+              type: string
+              description: The ID of the function resource this tool executes.
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  functionInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - functionInputVariableID
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - functionID
+            - asyncExecution
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating this tool calls a tool from an MCP server.
+              x-enumNames:
+                - MCP
+            mcpToolID:
+              type: string
+              description: The ID of the MCP tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  mcpIntegrationVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - mcpIntegrationVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - mcpToolID
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - integrationToolID
+            - inputVariables
+            - captureResponse
+    StableToolListResponseV2:
+      type: object
+      properties:
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableToolV2'
+      required:
+        - tools
+    StableToolTarget:
+      type: object
+      properties:
+        global:
+          description: Target the agent. Cannot be used with playbookID.
+          type: boolean
+        playbookID:
+          description: Target a specific playbook. Cannot be used with global.
+          type: string
+      additionalProperties: false
+    StableToolResponseV2:
+      type: object
+      properties:
+        tool:
+          $ref: '#/components/schemas/StableToolV2'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - tool
+    StableToolCreateRequestV2:
+      oneOf:
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            asyncExecution:
+              default: false
+              description: When enabled, the tool runs in the background without blocking the conversation.
+              type: boolean
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  apiToolInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - apiToolInputVariableID
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating this tool executes a saved API request.
+              x-enumNames:
+                - API
+            apiToolID:
+              type: string
+              description: The ID of the API resource this tool executes.
+          required:
+            - target
+            - type
+            - apiToolID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            asyncExecution:
+              default: false
+              description: When enabled, the tool runs in the background without blocking the conversation.
+              type: boolean
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  functionInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - functionInputVariableID
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating this tool executes a custom function.
+              x-enumNames:
+                - FUNCTION
+            functionID:
+              type: string
+              description: The ID of the function resource this tool executes.
+          required:
+            - target
+            - type
+            - functionID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  mcpIntegrationVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - mcpIntegrationVariableName
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating this tool calls a tool from an MCP server.
+              x-enumNames:
+                - MCP
+            mcpToolID:
+              type: string
+              description: The ID of the MCP tool resource this tool calls.
+          required:
+            - target
+            - type
+            - mcpToolID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+          required:
+            - target
+            - type
+            - integrationToolID
+          additionalProperties: false
+    StableToolCreateManyResponse:
+      type: object
+      properties:
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableToolV2'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - tools
+    StableToolCreateManyRequestV2:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating that API tools are being created.
+              x-enumNames:
+                - API
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            tools:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    nullable: true
+                    description: A description of what the tool does, used by the agent to decide when to call it.
+                    type: string
+                  messages:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/StableToolMessages'
+                  captureInputVariables:
+                    default: {}
+                    nullable: true
+                    description: A map of tool input names to the variables or entities whose values are captured into them.
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  asyncExecution:
+                    default: false
+                    description: When enabled, the tool runs in the background without blocking the conversation.
+                    type: boolean
+                  inputVariables:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        description:
+                          default: null
+                          nullable: true
+                          type: string
+                        defaultValue:
+                          default: null
+                          nullable: true
+                          allOf:
+                            - $ref: '#/components/schemas/DefaultValueString'
+                        apiToolInputVariableID:
+                          type: string
+                        captureType:
+                          allOf:
+                            - $ref: '#/components/schemas/ToolNodeCaptureType'
+                        required:
+                          type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                      required:
+                        - apiToolInputVariableID
+                  captureResponse:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+                    description: A map of variable names to the parts of the tool response captured into them.
+                  apiToolID:
+                    type: string
+                    description: The ID of the API resource this tool executes.
+                required:
+                  - apiToolID
+                additionalProperties: false
+          required:
+            - type
+            - target
+            - tools
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating that function tools are being created.
+              x-enumNames:
+                - FUNCTION
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            tools:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    nullable: true
+                    description: A description of what the tool does, used by the agent to decide when to call it.
+                    type: string
+                  messages:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/StableToolMessages'
+                  captureInputVariables:
+                    default: {}
+                    nullable: true
+                    description: A map of tool input names to the variables or entities whose values are captured into them.
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  asyncExecution:
+                    default: false
+                    description: When enabled, the tool runs in the background without blocking the conversation.
+                    type: boolean
+                  inputVariables:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        description:
+                          default: null
+                          nullable: true
+                          type: string
+                        defaultValue:
+                          default: null
+                          nullable: true
+                          allOf:
+                            - $ref: '#/components/schemas/DefaultValueString'
+                        functionInputVariableID:
+                          type: string
+                        captureType:
+                          allOf:
+                            - $ref: '#/components/schemas/ToolNodeCaptureType'
+                        required:
+                          type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                      required:
+                        - functionInputVariableID
+                  captureResponse:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+                    description: A map of variable names to the parts of the tool response captured into them.
+                  functionID:
+                    type: string
+                    description: The ID of the function resource this tool executes.
+                required:
+                  - functionID
+                additionalProperties: false
+          required:
+            - type
+            - target
+            - tools
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating that MCP tools are being created.
+              x-enumNames:
+                - MCP
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            tools:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    nullable: true
+                    description: A description of what the tool does, used by the agent to decide when to call it.
+                    type: string
+                  messages:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/StableToolMessages'
+                  captureInputVariables:
+                    default: {}
+                    nullable: true
+                    description: A map of tool input names to the variables or entities whose values are captured into them.
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  inputVariables:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        description:
+                          default: null
+                          nullable: true
+                          type: string
+                        defaultValue:
+                          default: null
+                          nullable: true
+                          allOf:
+                            - $ref: '#/components/schemas/DefaultValueString'
+                        mcpIntegrationVariableName:
+                          type: string
+                        captureType:
+                          allOf:
+                            - $ref: '#/components/schemas/ToolNodeCaptureType'
+                        required:
+                          type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                      required:
+                        - mcpIntegrationVariableName
+                  captureResponse:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+                    description: A map of variable names to the parts of the tool response captured into them.
+                  mcpToolID:
+                    type: string
+                    description: The ID of the MCP tool resource this tool calls.
+                required:
+                  - mcpToolID
+                additionalProperties: false
+          required:
+            - type
+            - target
+            - tools
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating that integration tools are being created.
+              x-enumNames:
+                - INTEGRATION
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            tools:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    nullable: true
+                    description: A description of what the tool does, used by the agent to decide when to call it.
+                    type: string
+                  messages:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/StableToolMessages'
+                  captureInputVariables:
+                    default: {}
+                    nullable: true
+                    description: A map of tool input names to the variables or entities whose values are captured into them.
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  inputVariables:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        description:
+                          default: null
+                          nullable: true
+                          type: string
+                        defaultValue:
+                          default: null
+                          nullable: true
+                          allOf:
+                            - $ref: '#/components/schemas/DefaultValueString'
+                        integrationToolVariableName:
+                          type: string
+                        captureType:
+                          allOf:
+                            - $ref: '#/components/schemas/ToolNodeCaptureType'
+                        required:
+                          type: boolean
+                          description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                      required:
+                        - integrationToolVariableName
+                  captureResponse:
+                    default: {}
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+                    description: A map of variable names to the parts of the tool response captured into them.
+                  integrationToolID:
+                    type: string
+                    description: The ID of the integration tool resource this tool calls.
+                required:
+                  - integrationToolID
+                additionalProperties: false
+          required:
+            - type
+            - target
+            - tools
+    StableToolReadResponse:
+      type: object
+      properties:
+        tool:
+          $ref: '#/components/schemas/StableToolV2'
+      required:
+        - tool
+    StableToolUpdateRequestV2:
+      oneOf:
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating this tool executes a saved API request.
+              x-enumNames:
+                - API
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  apiToolInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - apiToolInputVariableID
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating this tool executes a custom function.
+              x-enumNames:
+                - FUNCTION
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  functionInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - functionInputVariableID
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating this tool calls a tool from an MCP server.
+              x-enumNames:
+                - MCP
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  mcpIntegrationVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - mcpIntegrationVariableName
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - type
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
           required:
             - type
           additionalProperties: false
