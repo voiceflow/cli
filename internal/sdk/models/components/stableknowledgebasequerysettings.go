@@ -48,6 +48,7 @@ const (
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude45Sonnet     StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.5-sonnet"
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude46Sonnet     StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.6-sonnet"
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude5Sonnet      StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-5-sonnet"
+	StableKnowledgeBaseQuerySettingsModelBedrockClaude55Sonnet     StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-5.5-sonnet"
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude45Haiku      StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.5-haiku"
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude45Opus       StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.5-opus"
 	StableKnowledgeBaseQuerySettingsModelBedrockClaude47Opus       StableKnowledgeBaseQuerySettingsModel = "bedrock-claude-4.7-opus"
@@ -168,6 +169,8 @@ func (e *StableKnowledgeBaseQuerySettingsModel) UnmarshalJSON(data []byte) error
 	case "bedrock-claude-4.6-sonnet":
 		fallthrough
 	case "bedrock-claude-5-sonnet":
+		fallthrough
+	case "bedrock-claude-5.5-sonnet":
 		fallthrough
 	case "bedrock-claude-4.5-haiku":
 		fallthrough

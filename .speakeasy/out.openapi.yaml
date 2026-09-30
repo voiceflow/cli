@@ -11501,6 +11501,7 @@ components:
         - bedrock-claude-4.5-sonnet
         - bedrock-claude-4.6-sonnet
         - bedrock-claude-5-sonnet
+        - bedrock-claude-5.5-sonnet
         - bedrock-claude-4.5-haiku
         - bedrock-claude-4.5-opus
         - bedrock-claude-4.7-opus
@@ -11576,6 +11577,7 @@ components:
         - BEDROCK_CLAUDE_4_5_SONNET
         - BEDROCK_CLAUDE_4_6_SONNET
         - BEDROCK_CLAUDE_5_SONNET
+        - BEDROCK_CLAUDE_5_5_SONNET
         - BEDROCK_CLAUDE_4_5_HAIKU
         - BEDROCK_CLAUDE_4_5_OPUS
         - BEDROCK_CLAUDE_4_7_OPUS
@@ -32969,6 +32971,7 @@ components:
                 - bedrock-claude-4.5-sonnet
                 - bedrock-claude-4.6-sonnet
                 - bedrock-claude-5-sonnet
+                - bedrock-claude-5.5-sonnet
                 - bedrock-claude-4.5-haiku
                 - bedrock-claude-4.5-opus
                 - bedrock-claude-4.7-opus
@@ -33045,6 +33048,7 @@ components:
                 - BEDROCK_CLAUDE_4_5_SONNET
                 - BEDROCK_CLAUDE_4_6_SONNET
                 - BEDROCK_CLAUDE_5_SONNET
+                - BEDROCK_CLAUDE_5_5_SONNET
                 - BEDROCK_CLAUDE_4_5_HAIKU
                 - BEDROCK_CLAUDE_4_5_OPUS
                 - BEDROCK_CLAUDE_4_7_OPUS
@@ -33249,6 +33253,7 @@ components:
             - bedrock-claude-4.5-sonnet
             - bedrock-claude-4.6-sonnet
             - bedrock-claude-5-sonnet
+            - bedrock-claude-5.5-sonnet
             - bedrock-claude-4.5-haiku
             - bedrock-claude-4.5-opus
             - bedrock-claude-4.7-opus
@@ -33324,6 +33329,7 @@ components:
             - BEDROCK_CLAUDE_4_5_SONNET
             - BEDROCK_CLAUDE_4_6_SONNET
             - BEDROCK_CLAUDE_5_SONNET
+            - BEDROCK_CLAUDE_5_5_SONNET
             - BEDROCK_CLAUDE_4_5_HAIKU
             - BEDROCK_CLAUDE_4_5_OPUS
             - BEDROCK_CLAUDE_4_7_OPUS
