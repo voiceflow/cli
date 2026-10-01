@@ -52,9 +52,6 @@ func InitAgentMode(cmd *cobra.Command) {
 	if !agentDetected.CompareAndSwap(false, true) {
 		return
 	}
-	// flagutil decides whether a silent socket on stdin is a body, and cannot
-	// import this package to ask. See internal/flagutil/stdin.go.
-	defer func() { flagutil.SetAgentMode(agentMode.Load()) }()
 
 	// Explicit flag takes priority: --agent-mode=false overrides env vars.
 	if flagVal, changed := flagutil.GetBoolFlag(cmd, "agent-mode"); changed {
@@ -82,7 +79,6 @@ func IsAgentMode() bool {
 func ResetAgentMode() {
 	agentMode.Store(false)
 	agentDetected.Store(false)
-	flagutil.SetAgentMode(false)
 }
 
 // isTruthyEnvVar checks if an environment variable is set to a truthy value.

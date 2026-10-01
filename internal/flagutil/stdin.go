@@ -43,7 +43,6 @@ import (
 	"io"
 	"os"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -63,14 +62,16 @@ const agentSocketWait = 250 * time.Millisecond
 // without delivering data or closing.
 var ErrStdinTimeout = errors.New("timed out reading stdin")
 
-// agentMode mirrors output.IsAgentMode. The output package owns agent
-// detection and reports it through SetAgentMode, because output imports
-// flagutil and the reverse import would be a cycle.
-var agentMode atomic.Bool
+// isAgentMode reports whether an AI coding agent is running vf. The output
+// package owns agent detection and installs its IsAgentMode here when the
+// program starts, because output imports flagutil and the reverse import would
+// be a cycle. Asking each time, rather than keeping a copy, means flagutil
+// always sees the mode as finally resolved.
+var isAgentMode = func() bool { return false }
 
-// SetAgentMode records whether an AI coding agent is running vf.
-func SetAgentMode(on bool) {
-	agentMode.Store(on)
+// SetAgentModeCheck installs the function that reports agent mode.
+func SetAgentModeCheck(check func() bool) {
+	isAgentMode = check
 }
 
 // silenceMeansNoBody reports whether stdin of this type, when it stays silent
@@ -87,7 +88,7 @@ func readStdinBody(cmd *cobra.Command) ([]byte, error) {
 	}
 	in := cmd.InOrStdin()
 	if in == os.Stdin {
-		if stat, err := os.Stdin.Stat(); err == nil && silenceMeansNoBody(agentMode.Load(), stat.Mode()) {
+		if stat, err := os.Stdin.Stat(); err == nil && silenceMeansNoBody(isAgentMode(), stat.Mode()) {
 			return readStdinBounded(in, agentSocketWait)
 		}
 	}
