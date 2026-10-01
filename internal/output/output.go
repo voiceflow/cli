@@ -279,6 +279,10 @@ func Error(cmd *cobra.Command, err error) error {
 	if err == nil {
 		return nil
 	}
+	// A dry run's stand-in response is not an API error. See dryrun.go.
+	if isAboutDryRunResponse(err) {
+		return nil
+	}
 
 	format := resolveOutputFormat(cmd)
 	jqExpr, _ := flagutil.GetStringFlag(cmd, "jq")

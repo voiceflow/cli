@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/voiceflow/cli/internal/flagutil"
+	"github.com/voiceflow/cli/internal/output"
 )
 
 // maxBodyPreview is the maximum number of bytes to show in body previews.
@@ -244,10 +245,17 @@ func (c *DryRunClient) Do(req *http.Request) (*http.Response, error) {
 	}
 	fmt.Fprintf(c.Stderr, "[DRY-RUN] Network call skipped.\n")
 
+	// The marker tells output.Error that an SDK error about this response
+	// (operations that succeed only with 201 reject a 200) is not an API
+	// error. See internal/output/dryrun.go.
+	header := http.Header{}
+	header.Set("Content-Type", "application/json")
+	header.Set(output.DryRunResponseHeader, "true")
+
 	return &http.Response{
 		StatusCode: http.StatusOK,
 		Status:     "200 OK",
-		Header:     http.Header{"Content-Type": []string{"application/json"}},
+		Header:     header,
 		Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
 		Request:    req,
 	}, nil
