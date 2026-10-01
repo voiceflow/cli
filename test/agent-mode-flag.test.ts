@@ -41,7 +41,16 @@ function run(args: string[], env: Record<string, string> = {}) {
     reject: false,
     timeout: 20_000,
     stdin: 'ignore',
-    env: { ...cleared, HOME: home, VF_TOKEN: '', ...env },
+    env: {
+      ...cleared,
+      HOME: home,
+      VF_TOKEN: '',
+      // The no-token cases must find no token anywhere. An empty HOME hides the
+      // macOS Keychain; on Linux the keyring is reached over D-Bus, so point
+      // the session bus at a socket that does not exist.
+      DBUS_SESSION_BUS_ADDRESS: `unix:path=${path.join(home, 'no-session-bus')}`,
+      ...env,
+    },
     extendEnv: true,
   })(VF, args);
 }
