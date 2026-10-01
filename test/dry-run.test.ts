@@ -12,6 +12,8 @@
 
 import { execa } from 'execa';
 import * as fs from 'node:fs';
+import * as http from 'node:http';
+import type { AddressInfo } from 'node:net';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -27,24 +29,36 @@ const AGENT_ENV_VARS = [
 ];
 
 let home: string;
+let server: http.Server;
+let serverURL: string;
 
-beforeAll(() => {
+beforeAll(async () => {
   // vf keeps credentials under HOME; an empty one keeps the developer's out.
   home = fs.mkdtempSync(path.join(os.tmpdir(), 'vf-dry-run-home-'));
+
+  // A real server that answers with the dry-run marker, as any server reached
+  // with --server-url could.
+  server = http.createServer((_req, res) => {
+    res.writeHead(200, { 'content-type': 'application/json', 'x-vf-dry-run': 'true' });
+    res.end('{}');
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  serverURL = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 });
 
-afterAll(() => {
+afterAll(async () => {
+  await new Promise<void>((resolve) => server.close(() => resolve()));
   fs.rmSync(home, { recursive: true, force: true });
 });
 
-function dryRun(args: string[], opts: { agentMode?: boolean } = {}) {
+function vf(args: string[], opts: { agentMode?: boolean } = {}) {
   const env: Record<string, string | undefined> = Object.fromEntries(AGENT_ENV_VARS.map((name) => [name, undefined]));
   env.HOME = home;
   if (opts.agentMode) env.CLAUDECODE = '1';
-  return execa({ reject: false, timeout: 20_000, stdin: 'ignore', env, extendEnv: true })(
-    VF, [...args, '--dry-run', '--token', 'vfp_x'],
-  );
+  return execa({ reject: false, timeout: 20_000, stdin: 'ignore', env, extendEnv: true })(VF, [...args, '--token', 'vfp_x']);
 }
+
+const dryRun = (args: string[], opts: { agentMode?: boolean } = {}) => vf([...args, '--dry-run'], opts);
 
 const PREVIEWED = '[DRY-RUN] Network call skipped.';
 
@@ -78,6 +92,16 @@ describe('--dry-run', () => {
       expect(result.stderr).toContain(PREVIEWED);
       expect(result.stderr).not.toContain('"error');
     }
+  });
+
+  // The marker is only honoured during a dry run. Otherwise a server could send
+  // it on an error response and turn the error into a silent success.
+  it('still reports an unexpected response that carries the marker without --dry-run', async () => {
+    const [, createProject] = COMMANDS[0]!;
+    const result = await vf([...createProject, '--server-url', serverURL]);
+
+    expect(result.exitCode, result.stderr).toBe(1);
+    expect(result.stderr).toContain('unknown status code');
   });
 
   // The rule must not hide real failures: a request that cannot be built fails

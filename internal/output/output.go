@@ -280,7 +280,7 @@ func Error(cmd *cobra.Command, err error) error {
 		return nil
 	}
 	// A dry run's stand-in response is not an API error. See dryrun.go.
-	if isAboutDryRunResponse(err) {
+	if isAboutDryRunResponse(cmd, err) {
 		return nil
 	}
 

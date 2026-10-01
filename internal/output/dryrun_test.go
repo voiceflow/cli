@@ -24,11 +24,18 @@ func standInHeader() http.Header {
 	return header
 }
 
-// reportError runs Error and returns what it returned and printed.
-func reportError(t *testing.T, err error) (error, string) {
+// reportError runs Error, with or without --dry-run, and returns what it
+// returned and printed.
+func reportError(t *testing.T, err error, isDryRun bool) (error, string) {
 	t.Helper()
 	var stderr bytes.Buffer
 	cmd := &cobra.Command{Use: "vf"}
+	cmd.Flags().Bool("dry-run", false, "")
+	if isDryRun {
+		if setErr := cmd.Flags().Set("dry-run", "true"); setErr != nil {
+			t.Fatal(setErr)
+		}
+	}
 	cmd.SetErr(&stderr)
 	return Error(cmd, err), stderr.String()
 }
@@ -43,7 +50,7 @@ func TestErrorIgnoresTheDryRunStandInResponse(t *testing.T) {
 				InitAgentMode(&cobra.Command{Use: "vf"})
 			}
 
-			got, printed := reportError(t, statusError(standInHeader()))
+			got, printed := reportError(t, statusError(standInHeader()), true)
 			if got != nil || printed != "" {
 				t.Fatalf("Error = %v, printed %q; want nil and nothing printed", got, printed)
 			}
@@ -55,12 +62,20 @@ func TestErrorStillReportsEveryOtherError(t *testing.T) {
 	ResetAgentMode()
 	t.Cleanup(ResetAgentMode)
 
-	for name, err := range map[string]error{
-		"a response the API sent":     statusError(http.Header{"Content-Type": {"application/json"}}),
-		"an error before the preview": errors.New("error serializing request body: boom"),
-	} {
-		t.Run(name, func(t *testing.T) {
-			got, printed := reportError(t, err)
+	cases := []struct {
+		name     string
+		err      error
+		isDryRun bool
+	}{
+		{"a response the API sent", statusError(http.Header{"Content-Type": {"application/json"}}), true},
+		{"an error before the preview", errors.New("error serializing request body: boom"), true},
+		// The marker is a header any server could send; outside a dry run it
+		// must not turn that server's error into a success.
+		{"a marked response without --dry-run", statusError(standInHeader()), false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, printed := reportError(t, tc.err, tc.isDryRun)
 			if got == nil || printed == "" {
 				t.Fatalf("Error = %v, printed %q; want the error returned and reported", got, printed)
 			}

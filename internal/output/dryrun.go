@@ -11,8 +11,19 @@
 // report an error about it: the preview has printed and nothing was sent.
 // Errors raised before the preview, such as a body that fails to serialize,
 // carry no response and are still reported.
+//
+// The marker counts only while --dry-run is on. A header is something any
+// server reached with --server-url could send, and it must not be able to turn
+// its own error into a silent success. During a dry run nothing is sent, so
+// the stand-in is the only response there can be.
 
 package output
+
+import (
+	"github.com/spf13/cobra"
+
+	"github.com/voiceflow/cli/internal/flagutil"
+)
 
 // DryRunResponseHeader marks the stand-in response that a dry run returns in
 // place of sending the request.
@@ -20,6 +31,9 @@ const DryRunResponseHeader = "X-Vf-Dry-Run"
 
 // isAboutDryRunResponse reports whether err concerns a dry run's stand-in
 // response rather than anything the API returned.
-func isAboutDryRunResponse(err error) bool {
+func isAboutDryRunResponse(cmd *cobra.Command, err error) bool {
+	if isDryRun, _ := flagutil.GetBoolFlag(cmd, "dry-run"); !isDryRun {
+		return false
+	}
 	return extractErrorResponseHeaders(err).Get(DryRunResponseHeader) != ""
 }
