@@ -69,6 +69,27 @@ func TestRedactBodyHidesSecretsAndKeepsTheRest(t *testing.T) {
 	}
 }
 
+// A credential pair hides only a value that could be a secret. A null, a
+// boolean or a number keeps its value and its JSON type.
+func TestRedactBodyKeepsACredentialPairsNonSecretValue(t *testing.T) {
+	body := `{"headers": [
+		{"key": "Authorization", "value": null},
+		{"key": "X-Api-Key", "value": false},
+		{"key": "X-Auth-Token", "value": 7}
+	]}`
+
+	out := redactBody([]byte(body))
+
+	if strings.Contains(out, redacted) {
+		t.Errorf("a null, boolean or number was redacted:\n%s", out)
+	}
+	for _, kept := range []string{`"value": null`, `"value": false`, `"value": 7`} {
+		if !strings.Contains(out, kept) {
+			t.Errorf("%s was changed:\n%s", kept, out)
+		}
+	}
+}
+
 func TestRedactRequestBodyHidesTheValueOnSecretEndpoints(t *testing.T) {
 	cases := []struct {
 		path, body, secret, kept string

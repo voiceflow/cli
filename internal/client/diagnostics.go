@@ -96,7 +96,7 @@ func redactJSON(v interface{}, depth int) interface{} {
 		credentialPair := isCredentialPair(val)
 		out := make(map[string]interface{}, len(val))
 		for k, child := range val {
-			if hidesValue(k, child) || (credentialPair && k == "value") {
+			if hidesValue(k, child) || (credentialPair && k == "value" && canHoldSecret(child)) {
 				out[k] = redacted
 			} else {
 				out[k] = redactJSON(child, depth+1)
