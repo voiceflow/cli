@@ -28,6 +28,7 @@ import (
 	"github.com/voiceflow/cli/internal/cli/tool"
 	"github.com/voiceflow/cli/internal/cli/transcript"
 	"github.com/voiceflow/cli/internal/cli/variable"
+	"github.com/voiceflow/cli/internal/cli/widget"
 	"github.com/voiceflow/cli/internal/cli/workspace"
 	"github.com/voiceflow/cli/internal/config"
 	"github.com/voiceflow/cli/internal/explorer"
@@ -133,6 +134,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := test.InitTestRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init test: %w", err)
+	}
+	if err := widget.InitWidgetRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init widget: %w", err)
 	}
 	if err := initConfigureCmd(rootCmd); err != nil {
 		return nil, fmt.Errorf("init configure: %w", err)
