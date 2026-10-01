@@ -103,9 +103,13 @@ describe('a string flag whose field is not text', () => {
     ]);
   });
 
-  it('takes plain text or null for a nullable string: evaluation create --body-param.boolean.description', async () => {
+  it('takes plain text, empty text or null for a nullable string: evaluation create --body-param.boolean.description', async () => {
     const text = await dryRun([...EVALUATION, '--body-param.boolean.description', 'Checks tone']);
     expect(sentBody(text.stderr)).toMatchObject({ type: 'boolean', description: 'Checks tone' });
+
+    // Given '' on purpose, the field is sent empty rather than left out.
+    const empty = await dryRun([...EVALUATION, '--body-param.boolean.description', '']);
+    expect(sentBody(empty.stderr)).toMatchObject({ description: '' });
 
     const cleared = await dryRun([...EVALUATION, '--body-param.boolean.description', 'null']);
     expect(sentBody(cleared.stderr)).toMatchObject({ description: null });

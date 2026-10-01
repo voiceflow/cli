@@ -43,17 +43,62 @@ func TestFieldHoldsText(t *testing.T) {
 	}
 }
 
-// buildString runs buildStringField for one string flag set to value.
-func buildString(t *testing.T, flag, path, value string) (stringFlagTarget, error) {
+// buildFlag runs buildStringField for the string flag m, set to *value, or not
+// given at all when value is nil.
+func buildFlag(t *testing.T, m FlagMeta, value *string) (stringFlagTarget, error) {
 	t.Helper()
 	cmd := &cobra.Command{Use: "vf"}
-	cmd.Flags().String(flag, "", "")
-	if err := cmd.Flags().Set(flag, value); err != nil {
-		t.Fatal(err)
+	cmd.Flags().String(m.FlagName, "", "")
+	if value != nil {
+		if err := cmd.Flags().Set(m.FlagName, *value); err != nil {
+			t.Fatal(err)
+		}
 	}
 	var target stringFlagTarget
-	err := buildStringField(cmd, reflect.ValueOf(&target).Elem(), FlagMeta{FlagName: flag, FieldPath: path, Kind: FlagKindString, Required: true})
+	err := buildStringField(cmd, reflect.ValueOf(&target).Elem(), m)
 	return target, err
+}
+
+// buildString runs buildStringField for a required string flag set to value.
+func buildString(t *testing.T, flag, path, value string) (stringFlagTarget, error) {
+	t.Helper()
+	return buildFlag(t, FlagMeta{FlagName: flag, FieldPath: path, Kind: FlagKindString, Required: true}, &value)
+}
+
+// A flag that is not required, given ” on purpose or not given at all. Empty
+// text for a nullable string is sent as "", as a string flag's ” always was;
+// an object has no empty text, so ” leaves it out, as it would a JSON flag.
+func TestStringFlagThatIsNotRequiredGivenEmptyOrNothing(t *testing.T) {
+	empty := ""
+	for _, kind := range []struct {
+		name               string
+		optional, required bool
+	}{
+		{"optional", true, false},
+		{"neither optional nor required", false, false},
+	} {
+		t.Run(kind.name, func(t *testing.T) {
+			note := FlagMeta{FlagName: "note", FieldPath: "Note", Kind: FlagKindString, Optional: kind.optional, Required: kind.required}
+			payload := FlagMeta{FlagName: "payload", FieldPath: "Payload", Kind: FlagKindString, Optional: kind.optional, Required: kind.required}
+
+			got, err := buildFlag(t, note, &empty)
+			if value, ok := got.Note.GetOrZero(); err != nil || !ok || value != "" {
+				t.Errorf("note given '': Note = %v, err = %v; want empty text", got.Note, err)
+			}
+
+			got, err = buildFlag(t, note, nil)
+			if err != nil || got.Note.IsSet() {
+				t.Errorf("note not given: Note = %v, err = %v; want it left out", got.Note, err)
+			}
+
+			for _, value := range []*string{&empty, nil} {
+				got, err = buildFlag(t, payload, value)
+				if err != nil || got.Payload.Sequential {
+					t.Errorf("payload given %v: Payload = %+v, err = %v; want it left out", value, got.Payload, err)
+				}
+			}
+		})
+	}
 }
 
 func TestStringFlagOnAnObjectTakesJSON(t *testing.T) {
