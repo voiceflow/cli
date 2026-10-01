@@ -1683,7 +1683,7 @@ func (s *StableAgentUpdateRequestV2Llm) GetDefaults() *StableAgentUpdateRequestV
 // #region class-body-stableagentupdaterequestv2llm
 // #endregion class-body-stableagentupdaterequestv2llm
 
-type Voice struct {
+type StableAgentUpdateRequestV2Voice struct {
 	Stt                     *STTSettings                               `json:"stt,omitzero"`
 	Tts                     *VoiceSettings                             `json:"tts,omitzero"`
 	PronunciationDictionary []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
@@ -1698,198 +1698,201 @@ type Voice struct {
 	MaxDuration             *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
 }
 
-func (v Voice) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(v, "", false)
+func (s StableAgentUpdateRequestV2Voice) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
 }
 
-func (v *Voice) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
+func (s *StableAgentUpdateRequestV2Voice) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (v *Voice) GetStt() *STTSettings {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetStt() *STTSettings {
+	if s == nil {
 		return nil
 	}
-	return v.Stt
+	return s.Stt
 }
 
-func (v *Voice) GetSttElevenlabs() *ElevenLabsSTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttElevenlabs() *ElevenLabsSTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.ElevenLabsSTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetSttDeepgram() *DeepgramSTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttDeepgram() *DeepgramSTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.DeepgramSTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetSttAssemblyai() *AssemblyAISTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttAssemblyai() *AssemblyAISTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.AssemblyAISTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetSttCartesia() *CartesiaSTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttCartesia() *CartesiaSTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.CartesiaSTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetSttGladia() *GladiaSTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttGladia() *GladiaSTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.GladiaSTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetSttGoogle() *GoogleSTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttGoogle() *GoogleSTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.GoogleSTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetSttSoniox() *SonioxSTTSettings {
-	if v := v.GetStt(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSttSoniox() *SonioxSTTSettings {
+	if v := s.GetStt(); v != nil {
 		return v.SonioxSTTSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTts() *VoiceSettings {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTts() *VoiceSettings {
+	if s == nil {
 		return nil
 	}
-	return v.Tts
+	return s.Tts
 }
 
-func (v *Voice) GetTtsAmazon() *AmazonVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsAmazon() *AmazonVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.AmazonVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTtsGoogle() *GoogleVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsGoogle() *GoogleVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.GoogleVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTtsCartesia() *CartesiaVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsCartesia() *CartesiaVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.CartesiaVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTtsRimelabs() *RimelabsVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsRimelabs() *RimelabsVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.RimelabsVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTtsSoniox() *SonioxVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsSoniox() *SonioxVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.SonioxVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTtsMicrosoft() *MicrosoftVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsMicrosoft() *MicrosoftVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.MicrosoftVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetTtsElevenlabs() *ElevenLabsVoiceSettings {
-	if v := v.GetTts(); v != nil {
+func (s *StableAgentUpdateRequestV2Voice) GetTtsElevenlabs() *ElevenLabsVoiceSettings {
+	if v := s.GetTts(); v != nil {
 		return v.ElevenLabsVoiceSettings
 	}
 	return nil
 }
 
-func (v *Voice) GetPronunciationDictionary() []PronunciationDictionaryEntry {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetPronunciationDictionary() []PronunciationDictionaryEntry {
+	if s == nil {
 		return nil
 	}
-	return v.PronunciationDictionary
+	return s.PronunciationDictionary
 }
 
-func (v *Voice) GetFailureMessage() optionalnullable.OptionalNullable[string] {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetFailureMessage() optionalnullable.OptionalNullable[string] {
+	if s == nil {
 		return nil
 	}
-	return v.FailureMessage
+	return s.FailureMessage
 }
 
-func (v *Voice) GetHasCallRecording() *bool {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetHasCallRecording() *bool {
+	if s == nil {
 		return nil
 	}
-	return v.HasCallRecording
+	return s.HasCallRecording
 }
 
-func (v *Voice) GetAudioCue() optionalnullable.OptionalNullable[float64] {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetAudioCue() optionalnullable.OptionalNullable[float64] {
+	if s == nil {
 		return nil
 	}
-	return v.AudioCue
+	return s.AudioCue
 }
 
-func (v *Voice) GetBackgroundAudio() optionalnullable.OptionalNullable[string] {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetBackgroundAudio() optionalnullable.OptionalNullable[string] {
+	if s == nil {
 		return nil
 	}
-	return v.BackgroundAudio
+	return s.BackgroundAudio
 }
 
-func (v *Voice) GetBackgroundAudioSettings() *BackgroundAudioSettings {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetBackgroundAudioSettings() *BackgroundAudioSettings {
+	if s == nil {
 		return nil
 	}
-	return v.BackgroundAudioSettings
+	return s.BackgroundAudioSettings
 }
 
-func (v *Voice) GetAudioSync() *bool {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetAudioSync() *bool {
+	if s == nil {
 		return nil
 	}
-	return v.AudioSync
+	return s.AudioSync
 }
 
-func (v *Voice) GetKeypadInput() *VoiceKeypadSettings {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetKeypadInput() *VoiceKeypadSettings {
+	if s == nil {
 		return nil
 	}
-	return v.KeypadInput
+	return s.KeypadInput
 }
 
-func (v *Voice) GetSilenceTimeoutMs() *float64 {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetSilenceTimeoutMs() *float64 {
+	if s == nil {
 		return nil
 	}
-	return v.SilenceTimeoutMs
+	return s.SilenceTimeoutMs
 }
 
-func (v *Voice) GetMaxDuration() *VoiceMaxDurationSettings {
-	if v == nil {
+func (s *StableAgentUpdateRequestV2Voice) GetMaxDuration() *VoiceMaxDurationSettings {
+	if s == nil {
 		return nil
 	}
-	return v.MaxDuration
+	return s.MaxDuration
 }
+
+// #region class-body-stableagentupdaterequestv2voice
+// #endregion class-body-stableagentupdaterequestv2voice
 
 type StableAgentUpdateRequestV2 struct {
 	Prompt   *string                                                               `json:"prompt,omitzero"`
@@ -1909,9 +1912,9 @@ type StableAgentUpdateRequestV2 struct {
 	CallForwardTool   optionalnullable.OptionalNullable[StableAgentUpdateRequestV2CallForwardTool]   `json:"callForwardTool,omitzero"`
 	KnowledgeBaseTool optionalnullable.OptionalNullable[StableAgentUpdateRequestV2KnowledgeBaseTool] `json:"knowledgeBaseTool,omitzero"`
 	// Whether to append the default prompting guidelines to the global prompt.
-	IncludeGuidelines *bool                          `json:"includeGuidelines,omitzero"`
-	Llm               *StableAgentUpdateRequestV2Llm `json:"llm,omitzero"`
-	Voice             *Voice                         `json:"voice,omitzero"`
+	IncludeGuidelines *bool                            `json:"includeGuidelines,omitzero"`
+	Llm               *StableAgentUpdateRequestV2Llm   `json:"llm,omitzero"`
+	Voice             *StableAgentUpdateRequestV2Voice `json:"voice,omitzero"`
 }
 
 func (s StableAgentUpdateRequestV2) MarshalJSON() ([]byte, error) {
@@ -2030,7 +2033,7 @@ func (s *StableAgentUpdateRequestV2) GetLlm() *StableAgentUpdateRequestV2Llm {
 	return s.Llm
 }
 
-func (s *StableAgentUpdateRequestV2) GetVoice() *Voice {
+func (s *StableAgentUpdateRequestV2) GetVoice() *StableAgentUpdateRequestV2Voice {
 	if s == nil {
 		return nil
 	}

@@ -10689,6 +10689,187 @@ paths:
         - Test Run
       security:
         - token: []
+  /v1/stable/widget:
+    get:
+      operationId: StableWidgetController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_widget
+          toolDescription: |-
+            The embeddable web widget — how the agent looks and behaves once it is running on a customer's website. One configuration per environment, read and written as a single object in five parts:
+            type — whether the embed runs as a text `chat` widget or a click-to-call `voice` widget. It selects which of the two surface blocks the runtime applies; the other is kept but ignored.
+            chat — the chat surface: render mode (floating `widget`, inline `embed`, or `popover`), header and agent images, the opening banner, the input placeholder, the privacy and AI disclaimers, voice input and output, file upload, and the end-of-conversation CSAT survey.
+            voice — the voice surface: render mode and the call-screen copy (call-to-action, start and end button labels, listening and talking states).
+            common — chrome shared by both surfaces: launcher type and label, primary color and its palette, font, position and spacing on the page, width, the Voiceflow footer link, and where conversation state is persisted between page loads.
+            security — approved-domain allowlisting and transcript controls.
+            Some fields are gated on the workspace plan: `security` and `chat.disclaimer` on the widget-security entitlement, and `common.poweredBy`, `common.fontFamily`, `common.footerLink`, `common.primaryColor.palette`, `chat.placeholderText` and `chat.aiDisclaimer` on Webchat Premium. A write touching one without the entitlement is refused with 403 in full, so nothing sent alongside it lands either. The primary color splits across that line: `common.primaryColor.color` is free and sending it alone regenerates the shade palette from it, while naming `common.primaryColor.palette` yourself is what costs Webchat Premium.
+            Widget settings are stored on the environment's version, not compiled into the agent: a change needs no recompile, but it lands on the draft version, so voiceflow_environment.publish is what puts it in front of visitors.
+            Predecessor: select the project and environment first.
+            Successor: hand the user the embed snippet so they can paste it into their site, then publish the environment once they are happy with the configuration.
+          operation: get
+          operationDescription: |-
+            WHAT — Read the environment's whole widget configuration: the surface `type`, and the `chat`, `voice`, `common` and `security` blocks.
+            USE WHEN — Reporting how the embed is currently configured, or ahead of an edit so the patch you send changes only what the user asked for.
+            BEFORE — voiceflow_project.list then voiceflow_environment.list if you do not yet have projectID + environmentAlias.
+            AFTER — voiceflow_widget.update to change it, or voiceflow_widget.get_snippet to hand the user the embed code.
+            DO NOT — Read this as what visitors see on the live site. It returns the environment's DRAFT version; live traffic serves the published one, so the two differ until voiceflow_environment.publish runs.
+        cli:
+          command: widget get
+      x-speakeasy-group: widget
+      x-speakeasy-name-override: get
+      summary: Get widget
+      description: Get the widget configuration stored on the environment's draft version.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWidgetResponse'
+      tags:
+        - Widget
+      security:
+        - token: []
+    patch:
+      operationId: StableWidgetController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_widget
+          toolDescription: |-
+            The embeddable web widget — how the agent looks and behaves once it is running on a customer's website. One configuration per environment, read and written as a single object in five parts:
+            type — whether the embed runs as a text `chat` widget or a click-to-call `voice` widget. It selects which of the two surface blocks the runtime applies; the other is kept but ignored.
+            chat — the chat surface: render mode (floating `widget`, inline `embed`, or `popover`), header and agent images, the opening banner, the input placeholder, the privacy and AI disclaimers, voice input and output, file upload, and the end-of-conversation CSAT survey.
+            voice — the voice surface: render mode and the call-screen copy (call-to-action, start and end button labels, listening and talking states).
+            common — chrome shared by both surfaces: launcher type and label, primary color and its palette, font, position and spacing on the page, width, the Voiceflow footer link, and where conversation state is persisted between page loads.
+            security — approved-domain allowlisting and transcript controls.
+            Some fields are gated on the workspace plan: `security` and `chat.disclaimer` on the widget-security entitlement, and `common.poweredBy`, `common.fontFamily`, `common.footerLink`, `common.primaryColor.palette`, `chat.placeholderText` and `chat.aiDisclaimer` on Webchat Premium. A write touching one without the entitlement is refused with 403 in full, so nothing sent alongside it lands either. The primary color splits across that line: `common.primaryColor.color` is free and sending it alone regenerates the shade palette from it, while naming `common.primaryColor.palette` yourself is what costs Webchat Premium.
+            Widget settings are stored on the environment's version, not compiled into the agent: a change needs no recompile, but it lands on the draft version, so voiceflow_environment.publish is what puts it in front of visitors.
+            Predecessor: select the project and environment first.
+            Successor: hand the user the embed snippet so they can paste it into their site, then publish the environment once they are happy with the configuration.
+          operation: update
+          operationDescription: |-
+            WHAT — Patch the widget configuration. Send only what changes: `chat`, `voice` and `common` merge one level deep into the stored blocks, while a nested object inside them replaces the stored one outright. `common.primaryColor` is the one exception and merges: `color` on its own recolors the widget and regenerates the shade palette from it, `palette` on its own hand-tunes the shades against the stored color.
+            USE WHEN — The user wants to restyle the embed, switch between the chat and voice surfaces, change the launcher, the opening banner or the disclaimers, or lock the widget to approved domains.
+            BEFORE — voiceflow_widget.get, so every nested object you resend is complete rather than half the stored one.
+            AFTER — voiceflow_environment.publish. The write lands on the draft version; publishing is what puts it in front of visitors. No recompile is needed — widget settings are not compiled into the agent.
+            DO NOT — Send a plan-gated field unless the user asked for it. `security` and `chat.disclaimer` need the widget-security entitlement; `common.poweredBy`, `common.fontFamily`, `common.footerLink`, `common.primaryColor.palette`, `chat.placeholderText` and `chat.aiDisclaimer` need the Webchat Premium one. Without it the whole request is refused with 403 and nothing is written, including the fields sent alongside it. Recoloring to a flat brand color is NOT one of them: send `common.primaryColor.color` alone and leave `palette` out, which is free on any plan and gets you the generated shades.
+        cli:
+          command: widget update
+      x-speakeasy-group: widget
+      x-speakeasy-name-override: update
+      summary: Update widget
+      description: Update the widget configuration. `chat`, `voice` and `common` are merged one level deep into the stored settings, except `common.primaryColor`, which merges a level deeper so that `color` and `palette` can be sent independently; `security` is replaced in full. `security` and `chat.disclaimer` require the widget-security entitlement, and the premium appearance fields require the Webchat Premium one.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableWidgetUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Widget
+      security:
+        - token: []
+  /v1/stable/widget/snippet:
+    get:
+      operationId: StableWidgetController_getSnippet
+      x-vf:
+        mcp:
+          tool: voiceflow_widget
+          toolDescription: |-
+            The embeddable web widget — how the agent looks and behaves once it is running on a customer's website. One configuration per environment, read and written as a single object in five parts:
+            type — whether the embed runs as a text `chat` widget or a click-to-call `voice` widget. It selects which of the two surface blocks the runtime applies; the other is kept but ignored.
+            chat — the chat surface: render mode (floating `widget`, inline `embed`, or `popover`), header and agent images, the opening banner, the input placeholder, the privacy and AI disclaimers, voice input and output, file upload, and the end-of-conversation CSAT survey.
+            voice — the voice surface: render mode and the call-screen copy (call-to-action, start and end button labels, listening and talking states).
+            common — chrome shared by both surfaces: launcher type and label, primary color and its palette, font, position and spacing on the page, width, the Voiceflow footer link, and where conversation state is persisted between page loads.
+            security — approved-domain allowlisting and transcript controls.
+            Some fields are gated on the workspace plan: `security` and `chat.disclaimer` on the widget-security entitlement, and `common.poweredBy`, `common.fontFamily`, `common.footerLink`, `common.primaryColor.palette`, `chat.placeholderText` and `chat.aiDisclaimer` on Webchat Premium. A write touching one without the entitlement is refused with 403 in full, so nothing sent alongside it lands either. The primary color splits across that line: `common.primaryColor.color` is free and sending it alone regenerates the shade palette from it, while naming `common.primaryColor.palette` yourself is what costs Webchat Premium.
+            Widget settings are stored on the environment's version, not compiled into the agent: a change needs no recompile, but it lands on the draft version, so voiceflow_environment.publish is what puts it in front of visitors.
+            Predecessor: select the project and environment first.
+            Successor: hand the user the embed snippet so they can paste it into their site, then publish the environment once they are happy with the configuration.
+          operation: get_snippet
+          operationDescription: |-
+            WHAT — Return the ready-to-paste `<script>` tag that loads this project's widget on a website, already filled in with the right verification key, runtime endpoints, environment, version and render block.
+            USE WHEN — The user asks how to install, embed or ship the agent on their own site.
+            AFTER — Tell the user where it goes: just before the closing `</body>` of every page the widget should appear on. If the widget renders inline, the snippet carries a `document.getElementById(...)` placeholder they must replace with the element to render into. A snippet that verifies by `projectID` also requires the agent to be public. If the snippet contains <PROJECT_ID> or <CLIENT_KEY> they must be replaced for the script to function.
+            DO NOT — Hand-write or patch this snippet, and do not reuse one from another project or environment. The verification key, the endpoints, the environment, the version and the render block all follow configuration that only this operation resolves.
+            NOTE — The configuration it reads follows `version`, which defaults to `published` — the version serving live traffic. A widget change that is still only on the draft is not reflected until voiceflow_environment.publish runs, and asking for `draft` pins the embed to the draft rather than previewing it.
+        cli:
+          command: widget get-snippet
+      x-speakeasy-group: widget
+      x-speakeasy-name-override: get-snippet
+      summary: Get widget snippet
+      description: Get the JavaScript snippet that embeds the widget on a website, filled in for this project and environment.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: version
+          required: false
+          in: query
+          schema:
+            default: published
+            description: 'Pins the embed to one version of the environment: `draft`, the version used when testing, or `published`, the version serving live traffic. Omit it to pin the snippet to `published`.'
+            type: string
+            enum:
+              - draft
+              - published
+            x-enumNames:
+              - DRAFT
+              - PUBLISHED
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWidgetGetSnippetResponse'
+      tags:
+        - Widget
+      security:
+        - token: []
 info:
   title: Realtime
   description: Realtime gateway API service
@@ -34427,6 +34608,174 @@ components:
           nullable: true
           description: The initial value of the variable at the start of a conversation.
           type: string
+      additionalProperties: false
+    StableWidget:
+      type: object
+      properties:
+        type:
+          description: 'Which surface the embed runs: `chat` for a text chat widget, `voice` for a click-to-call widget. It selects whether the `chat` or the `voice` block is applied at runtime; the other is kept but ignored.'
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsWidgetType'
+          enum:
+            - chat
+            - voice
+          x-enumNames:
+            - CHAT
+            - VOICE
+        chat:
+          description: 'The chat surface, applied when `type` is `chat`: how it renders on the page (floating `widget`, inline `embed`, or `popover`), its header and agent images, the opening banner, the input placeholder, the privacy and AI disclaimers, voice input and output, file upload, and the end-of-conversation CSAT survey.'
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsChatSettings'
+        voice:
+          description: 'The voice surface, applied when `type` is `voice`: how the call screen renders, and the copy shown through a call — the call-to-action, the start and end button labels, and the listening and talking states.'
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsVoiceSettings'
+        common:
+          description: 'Chrome shared by both surfaces: the launcher, the primary color and its palette, the font, the position and spacing on the page, the width, the Voiceflow footer link, and where the conversation is persisted between page loads.'
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsCommonSettings'
+        security:
+          description: Approved-domain allowlisting and transcript controls. Absent on a project that has never configured it. Writing this block requires a plan entitlement.
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsSecuritySettings'
+      required:
+        - type
+        - chat
+        - voice
+        - common
+    StableWidgetResponse:
+      type: object
+      properties:
+        widget:
+          description: The widget configuration stored on the environment's draft version.
+          allOf:
+            - $ref: '#/components/schemas/StableWidget'
+      required:
+        - widget
+    StableWidgetGetSnippetResponse:
+      type: object
+      properties:
+        snippet:
+          type: string
+          description: The complete `<script>` tag to paste into the website, just before the closing `</body>` of every page the widget should appear on. Already filled in with the right verification key, runtime endpoints and render block — it is meant to be copied verbatim, not edited.
+      required:
+        - snippet
+    StableWidgetUpdateRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - chat
+            - voice
+          description: Switches the embed between the text `chat` surface and the click-to-call `voice` surface. The surface you switch away from is kept as it was, so switching back later restores it.
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsWidgetType'
+          x-enumNames:
+            - CHAT
+            - VOICE
+        chat:
+          type: object
+          properties:
+            renderMode:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatRenderMode'
+            headerImage:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsHeaderImage'
+            agentImage:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsAgentImage'
+            banner:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsBanner'
+            placeholderText:
+              type: string
+            disclaimer:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatDisclaimer'
+            aiDisclaimer:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsAIDisclaimer'
+            handoffToAgentImageURL:
+              nullable: true
+              type: string
+            streamingDisabled:
+              type: boolean
+            responseLoader:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsResponseLoader'
+            voiceInput:
+              type: boolean
+            voiceOutput:
+              type: boolean
+            voiceOutputMuted:
+              type: boolean
+            voiceMode:
+              type: boolean
+            notificationSound:
+              type: boolean
+            fileUpload:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsFileUpload'
+            csat:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatSettingsCSAT'
+          description: 'Chat-surface fields to change, merged one level deep into the stored `chat` block: what you send replaces its stored counterpart and everything else is kept. A nested object (`banner`, `headerImage`, `disclaimer`, `csat`, …) replaces the stored one outright, so send it complete. `placeholderText` and `aiDisclaimer` need the Webchat Premium entitlement and `disclaimer` the widget-security one: without it the whole request is refused with 403 and nothing is written, including the other fields sent alongside it.'
+        voice:
+          type: object
+          properties:
+            renderMode:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsVoiceRenderMode'
+            content:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsVoiceSettingsContent'
+          description: 'Voice-surface fields to change, merged one level deep into the stored `voice` block. `content` is a nested object: it replaces the stored one outright, so send every line of call-screen copy, not just the one you are changing.'
+        common:
+          type: object
+          properties:
+            sideSpacing:
+              type: string
+            bottomSpacing:
+              type: string
+            width:
+              type: string
+            position:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsWidgetPosition'
+            fontFamily:
+              type: string
+            primaryColor:
+              type: object
+              properties:
+                color:
+                  type: string
+                  pattern: ^#(?:[\da-f]{3}|[\da-f]{6})$
+                  description: The brand color, as 3- or 6-digit hex. Sent on its own it also regenerates `palette` from itself, which is the only way to recolor the widget without the Webchat Premium entitlement.
+                palette:
+                  description: The ten shades derived from `color`, keyed `50` through `900`. Send it to override the generated shades — that is the part which needs the Webchat Premium entitlement. Omit it to have it regenerated from `color`.
+                  allOf:
+                    - $ref: '#/components/schemas/WidgetSettingsColorPalette'
+            poweredBy:
+              type: boolean
+            launcher:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsCommonSettingsLauncher'
+            footerLink:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsCommonSettingsFooterLink'
+            persistence:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsChatPersistence'
+            featureFlags:
+              allOf:
+                - $ref: '#/components/schemas/WidgetSettingsCommonSettingsFeatureFlags'
+          description: 'Shared-chrome fields to change, merged one level deep into the stored `common` block. A nested object (`launcher`, `footerLink`) replaces the stored one outright, so send it complete. `primaryColor` is the exception and merges too: send `color` on its own to recolor the widget and the shade palette is regenerated from it, send `palette` on its own to hand-tune the shades against the stored color, or send both together. `poweredBy`, `fontFamily`, `footerLink` and `primaryColor.palette` need the Webchat Premium entitlement — `primaryColor.color` on its own does not — and without it the whole request is refused with 403 and nothing is written, including the other fields sent alongside it.'
+        security:
+          description: 'Replaces the stored security block in full — unlike the other blocks it has no partial form. Requires a plan entitlement: without one the whole request is refused with 403 and nothing is written, including the other fields sent alongside it.'
+          allOf:
+            - $ref: '#/components/schemas/WidgetSettingsSecuritySettings'
       additionalProperties: false
     StableWorkspace:
       type: object

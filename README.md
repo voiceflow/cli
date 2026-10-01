@@ -569,6 +569,12 @@ server's dynamic client registration endpoint and caches the resulting
 * [`create`](docs/vf_test_run_create.md) - Create run
 * [`get`](docs/vf_test_run_get.md) - Get run
 
+### [widget](docs/vf_widget.md)
+
+* [`get`](docs/vf_widget_get.md) - Get widget
+* [`update`](docs/vf_widget_update.md) - Update widget
+* [`get-snippet`](docs/vf_widget_get-snippet.md) - Get widget snippet
+
 </details>
 <!-- End Available Commands [operations] -->
 
