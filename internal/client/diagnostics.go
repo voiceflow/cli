@@ -57,19 +57,6 @@ var sensitiveHeaderSuffixes = []string{
 	"-token",
 }
 
-// sensitiveJSONKeys lists JSON field names that should be redacted.
-var sensitiveJSONKeys = map[string]bool{
-	"password":      true,
-	"secret":        true,
-	"token":         true,
-	"access_token":  true,
-	"refresh_token": true,
-	"api_key":       true,
-	"apikey":        true,
-	"private_key":   true,
-	"client_secret": true,
-}
-
 // isSensitiveHeader returns true if the header key matches a sensitive pattern.
 func isSensitiveHeader(key string) bool {
 	lower := strings.ToLower(key)
@@ -106,10 +93,12 @@ func redactJSON(v interface{}, depth int) interface{} {
 	}
 	switch val := v.(type) {
 	case map[string]interface{}:
+		// Which values are hidden, and why: see redact.go.
+		credentialPair := isCredentialPair(val)
 		out := make(map[string]interface{}, len(val))
 		for k, child := range val {
-			if sensitiveJSONKeys[strings.ToLower(k)] {
-				out[k] = "[REDACTED]"
+			if hidesValue(k, child) || (credentialPair && k == "value" && canHoldSecret(child)) {
+				out[k] = redacted
 			} else {
 				out[k] = redactJSON(child, depth+1)
 			}
@@ -205,7 +194,7 @@ func (c *DebugClient) Do(req *http.Request) (*http.Response, error) {
 	if req.Body != nil {
 		bodyData, restored := readAndRestoreBody(req.Body)
 		req.Body = restored
-		fmt.Fprintf(c.Stderr, "[DEBUG] Request Body:\n  %s\n", redactBody(bodyData))
+		fmt.Fprintf(c.Stderr, "[DEBUG] Request Body:\n  %s\n", redactRequestBody(req.URL.Path, bodyData))
 	}
 
 	// Execute
@@ -241,7 +230,7 @@ func (c *DryRunClient) Do(req *http.Request) (*http.Response, error) {
 	fmt.Fprintf(c.Stderr, "[DRY-RUN] Headers:\n%s", formatHeaders(redactHeaders(req.Header)))
 	if req.Body != nil {
 		bodyData, _ := readAndRestoreBody(req.Body)
-		fmt.Fprintf(c.Stderr, "[DRY-RUN] Body:\n  %s\n", redactBody(bodyData))
+		fmt.Fprintf(c.Stderr, "[DRY-RUN] Body:\n  %s\n", redactRequestBody(req.URL.Path, bodyData))
 	}
 	fmt.Fprintf(c.Stderr, "[DRY-RUN] Network call skipped.\n")
 
