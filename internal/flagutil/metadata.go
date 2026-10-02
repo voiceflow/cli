@@ -541,6 +541,10 @@ func buildStringField(cmd *cobra.Command, v reflect.Value, m FlagMeta) error {
 	if shouldSkipDefault(m, changed) {
 		return nil
 	}
+	// A string flag whose field cannot hold text takes JSON. See stringflag.go.
+	if !fieldHoldsText(v.Type(), m.FieldPath) {
+		return buildNonTextField(cmd, v, m, val)
+	}
 	return setFieldByPath(v, m.FieldPath, reflect.ValueOf(val))
 }
 
