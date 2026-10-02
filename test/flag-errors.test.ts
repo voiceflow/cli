@@ -122,6 +122,38 @@ describe('structured flags still reject raw text', () => {
 /** Collapses whitespace runs, since help indents a description's later lines. */
 const squash = (text: string) => text.replace(/\s+/g, ' ');
 
+/** The escapes a KDL string can hold, beyond \u{...}. */
+const KDL_ESCAPES: Record<string, string> = { n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', s: ' ', '"': '"', '\\': '\\', '/': '/' };
+
+/** Decodes a KDL string body, including \u{...}, which JSON.parse rejects. */
+function unescapeKDL(raw: string): string {
+  return raw.replace(/\\(?:u\{([0-9a-fA-F]{1,6})\}|(.))/g, (escape, hex?: string, char?: string) =>
+    hex !== undefined ? String.fromCodePoint(parseInt(hex, 16)) : (KDL_ESCAPES[char ?? ''] ?? escape));
+}
+
+/** Matches the start of any flag's entry in --help. */
+const FLAG_ENTRY = /^\s+(?:-\w, )?--[\w-]/;
+
+/**
+ * One flag's own entry in --help: its line, and the lines its description
+ * wraps onto, up to the next flag or the end of the section.
+ */
+function helpEntry(help: string, name: string): string | undefined {
+  const lines = help.split('\n');
+  const start = lines.findIndex((line) => new RegExp(`^\\s+(?:-\\w, )?--${name}(?=\\s|$)`).test(line));
+  if (start < 0) return undefined;
+  let end = start + 1;
+  while (end < lines.length && /^\s+\S/.test(lines[end]!) && !FLAG_ENTRY.test(lines[end]!)) end += 1;
+  return lines.slice(start, end).join('\n');
+}
+
+/**
+ * The labels pflag gives a flag's value: its type, renamed for a few kinds.
+ * A boolean has none. A label outside this list is a word lifted from the
+ * description.
+ */
+const TYPE_LABELS = new Set(['string', 'stringArray', 'strings', 'int', 'ints', 'uint', 'uints', 'float', 'duration', 'bools']);
+
 /** A flag whose description, as the spec wrote it, uses backticks. */
 interface BacktickedFlag {
   command: string[];
@@ -149,8 +181,7 @@ async function backtickedFlags(): Promise<BacktickedFlag[]> {
       flags.push({
         command: blocks.filter((block): block is string => block !== null),
         name,
-        // KDL escapes a string the way JSON does.
-        description: JSON.parse(`"${help}"`),
+        description: unescapeKDL(help),
       });
     }
     if (/\{\s*$/.test(line)) blocks.push(line.match(/^\s*cmd "([^"]+)"/)?.[1] ?? null);
@@ -180,18 +211,32 @@ describe('help shows the flag type, not a word from its description', () => {
     expect(flags.length).toBeGreaterThan(0);
   });
 
-  it('renders every one of them with its backticks as quotes, so pflag lifts no word', async () => {
-    // One check covers both halves: had pflag lifted a word, that word would
-    // appear bare in the sentence, and the description below would not match.
-    const problems: string[] = [];
-    for (const command of new Set(flags.map((flag) => flag.command.join(' ')))) {
+  it('labels every one of them by its type and keeps its backticks as quotes', async () => {
+    // Each flag is checked against its own entry in --help, so a flag cannot
+    // pass on another flag's text. Had pflag lifted a word, the label would be
+    // that word, and the word would appear bare in the sentence.
+    const commands = [...new Set(flags.map((flag) => flag.command.join(' ')))];
+    const helps = new Map(await Promise.all(commands.map(async (command) => {
       const { stdout, stderr } = await run([...command.split(' ').filter(Boolean), '--help']);
-      const help = stdout + stderr;
-      for (const { name, description } of flags.filter((flag) => flag.command.join(' ') === command)) {
-        const line = help.split('\n').find((l) => new RegExp(`^\\s+(?:-\\w, )?--${name} `).test(l));
-        if (line === undefined || !squash(help).includes(squash(description.replaceAll('`', "'")))) {
-          problems.push(`vf ${command} --${name}: ${line?.trim() ?? 'no help line'}`);
-        }
+      return [command, stdout + stderr] as const;
+    })));
+
+    const problems: string[] = [];
+    for (const { command, name, description } of flags) {
+      const entry = helpEntry(helps.get(command.join(' ')) ?? '', name);
+      const where = `vf ${command.join(' ')} --${name}`;
+      if (entry === undefined) {
+        problems.push(`${where}: no help entry`);
+        continue;
+      }
+      // The label runs to the gap before the description; a lifted one can hold
+      // spaces, as in "{ key, values }".
+      const label = entry.match(new RegExp(`--${name}(?: (\\S.*?))?(?:\\s{2,}|$)`, 'm'))?.[1];
+      if (label !== undefined && !TYPE_LABELS.has(label)) {
+        problems.push(`${where}: labelled "${label}"`);
+      }
+      if (!squash(entry).includes(squash(description.replaceAll('`', "'")))) {
+        problems.push(`${where}: description changed: ${squash(entry).trim()}`);
       }
     }
     expect(problems).toEqual([]);
