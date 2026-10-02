@@ -20,14 +20,19 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/flagutil"
 	"github.com/voiceflow/cli/internal/output"
 )
 
 const (
 	docsBaseURL       = "https://www.voiceflow.com/docs"
 	docsSearchMCPURL  = "https://www.voiceflow.com/docs/mcp"
-	docsSearchTool    = "search_voiceflow_documentation"
+	docsSearchTool    = "search_voiceflow"
 	docsClientTimeout = 15 * time.Second
+
+	// docsSearchWhy is the one-sentence goal the search tool requires with
+	// every call. vf cannot know the user's task, so it names its own.
+	docsSearchWhy = "Look up Voiceflow documentation from the vf CLI"
 )
 
 // initDocsCmd registers the docs command group.
@@ -74,12 +79,20 @@ voiceflow.com/docs URL.`,
 	})
 }
 
-// docsSearchResult is one parsed search hit.
+// docsSearchResult is one search hit as vf prints it.
 type docsSearchResult struct {
 	Title   string `json:"title"`
 	Link    string `json:"link"`
 	Page    string `json:"page"`
 	Content string `json:"content"`
+}
+
+// docsSearchHit is one entry of the search tool's structuredContent.results.
+type docsSearchHit struct {
+	Title   string `json:"title"`
+	URL     string `json:"url"`
+	PageURL string `json:"pageUrl"`
+	Snippet string `json:"snippet"`
 }
 
 // runDocsSearchCmd executes docs search via the public documentation search
@@ -93,7 +106,7 @@ func runDocsSearchCmd(cmd *cobra.Command, args []string) error {
 		"method":  "tools/call",
 		"params": map[string]interface{}{
 			"name":      docsSearchTool,
-			"arguments": map[string]string{"query": query},
+			"arguments": docsSearchArguments(query),
 		},
 	})
 	if err != nil {
@@ -112,37 +125,71 @@ func runDocsSearchCmd(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	blocks, err := parseDocsSearchResponse(body)
+	results, err := parseDocsSearchResponse(body)
 	if err != nil {
 		return err
 	}
-	if len(blocks) == 0 {
+	if output.WantsRawJSON(cmd) {
+		return writeDocsSearchJSON(cmd, results)
+	}
+	if len(results) == 0 {
 		fmt.Fprintf(cmd.OutOrStdout(), "No documentation matches for %q. Browse everything at %s\n", query, docsBaseURL)
 		return nil
 	}
 
-	if output.WantsRawJSON(cmd) {
-		results := make([]docsSearchResult, 0, len(blocks))
-		for _, block := range blocks {
-			results = append(results, parseDocsSearchBlock(block))
+	out := cmd.OutOrStdout()
+	for i, result := range results {
+		if i > 0 {
+			fmt.Fprint(out, "\n---\n\n")
 		}
+		fmt.Fprintf(out, "Title: %s\nLink: %s\nPage: %s\nContent: %s\n", result.Title, result.Link, result.Page, result.Content)
+	}
+	fmt.Fprintln(out, "\nRead a full page with: vf docs get <page>")
+	return nil
+}
+
+// writeDocsSearchJSON prints results as JSON, through the --jq expression when
+// one is set, the way other commands apply it. No matches print as [], so a
+// caller that parses stdout always gets JSON.
+func writeDocsSearchJSON(cmd *cobra.Command, results []docsSearchResult) error {
+	out := cmd.OutOrStdout()
+	expression, _ := flagutil.GetStringFlag(cmd, "jq")
+	if expression == "" {
 		encoded, err := json.MarshalIndent(results, "", "  ")
 		if err != nil {
 			return err
 		}
-		fmt.Fprintln(cmd.OutOrStdout(), string(encoded))
+		fmt.Fprintln(out, string(encoded))
 		return nil
 	}
-
-	out := cmd.OutOrStdout()
-	for i, block := range blocks {
-		if i > 0 {
-			fmt.Fprint(out, "\n---\n\n")
-		}
-		fmt.Fprintln(out, strings.TrimSpace(block))
+	filtered, err := output.ApplyJqFilter(results, expression)
+	if err != nil {
+		return err
 	}
-	fmt.Fprintln(out, "\nRead a full page with: vf docs get <page>")
+	for _, value := range filtered {
+		encoded, err := json.MarshalIndent(value, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(out, string(encoded))
+	}
 	return nil
+}
+
+// docsSearchArguments builds the search tool's arguments. Besides the query,
+// the tool requires who is asking and why: an agent that runs vf chose to
+// search on its own, so agent mode reports "agent", and anything else "human".
+func docsSearchArguments(query string) map[string]string {
+	initiator := "human"
+	if output.IsAgentMode() {
+		initiator = "agent"
+	}
+	return map[string]string{
+		"initiator": initiator,
+		"purpose":   "answers",
+		"why":       docsSearchWhy,
+		"question":  query,
+	}
 }
 
 // runDocsGetCmd fetches one page's markdown rendition and prints it.
@@ -232,22 +279,12 @@ func doDocsRequest(request *http.Request) ([]byte, error) {
 	return body, nil
 }
 
-// parseDocsSearchResponse extracts the text blocks from a JSON-RPC tools/call
+// parseDocsSearchResponse extracts the search hits from a JSON-RPC tools/call
 // response, handling both plain JSON and SSE-framed ("data: {...}") bodies.
-func parseDocsSearchResponse(body []byte) ([]string, error) {
-	payload := body
-	if !bytes.HasPrefix(bytes.TrimSpace(body), []byte("{")) {
-		// SSE framing: use the first "data:" line.
-		payload = nil
-		for _, line := range bytes.Split(body, []byte("\n")) {
-			if data, found := bytes.CutPrefix(bytes.TrimSpace(line), []byte("data:")); found {
-				payload = bytes.TrimSpace(data)
-				break
-			}
-		}
-		if payload == nil {
-			return nil, fmt.Errorf("unexpected response from the documentation search endpoint")
-		}
+func parseDocsSearchResponse(body []byte) ([]docsSearchResult, error) {
+	payload, err := docsSearchResponsePayload(body)
+	if err != nil {
+		return nil, err
 	}
 
 	var response struct {
@@ -256,6 +293,10 @@ func parseDocsSearchResponse(body []byte) ([]string, error) {
 				Type string `json:"type"`
 				Text string `json:"text"`
 			} `json:"content"`
+			StructuredContent *struct {
+				Results []docsSearchHit `json:"results"`
+			} `json:"structuredContent"`
+			IsError bool `json:"isError"`
 		} `json:"result"`
 		Error *struct {
 			Message string `json:"message"`
@@ -267,33 +308,101 @@ func parseDocsSearchResponse(body []byte) ([]string, error) {
 	if response.Error != nil {
 		return nil, fmt.Errorf("documentation search failed: %s", response.Error.Message)
 	}
-
-	blocks := make([]string, 0, len(response.Result.Content))
-	for _, content := range response.Result.Content {
-		if content.Type == "text" && strings.TrimSpace(content.Text) != "" {
-			blocks = append(blocks, content.Text)
+	// A tool that fails says so inside a successful JSON-RPC result. Read
+	// without this check, the failure text printed as if it were a search hit
+	// and the command exited 0.
+	if response.Result.IsError {
+		var reasons []string
+		for _, content := range response.Result.Content {
+			if content.Type == "text" && strings.TrimSpace(content.Text) != "" {
+				reasons = append(reasons, strings.TrimSpace(content.Text))
+			}
 		}
+		if len(reasons) == 0 {
+			reasons = []string{"the search tool reported an error without saying why"}
+		}
+		return nil, fmt.Errorf("documentation search failed: %s — the docs are also at %s", strings.Join(reasons, "; "), docsBaseURL)
 	}
-	return blocks, nil
+	if response.Result.StructuredContent == nil {
+		return nil, fmt.Errorf("unexpected response from the documentation search endpoint: no structured results — the docs are also at %s", docsBaseURL)
+	}
+
+	hits := response.Result.StructuredContent.Results
+	results := make([]docsSearchResult, 0, len(hits))
+	for _, hit := range hits {
+		// The page comes from the hit's link when it has no page URL of its
+		// own; docsPagePath drops the link's #section.
+		page := hit.PageURL
+		if page == "" {
+			page = hit.URL
+		}
+		results = append(results, docsSearchResult{
+			Title:   hit.Title,
+			Link:    hit.URL,
+			Page:    docsPagePath(page),
+			Content: hit.Snippet,
+		})
+	}
+	return results, nil
 }
 
-// parseDocsSearchBlock splits one "Title:/Link:/Page:/Content:" text block
-// into a structured result.
-func parseDocsSearchBlock(block string) docsSearchResult {
-	result := docsSearchResult{}
-	lines := strings.Split(block, "\n")
-	for i, line := range lines {
-		switch {
-		case strings.HasPrefix(line, "Title: "):
-			result.Title = strings.TrimPrefix(line, "Title: ")
-		case strings.HasPrefix(line, "Link: "):
-			result.Link = strings.TrimPrefix(line, "Link: ")
-		case strings.HasPrefix(line, "Page: "):
-			result.Page = strings.TrimPrefix(line, "Page: ")
-		case strings.HasPrefix(line, "Content: "):
-			result.Content = strings.TrimSpace(strings.TrimPrefix(strings.Join(lines[i:], "\n"), "Content: "))
-			return result
+// docsSearchResponsePayload returns the JSON-RPC response in body, which is
+// either one JSON object or a stream of server-sent events. A stream may carry
+// other messages before the response, such as progress notifications, and may
+// split one message across several data: lines. The response is the first
+// message that carries a result or an error; notifications carry neither.
+func docsSearchResponsePayload(body []byte) ([]byte, error) {
+	trimmed := bytes.TrimSpace(body)
+	if bytes.HasPrefix(trimmed, []byte("{")) {
+		return trimmed, nil
+	}
+	for _, event := range serverSentEventData(body) {
+		var message struct {
+			Result json.RawMessage `json:"result"`
+			Error  json.RawMessage `json:"error"`
+		}
+		if json.Unmarshal(event, &message) == nil && (message.Result != nil || message.Error != nil) {
+			return event, nil
 		}
 	}
-	return result
+	return nil, fmt.Errorf("unexpected response from the documentation search endpoint: it held no reply to the search — the docs are also at %s", docsBaseURL)
+}
+
+// serverSentEventData returns the data of each event in an SSE stream: its
+// data: lines joined by newlines, as the format defines.
+func serverSentEventData(body []byte) [][]byte {
+	var events, lines [][]byte
+	endEvent := func() {
+		if len(lines) > 0 {
+			events = append(events, bytes.Join(lines, []byte("\n")))
+			lines = nil
+		}
+	}
+	for _, line := range bytes.Split(body, []byte("\n")) {
+		line = bytes.TrimSuffix(line, []byte("\r"))
+		if len(line) == 0 {
+			endEvent()
+			continue
+		}
+		if data, isData := bytes.CutPrefix(line, []byte("data:")); isData {
+			lines = append(lines, bytes.TrimPrefix(data, []byte(" ")))
+		}
+	}
+	endEvent()
+	return events
+}
+
+// docsPagePath turns a hit's page URL into the argument 'vf docs get' takes:
+// https://www.voiceflow.com/docs/api-reference/authentication becomes
+// api-reference/authentication. Any other URL is returned whole, and 'vf docs
+// get' decides whether it can fetch it.
+func docsPagePath(pageURL string) string {
+	page, isDocsPage := strings.CutPrefix(pageURL, docsBaseURL+"/")
+	if !isDocsPage {
+		return pageURL
+	}
+	if end := strings.IndexAny(page, "?#"); end >= 0 {
+		page = page[:end]
+	}
+	return page
 }

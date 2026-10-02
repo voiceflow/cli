@@ -1,6 +1,7 @@
 import baseConfig from '@voiceflow/vitest-config/unit';
-import dotenv from 'dotenv';
 import { mergeConfig, type ViteUserConfig } from 'vitest/config';
+
+import { loadTestEnv } from './test/env';
 
 // Two kinds of test live in test/:
 //
@@ -19,7 +20,9 @@ import { mergeConfig, type ViteUserConfig } from 'vitest/config';
 //
 // Credentials are resolved here rather than in test/setup.ts because setupFiles
 // run after the config is built, which is too late to choose what to include.
-dotenv.config({ path: '.env.test' });
+// They come from .env.test alone, never from the developer's shell: see
+// test/env.ts.
+loadTestEnv();
 
 const hasCredentials = Boolean(process.env.VF_TOKEN && process.env.VF_WORKSPACE_ID);
 const integrationOptOut = process.env.VF_SKIP_INTEGRATION_TESTS === '1';

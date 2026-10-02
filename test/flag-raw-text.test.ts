@@ -2,8 +2,9 @@
 // string accept prose without JSON quoting.
 //
 // The two assertions this change lives or dies on are at the bottom: the wire
-// payload is unchanged, and Markup fields are untouched. Both were raised in
-// review and both are pinned here rather than argued.
+// payload is unchanged, and union fields (Markup, when this was written) are
+// untouched. Both were raised in review and both are pinned here rather than
+// argued.
 //
 // Requires: go build -o vf ./cmd/vf
 
@@ -78,14 +79,27 @@ describe('the fallback changes encoding, not types', () => {
     expect(a, 'the two input forms disagree on the wire').toBe(sent(quoted.stderr + quoted.stdout, 'instructions'));
   });
 
-  // --url on mcp-server create is []components.Markup. Markup is a union struct,
-  // so stringLikeJSONTarget rejects it and the fallback never runs. If this ever
-  // starts passing, the change has grown past what it was reviewed as.
-  it('leaves Markup-valued flags strict', async () => {
+  // --filters on transcript search is []components.TranscriptFilterUnion, a list
+  // of unions: the shape --url on mcp-server create had as []components.Markup
+  // until a regeneration made that field a plain string. A list is not a
+  // string, so the fallback never runs and raw text is still an error.
+  //
+  // Both ways of failing start "invalid value for --filters", so the check is
+  // on the rest. Strict, the text is "not valid JSON". Had the fallback run, the
+  // text would have been quoted into valid JSON that then failed to decode as a
+  // list, and the error would say so.
+  //
+  // The sharper case, a union with a string member that is not in a list, would
+  // decode quoted text if the fallback ever ran on it. No flag has that shape
+  // today, so internal/flagutil/stringvalue_test.go pins it on types the spec
+  // cannot change.
+  it('leaves union-valued flags strict', async () => {
     const r = await run([
-      'mcp-server', 'create', '--project-id', 'p', '--environment-alias', 'main',
-      '--dry-run', '--token', 'vfp_x', '--name', 'n', '--url', 'not json',
+      'transcript', 'search', '--project-id', 'p', '--environment-alias', 'main',
+      '--dry-run', '--token', 'vfp_x', '--filters', 'not json',
     ]);
-    expect(r.stderr, 'a Markup field accepted raw text').toContain('invalid value for --url');
+    expect(r.exitCode).not.toBe(0);
+    expect(r.stderr, 'the raw text was not refused as JSON').toContain('the value is not valid JSON');
+    expect(r.stderr, 'the raw-text fallback ran on a union field').not.toContain('valid JSON but not the shape');
   });
 });
