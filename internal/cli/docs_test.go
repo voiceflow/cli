@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -108,6 +109,42 @@ func TestParseDocsSearchResponseFailsWithoutResults(t *testing.T) {
 				t.Fatalf("parse succeeded with %+v, want an error", results)
 			}
 		})
+	}
+}
+
+// writeJSON runs writeDocsSearchJSON with --jq set to expression, or unset
+// when it is empty, and returns what it printed.
+func writeJSON(t *testing.T, results []docsSearchResult, expression string) string {
+	t.Helper()
+	var stdout bytes.Buffer
+	cmd := &cobra.Command{Use: "search"}
+	cmd.Flags().String("jq", "", "")
+	if expression != "" {
+		if err := cmd.Flags().Set("jq", expression); err != nil {
+			t.Fatal(err)
+		}
+	}
+	cmd.SetOut(&stdout)
+	if err := writeDocsSearchJSON(cmd, results); err != nil {
+		t.Fatalf("writeDocsSearchJSON: %v", err)
+	}
+	return stdout.String()
+}
+
+func TestDocsSearchJSONPrintsAnEmptyListForNoMatches(t *testing.T) {
+	if got := writeJSON(t, []docsSearchResult{}, ""); strings.TrimSpace(got) != "[]" {
+		t.Fatalf("printed %q, want []", got)
+	}
+}
+
+func TestDocsSearchJSONAppliesJq(t *testing.T) {
+	results := []docsSearchResult{{Title: "Personal access tokens", Page: "api-reference/authentication"}}
+
+	if got := writeJSON(t, results, ".[0].page"); strings.TrimSpace(got) != `"api-reference/authentication"` {
+		t.Fatalf("printed %q, want only the page", got)
+	}
+	if got := writeJSON(t, results, ""); !strings.Contains(got, `"title": "Personal access tokens"`) {
+		t.Fatalf("printed %q, want the whole list", got)
 	}
 }
 

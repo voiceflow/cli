@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/flagutil"
 	"github.com/voiceflow/cli/internal/output"
 )
 
@@ -128,17 +129,11 @@ func runDocsSearchCmd(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	if output.WantsRawJSON(cmd) {
+		return writeDocsSearchJSON(cmd, results)
+	}
 	if len(results) == 0 {
 		fmt.Fprintf(cmd.OutOrStdout(), "No documentation matches for %q. Browse everything at %s\n", query, docsBaseURL)
-		return nil
-	}
-
-	if output.WantsRawJSON(cmd) {
-		encoded, err := json.MarshalIndent(results, "", "  ")
-		if err != nil {
-			return err
-		}
-		fmt.Fprintln(cmd.OutOrStdout(), string(encoded))
 		return nil
 	}
 
@@ -150,6 +145,34 @@ func runDocsSearchCmd(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(out, "Title: %s\nLink: %s\nPage: %s\nContent: %s\n", result.Title, result.Link, result.Page, result.Content)
 	}
 	fmt.Fprintln(out, "\nRead a full page with: vf docs get <page>")
+	return nil
+}
+
+// writeDocsSearchJSON prints results as JSON, through the --jq expression when
+// one is set, the way other commands apply it. No matches print as [], so a
+// caller that parses stdout always gets JSON.
+func writeDocsSearchJSON(cmd *cobra.Command, results []docsSearchResult) error {
+	out := cmd.OutOrStdout()
+	expression, _ := flagutil.GetStringFlag(cmd, "jq")
+	if expression == "" {
+		encoded, err := json.MarshalIndent(results, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(out, string(encoded))
+		return nil
+	}
+	filtered, err := output.ApplyJqFilter(results, expression)
+	if err != nil {
+		return err
+	}
+	for _, value := range filtered {
+		encoded, err := json.MarshalIndent(value, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(out, string(encoded))
+	}
 	return nil
 }
 
