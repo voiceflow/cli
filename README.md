@@ -24,6 +24,7 @@ Realtime: Realtime gateway API service
   * [Authentication](#authentication)
   * [Browser sign-in (OAuth2)](#browser-sign-in-oauth2)
   * [Link a project to a directory](#link-a-project-to-a-directory)
+  * [Get project context in one call](#get-project-context-in-one-call)
   * [Available Commands](#available-commands)
   * [Request Body Input](#request-body-input)
   * [Server Selection](#server-selection)
@@ -309,6 +310,33 @@ effect, and `vf unlink` removes it.
 - **For coding agents**, `vf link` also prints a short snippet for the agent's
   instructions file (`CLAUDE.md`, `AGENTS.md`), so the agent knows the project
   is linked before it runs its first command.
+
+## Get project context in one call
+
+`vf context` summarizes a project for an AI coding agent: the model, the
+global prompt and instructions (line counts and an opening excerpt), the
+playbooks with the description the agent routes on, functions, agent tools,
+variables, the knowledge base, the most recent changes and conversations, and
+the rules for working on it.
+
+```bash
+vf context                                   # the linked project; TOON in agent mode
+vf context --output-format json
+vf context --project-id <id> --environment-alias dev
+```
+
+It makes the underlying API calls itself, in parallel, and returns an outline
+rather than the raw data. Long text is clipped and long lists are capped, with
+the true totals under `counts`. In agent mode the output stays under 20 KB
+(about 5,000 tokens) however large the project is; a large real project comes
+to about 9 KB. `drillDown` lists the commands that return anything the outline
+leaves out.
+
+- **A partial answer beats none.** If part of the project cannot be read, the
+  outline still prints, that part's count is `null`, and `warnings` says why.
+- **When, not who.** `recentChanges` is ordered by `updatedAt`. The API does
+  not report who made a change, and the agent's own instructions and global
+  prompt carry no timestamp, so their edits do not appear there.
 
 <!-- Start Available Commands [operations] -->
 ## Available Commands

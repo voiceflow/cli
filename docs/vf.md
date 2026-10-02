@@ -36,6 +36,7 @@ vf [flags]
 * [vf api-tool](vf_api-tool.md)	 - Operations for api-tool
 * [vf auth](vf_auth.md)	 - Manage authentication credentials
 * [vf configure](vf_configure.md)	 - Configure authentication credentials and preferences
+* [vf context](vf_context.md)	 - Summarize a project for an AI coding agent in one call
 * [vf conversation](vf_conversation.md)	 - Operations for conversation
 * [vf document](vf_document.md)	 - Operations for document
 * [vf environment](vf_environment.md)	 - Operations for environment
