@@ -259,19 +259,9 @@ func doDocsRequest(request *http.Request) ([]byte, error) {
 // parseDocsSearchResponse extracts the search hits from a JSON-RPC tools/call
 // response, handling both plain JSON and SSE-framed ("data: {...}") bodies.
 func parseDocsSearchResponse(body []byte) ([]docsSearchResult, error) {
-	payload := body
-	if !bytes.HasPrefix(bytes.TrimSpace(body), []byte("{")) {
-		// SSE framing: use the first "data:" line.
-		payload = nil
-		for _, line := range bytes.Split(body, []byte("\n")) {
-			if data, found := bytes.CutPrefix(bytes.TrimSpace(line), []byte("data:")); found {
-				payload = bytes.TrimSpace(data)
-				break
-			}
-		}
-		if payload == nil {
-			return nil, fmt.Errorf("unexpected response from the documentation search endpoint")
-		}
+	payload, err := docsSearchResponsePayload(body)
+	if err != nil {
+		return nil, err
 	}
 
 	var response struct {
@@ -322,6 +312,52 @@ func parseDocsSearchResponse(body []byte) ([]docsSearchResult, error) {
 		})
 	}
 	return results, nil
+}
+
+// docsSearchResponsePayload returns the JSON-RPC response in body, which is
+// either one JSON object or a stream of server-sent events. A stream may carry
+// other messages before the response, such as progress notifications, and may
+// split one message across several data: lines. The response is the first
+// message that carries a result or an error; notifications carry neither.
+func docsSearchResponsePayload(body []byte) ([]byte, error) {
+	trimmed := bytes.TrimSpace(body)
+	if bytes.HasPrefix(trimmed, []byte("{")) {
+		return trimmed, nil
+	}
+	for _, event := range serverSentEventData(body) {
+		var message struct {
+			Result json.RawMessage `json:"result"`
+			Error  json.RawMessage `json:"error"`
+		}
+		if json.Unmarshal(event, &message) == nil && (message.Result != nil || message.Error != nil) {
+			return event, nil
+		}
+	}
+	return nil, fmt.Errorf("unexpected response from the documentation search endpoint: it held no reply to the search — the docs are also at %s", docsBaseURL)
+}
+
+// serverSentEventData returns the data of each event in an SSE stream: its
+// data: lines joined by newlines, as the format defines.
+func serverSentEventData(body []byte) [][]byte {
+	var events, lines [][]byte
+	endEvent := func() {
+		if len(lines) > 0 {
+			events = append(events, bytes.Join(lines, []byte("\n")))
+			lines = nil
+		}
+	}
+	for _, line := range bytes.Split(body, []byte("\n")) {
+		line = bytes.TrimSuffix(line, []byte("\r"))
+		if len(line) == 0 {
+			endEvent()
+			continue
+		}
+		if data, isData := bytes.CutPrefix(line, []byte("data:")); isData {
+			lines = append(lines, bytes.TrimPrefix(data, []byte(" ")))
+		}
+	}
+	endEvent()
+	return events
 }
 
 // docsPagePath turns a hit's page URL into the argument 'vf docs get' takes:

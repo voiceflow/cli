@@ -37,6 +37,33 @@ func TestParseDocsSearchResponseReadsTheStructuredResults(t *testing.T) {
 	}
 }
 
+// The response is the message that carries a result. An SSE stream may send
+// other messages first, and may split one message across data: lines.
+func TestParseDocsSearchResponseFindsTheResultInAStream(t *testing.T) {
+	result := strings.TrimPrefix(strings.SplitN(docsSearchSSE, "\n", 2)[1], "data: ")
+	cut := strings.Index(result, `,"structuredContent"`)
+	for name, body := range map[string]string{
+		"after a progress notification": "event: message\n" +
+			`data: {"jsonrpc":"2.0","method":"notifications/progress","params":{"progress":1}}` + "\n\n" +
+			docsSearchSSE,
+		"split across data lines": "event: message\r\ndata: " + result[:cut] + "\r\ndata: " + result[cut:] + "\r\n\r\n",
+	} {
+		t.Run(name, func(t *testing.T) {
+			results, err := parseDocsSearchResponse([]byte(body))
+			if err != nil || len(results) != 1 || results[0].Page != "api-reference/authentication" {
+				t.Fatalf("results = %+v, err = %v; want the one hit", results, err)
+			}
+		})
+	}
+}
+
+func TestParseDocsSearchResponseFailsOnAStreamWithNoReply(t *testing.T) {
+	body := "event: message\ndata: {\"jsonrpc\":\"2.0\",\"method\":\"notifications/progress\"}\n\n"
+	if results, err := parseDocsSearchResponse([]byte(body)); err == nil {
+		t.Fatalf("parse succeeded with %+v, want an error", results)
+	}
+}
+
 // The docs server reports a failed tool call inside a successful JSON-RPC
 // result. vf used to print that failure as a search hit and exit 0.
 func TestParseDocsSearchResponseFailsOnAToolError(t *testing.T) {
