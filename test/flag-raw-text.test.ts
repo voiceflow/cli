@@ -84,6 +84,11 @@ describe('the fallback changes encoding, not types', () => {
   // until a regeneration made that field a plain string. A list is not a
   // string, so the fallback never runs and raw text is still an error.
   //
+  // Both ways of failing start "invalid value for --filters", so the check is
+  // on the rest. Strict, the text is "not valid JSON". Had the fallback run, the
+  // text would have been quoted into valid JSON that then failed to decode as a
+  // list, and the error would say so.
+  //
   // The sharper case, a union with a string member that is not in a list, would
   // decode quoted text if the fallback ever ran on it. No flag has that shape
   // today, so internal/flagutil/stringvalue_test.go pins it on types the spec
@@ -94,6 +99,7 @@ describe('the fallback changes encoding, not types', () => {
       '--dry-run', '--token', 'vfp_x', '--filters', 'not json',
     ]);
     expect(r.exitCode).not.toBe(0);
-    expect(r.stderr, 'a union field accepted raw text').toContain('invalid value for --filters');
+    expect(r.stderr, 'the raw text was not refused as JSON').toContain('the value is not valid JSON');
+    expect(r.stderr, 'the raw-text fallback ran on a union field').not.toContain('valid JSON but not the shape');
   });
 });
