@@ -1,10 +1,12 @@
-import dotenv from 'dotenv';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll } from 'vitest';
 
-dotenv.config({ path: '.env.test' });
+import { loadTestEnv } from './env';
+
+// VF_* settings come from .env.test alone, never from the developer's shell.
+loadTestEnv();
 
 // Every vf this suite spawns inherits this process's environment, and vf keeps
 // credentials in two places: ~/.config/vf (config.yaml and the OAuth session)
