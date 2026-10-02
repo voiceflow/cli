@@ -78,6 +78,25 @@ func TestParseDocsSearchResponseFailsOnAToolError(t *testing.T) {
 	}
 }
 
+func TestParseDocsSearchResponseNamesAReasonForAToolErrorWithoutText(t *testing.T) {
+	body := `{"jsonrpc":"2.0","id":1,"result":{"content":[],"isError":true}}`
+
+	_, err := parseDocsSearchResponse([]byte(body))
+	if err == nil || !strings.Contains(err.Error(), "without saying why") {
+		t.Fatalf("err = %v, want one that says the tool gave no reason", err)
+	}
+}
+
+func TestParseDocsSearchResponseTakesThePageFromTheLinkWhenThereIsNoPageURL(t *testing.T) {
+	body := `{"jsonrpc":"2.0","id":1,"result":{"structuredContent":{"results":[` +
+		`{"title":"Personal access tokens","url":"https://www.voiceflow.com/docs/api-reference/authentication#create-a-token","snippet":"s"}]}}}`
+
+	results, err := parseDocsSearchResponse([]byte(body))
+	if err != nil || len(results) != 1 || results[0].Page != "api-reference/authentication" {
+		t.Fatalf("results = %+v, err = %v; want the page taken from the link", results, err)
+	}
+}
+
 func TestParseDocsSearchResponseFailsWithoutResults(t *testing.T) {
 	for name, body := range map[string]string{
 		"JSON-RPC error":        `{"jsonrpc":"2.0","id":1,"error":{"code":-32602,"message":"invalid params"}}`,

@@ -295,6 +295,9 @@ func parseDocsSearchResponse(body []byte) ([]docsSearchResult, error) {
 				reasons = append(reasons, strings.TrimSpace(content.Text))
 			}
 		}
+		if len(reasons) == 0 {
+			reasons = []string{"the search tool reported an error without saying why"}
+		}
 		return nil, fmt.Errorf("documentation search failed: %s — the docs are also at %s", strings.Join(reasons, "; "), docsBaseURL)
 	}
 	if response.Result.StructuredContent == nil {
@@ -304,10 +307,16 @@ func parseDocsSearchResponse(body []byte) ([]docsSearchResult, error) {
 	hits := response.Result.StructuredContent.Results
 	results := make([]docsSearchResult, 0, len(hits))
 	for _, hit := range hits {
+		// The page comes from the hit's link when it has no page URL of its
+		// own; docsPagePath drops the link's #section.
+		page := hit.PageURL
+		if page == "" {
+			page = hit.URL
+		}
 		results = append(results, docsSearchResult{
 			Title:   hit.Title,
 			Link:    hit.URL,
-			Page:    docsPagePath(hit.PageURL),
+			Page:    docsPagePath(page),
 			Content: hit.Snippet,
 		})
 	}
