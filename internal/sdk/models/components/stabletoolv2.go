@@ -217,6 +217,8 @@ type StableToolV2Integration struct {
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables map[string]AgentToolCaptureInputVariable `json:"captureInputVariables"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible bool `json:"interruptible"`
 	// Discriminator indicating this tool calls a connected first-party integration.
 	Type StableToolV2TypeIntegration `json:"type"`
 	// The ID of the integration tool resource this tool calls.
@@ -278,6 +280,13 @@ func (s *StableToolV2Integration) GetCaptureInputVariables() map[string]AgentToo
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolV2Integration) GetInterruptible() bool {
+	if s == nil {
+		return false
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolV2Integration) GetType() StableToolV2TypeIntegration {
@@ -516,6 +525,8 @@ type StableToolV2Mcp struct {
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables map[string]AgentToolCaptureInputVariable `json:"captureInputVariables"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible bool `json:"interruptible"`
 	// Discriminator indicating this tool calls a tool from an MCP server.
 	Type StableToolV2TypeMcp `json:"type"`
 	// The ID of the MCP tool resource this tool calls.
@@ -577,6 +588,13 @@ func (s *StableToolV2Mcp) GetCaptureInputVariables() map[string]AgentToolCapture
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolV2Mcp) GetInterruptible() bool {
+	if s == nil {
+		return false
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolV2Mcp) GetType() StableToolV2TypeMcp {
@@ -815,6 +833,8 @@ type StableToolV2Function struct {
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables map[string]AgentToolCaptureInputVariable `json:"captureInputVariables"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible bool `json:"interruptible"`
 	// Discriminator indicating this tool executes a custom function.
 	Type StableToolV2TypeFunction `json:"type"`
 	// The ID of the function resource this tool executes.
@@ -878,6 +898,13 @@ func (s *StableToolV2Function) GetCaptureInputVariables() map[string]AgentToolCa
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolV2Function) GetInterruptible() bool {
+	if s == nil {
+		return false
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolV2Function) GetType() StableToolV2TypeFunction {
@@ -1123,6 +1150,8 @@ type StableToolV2API struct {
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables map[string]AgentToolCaptureInputVariable `json:"captureInputVariables"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible bool `json:"interruptible"`
 	// Discriminator indicating this tool executes a saved API request.
 	Type StableToolV2TypeAPI `json:"type"`
 	// The ID of the API resource this tool executes.
@@ -1186,6 +1215,13 @@ func (s *StableToolV2API) GetCaptureInputVariables() map[string]AgentToolCapture
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolV2API) GetInterruptible() bool {
+	if s == nil {
+		return false
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolV2API) GetType() StableToolV2TypeAPI {
