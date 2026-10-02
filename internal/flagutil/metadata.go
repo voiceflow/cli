@@ -320,6 +320,12 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 		}
 	}
 
+	// Priority 4: a linked project's values fill only what the flags, --body
+	// and stdin left empty; see linkdefault.go.
+	if err := applyLinkDefaults(cmd, v, meta); err != nil {
+		return nil, err
+	}
+
 	return &req, nil
 }
 

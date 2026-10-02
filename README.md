@@ -23,6 +23,7 @@ Realtime: Realtime gateway API service
   * [CLI Example Usage](#cli-example-usage)
   * [Authentication](#authentication)
   * [Browser sign-in (OAuth2)](#browser-sign-in-oauth2)
+  * [Link a project to a directory](#link-a-project-to-a-directory)
   * [Available Commands](#available-commands)
   * [Request Body Input](#request-body-input)
   * [Server Selection](#server-selection)
@@ -282,6 +283,32 @@ outranks a session an agent-mode login just stored.
 set, the CLI registers itself as a public client through the authorization
 server's dynamic client registration endpoint and caches the resulting
 `client_id` for later logins.
+
+## Link a project to a directory
+
+Every project command takes `--project-id` and `--environment-alias`. Link a
+directory once and leave them out:
+
+```bash
+vf link 6a67842584dac97c7626ebaa                          # environment "main"
+vf link 6a67842584dac97c7626ebaa --environment-alias dev
+```
+
+`vf link` checks that the project and environment exist, then writes
+`.voiceflow/project.json`: ids, the project name and the environment alias,
+nothing secret. Commands run in that directory, or in any directory below it,
+use the link. A linked value is only a fallback: an explicit flag, or a value in
+`--body` or stdin, always wins. `vf whoami` shows the link in
+effect, and `vf unlink` removes it.
+
+- **Deletes always name their target.** A link never fills in the project,
+  environment or workspace that `project delete`, `environment delete` or
+  `workspace delete` would destroy.
+- **The project id is in Creator**, under the agent's Settings → General
+  (Metadata). A Creator page URL will not do: the id in it is a version id.
+- **For coding agents**, `vf link` also prints a short snippet for the agent's
+  instructions file (`CLAUDE.md`, `AGENTS.md`), so the agent knows the project
+  is linked before it runs its first command.
 
 <!-- Start Available Commands [operations] -->
 ## Available Commands

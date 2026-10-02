@@ -43,12 +43,14 @@ vf [flags]
 * [vf explore](vf_explore.md)	 - Interactively browse and run commands
 * [vf function](vf_function.md)	 - Operations for function
 * [vf knowledge-base](vf_knowledge-base.md)	 - Operations for knowledge-base
+* [vf link](vf_link.md)	 - Pin a project and environment to this directory
 * [vf mcp-server](vf_mcp-server.md)	 - Operations for mcp-server
 * [vf mcp-tool](vf_mcp-tool.md)	 - Operations for mcp-tool
 * [vf playbook](vf_playbook.md)	 - Operations for playbook
 * [vf project](vf_project.md)	 - Operations for project
 * [vf tool](vf_tool.md)	 - Operations for tool
 * [vf transcript](vf_transcript.md)	 - Operations for transcript
+* [vf unlink](vf_unlink.md)	 - Remove the project link that applies to this directory
 * [vf variable](vf_variable.md)	 - Operations for variable
 * [vf version](vf_version.md)	 - Print the CLI version
 * [vf whoami](vf_whoami.md)	 - Display current authentication configuration

@@ -67,7 +67,9 @@ func NewRootCommand() (*cobra.Command, error) {
 				return err
 			}
 			output.InitAgentMode(cmd)
-			return nil
+			// Fill --project-id / --environment-alias / --workspace-id from
+			// .voiceflow/project.json; see link.go.
+			return applyLinkDefaults(cmd)
 		},
 	}
 	if err := agent.InitAgentRoot(rootCmd); err != nil {
@@ -153,6 +155,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	initExploreCmd(rootCmd)
 	initDocsCmd(rootCmd)
+	initLinkCmd(rootCmd) // vf link / vf unlink; see link.go
 
 	// Global output format flag
 	rootCmd.PersistentFlags().StringP("output-format", "o", "pretty", "Specify the output format. Options: pretty, json, yaml, table, toon.")
