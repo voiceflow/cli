@@ -33,18 +33,23 @@ const ARGS = [
   '--token', 'vfp_not_a_real_token',
 ].join(' ');
 
-/** Runs a real shell pipeline: <producer> | vf agent update --dry-run */
-function pipeline(producer: string, options: { timeout?: number } = {}) {
-  return execa({ reject: false, timeout: options.timeout ?? 20_000, stdin: 'ignore' })(
-    'sh', ['-c', `${producer} | ${VF} ${ARGS}`],
+/** Runs a real shell pipeline: <producer> | vf agent update --dry-run [flags] */
+function pipeline(producer: string, options: { timeout?: number; flags?: string; env?: Record<string, string> } = {}) {
+  return execa({ reject: false, timeout: options.timeout ?? 20_000, stdin: 'ignore', env: options.env })(
+    'sh', ['-c', `${producer} | ${VF} ${ARGS} ${options.flags ?? ''}`],
   );
 }
 
-/** The dry-run output contains the request body; pull the prompt back out. */
-function sentPrompt(output: string): string | null {
-  const m = output.match(/"prompt":\s*"([^"]*)"/);
+/** The dry-run output contains the request body; pull a string field back out. */
+function sentField(output: string, field: string): string | null {
+  const m = output.match(new RegExp(`"${field}":\\s*"([^"]*)"`));
   return m ? m[1] : null;
 }
+
+const sentPrompt = (output: string) => sentField(output, 'prompt');
+
+/** Puts vf in agent mode the way Claude Code's shell does. */
+const AGENT = { CLAUDECODE: '1' };
 
 describe('stdin from cold producers', () => {
   // Each of these is a producer that does real work before writing. They are
@@ -94,6 +99,57 @@ describe('stdin that never delivers', () => {
 
     expect(result.timedOut).toBe(false);
     expect(sentPrompt(result.stderr + result.stdout), 'body lost when producer held the write end').toBe('from-held');
+  });
+});
+
+describe("stdin in an agent's shell", () => {
+  // Claude Code runs any Bash command that contains a heredoc with stdin
+  // connected to a Unix socket that it never writes to and never closes. Every
+  // body command in such a call used to wait the full 10s and then fail, flags
+  // or not. execa's stdin: 'pipe' hands vf the same thing: Node spawns children
+  // over a socketpair, and nothing is written unless the test writes it.
+  const agentShell = (args: string[]) =>
+    execa({ reject: false, timeout: 20_000, stdin: 'pipe', env: AGENT })(VF, args);
+
+  // Well under the 10s the silent socket used to cost, with room for a slow CI
+  // machine to start the binary.
+  const NO_WAIT_MS = 5_000;
+
+  it('takes the body from the flags without waiting on a silent socket', async () => {
+    const started = Date.now();
+    const result = await agentShell([...ARGS.split(' '), '--prompt', 'from-flag']);
+
+    expect(Date.now() - started, 'vf waited on a socket that never writes').toBeLessThan(NO_WAIT_MS);
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(sentPrompt(result.stderr + result.stdout)).toBe('from-flag');
+  });
+
+  it('does not wait either when no body flag is given', async () => {
+    const started = Date.now();
+    const result = await agentShell(ARGS.split(' '));
+
+    expect(Date.now() - started, 'vf waited on a socket that never writes').toBeLessThan(NO_WAIT_MS);
+    expect(result.exitCode, result.stderr).toBe(0);
+  });
+
+  it('still reads a body the socket delivers as vf starts', async () => {
+    const result = await execa({ reject: false, timeout: 20_000, input: '{"prompt":"from-socket"}', env: AGENT })(
+      VF, ARGS.split(' '),
+    );
+    expect(sentPrompt(result.stderr + result.stdout)).toBe('from-socket');
+  });
+
+  // Only a socket is cut short. A shell pipe is what `producer | vf` gives vf,
+  // in agent mode too, so a producer slower than the socket's wait still has
+  // its body read, and merged with the flags as the README documents.
+  it('still reads a slow shell producer, merged with the flags', async () => {
+    const result = await pipeline(`sh -c 'sleep 1; echo "{\\"prompt\\":\\"from-slow-pipe\\"}"'`, {
+      flags: '--instructions from-flag',
+      env: AGENT,
+    });
+    expect(result.timedOut).toBe(false);
+    expect(sentPrompt(result.stderr + result.stdout), 'slow body dropped in agent mode').toBe('from-slow-pipe');
+    expect(sentField(result.stderr + result.stdout, 'instructions')).toBe('from-flag');
   });
 });
 

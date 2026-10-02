@@ -251,10 +251,11 @@ func BuildRequest[T any](cmd *cobra.Command, meta []FlagMeta, bodyFieldPath stri
 	// flag) have no body for stdin to fill — consuming piped JSON there would
 	// both surprise pipelines and re-relax required path/query params via the
 	// bodyPrePopulated relaxation below.
-	if !bodyPrePopulated && (bodyFieldPath != "" || bodyFlagName != "") && HasStdinInput(cmd) {
+	if !bodyPrePopulated && (bodyFieldPath != "" || bodyFlagName != "") {
 		// Bounded: an open pipe that never sends data and never closes would
-		// otherwise block here forever. See internal/flagutil/stdin.go.
-		stdinData, err := readStdinBounded(cmd.InOrStdin())
+		// otherwise block here forever, and in an agent's shell a silent socket
+		// is no body at all. See internal/flagutil/stdin.go.
+		stdinData, err := readStdinBody(cmd)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read stdin: %w", err)
 		}
@@ -331,9 +332,9 @@ func BuildRequestBody[T any](cmd *cobra.Command, flagName string, annotations st
 
 	if FlagChanged(cmd, flagName) {
 		requestData, _ = GetStringFlag(cmd, flagName)
-	} else if HasStdinInput(cmd) {
-		// Bounded, same reasoning as BuildRequest above.
-		stdin, err := readStdinBounded(cmd.InOrStdin())
+	} else {
+		// Same rules as BuildRequest above.
+		stdin, err := readStdinBody(cmd)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read stdin: %w", err)
 		}
