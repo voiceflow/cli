@@ -40,22 +40,30 @@ var agentEnvVars = []string{
 }
 
 // InitAgentMode detects and caches agent mode state for the lifetime of the
-// process. In production, each CLI invocation is a separate process, so this
-// is evaluated exactly once. For in-process test scenarios with multiple
-// command executions, call ResetAgentMode() between runs to re-evaluate.
+// process. In production, each CLI invocation is a separate process, so the
+// environment is checked exactly once, while an explicit --agent-mode is
+// applied by any call that can see it. For in-process test scenarios with
+// multiple command executions, call ResetAgentMode() between runs to
+// re-evaluate.
 //
 // Checks --agent-mode flag first (explicit override), then auto-detects
 // from well-known AI agent environment variables.
 func InitAgentMode(cmd *cobra.Command) {
-	// CompareAndSwap ensures only the first caller runs detection; subsequent
-	// calls return immediately without touching agentMode.
-	if !agentDetected.CompareAndSwap(false, true) {
+	// Explicit flag takes priority: --agent-mode=false overrides env vars. It is
+	// checked before the CompareAndSwap below because Execute calls this once
+	// before cobra parses flags, to keep the explorer TUI away from agents.
+	// That first call can only see the environment, and used to settle the
+	// mode for good, so the flag was ignored. The second call, from
+	// PersistentPreRunE, is the first that can see the flag.
+	if flagVal, changed := flagutil.GetBoolFlag(cmd, "agent-mode"); changed {
+		agentDetected.Store(true)
+		agentMode.Store(flagVal)
 		return
 	}
 
-	// Explicit flag takes priority: --agent-mode=false overrides env vars.
-	if flagVal, changed := flagutil.GetBoolFlag(cmd, "agent-mode"); changed {
-		agentMode.Store(flagVal)
+	// CompareAndSwap ensures only the first caller runs detection; subsequent
+	// calls return immediately without touching agentMode.
+	if !agentDetected.CompareAndSwap(false, true) {
 		return
 	}
 
