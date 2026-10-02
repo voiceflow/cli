@@ -210,6 +210,8 @@ func (s *StableToolUpdateRequestV2InputVariables4) GetRequired() *bool {
 type StableToolUpdateRequestV2Integration struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible *bool `json:"interruptible,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
 	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages4]       `json:"messages,omitzero"`
@@ -236,6 +238,13 @@ func (s *StableToolUpdateRequestV2Integration) GetDescription() optionalnullable
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StableToolUpdateRequestV2Integration) GetInterruptible() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolUpdateRequestV2Integration) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
@@ -475,6 +484,8 @@ func (s *StableToolUpdateRequestV2InputVariables3) GetRequired() *bool {
 type StableToolUpdateRequestV2Mcp struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible *bool `json:"interruptible,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
 	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages3]       `json:"messages,omitzero"`
@@ -501,6 +512,13 @@ func (s *StableToolUpdateRequestV2Mcp) GetDescription() optionalnullable.Optiona
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StableToolUpdateRequestV2Mcp) GetInterruptible() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolUpdateRequestV2Mcp) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
@@ -740,6 +758,8 @@ func (s *StableToolUpdateRequestV2InputVariables2) GetRequired() *bool {
 type StableToolUpdateRequestV2Function struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible *bool `json:"interruptible,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
 	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages2]       `json:"messages,omitzero"`
@@ -768,6 +788,13 @@ func (s *StableToolUpdateRequestV2Function) GetDescription() optionalnullable.Op
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StableToolUpdateRequestV2Function) GetInterruptible() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolUpdateRequestV2Function) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
@@ -1014,6 +1041,8 @@ func (s *StableToolUpdateRequestV2InputVariables1) GetRequired() *bool {
 type StableToolUpdateRequestV2API struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
+	Interruptible *bool `json:"interruptible,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
 	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages1]       `json:"messages,omitzero"`
@@ -1042,6 +1071,13 @@ func (s *StableToolUpdateRequestV2API) GetDescription() optionalnullable.Optiona
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StableToolUpdateRequestV2API) GetInterruptible() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Interruptible
 }
 
 func (s *StableToolUpdateRequestV2API) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
