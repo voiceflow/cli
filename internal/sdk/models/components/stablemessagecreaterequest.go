@@ -4,7 +4,7 @@
 package components
 
 type StableMessageCreateRequest struct {
-	// The variants in the order the runtime receives them. The first variant cannot carry a condition.
+	// The variants, in stored order. They are alternatives: the runtime says one of them each time. The first variant cannot carry a condition.
 	Variants []StableMessageVariantCreateRequest `json:"variants"`
 }
 

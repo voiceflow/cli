@@ -19,7 +19,7 @@ import (
 
 type Function struct {
 	Variable *FunctionVariable
-	Path     *Path
+	Path     *FunctionPath
 
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
@@ -32,7 +32,7 @@ func newFunction(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
 		Variable:         newFunctionVariable(rootSDK, sdkConfig, hooks),
-		Path:             newPath(rootSDK, sdkConfig, hooks),
+		Path:             newFunctionPath(rootSDK, sdkConfig, hooks),
 	}
 }
 

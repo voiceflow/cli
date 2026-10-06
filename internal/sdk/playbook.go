@@ -18,6 +18,8 @@ import (
 )
 
 type Playbook struct {
+	Path *PlaybookPath
+
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -28,6 +30,7 @@ func newPlaybook(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks
 		rootSDK:          rootSDK,
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
+		Path:             newPlaybookPath(rootSDK, sdkConfig, hooks),
 	}
 }
 

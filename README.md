@@ -317,6 +317,13 @@ server's dynamic client registration endpoint and caches the resulting
 * [`update-tool-message`](docs/vf_playbook_update-tool-message.md) - Update playbook tool message
 * [`delete-tool-message`](docs/vf_playbook_delete-tool-message.md) - Delete playbook tool message
 
+#### [playbook-path](docs/vf_playbook_playbook-path.md)
+
+* [`list`](docs/vf_playbook_playbook-path_list.md) - List exit paths
+* [`create`](docs/vf_playbook_playbook-path_create.md) - Create exit path
+* [`update`](docs/vf_playbook_playbook-path_update.md) - Update exit path
+* [`delete`](docs/vf_playbook_playbook-path_delete.md) - Delete exit path
+
 ### [tool](docs/vf_tool.md)
 
 * [`list`](docs/vf_tool_list.md) - List tools
@@ -432,13 +439,13 @@ server's dynamic client registration endpoint and caches the resulting
 * [`update`](docs/vf_function_function-variable_update.md) - Update variable
 * [`delete`](docs/vf_function_function-variable_delete.md) - Delete variable
 
-#### [path](docs/vf_function_path.md)
+#### [function-path](docs/vf_function_function-path.md)
 
-* [`list`](docs/vf_function_path_list.md) - List paths
-* [`create`](docs/vf_function_path_create.md) - Create path
-* [`get`](docs/vf_function_path_get.md) - Get path
-* [`update`](docs/vf_function_path_update.md) - Update path
-* [`delete`](docs/vf_function_path_delete.md) - Delete path
+* [`list`](docs/vf_function_function-path_list.md) - List paths
+* [`create`](docs/vf_function_function-path_create.md) - Create path
+* [`get`](docs/vf_function_function-path_get.md) - Get path
+* [`update`](docs/vf_function_function-path_update.md) - Update path
+* [`delete`](docs/vf_function_function-path_delete.md) - Delete path
 
 ### [evaluation](docs/vf_evaluation.md)
 
@@ -574,6 +581,29 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_widget_get.md) - Get widget
 * [`update`](docs/vf_widget_update.md) - Update widget
 * [`get-snippet`](docs/vf_widget_get-snippet.md) - Get widget snippet
+
+### [workflow](docs/vf_workflow.md)
+
+* [`list`](docs/vf_workflow_list.md) - List workflows
+* [`create`](docs/vf_workflow_create.md) - Create workflow
+* [`get`](docs/vf_workflow_get.md) - Get workflow
+* [`update`](docs/vf_workflow_update.md) - Update workflow
+* [`delete`](docs/vf_workflow_delete.md) - Delete workflow
+* [`get-step`](docs/vf_workflow_get-step.md) - Get workflow step
+* [`update-step`](docs/vf_workflow_update-step.md) - Update workflow step
+* [`delete-step`](docs/vf_workflow_delete-step.md) - Delete workflow step
+* [`link`](docs/vf_workflow_link.md) - Link a port
+* [`unlink`](docs/vf_workflow_unlink.md) - Unlink a port
+* [`create-block`](docs/vf_workflow_create-block.md) - Create block
+* [`update-block`](docs/vf_workflow_update-block.md) - Update block
+* [`delete-block`](docs/vf_workflow_delete-block.md) - Delete workflow block
+* [`split-block`](docs/vf_workflow_split-block.md) - Split workflow block
+* [`insert-step`](docs/vf_workflow_insert-step.md) - Insert workflow step
+* [`add-branch`](docs/vf_workflow_add-branch.md) - Add workflow branch
+* [`update-branch`](docs/vf_workflow_update-branch.md) - Update workflow branch
+* [`delete-branch`](docs/vf_workflow_delete-branch.md) - Delete workflow branch
+* [`add-actions`](docs/vf_workflow_add-actions.md) - Add port actions
+* [`reorder-actions`](docs/vf_workflow_reorder-actions.md) - Reorder port actions
 
 </details>
 <!-- End Available Commands [operations] -->

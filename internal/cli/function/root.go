@@ -5,8 +5,8 @@ package function
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/function/functionpath"
 	"github.com/voiceflow/cli/internal/cli/function/functionvariable"
-	"github.com/voiceflow/cli/internal/cli/function/path"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -26,7 +26,7 @@ func InitFunctionRoot(parent *cobra.Command) error {
 	if err := functionvariable.InitFunctionVariableRoot(FunctionCmd); err != nil {
 		return err
 	}
-	if err := path.InitPathRoot(FunctionCmd); err != nil {
+	if err := functionpath.InitFunctionPathRoot(FunctionCmd); err != nil {
 		return err
 	}
 

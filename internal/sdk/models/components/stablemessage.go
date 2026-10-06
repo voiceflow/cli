@@ -10,7 +10,7 @@ import (
 
 type StableMessage struct {
 	ID string `json:"id"`
-	// Every variant, in the order the runtime receives them. The first variant cannot be given a condition.
+	// Every variant, in stored order. Variants are alternatives: the runtime says one of them each time. The first variant cannot be given a condition.
 	Variants  []StableMessageVariant `json:"variants"`
 	CreatedAt time.Time              `json:"createdAt"`
 	UpdatedAt time.Time              `json:"updatedAt"`

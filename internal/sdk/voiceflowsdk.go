@@ -74,6 +74,7 @@ type VoiceflowSDK struct {
 	Analytics     *Analytics
 	Test          *Test
 	Widget        *Widget
+	Workflow      *Workflow
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -190,6 +191,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Analytics = newAnalytics(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Test = newTest(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Widget = newWidget(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Workflow = newWorkflow(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }
