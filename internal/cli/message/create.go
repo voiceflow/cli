@@ -18,7 +18,7 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "variants", Shorthand: "v", FieldPath: "Body.Variants", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"variants"`, Description: "The variants in the order the runtime receives them. The first variant cannot carry a condition. [required]"},
+	{FlagName: "variants", Shorthand: "v", FieldPath: "Body.Variants", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"variants"`, Description: "The variants, in stored order. They are alternatives: the runtime says one of them each time. The first variant cannot carry a condition. [required]"},
 }
 
 // initCreateCmd initializes the create command.

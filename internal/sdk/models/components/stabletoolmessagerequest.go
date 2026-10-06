@@ -10,33 +10,33 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-// TypeScripted - Discriminator: this message is a fixed response, said verbatim.
-type TypeScripted string
+// StableToolMessageRequestTypeScripted - Discriminator: this message is a fixed response, said verbatim.
+type StableToolMessageRequestTypeScripted string
 
 const (
-	TypeScriptedScripted TypeScripted = "scripted"
+	StableToolMessageRequestTypeScriptedScripted StableToolMessageRequestTypeScripted = "scripted"
 )
 
-func (e TypeScripted) ToPointer() *TypeScripted {
+func (e StableToolMessageRequestTypeScripted) ToPointer() *StableToolMessageRequestTypeScripted {
 	return &e
 }
-func (e *TypeScripted) UnmarshalJSON(data []byte) error {
+func (e *StableToolMessageRequestTypeScripted) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 	switch v {
 	case "scripted":
-		*e = TypeScripted(v)
+		*e = StableToolMessageRequestTypeScripted(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for TypeScripted: %v", v)
+		return fmt.Errorf("invalid value for StableToolMessageRequestTypeScripted: %v", v)
 	}
 }
 
 type StableToolMessageRequestScripted struct {
 	// Discriminator: this message is a fixed response, said verbatim.
-	Type TypeScripted `json:"type"`
+	Type StableToolMessageRequestTypeScripted `json:"type"`
 	// The ID of an existing response in this environment — the same ID this slot reports as <slot>MessageID on a read.
 	MessageID string `json:"messageID"`
 }
@@ -52,9 +52,9 @@ func (s *StableToolMessageRequestScripted) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableToolMessageRequestScripted) GetType() TypeScripted {
+func (s *StableToolMessageRequestScripted) GetType() StableToolMessageRequestTypeScripted {
 	if s == nil {
-		return TypeScripted("")
+		return StableToolMessageRequestTypeScripted("")
 	}
 	return s.Type
 }
@@ -66,33 +66,33 @@ func (s *StableToolMessageRequestScripted) GetMessageID() string {
 	return s.MessageID
 }
 
-// TypeGenerative - Discriminator: the model writes this message itself, guided by the examples below.
-type TypeGenerative string
+// StableToolMessageRequestTypeGenerative - Discriminator: the model writes this message itself, guided by the examples below.
+type StableToolMessageRequestTypeGenerative string
 
 const (
-	TypeGenerativeGenerative TypeGenerative = "generative"
+	StableToolMessageRequestTypeGenerativeGenerative StableToolMessageRequestTypeGenerative = "generative"
 )
 
-func (e TypeGenerative) ToPointer() *TypeGenerative {
+func (e StableToolMessageRequestTypeGenerative) ToPointer() *StableToolMessageRequestTypeGenerative {
 	return &e
 }
-func (e *TypeGenerative) UnmarshalJSON(data []byte) error {
+func (e *StableToolMessageRequestTypeGenerative) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 	switch v {
 	case "generative":
-		*e = TypeGenerative(v)
+		*e = StableToolMessageRequestTypeGenerative(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for TypeGenerative: %v", v)
+		return fmt.Errorf("invalid value for StableToolMessageRequestTypeGenerative: %v", v)
 	}
 }
 
 type StableToolMessageRequestGenerative struct {
 	// Discriminator: the model writes this message itself, guided by the examples below.
-	Type TypeGenerative `json:"type"`
+	Type StableToolMessageRequestTypeGenerative `json:"type"`
 	// Example phrasings the model writes from. Replaces every example the slot holds today.
 	Examples []string `json:"examples"`
 }
@@ -108,9 +108,9 @@ func (s *StableToolMessageRequestGenerative) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableToolMessageRequestGenerative) GetType() TypeGenerative {
+func (s *StableToolMessageRequestGenerative) GetType() StableToolMessageRequestTypeGenerative {
 	if s == nil {
-		return TypeGenerative("")
+		return StableToolMessageRequestTypeGenerative("")
 	}
 	return s.Type
 }
@@ -125,8 +125,8 @@ func (s *StableToolMessageRequestGenerative) GetExamples() []string {
 type StableToolMessageRequestType string
 
 const (
-	StableToolMessageRequestTypeGenerative StableToolMessageRequestType = "generative"
-	StableToolMessageRequestTypeScripted   StableToolMessageRequestType = "scripted"
+	StableToolMessageRequestTypeGenerativeValue StableToolMessageRequestType = "generative"
+	StableToolMessageRequestTypeScriptedValue   StableToolMessageRequestType = "scripted"
 )
 
 // StableToolMessageRequest - A tool message in one of its two forms. Writing one form switches the slot to it and leaves the other form stored but inactive, exactly as the editor does — so switching back does not have to be retyped.
@@ -138,9 +138,9 @@ type StableToolMessageRequest struct {
 }
 
 func CreateStableToolMessageRequestGenerative(generative StableToolMessageRequestGenerative) StableToolMessageRequest {
-	typ := StableToolMessageRequestTypeGenerative
+	typ := StableToolMessageRequestTypeGenerativeValue
 
-	typStr := TypeGenerative(typ)
+	typStr := StableToolMessageRequestTypeGenerative(typ)
 	generative.Type = typStr
 
 	return StableToolMessageRequest{
@@ -150,9 +150,9 @@ func CreateStableToolMessageRequestGenerative(generative StableToolMessageReques
 }
 
 func CreateStableToolMessageRequestScripted(scripted StableToolMessageRequestScripted) StableToolMessageRequest {
-	typ := StableToolMessageRequestTypeScripted
+	typ := StableToolMessageRequestTypeScriptedValue
 
-	typStr := TypeScripted(typ)
+	typStr := StableToolMessageRequestTypeScripted(typ)
 	scripted.Type = typStr
 
 	return StableToolMessageRequest{
@@ -180,7 +180,7 @@ func (u *StableToolMessageRequest) UnmarshalJSON(data []byte) error {
 		}
 
 		u.StableToolMessageRequestGenerative = stableToolMessageRequestGenerative
-		u.Type = StableToolMessageRequestTypeGenerative
+		u.Type = StableToolMessageRequestTypeGenerativeValue
 		return nil
 	case "scripted":
 		stableToolMessageRequestScripted := new(StableToolMessageRequestScripted)
@@ -189,7 +189,7 @@ func (u *StableToolMessageRequest) UnmarshalJSON(data []byte) error {
 		}
 
 		u.StableToolMessageRequestScripted = stableToolMessageRequestScripted
-		u.Type = StableToolMessageRequestTypeScripted
+		u.Type = StableToolMessageRequestTypeScriptedValue
 		return nil
 	}
 

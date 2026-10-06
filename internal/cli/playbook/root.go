@@ -5,6 +5,7 @@ package playbook
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/playbook/playbookpath"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -19,6 +20,10 @@ func InitPlaybookRoot(parent *cobra.Command) error {
 			}
 			return cmd.Help()
 		},
+	}
+
+	if err := playbookpath.InitPlaybookPathRoot(PlaybookCmd); err != nil {
+		return err
 	}
 
 	if err := initListCmd(PlaybookCmd); err != nil {
