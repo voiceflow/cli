@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 3690200ee0c33230cdb892ddcf7b0c3b
+  docChecksum: 53a9e53bc89b3a187b9dbbaf90eb4114
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.273
-  configChecksum: 55029161555060baa5e902ee47289607
+  releaseVersion: 0.2.274
+  configChecksum: c1cc7b86251214bcc0a06dbe30bba9e0
 persistentEdits:
-  generation_id: 72b5f25e-66ff-4be2-accd-a2c1eca9779d
-  pristine_commit_hash: dc6c20fffe999a8d69fc4bff3c006193bf4fcb70
-  pristine_tree_hash: bd9b2b117bdc7a0eae3dc108254f7c031fe1b6e9
+  generation_id: ef6e9071-4cb3-4651-81ad-397c0b0c1f71
+  pristine_commit_hash: f91401e292162091b24684b5c214fa26b21af181
+  pristine_tree_hash: 68e5305a171755f1bf723cc9deab28a6e24255f8
 features:
   cli:
     additionalProperties: 0.0.1
@@ -942,8 +942,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:443708a2cb9627703b4d7529b4c930a0541c7d8f
-    pristine_git_object: 9b7719a4b404f0354ce2acf561edfc8c7a5cad2f
+    last_write_checksum: sha1:11a6bf0ffa7d8313838eb6ce7a44f4655cddf928
+    pristine_git_object: 9d9c1cbffcda130b4bc3d6f7f24a74f19904acad
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1614,8 +1614,8 @@ trackedFiles:
     pristine_git_object: ec37614805d5f8f8027d7b0179e8678bd56e477b
   internal/sdk/models/components/kbdocumenturldata.go:
     id: f30a46a05f44
-    last_write_checksum: sha1:01d9100c522955c2ba8471bb730a71ae805ab29b
-    pristine_git_object: f226b0c017142e90fa80d6bd71bccda26cf268d9
+    last_write_checksum: sha1:44a586cd4bd34df1a0a790010637028d6583be90
+    pristine_git_object: 90fe15a5e96f5c6933d160ceb493dd5bc1054f52
   internal/sdk/models/components/kbdocumentxlsxdata.go:
     id: bae91d506dbb
     last_write_checksum: sha1:593b944940699d645e4fd5b7a16569a808d23873
@@ -2142,8 +2142,8 @@ trackedFiles:
     pristine_git_object: b9a34d79846ebc0fa94dc4d9699d1741b21975fe
   internal/sdk/models/components/stabledocument.go:
     id: ac41e7570aae
-    last_write_checksum: sha1:8aae5da4d3050b3672172cd94e1584d5620f7342
-    pristine_git_object: 6ae19af3c8f52cd5175de06c8f2b3776d8109231
+    last_write_checksum: sha1:11a1460f5a894382315de1a22146321e5b3c64a0
+    pristine_git_object: 5b2f505f33a5b017b3ed502ab34a5b10746b4af7
   internal/sdk/models/components/stabledocumentcreatesitemaprequest.go:
     id: 459bea50b1e5
     last_write_checksum: sha1:5706c3e0064eed410d4e5df3c8ad33f3d197af94
@@ -2158,8 +2158,8 @@ trackedFiles:
     pristine_git_object: 6aa484c8edab8cdaf0634f6fd8be87decd9be2e8
   internal/sdk/models/components/stabledocumentdetails.go:
     id: 05497a2ff5f9
-    last_write_checksum: sha1:6433a1ce9cd64b94400d4fb812d91c95d6f87e43
-    pristine_git_object: aaa042f406a69aa43ea8941b722a3d2a9dbbd875
+    last_write_checksum: sha1:e5dd150f95adb08bc0342f72f216b614d0e8b6c5
+    pristine_git_object: 306e827b8e774a57779892673e2207e981a87989
   internal/sdk/models/components/stabledocumentdetailsresponse.go:
     id: 8fff5be83351
     last_write_checksum: sha1:0d7cea5480877615d264fa33f9c08b5350ac29c1
@@ -4626,8 +4626,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:3947f650b452ab621cd01ed5284a4623753fa691
-    pristine_git_object: dc9406e33c812b3e2b68f10219556df89ddeb3e9
+    last_write_checksum: sha1:afdd82fc82fdb4bfdd5074966690fafb4782a0bd
+    pristine_git_object: fcec8f392e87ca184bb8c4c94c12642f6cc42b7a
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -7468,7 +7468,7 @@ examples:
         application/json: {"kind": "crew"}
       responses:
         "200":
-          application/json: {"message": "<value>", "branchID": "<id>", "step": {"id": "<id>", "kind": "message", "exitClass": "branch", "content": {"responseType": "prompt", "promptID": "<id>", "responseEnabled": true}, "fallsThroughTo": "<value>", "suppressedPorts": ["<value 1>", "<value 2>", "<value 3>"], "links": [{"port": "<value>", "label": "<value>", "to": "<value>", "overridden": true}]}}
+          application/json: {"message": "<value>", "branchID": "<id>", "step": {"id": "<id>", "kind": "message", "exitClass": "branch", "content": {"responseType": "prompt", "promptID": "<id>", "waitForUserResponse": false}, "fallsThroughTo": "<value>", "suppressedPorts": ["<value 1>", "<value 2>", "<value 3>"], "links": [{"port": "<value>", "label": "<value>", "to": "<value>", "overridden": true}]}}
   StableWorkflowController_deleteBranch:
     speakeasy-default-stable-workflow-controller-delete-branch:
       parameters:

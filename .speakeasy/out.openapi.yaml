@@ -13765,6 +13765,8 @@ components:
           type: string
         url:
           type: string
+        title:
+          type: string
         refreshRate:
           allOf:
             - $ref: '#/components/schemas/KnowledgeBaseDocumentRefreshRate'
