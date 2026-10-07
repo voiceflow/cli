@@ -666,6 +666,7 @@ type StableDocumentKBDocumentURLData struct {
 	Type                  StableDocumentTypeURL                     `json:"type"`
 	Name                  string                                    `json:"name"`
 	URL                   string                                    `json:"url"`
+	Title                 *string                                   `json:"title,omitzero"`
 	RefreshRate           *KnowledgeBaseDocumentRefreshRate         `json:"refreshRate,omitzero"`
 	LastSuccessUpdate     *string                                   `json:"lastSuccessUpdate,omitzero"`
 	AccessTokenID         *float64                                  `json:"accessTokenID,omitzero"`
@@ -704,6 +705,13 @@ func (s *StableDocumentKBDocumentURLData) GetURL() string {
 		return ""
 	}
 	return s.URL
+}
+
+func (s *StableDocumentKBDocumentURLData) GetTitle() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Title
 }
 
 func (s *StableDocumentKBDocumentURLData) GetRefreshRate() *KnowledgeBaseDocumentRefreshRate {

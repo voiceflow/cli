@@ -37,6 +37,7 @@ type KBDocumentURLData struct {
 	Type                  KBDocumentURLDataType                     `json:"type"`
 	Name                  string                                    `json:"name"`
 	URL                   string                                    `json:"url"`
+	Title                 *string                                   `json:"title,omitzero"`
 	RefreshRate           *KnowledgeBaseDocumentRefreshRate         `json:"refreshRate,omitzero"`
 	LastSuccessUpdate     *string                                   `json:"lastSuccessUpdate,omitzero"`
 	AccessTokenID         *float64                                  `json:"accessTokenID,omitzero"`
@@ -75,6 +76,13 @@ func (k *KBDocumentURLData) GetURL() string {
 		return ""
 	}
 	return k.URL
+}
+
+func (k *KBDocumentURLData) GetTitle() *string {
+	if k == nil {
+		return nil
+	}
+	return k.Title
 }
 
 func (k *KBDocumentURLData) GetRefreshRate() *KnowledgeBaseDocumentRefreshRate {
