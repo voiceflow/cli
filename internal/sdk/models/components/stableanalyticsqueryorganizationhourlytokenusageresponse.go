@@ -3,9 +3,17 @@
 
 package components
 
+import (
+	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
+)
+
 type Usage struct {
-	TotalCount    float64 `json:"totalCount"`
-	FilteredCount float64 `json:"filteredCount"`
+	TotalCount          float64                                    `json:"totalCount"`
+	FilteredCount       float64                                    `json:"filteredCount"`
+	TotalCredits        float64                                    `json:"totalCredits"`
+	FilteredCredits     float64                                    `json:"filteredCredits"`
+	TotalCostDollars    optionalnullable.OptionalNullable[float64] `json:"totalCostDollars,omitzero"`
+	FilteredCostDollars optionalnullable.OptionalNullable[float64] `json:"filteredCostDollars,omitzero"`
 }
 
 func (u *Usage) GetTotalCount() float64 {
@@ -20,6 +28,34 @@ func (u *Usage) GetFilteredCount() float64 {
 		return 0.0
 	}
 	return u.FilteredCount
+}
+
+func (u *Usage) GetTotalCredits() float64 {
+	if u == nil {
+		return 0.0
+	}
+	return u.TotalCredits
+}
+
+func (u *Usage) GetFilteredCredits() float64 {
+	if u == nil {
+		return 0.0
+	}
+	return u.FilteredCredits
+}
+
+func (u *Usage) GetTotalCostDollars() optionalnullable.OptionalNullable[float64] {
+	if u == nil {
+		return nil
+	}
+	return u.TotalCostDollars
+}
+
+func (u *Usage) GetFilteredCostDollars() optionalnullable.OptionalNullable[float64] {
+	if u == nil {
+		return nil
+	}
+	return u.FilteredCostDollars
 }
 
 type StableAnalyticsQueryOrganizationHourlyTokenUsageResponse struct {

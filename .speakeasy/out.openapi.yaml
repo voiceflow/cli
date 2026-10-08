@@ -22400,9 +22400,21 @@ components:
               type: number
             filteredCount:
               type: number
+            totalCredits:
+              type: number
+            filteredCredits:
+              type: number
+            totalCostDollars:
+              nullable: true
+              type: number
+            filteredCostDollars:
+              nullable: true
+              type: number
           required:
             - totalCount
             - filteredCount
+            - totalCredits
+            - filteredCredits
       required:
         - usage
     StableAnalyticsQueryHourlyOrganizationTokenUsageRequest:
@@ -22453,6 +22465,11 @@ components:
                 type: string
               count:
                 type: number
+              credits:
+                type: number
+              costDollars:
+                nullable: true
+                type: number
               intervalStartDate:
                 type: string
                 allOf:
@@ -22464,6 +22481,7 @@ components:
               - model
               - usageCategory
               - count
+              - credits
               - intervalStartDate
       required:
         - rows

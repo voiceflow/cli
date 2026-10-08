@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 53a9e53bc89b3a187b9dbbaf90eb4114
+  docChecksum: 61d21e722211f0172199352fd70d21ce
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.274
-  configChecksum: c1cc7b86251214bcc0a06dbe30bba9e0
+  releaseVersion: 0.2.275
+  configChecksum: 62d9bd22c26833fce37ec6551eb101c7
 persistentEdits:
-  generation_id: ef6e9071-4cb3-4651-81ad-397c0b0c1f71
-  pristine_commit_hash: f91401e292162091b24684b5c214fa26b21af181
-  pristine_tree_hash: 68e5305a171755f1bf723cc9deab28a6e24255f8
+  generation_id: 1ef29d7f-5e75-4e1b-86be-eb38fbd418b3
+  pristine_commit_hash: bf2964db8e076e70ce227bb289c2985882dad8db
+  pristine_tree_hash: d4794afbd93bed7dca6007fe7d3fc78b18c53ea4
 features:
   cli:
     additionalProperties: 0.0.1
@@ -942,8 +942,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:11a6bf0ffa7d8313838eb6ce7a44f4655cddf928
-    pristine_git_object: 9d9c1cbffcda130b4bc3d6f7f24a74f19904acad
+    last_write_checksum: sha1:fbfe0a227648dd404a94b0be394d1164e9be70cc
+    pristine_git_object: d9befbdf94b896e244dfa6ceb90ce4e7536c7594
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1930,8 +1930,8 @@ trackedFiles:
     pristine_git_object: df8aeec8e04332cacfa1de6ee044727cf760fbd6
   internal/sdk/models/components/stableanalyticsqueryorganizationhourlytokenusageresponse.go:
     id: 2965a5d33dd5
-    last_write_checksum: sha1:1b0d63a2e9dbca4eb3c8e3ebf069b17a0ae5750e
-    pristine_git_object: d9f4e23052416a4d051b0b3b980b613d2ca942bc
+    last_write_checksum: sha1:8d16896a2a4f769d09379f9dd97fb689c75f31dc
+    pristine_git_object: 6d9ddb02b2d90117da955dbfa3e77d8b8877f285
   internal/sdk/models/components/stableanalyticsqueryorganizationtokenusagerequest.go:
     id: 2611a4080dfd
     last_write_checksum: sha1:906ef07f92857e182f6056d2aa4c23046b6bde4a
@@ -1954,8 +1954,8 @@ trackedFiles:
     pristine_git_object: c7ef1a9aad67b2a778c3ccd47124bf61646cd24b
   internal/sdk/models/components/stableanalyticsqueryprojecthourlytokenusageresponse.go:
     id: 345f338ef5de
-    last_write_checksum: sha1:66a91212c4e1ac32f83ba20f090a084ed83e6a3e
-    pristine_git_object: bf8232170b5da59108db10e43e5d80a6a63c0a9e
+    last_write_checksum: sha1:f611292f9ba19caa6b2b7e2eaaf3752381e9f163
+    pristine_git_object: 4e2a628afa6bb4d619dbccac76e4f7871f5f9236
   internal/sdk/models/components/stableanalyticsqueryprojectinteractioncountrequest.go:
     id: 644efe0a83fb
     last_write_checksum: sha1:370fc5b15cc0809266ab8af4c1b482fdf837a79b
@@ -4626,8 +4626,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:afdd82fc82fdb4bfdd5074966690fafb4782a0bd
-    pristine_git_object: fcec8f392e87ca184bb8c4c94c12642f6cc42b7a
+    last_write_checksum: sha1:42328f8b0dba4f1122c0b714a9435170e7e5d9cc
+    pristine_git_object: d0ff2bd9fbe5ac6e50428817a45edd9b75597fd0
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -5859,7 +5859,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>"}
       responses:
         "200":
-          application/json: {"usage": {"totalCount": 4445.23, "filteredCount": 2824.9}}
+          application/json: {"usage": {"totalCount": 4445.23, "filteredCount": 2824.9, "totalCredits": 4445.23, "filteredCredits": 2824.9}}
   StableAnalyticsController_queryHourlyTokenUsageByProject:
     speakeasy-default-stable-analytics-controller-query-hourly-token-usage-by-project:
       parameters:
@@ -5869,7 +5869,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>", "interval": "hour"}
       responses:
         "200":
-          application/json: {"rows": [{"model": "Fiesta", "usageCategory": "<value>", "count": 8866.25, "intervalStartDate": "<value>"}]}
+          application/json: {"rows": [{"model": "Fiesta", "usageCategory": "<value>", "count": 8866.25, "credits": 948.23, "intervalStartDate": "<value>"}]}
   StableAnalyticsController_queryDailyTokenUsage:
     speakeasy-default-stable-analytics-controller-query-daily-token-usage:
       parameters:
