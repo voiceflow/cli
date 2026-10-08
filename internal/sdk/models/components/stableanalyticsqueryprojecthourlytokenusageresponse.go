@@ -3,11 +3,17 @@
 
 package components
 
+import (
+	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
+)
+
 type StableAnalyticsQueryProjectHourlyTokenUsageResponseRow struct {
-	Model             *string `json:"model"`
-	UsageCategory     *string `json:"usageCategory"`
-	Count             float64 `json:"count"`
-	IntervalStartDate string  `json:"intervalStartDate"`
+	Model             *string                                    `json:"model"`
+	UsageCategory     *string                                    `json:"usageCategory"`
+	Count             float64                                    `json:"count"`
+	Credits           float64                                    `json:"credits"`
+	CostDollars       optionalnullable.OptionalNullable[float64] `json:"costDollars,omitzero"`
+	IntervalStartDate string                                     `json:"intervalStartDate"`
 }
 
 func (s *StableAnalyticsQueryProjectHourlyTokenUsageResponseRow) GetModel() *string {
@@ -29,6 +35,20 @@ func (s *StableAnalyticsQueryProjectHourlyTokenUsageResponseRow) GetCount() floa
 		return 0.0
 	}
 	return s.Count
+}
+
+func (s *StableAnalyticsQueryProjectHourlyTokenUsageResponseRow) GetCredits() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.Credits
+}
+
+func (s *StableAnalyticsQueryProjectHourlyTokenUsageResponseRow) GetCostDollars() optionalnullable.OptionalNullable[float64] {
+	if s == nil {
+		return nil
+	}
+	return s.CostDollars
 }
 
 func (s *StableAnalyticsQueryProjectHourlyTokenUsageResponseRow) GetIntervalStartDate() string {
