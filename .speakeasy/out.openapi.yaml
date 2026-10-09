@@ -12608,6 +12608,7 @@ components:
         - gpt-5.6-luna
         - gpt-6-sol
         - gpt-6-luna
+        - gpt-6.1-sol
         - gpt-realtime
         - gpt-live-1
         - claude-4-opus
@@ -12684,6 +12685,7 @@ components:
         - GPT_5_6_LUNA
         - GPT_6_SOL
         - GPT_6_LUNA
+        - GPT_6_1_SOL
         - GPT_REALTIME
         - GPT_LIVE_1
         - CLAUDE_4_OPUS
@@ -32415,6 +32417,7 @@ components:
                 - gpt-5.6-luna
                 - gpt-6-sol
                 - gpt-6-luna
+                - gpt-6.1-sol
                 - gpt-realtime
                 - gpt-live-1
                 - claude-4-opus
@@ -32492,6 +32495,7 @@ components:
                 - GPT_5_6_LUNA
                 - GPT_6_SOL
                 - GPT_6_LUNA
+                - GPT_6_1_SOL
                 - GPT_REALTIME
                 - GPT_LIVE_1
                 - CLAUDE_4_OPUS
@@ -32697,6 +32701,7 @@ components:
             - gpt-5.6-luna
             - gpt-6-sol
             - gpt-6-luna
+            - gpt-6.1-sol
             - gpt-realtime
             - gpt-live-1
             - claude-4-opus
@@ -32773,6 +32778,7 @@ components:
             - GPT_5_6_LUNA
             - GPT_6_SOL
             - GPT_6_LUNA
+            - GPT_6_1_SOL
             - GPT_REALTIME
             - GPT_LIVE_1
             - CLAUDE_4_OPUS
