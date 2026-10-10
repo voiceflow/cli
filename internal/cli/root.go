@@ -23,6 +23,7 @@ import (
 	"github.com/voiceflow/cli/internal/cli/mcpserver"
 	"github.com/voiceflow/cli/internal/cli/mcptool"
 	"github.com/voiceflow/cli/internal/cli/message"
+	"github.com/voiceflow/cli/internal/cli/phonenumber"
 	"github.com/voiceflow/cli/internal/cli/playbook"
 	"github.com/voiceflow/cli/internal/cli/project"
 	"github.com/voiceflow/cli/internal/cli/prompt"
@@ -142,6 +143,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := workflow.InitWorkflowRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init workflow: %w", err)
+	}
+	if err := phonenumber.InitPhoneNumberRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init phone-number: %w", err)
 	}
 	if err := initConfigureCmd(rootCmd); err != nil {
 		return nil, fmt.Errorf("init configure: %w", err)

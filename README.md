@@ -605,6 +605,16 @@ server's dynamic client registration endpoint and caches the resulting
 * [`add-actions`](docs/vf_workflow_add-actions.md) - Add port actions
 * [`reorder-actions`](docs/vf_workflow_reorder-actions.md) - Reorder port actions
 
+### [phone-number](docs/vf_phone-number.md)
+
+* [`list`](docs/vf_phone-number_list.md) - List phone numbers
+* [`create`](docs/vf_phone-number_create.md) - Create phone number
+* [`get`](docs/vf_phone-number_get.md) - Get phone number
+* [`update`](docs/vf_phone-number_update.md) - Update phone number
+* [`delete`](docs/vf_phone-number_delete.md) - Delete phone number
+* [`assign`](docs/vf_phone-number_assign.md) - Assign phone number
+* [`unassign`](docs/vf_phone-number_unassign.md) - Unassign phone number
+
 </details>
 <!-- End Available Commands [operations] -->
 

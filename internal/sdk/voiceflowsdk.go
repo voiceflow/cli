@@ -75,6 +75,7 @@ type VoiceflowSDK struct {
 	Test          *Test
 	Widget        *Widget
 	Workflow      *Workflow
+	PhoneNumber   *PhoneNumber
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -192,6 +193,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Test = newTest(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Widget = newWidget(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Workflow = newWorkflow(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.PhoneNumber = newPhoneNumber(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

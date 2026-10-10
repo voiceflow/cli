@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 292622451cf375109e449c6bf377629d
+  docChecksum: efdc2a81923a235fbc231b0e64c18279
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.276
-  configChecksum: 08d3a2aed442817dbd9ecf9b5ba6aba9
+  releaseVersion: 0.2.277
+  configChecksum: 498541232ae835c6298cec26cd3f1438
 persistentEdits:
-  generation_id: 4aea4c9c-4d19-479b-abb0-5c7df7beed73
-  pristine_commit_hash: 8c90dd574baaf83a11c1e9e757ba9c185aafc6ee
-  pristine_tree_hash: 776092bfe7d0d59dda2d0154d249101ced9efd63
+  generation_id: 31a56a24-c0df-4bf6-be21-dca382de163a
+  pristine_commit_hash: 35da0af48dd99b94106ce616fda6e3fb8b99f6a5
+  pristine_tree_hash: 9e3217d4d1a69957a64a1a0743db1dd4c1850cf1
 features:
   cli:
     additionalProperties: 0.0.1
@@ -612,6 +612,38 @@ trackedFiles:
     id: b6fccead8dfd
     last_write_checksum: sha1:c0222284d5cf005eddb9e5fac430b314d4630b5d
     pristine_git_object: f769bbd00a72e2e30faa561b2bdfd6a7797e1804
+  internal/cli/phonenumber/assign.go:
+    id: 3720c9ed7c39
+    last_write_checksum: sha1:4ddae9dd8dc72a85007f915814b18b822c0ecba1
+    pristine_git_object: 97efe4e47d51486f0091908f3b955ac00f4b2d6e
+  internal/cli/phonenumber/create.go:
+    id: 64a3d19c5fe2
+    last_write_checksum: sha1:3dd2a3099699c8d6a60790a8a750d7331f82034d
+    pristine_git_object: d8268e874ae2e75da3b6f21e899fca8553593163
+  internal/cli/phonenumber/delete.go:
+    id: b202f622aebe
+    last_write_checksum: sha1:2020c530f48cd261177c898411494fa9160712ab
+    pristine_git_object: 0bdad668a39396bf58b7bdab0129ee20393b1a63
+  internal/cli/phonenumber/get.go:
+    id: 10467fd728b5
+    last_write_checksum: sha1:4f28f0a06ddaf2faa2cddcacbeffcc62bd06a837
+    pristine_git_object: 99c4c91614748b2381341effee8e9d03e9e0245f
+  internal/cli/phonenumber/list.go:
+    id: 916bdc9861b7
+    last_write_checksum: sha1:df7f9c0121e2062461ca1acbb749becc40b036f7
+    pristine_git_object: cd9e2de7fba1c695b31dff188fea33854556cc49
+  internal/cli/phonenumber/root.go:
+    id: 81a98fae049c
+    last_write_checksum: sha1:b4b98271203f1c816b2de8c3bce2b2ec6f78278c
+    pristine_git_object: 1e099a5e2bec981fd2e30c59d7294b9cf16a5beb
+  internal/cli/phonenumber/unassign.go:
+    id: 588d6fa82703
+    last_write_checksum: sha1:4a355390176ae6d8b6bffd1f239c38c48558c2c5
+    pristine_git_object: 8dca6b1d6191431cc1a5c28897dcc1dab1edff81
+  internal/cli/phonenumber/update.go:
+    id: c4304c64bb7e
+    last_write_checksum: sha1:295f77b9272482d3d039ebc059dc84f98c61efe1
+    pristine_git_object: c6b62534799a65ed56028e45a58c9f8f50cf31ef
   internal/cli/playbook/addtoolmessage.go:
     id: 78015efbced7
     last_write_checksum: sha1:df3a401ac794516c82ddb7729cc44c01c7e50db0
@@ -734,8 +766,8 @@ trackedFiles:
     pristine_git_object: 1ea74d59a958659d70ecd2f145d359954fa1ed81
   internal/cli/root.go:
     id: 239d55a0d6be
-    last_write_checksum: sha1:30f8fed965971cbd49ea66bf567f73f801dcc5c2
-    pristine_git_object: a442fb6e2f9ea1b324a8f4baa62261b05c64f071
+    last_write_checksum: sha1:445574a8d1c765bcc8d0a7a3ac7ed30eaecae0c8
+    pristine_git_object: 0592a94e5ecc6f8500e2defd01ac0d9132602c17
   internal/cli/secret/create.go:
     id: 24d44099e06b
     last_write_checksum: sha1:f69350df7da1382b73e53496a1a989a527705faa
@@ -942,8 +974,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:7a1651fc07e8ddcbd040f46fc201d9aaa3cc5959
-    pristine_git_object: 80a72a2a662852be0c4a637d518869bf326f9016
+    last_write_checksum: sha1:6f759c7d6802946dac5e926b6c6c0a391fec0fa4
+    pristine_git_object: 5ef0f84c19132f2b23a36153001e319be2f3231d
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1724,6 +1756,10 @@ trackedFiles:
     id: 476b9d78d13a
     last_write_checksum: sha1:e046b34e76a85e1b595ba3ad59bed5e876c45d68
     pristine_git_object: 1cff2cf9913d40d28926addf68f7a7f35eafe9fa
+  internal/sdk/models/components/phonenumberprovider.go:
+    id: 4411cf1e0f0f
+    last_write_checksum: sha1:8d87e3b6439fd35f0a976d0a3e76b0a9836f7656
+    pristine_git_object: e508cf9fa0ea0c33156c195440bb76dc990815b0
   internal/sdk/models/components/projectintegration.go:
     id: db95823b466f
     last_write_checksum: sha1:cc43dfac696a6ac3570e82a633a313902b12661e
@@ -2520,6 +2556,34 @@ trackedFiles:
     id: 8a68f00f85fb
     last_write_checksum: sha1:d891e96763202b70183ffb568c317ba0b645a810
     pristine_git_object: 76e69ada02c74964a93f47917060cff7197b97a3
+  internal/sdk/models/components/stablephonenumber.go:
+    id: 2301af7fa441
+    last_write_checksum: sha1:a59d94780f5dab33adbb219941a5b20257c4b403
+    pristine_git_object: 045e840f84559be8f5fe1adb15e2d781bcc5ee2c
+  internal/sdk/models/components/stablephonenumberassignrequest.go:
+    id: 27ae0caac23a
+    last_write_checksum: sha1:0fadb68707a052f18331c3a5e1ae1d1eee9f84b2
+    pristine_git_object: ec90b251729c9fe50179d63827815b168b55262b
+  internal/sdk/models/components/stablephonenumbercreaterequest.go:
+    id: f471d03e4cae
+    last_write_checksum: sha1:d4888a831bba178820242b14bf9acbe39c07a5fa
+    pristine_git_object: 9d019b9a7762961d56c5f1dfcd7010837b4f8649
+  internal/sdk/models/components/stablephonenumberlistresponse.go:
+    id: 1fe2f6331e90
+    last_write_checksum: sha1:e5759c386a02edc1c6e936510e69c2347d3d9099
+    pristine_git_object: 21c0daa7b0f36aabbf4ebb45b0d43855a3d0c346
+  internal/sdk/models/components/stablephonenumberresponse.go:
+    id: 1a2353f5aaf9
+    last_write_checksum: sha1:849a59be1c6c3e89a529a2ba95bf6c21d1f29284
+    pristine_git_object: 196de216b10ccfdd971b25d717333787e50603a4
+  internal/sdk/models/components/stablephonenumberunassignrequest.go:
+    id: 53d4d280e085
+    last_write_checksum: sha1:7e4c8afd5f8cfed58b8b1a4448c44e28b2c2879f
+    pristine_git_object: 3dbe2c61fcfe2842e28e9c8414215f420e12cdf3
+  internal/sdk/models/components/stablephonenumberupdaterequest.go:
+    id: 047bff539803
+    last_write_checksum: sha1:d72384e43e168b430e5d83110228694d27db5453
+    pristine_git_object: 1d032fb7631f9dafae14bd82a72b7b3e61151992
   internal/sdk/models/components/stableplaybookcreaterequestv2.go:
     id: e828f8cdc76b
     last_write_checksum: sha1:ce47b5d689b15d1f34babf0e3f89e73a6bb6bb06
@@ -4072,6 +4136,34 @@ trackedFiles:
     id: e920fb238f4f
     last_write_checksum: sha1:156febbaff797ef9469cfbeeb320f2bf722db79d
     pristine_git_object: 57796a0e51a7474cb7cf59fb0b04cd06891a8948
+  internal/sdk/models/operations/stablephonenumbercontrollerassign.go:
+    id: 2003b8d4ba60
+    last_write_checksum: sha1:3eb62e8a32b42757ae4100d5bd8dbf9be81ce303
+    pristine_git_object: b0411357c5677d780a3481fb9a4b4dcb3dc507f3
+  internal/sdk/models/operations/stablephonenumbercontrollercreate.go:
+    id: a1d9f3ce8a72
+    last_write_checksum: sha1:69a5e0c6301c9d76cafeb3c9f8718d7baf4cdb4c
+    pristine_git_object: 075142c74756f9676c782ced35d68328dbc9010f
+  internal/sdk/models/operations/stablephonenumbercontrollerdelete.go:
+    id: bafca6e4cdab
+    last_write_checksum: sha1:952b7e25b877c1efbe0f6c1c86c967ec8255f0d2
+    pristine_git_object: 9eb6cfb393d5b44de10267272f003db1033f6981
+  internal/sdk/models/operations/stablephonenumbercontrollerget.go:
+    id: ebae43f8e97f
+    last_write_checksum: sha1:377d656a2683ae2a77db69b718b1de0eabb4e432
+    pristine_git_object: 224268e34b971f76c46cc1d4d4f6c6efac091e0f
+  internal/sdk/models/operations/stablephonenumbercontrollerlist.go:
+    id: be2e42e10799
+    last_write_checksum: sha1:96ed1c1e54028847e97b01ec90e00fe3469c0c80
+    pristine_git_object: cc28424086ddcacfdaf388db23165240b6eb6f8e
+  internal/sdk/models/operations/stablephonenumbercontrollerunassign.go:
+    id: b344708b8c00
+    last_write_checksum: sha1:7fda61321f111525a7ceddc9c3c97a5b91bdb90c
+    pristine_git_object: 4ef8a3ca7f18b275c7f5441c4f1be0564c03b080
+  internal/sdk/models/operations/stablephonenumbercontrollerupdate.go:
+    id: 541a90e462ab
+    last_write_checksum: sha1:0ac9660b4ea5780a5f74e149cdca02be676b651f
+    pristine_git_object: e437b1ba81fee656cdb014d24be27eec4a1aae74
   internal/sdk/models/operations/stableplaybookcontrolleraddtoolmessage.go:
     id: 13210931c531
     last_write_checksum: sha1:896ebf8ae4a0ac9f5eeeb3c307602a06ff10bc02
@@ -4468,6 +4560,10 @@ trackedFiles:
     id: 3920a41dfc4c
     last_write_checksum: sha1:4495e62cc50bf51d4db762ca6b9902c1e1e0464d
     pristine_git_object: 1a9bcd0cc4a56f4034599c5a32058b0490dd17f8
+  internal/sdk/phonenumber.go:
+    id: 730099762c53
+    last_write_checksum: sha1:379c2d20f840d5249ee2f7a158e0eca791db630f
+    pristine_git_object: befcb6d8252da37de70382d375789cfbdf66aab4
   internal/sdk/playbook.go:
     id: 0f4c3e0e4ee0
     last_write_checksum: sha1:c245207c15396fcacb6e1b2315d3119f0c9dae07
@@ -4606,8 +4702,8 @@ trackedFiles:
     pristine_git_object: 319f6d61ee986dfe1e8fe9e9b460b226fa669586
   internal/sdk/voiceflowsdk.go:
     id: f474e5d69d13
-    last_write_checksum: sha1:87114649d4dc7fb43208760b8f49588425fafa7d
-    pristine_git_object: 7b2b6e97ce763dac32b2b56a0f3ca54d0aae78ff
+    last_write_checksum: sha1:2d12dbb54132aa7fe852d7cc5f03bc8380f6ef03
+    pristine_git_object: 3a203f627b7f3b8485f89fab132fbe51ce716929
   internal/sdk/widget.go:
     id: c64684ab09d5
     last_write_checksum: sha1:fa09e1c267f3cffcd9e4c2553229ca88a3daad6f
@@ -4626,8 +4722,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:159d366c36184bd4f85a0517de7323848da490f3
-    pristine_git_object: 97921120628b429e618d2d487ecc79070c788b6b
+    last_write_checksum: sha1:482cb3525ad259d5d53c6c32f632ba46d3fbbaf1
+    pristine_git_object: 47b1cab3e11699f325f59d7900d09e52c67efd39
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -7512,4 +7608,72 @@ examples:
       responses:
         "200":
           application/json: {"message": "<value>", "stepID": "<id>", "port": "<value>", "actions": ["<value 1>", "<value 2>"], "to": "<value>"}
+  StablePhoneNumberController_list:
+    speakeasy-default-stable-phone-number-controller-list:
+      responses:
+        "200":
+          application/json: {"phoneNumbers": [{"id": "<id>", "sms": {"version": "published", "projectID": "<id>", "environmentAlias": "<value>"}, "name": "<value>", "value": "<value>", "voice": {"version": null, "projectID": "<id>", "environmentAlias": "<value>"}, "provider": "vonage", "workspaceID": "<id>", "providerResourceID": "<id>", "createdAt": "2026-09-26T12:49:01.303Z", "updatedAt": "2026-12-25T01:52:27.248Z"}]}
+  StablePhoneNumberController_create:
+    speakeasy-default-stable-phone-number-controller-create:
+      requestBody:
+        application/json: {"name": "", "workspaceID": "<id>", "provider": "vonage", "value": "<value>", "vonageAPIKey": "<value>", "vonageAPISecret": "<value>", "vonageSignatureSecret": "<value>"}
+      responses:
+        "201":
+          application/json: {"phoneNumber": {"id": "<id>", "sms": {"version": "published", "projectID": "<id>", "environmentAlias": "<value>"}, "name": "<value>", "value": "<value>", "voice": {"version": "draft", "projectID": "<id>", "environmentAlias": "<value>"}, "provider": "telnyx", "workspaceID": "<id>", "providerResourceID": "<id>", "createdAt": "2026-04-18T06:06:50.551Z", "updatedAt": "2024-07-10T01:03:34.796Z"}}
+  StablePhoneNumberController_get:
+    speakeasy-default-stable-phone-number-controller-get:
+      parameters:
+        path:
+          phoneNumberID: "<id>"
+        query:
+          workspaceID: "<id>"
+      responses:
+        "200":
+          application/json: {"phoneNumber": {"id": "<id>", "sms": {"version": "draft", "projectID": "<id>", "environmentAlias": "<value>"}, "name": "<value>", "value": "<value>", "voice": {"version": "draft", "projectID": "<id>", "environmentAlias": "<value>"}, "provider": "byo-sip", "workspaceID": "<id>", "providerResourceID": "<id>", "createdAt": "2026-03-24T00:29:03.316Z", "updatedAt": "2026-05-12T19:49:19.993Z"}}
+  StablePhoneNumberController_update:
+    speakeasy-default-stable-phone-number-controller-update:
+      parameters:
+        path:
+          phoneNumberID: "<id>"
+        query:
+          workspaceID: "<id>"
+      requestBody:
+        application/json: {"name": "<value>"}
+      responses:
+        "200":
+          application/json: {"message": "<value>"}
+  StablePhoneNumberController_delete:
+    speakeasy-default-stable-phone-number-controller-delete:
+      parameters:
+        path:
+          phoneNumberID: "<id>"
+        query:
+          workspaceID: "<id>"
+      responses:
+        "200":
+          application/json: {"message": "<value>"}
+  StablePhoneNumberController_assign:
+    speakeasy-default-stable-phone-number-controller-assign:
+      parameters:
+        path:
+          phoneNumberID: "<id>"
+        query:
+          workspaceID: "<id>"
+      requestBody:
+        application/json: {"target": "sms", "projectID": "<id>"}
+      responses:
+        "200":
+          application/json: {"message": "<value>"}
+  StablePhoneNumberController_unassign:
+    speakeasy-default-stable-phone-number-controller-unassign:
+      parameters:
+        path:
+          phoneNumberID: "<id>"
+        query:
+          workspaceID: "<id>"
+      requestBody:
+        application/json: {}
+      responses:
+        "200":
+          application/json: {"message": "<value>"}
 examplesVersion: 1.0.2

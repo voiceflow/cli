@@ -12417,6 +12417,361 @@ paths:
         - Workflow
       security:
         - token: []
+  /v1/stable/phone-number:
+    get:
+      operationId: StablePhoneNumberController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: list
+          operationDescription: |-
+            WHAT — List the workspace's phone numbers, or only the ones assigned to one project. Each entry carries its `voice` and `sms` targets, so this is how you see which agent — and which environment and version — a number currently answers as.
+            USE WHEN — The user asks what numbers they have, which number reaches a given agent, or whether a number is free to assign.
+            BEFORE — voiceflow_workspace.list if you do not yet have a workspaceID, or voiceflow_project.list for a projectID.
+            AFTER — voiceflow_phone_number.assign to point a number at a project environment, or voiceflow_phone_number.get for one number.
+            DO NOT — Send both `workspaceID` and `projectID` — exactly one is required. The workspace form returns every number the workspace holds; the project form returns only the numbers assigned to that project, for either target.
+        cli:
+          command: phone-number list
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: list
+      summary: List phone numbers
+      description: List all phone numbers by workspace or project ID.
+      parameters:
+        - name: projectID
+          required: false
+          in: query
+          schema:
+            description: List only the numbers assigned to this project, for either target. Mutually exclusive with `workspaceID`.
+            type: string
+            minLength: 1
+        - name: workspaceID
+          required: false
+          in: query
+          schema:
+            description: List every number the workspace holds, assigned or not. Mutually exclusive with `projectID`.
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePhoneNumberListResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
+    post:
+      operationId: StablePhoneNumberController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: create
+          operationDescription: |-
+            WHAT — Add a phone number to the workspace, either by buying one through Voiceflow or by connecting one you already own.
+            voiceflow-telnyx — Voiceflow buys the number: send `areaCode` and `country` (`US` or `CA`) and the carrier picks the digits, so no `value` is sent and the number it hands back is final.
+            twilio — `value` plus `twilioAccountSID` and `twilioAuthToken`.
+            vonage — `value` plus `vonageAPIKey`, `vonageAPISecret` and `vonageSignatureSecret`.
+            telnyx — `value` plus `telnyxAPIKey` and `telnyxPublicKey`.
+            `value` is E.164: a leading `+`, country code, then digits, with nothing else — `+14155552671`. The provider cannot be changed afterwards.
+            USE WHEN — The user wants a new number on the workspace and has told you which provider to use.
+            AFTER — voiceflow_phone_number.assign. A new number is unassigned and answers nothing until it points at a project.
+            DO NOT — Call this from an MCP or Copilot client — it is refused with 403. Buying a number spends the workspace's money and connecting one takes carrier credentials, so it belongs to the Voiceflow UI, the CLI or the REST API. Nor should you invent or guess carrier credentials: ask the user for them.
+        cli:
+          command: phone-number create
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: create
+      x-vf-client-restriction:
+        deniedClientTypes:
+          - mcp
+        guidance: A phone number cannot be provisioned from an MCP client, because doing so spends the workspace's money and writes carrier credentials. Buy or connect the number in the Voiceflow UI (Workspace settings → Phone numbers), with the Voiceflow CLI, or through the Voiceflow REST API, then assign it to a project with `assign`.
+      summary: Create phone number
+      description: Create a new phone number. MCP clients cannot call this — provisioning spends money and takes carrier credentials, so it belongs to the UI, the CLI or the REST API.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePhoneNumberCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePhoneNumberResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
+  /v1/stable/phone-number/{phoneNumberID}:
+    get:
+      operationId: StablePhoneNumberController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: get
+          operationDescription: |-
+            WHAT — Read one phone number: its name, its `value` (the number itself, in E.164), its provider, and the `voice` and `sms` targets naming the project, environment and version each side answers as.
+            USE WHEN — Confirming what a number is wired to before reassigning or deleting it.
+            BEFORE — voiceflow_phone_number.list if you do not yet have the phoneNumberID — it is not the number itself, and `workspaceID` is required alongside it.
+            AFTER — voiceflow_phone_number.assign or voiceflow_phone_number.unassign to change where it routes.
+        cli:
+          command: phone-number get
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: get
+      summary: Get phone number
+      description: Get a phone number by ID.
+      parameters:
+        - name: phoneNumberID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: workspaceID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the workspace the number belongs to.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePhoneNumberResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
+    patch:
+      operationId: StablePhoneNumberController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: update
+          operationDescription: |-
+            WHAT — Rename a phone number. `name` is the only editable field — it is the label shown in the workspace, not anything a caller sees.
+            USE WHEN — The user wants a number labelled for what it does, e.g. "Support line" rather than the raw digits.
+            DO NOT — Use this to change where a number routes, which provider it uses, or the number itself. Routing is voiceflow_phone_number.assign and voiceflow_phone_number.unassign; the provider and the number are fixed at creation.
+        cli:
+          command: phone-number update
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: update
+      summary: Update phone number
+      description: Update a phone number by ID.
+      parameters:
+        - name: phoneNumberID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: workspaceID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the workspace the number belongs to.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePhoneNumberUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
+    delete:
+      operationId: StablePhoneNumberController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: delete
+          operationDescription: |-
+            WHAT — Remove a phone number from the workspace, along with whatever it was routing to.
+            USE WHEN — The user is giving the number up for good.
+            DO NOT — Delete without explicit user confirmation. The number stops answering immediately, and a deleted phone number cannot be recovered. To stop a number reaching an agent while keeping it, use voiceflow_phone_number.unassign instead.
+        cli:
+          command: phone-number delete
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: delete
+      summary: Delete phone number
+      description: Delete a phone number by ID.
+      parameters:
+        - name: phoneNumberID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: workspaceID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the workspace the number belongs to.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
+  /v1/stable/phone-number/{phoneNumberID}/assign:
+    put:
+      operationId: StablePhoneNumberController_assign
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: assign
+          operationDescription: |-
+            WHAT — Point one side of a phone number at a project. `target` picks the side — `voice` for incoming calls, `sms` for incoming SMS — and the other side is left exactly as it was.
+            environmentAlias — which environment answers. Omitting it assigns the number to the project with no environment pinned, clearing a pin a previous assign set.
+            version — `published` (the default) or `draft`, and only accepted alongside an `environmentAlias`. `published` answers as the environment's live version, so a change does not reach callers until the environment is published; `draft` answers as the working copy, which is how you try a change on a real call before shipping it.
+            USE WHEN — The user wants a number to start reaching an agent, or to move it to a different agent, environment or version.
+            BEFORE — voiceflow_project.list then voiceflow_environment.list if you do not yet have projectID + environmentAlias.
+            AFTER — voiceflow_environment.publish when the assignment is `published` and the work is still on the draft — otherwise callers keep hearing the last published version.
+            DO NOT — Assume this moves both sides. Assigning `voice` leaves `sms` pointing wherever it already pointed, so reassigning a number to a new agent takes one call per target that is in use.
+            DO NOT — Mix `target` with the wrong number or project. `sms` needs a Twilio number and a chat project; `voice` needs a voice project — a chat project is reachable only through `sms`. A mismatch is refused with 400 and nothing is assigned.
+        cli:
+          command: phone-number assign
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: assign
+      summary: Assign phone number
+      description: Assign a phone number to a project by ID.
+      parameters:
+        - name: phoneNumberID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: workspaceID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the workspace the number belongs to.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePhoneNumberAssignRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
+  /v1/stable/phone-number/{phoneNumberID}/unassign:
+    put:
+      operationId: StablePhoneNumberController_unassign
+      x-vf:
+        mcp:
+          tool: voiceflow_phone_number
+          toolDescription: |-
+            Manage the workspace's phone numbers — the numbers that take incoming calls and SMS, and the assignment that points each one at an agent. A number belongs to the WORKSPACE, not to a project: assigning is what connects it to one, and a number with no assignment answers nothing.
+            Each number carries two independent targets. `voice` handles incoming calls, `sms` handles incoming SMS, and each names its own project, environment and version — one number can send calls to one agent and SMS to another, or leave either side unassigned.
+            A number is either bought through Voiceflow (provider `voiceflow-telnyx`, picked by area code) or connected from an account you already hold with Twilio, Vonage or Telnyx. The provider is fixed at creation; only the display name is editable afterwards.
+            Predecessor: select the workspace first; select the project and environment too before assigning.
+            Successor: assign the number to a project environment, then publish that environment so callers reach the version you tested.
+          operation: unassign
+          operationDescription: |-
+            WHAT — Clear a phone number's assignment so it stops reaching an agent. `target` clears one side — `voice` or `sms` — and omitting it clears both.
+            USE WHEN — The user wants a number taken off an agent, or freed up before pointing it somewhere else.
+            BEFORE — voiceflow_phone_number.get to see which sides are assigned — clearing a side that is not assigned is refused with 400, as is clearing a number that has no assignment at all.
+            AFTER — voiceflow_phone_number.assign if the number is being moved rather than retired. The number stays on the workspace either way.
+            DO NOT — Use this to give up a number. It only clears the routing; voiceflow_phone_number.delete is what removes the number itself.
+        cli:
+          command: phone-number unassign
+      x-speakeasy-group: phone-number
+      x-speakeasy-name-override: unassign
+      summary: Unassign phone number
+      description: Clear existing assignment of a phone number to a project.
+      parameters:
+        - name: phoneNumberID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: workspaceID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the workspace the number belongs to.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePhoneNumberUnassignRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Phone Number
+      security:
+        - token: []
 info:
   title: Realtime
   description: Realtime gateway API service
@@ -14292,6 +14647,22 @@ components:
     JsonSchema:
       type: object
       additionalProperties: {}
+    PhoneNumberProvider:
+      type: string
+      enum:
+        - twilio
+        - vonage
+        - telnyx
+        - voiceflow-telnyx
+        - voiceflow-sip
+        - byo-sip
+      x-enumNames:
+        - TWILIO
+        - VONAGE
+        - TELNYX
+        - VOICEFLOW_TELNYX
+        - VOICEFLOW_SIP
+        - BYO_SIP
     VersionVariant:
       type: string
       enum:
@@ -33147,6 +33518,317 @@ components:
           description: 'The tool''s arguments, keyed by argument name and typed as its JSON Schema says; see get_schema. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.'
           type: object
           additionalProperties: {}
+      additionalProperties: false
+    StablePhoneNumber:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the phone number, used to assign, update and delete it. Not the number itself.
+        sms:
+          nullable: true
+          description: Where incoming SMS go, or null when nothing handles SMS on this number.
+          allOf:
+            - $ref: '#/components/schemas/StablePhoneNumberTarget'
+        name:
+          type: string
+          description: The display name of the number within the workspace. Callers never see it.
+        value:
+          type: string
+          description: The number itself, in E.164 (e.g. `+14155552671`).
+        voice:
+          nullable: true
+          description: Where incoming calls go, or null when nothing handles calls on this number.
+          allOf:
+            - $ref: '#/components/schemas/StablePhoneNumberTarget'
+        provider:
+          description: Who the number is held with. `voiceflow-telnyx` is a number bought through Voiceflow; the rest are numbers connected from your own carrier account. Fixed at creation.
+          allOf:
+            - $ref: '#/components/schemas/PhoneNumberProvider'
+          enum:
+            - twilio
+            - vonage
+            - telnyx
+            - voiceflow-telnyx
+            - voiceflow-sip
+            - byo-sip
+          x-enumNames:
+            - TWILIO
+            - VONAGE
+            - TELNYX
+            - VOICEFLOW_TELNYX
+            - VOICEFLOW_SIP
+            - BYO_SIP
+        workspaceID:
+          type: string
+          description: The ID of the workspace the number belongs to.
+        providerResourceID:
+          type: string
+          description: The number's ID with the provider, for reconciling against it.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - sms
+        - name
+        - value
+        - voice
+        - provider
+        - workspaceID
+        - providerResourceID
+        - createdAt
+        - updatedAt
+    StablePhoneNumberTarget:
+      type: object
+      properties:
+        version:
+          nullable: true
+          description: 'Which version of the environment answers: `published`, the one serving live traffic, or `draft`, the working copy. Null when no environment is pinned.'
+          type: string
+          enum:
+            - draft
+            - published
+          x-enumNames:
+            - DRAFT
+            - PUBLISHED
+        projectID:
+          type: string
+          description: The ID of the project this side of the number reaches.
+        environmentAlias:
+          nullable: true
+          description: 'The alias of the environment this side of the number reaches (e.g. `main`). Null in two cases: the number is assigned to the project with no environment pinned, or the environment it was pinned to has since been deleted — `version` is still whatever the pin asked for, so a null alias beside a non-null `version` is the second case.'
+          type: string
+      required:
+        - version
+        - projectID
+        - environmentAlias
+    StablePhoneNumberListResponse:
+      type: object
+      properties:
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePhoneNumber'
+          description: The matching phone numbers, each with the project, environment and version its `voice` and `sms` sides reach.
+      required:
+        - phoneNumbers
+    StablePhoneNumberResponse:
+      type: object
+      properties:
+        phoneNumber:
+          $ref: '#/components/schemas/StablePhoneNumber'
+      required:
+        - phoneNumber
+    StablePhoneNumberCreateRequest:
+      oneOf:
+        - type: object
+          properties:
+            name:
+              default: ""
+              description: The display name of the number within the workspace. Callers never see it. Defaults to empty.
+              type: string
+            workspaceID:
+              type: string
+              description: The ID of the workspace to add the number to.
+            provider:
+              type: string
+              enum:
+                - voiceflow-telnyx
+              description: Buy a number through Voiceflow. The carrier picks the digits, so no `value` is sent.
+              x-enumNames:
+                - VOICEFLOW_TELNYX
+            areaCode:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+              description: The area code to buy in (e.g. `415`). The carrier picks the rest of the digits.
+            country:
+              type: string
+              enum:
+                - CA
+                - US
+              description: The country to buy in.
+              x-enumNames:
+                - CA
+                - US
+          required:
+            - workspaceID
+            - provider
+            - areaCode
+            - country
+          additionalProperties: false
+        - type: object
+          properties:
+            name:
+              default: ""
+              description: The display name of the number within the workspace. Callers never see it. Defaults to empty.
+              type: string
+            workspaceID:
+              type: string
+              description: The ID of the workspace to add the number to.
+            provider:
+              type: string
+              enum:
+                - twilio
+              description: Connect a number held in your own Twilio account.
+              x-enumNames:
+                - TWILIO
+            value:
+              type: string
+              pattern: ^\+\d+$
+              description: 'The number you already hold, in E.164: a leading `+`, country code, then digits (e.g. `+14155552671`).'
+            twilioAccountSID:
+              type: string
+              minLength: 34
+              maxLength: 34
+              description: The Account SID of the Twilio account holding the number. 34 characters.
+            twilioAuthToken:
+              type: string
+              minLength: 32
+              maxLength: 32
+              description: The Twilio auth token. 32 characters. Write-only — it is never returned.
+          required:
+            - workspaceID
+            - provider
+            - value
+            - twilioAccountSID
+            - twilioAuthToken
+          additionalProperties: false
+        - type: object
+          properties:
+            name:
+              default: ""
+              description: The display name of the number within the workspace. Callers never see it. Defaults to empty.
+              type: string
+            workspaceID:
+              type: string
+              description: The ID of the workspace to add the number to.
+            provider:
+              type: string
+              enum:
+                - vonage
+              description: Connect a number held in your own Vonage account.
+              x-enumNames:
+                - VONAGE
+            value:
+              type: string
+              pattern: ^\+\d+$
+              description: 'The number you already hold, in E.164: a leading `+`, country code, then digits (e.g. `+14155552671`).'
+            vonageAPIKey:
+              type: string
+              minLength: 8
+              maxLength: 8
+              description: The API key of the Vonage account holding the number. 8 characters.
+            vonageAPISecret:
+              type: string
+              minLength: 1
+              description: The Vonage API secret. Write-only — it is never returned.
+            vonageSignatureSecret:
+              type: string
+              minLength: 1
+              description: The Vonage signature secret, used to verify inbound webhooks. Write-only — it is never returned.
+          required:
+            - workspaceID
+            - provider
+            - value
+            - vonageAPIKey
+            - vonageAPISecret
+            - vonageSignatureSecret
+          additionalProperties: false
+        - type: object
+          properties:
+            name:
+              default: ""
+              description: The display name of the number within the workspace. Callers never see it. Defaults to empty.
+              type: string
+            workspaceID:
+              type: string
+              description: The ID of the workspace to add the number to.
+            provider:
+              type: string
+              enum:
+                - telnyx
+              description: Connect a number held in your own Telnyx account.
+              x-enumNames:
+                - TELNYX
+            value:
+              type: string
+              pattern: ^\+\d+$
+              description: 'The number you already hold, in E.164: a leading `+`, country code, then digits (e.g. `+14155552671`).'
+            telnyxAPIKey:
+              type: string
+              minLength: 1
+              description: The API key of the Telnyx account holding the number. Write-only — it is never returned.
+            telnyxPublicKey:
+              type: string
+              minLength: 1
+              description: The Telnyx public key, used to verify inbound webhooks. Base64 Ed25519, 32 bytes decoded.
+          required:
+            - workspaceID
+            - provider
+            - value
+            - telnyxAPIKey
+            - telnyxPublicKey
+          additionalProperties: false
+    StablePhoneNumberUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The display name of the number within the workspace. Callers never see it.
+      required:
+        - name
+      additionalProperties: false
+    StablePhoneNumberAssignRequest:
+      type: object
+      properties:
+        target:
+          type: string
+          enum:
+            - sms
+            - voice
+          description: 'Which side of the number to point at the project: `voice` for incoming calls, `sms` for incoming SMS. The other side is left as it was.'
+          x-enumNames:
+            - SMS
+            - VOICE
+        version:
+          description: 'Which version of the environment answers: `published`, the one serving live traffic, or `draft`, the working copy. Requires `environmentAlias`. Defaults to `published`.'
+          type: string
+          enum:
+            - draft
+            - published
+          x-enumNames:
+            - DRAFT
+            - PUBLISHED
+        projectID:
+          type: string
+          description: The ID of the project the number should reach.
+        environmentAlias:
+          description: The alias of the environment that should answer (e.g. `main`). Omit it to assign the number to the project without pinning an environment, which also clears a pin a previous assign set.
+          type: string
+          minLength: 1
+      required:
+        - target
+        - projectID
+      additionalProperties: false
+    StablePhoneNumberUnassignRequest:
+      type: object
+      properties:
+        target:
+          description: 'Which side of the number to clear: `voice` or `sms`. Omit it to clear both. Clearing a side that is not assigned is refused.'
+          type: string
+          enum:
+            - sms
+            - voice
+          x-enumNames:
+            - SMS
+            - VOICE
       additionalProperties: false
     StablePlaybookReadV2:
       type: object
