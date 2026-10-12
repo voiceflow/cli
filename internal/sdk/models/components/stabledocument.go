@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
+	"time"
 )
 
 type StableDocumentTypeSitemap string
@@ -66,6 +67,7 @@ func (s *StableDocumentFailure) GetAt() string {
 
 type StableDocumentSync struct {
 	SyncedAt     string                                                   `json:"syncedAt"`
+	StartedAt    optionalnullable.OptionalNullable[time.Time]             `json:"startedAt,omitzero"`
 	AddedCount   float64                                                  `json:"addedCount"`
 	RemovedCount float64                                                  `json:"removedCount"`
 	Failure      optionalnullable.OptionalNullable[StableDocumentFailure] `json:"failure,omitzero"`
@@ -87,6 +89,13 @@ func (s *StableDocumentSync) GetSyncedAt() string {
 		return ""
 	}
 	return s.SyncedAt
+}
+
+func (s *StableDocumentSync) GetStartedAt() optionalnullable.OptionalNullable[time.Time] {
+	if s == nil {
+		return nil
+	}
+	return s.StartedAt
 }
 
 func (s *StableDocumentSync) GetAddedCount() float64 {
