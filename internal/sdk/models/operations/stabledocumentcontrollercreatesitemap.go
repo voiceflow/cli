@@ -591,6 +591,122 @@ func (u StableDocumentControllerCreateSitemapLlmPrependContextUnion) MarshalJSON
 	return nil, errors.New("could not marshal union type StableDocumentControllerCreateSitemapLlmPrependContextUnion: all fields are null")
 }
 
+type StableDocumentControllerCreateSitemapSingleChunkEnum string
+
+const (
+	StableDocumentControllerCreateSitemapSingleChunkEnumTrue  StableDocumentControllerCreateSitemapSingleChunkEnum = "true"
+	StableDocumentControllerCreateSitemapSingleChunkEnumFalse StableDocumentControllerCreateSitemapSingleChunkEnum = "false"
+)
+
+func (e StableDocumentControllerCreateSitemapSingleChunkEnum) ToPointer() *StableDocumentControllerCreateSitemapSingleChunkEnum {
+	return &e
+}
+func (e *StableDocumentControllerCreateSitemapSingleChunkEnum) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "true":
+		fallthrough
+	case "false":
+		*e = StableDocumentControllerCreateSitemapSingleChunkEnum(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableDocumentControllerCreateSitemapSingleChunkEnum: %v", v)
+	}
+}
+
+type StableDocumentControllerCreateSitemapSingleChunkUnionType string
+
+const (
+	StableDocumentControllerCreateSitemapSingleChunkUnionTypeBoolean                                              StableDocumentControllerCreateSitemapSingleChunkUnionType = "boolean"
+	StableDocumentControllerCreateSitemapSingleChunkUnionTypeStableDocumentControllerCreateSitemapSingleChunkEnum StableDocumentControllerCreateSitemapSingleChunkUnionType = "StableDocumentController_createSitemap_singleChunk_enum"
+)
+
+// StableDocumentControllerCreateSitemapSingleChunkUnion - When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+type StableDocumentControllerCreateSitemapSingleChunkUnion struct {
+	Boolean                                              *bool                                                 `queryParam:"inline" union:"member"`
+	StableDocumentControllerCreateSitemapSingleChunkEnum *StableDocumentControllerCreateSitemapSingleChunkEnum `queryParam:"inline" union:"member"`
+
+	Type StableDocumentControllerCreateSitemapSingleChunkUnionType
+}
+
+func CreateStableDocumentControllerCreateSitemapSingleChunkUnionBoolean(boolean bool) StableDocumentControllerCreateSitemapSingleChunkUnion {
+	typ := StableDocumentControllerCreateSitemapSingleChunkUnionTypeBoolean
+
+	return StableDocumentControllerCreateSitemapSingleChunkUnion{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateStableDocumentControllerCreateSitemapSingleChunkUnionStableDocumentControllerCreateSitemapSingleChunkEnum(stableDocumentControllerCreateSitemapSingleChunkEnum StableDocumentControllerCreateSitemapSingleChunkEnum) StableDocumentControllerCreateSitemapSingleChunkUnion {
+	typ := StableDocumentControllerCreateSitemapSingleChunkUnionTypeStableDocumentControllerCreateSitemapSingleChunkEnum
+
+	return StableDocumentControllerCreateSitemapSingleChunkUnion{
+		StableDocumentControllerCreateSitemapSingleChunkEnum: &stableDocumentControllerCreateSitemapSingleChunkEnum,
+		Type: typ,
+	}
+}
+
+func (u *StableDocumentControllerCreateSitemapSingleChunkUnion) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableDocumentControllerCreateSitemapSingleChunkUnionTypeBoolean,
+			Value: &boolean,
+		})
+	}
+
+	var stableDocumentControllerCreateSitemapSingleChunkEnum StableDocumentControllerCreateSitemapSingleChunkEnum = StableDocumentControllerCreateSitemapSingleChunkEnum("")
+	if err := utils.UnmarshalJSON(data, &stableDocumentControllerCreateSitemapSingleChunkEnum, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableDocumentControllerCreateSitemapSingleChunkUnionTypeStableDocumentControllerCreateSitemapSingleChunkEnum,
+			Value: &stableDocumentControllerCreateSitemapSingleChunkEnum,
+		})
+	}
+
+	if len(candidates) == 0 {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableDocumentControllerCreateSitemapSingleChunkUnion", string(data))
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableDocumentControllerCreateSitemapSingleChunkUnion", string(data))
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StableDocumentControllerCreateSitemapSingleChunkUnionType)
+	switch best.Type {
+	case StableDocumentControllerCreateSitemapSingleChunkUnionTypeBoolean:
+		u.Boolean = best.Value.(*bool)
+		return nil
+	case StableDocumentControllerCreateSitemapSingleChunkUnionTypeStableDocumentControllerCreateSitemapSingleChunkEnum:
+		u.StableDocumentControllerCreateSitemapSingleChunkEnum = best.Value.(*StableDocumentControllerCreateSitemapSingleChunkEnum)
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableDocumentControllerCreateSitemapSingleChunkUnion", string(data))
+}
+
+func (u StableDocumentControllerCreateSitemapSingleChunkUnion) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.StableDocumentControllerCreateSitemapSingleChunkEnum != nil {
+		return utils.MarshalJSON(u.StableDocumentControllerCreateSitemapSingleChunkEnum, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type StableDocumentControllerCreateSitemapSingleChunkUnion: all fields are null")
+}
+
 type StableDocumentControllerCreateSitemapRequest struct {
 	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
 	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
@@ -604,7 +720,9 @@ type StableDocumentControllerCreateSitemapRequest struct {
 	LlmContentSummarization *StableDocumentControllerCreateSitemapLlmContentSummarizationUnion `queryParam:"style=form,explode=true,name=llmContentSummarization"`
 	// When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 	LlmPrependContext *StableDocumentControllerCreateSitemapLlmPrependContextUnion `queryParam:"style=form,explode=true,name=llmPrependContext"`
-	Body              components.StableDocumentCreateSitemapRequest                `request:"mediaType=application/json"`
+	// When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+	SingleChunk *StableDocumentControllerCreateSitemapSingleChunkUnion `queryParam:"style=form,explode=true,name=singleChunk"`
+	Body        components.StableDocumentCreateSitemapRequest          `request:"mediaType=application/json"`
 }
 
 func (s *StableDocumentControllerCreateSitemapRequest) GetProjectID() string {
@@ -654,6 +772,13 @@ func (s *StableDocumentControllerCreateSitemapRequest) GetLlmPrependContext() *S
 		return nil
 	}
 	return s.LlmPrependContext
+}
+
+func (s *StableDocumentControllerCreateSitemapRequest) GetSingleChunk() *StableDocumentControllerCreateSitemapSingleChunkUnion {
+	if s == nil {
+		return nil
+	}
+	return s.SingleChunk
 }
 
 func (s *StableDocumentControllerCreateSitemapRequest) GetBody() components.StableDocumentCreateSitemapRequest {
