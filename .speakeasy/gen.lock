@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 5708d0028d45f5c0caf46b654f5d66a5
+  docChecksum: fa004367e664d1f97f98c264df244919
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.278
-  configChecksum: 0f03f3a6478dc85b0669b72eea7c7353
+  releaseVersion: 0.2.279
+  configChecksum: 7873f24914ea9f79d9e725a09ccfcce0
 persistentEdits:
-  generation_id: 8d78640a-7b05-4135-a28e-5d8e02ef8edd
-  pristine_commit_hash: b9a9db39c356f2da52a0cd3a1a3990fd8400294e
-  pristine_tree_hash: 8145820f180ad55d2d143780df9525dc7a5419e2
+  generation_id: 15af0b88-3638-48ba-b62d-193ecb1cafdf
+  pristine_commit_hash: c60b3e8b1aa4db60c4d58b71896344cab82f86d7
+  pristine_tree_hash: 815891d8da836195c742101c63d97c4d5a2c2dfc
 features:
   cli:
     additionalProperties: 0.0.1
@@ -902,8 +902,8 @@ trackedFiles:
     pristine_git_object: 393410b6f322a4cf1f309337121df7fc578c3bc7
   internal/cli/tool/update.go:
     id: 3e77bb8295fb
-    last_write_checksum: sha1:16957cfc3fc6ef33b9fc8288f58dcece0faeae93
-    pristine_git_object: 7c81057f4d14eccc430775e93039c05597f676bc
+    last_write_checksum: sha1:1eee69557bfb31e72e7f18c002cc57acd667faff
+    pristine_git_object: aac6caad17e3d5bf593bee4908050362c4b7ddb5
   internal/cli/transcript/files.go:
     id: a5a0bf43a71c
     last_write_checksum: sha1:3397a7e8dc2562b283f5c248ec8bab43a2e03161
@@ -974,8 +974,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:fd5ad8f77f4905a0ea4e2853450fed1a6c01b94f
-    pristine_git_object: e501416b70a63e6a9fcfce6e2e4c52430b87b73f
+    last_write_checksum: sha1:cd66481183e1b8619348415809b572daf9ed350c
+    pristine_git_object: c7268f49de6a0f9591ffbdfe1c2cb6fe8711a0d6
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -2806,8 +2806,8 @@ trackedFiles:
     pristine_git_object: 11c1ae55b45814025c38b93e7cbb2713b7137546
   internal/sdk/models/components/stabletoolcreaterequestv2.go:
     id: aa0c656673e2
-    last_write_checksum: sha1:ded9ccd43976a7ac4bc2c6a9384b784bafbd88c7
-    pristine_git_object: bf1c4575ae39b21f4870e161983403b79e0d24a6
+    last_write_checksum: sha1:2753774f4c9873cf47bdd9754c2aed20a2e10f68
+    pristine_git_object: 7f5d215fd7eebd9b5d6cee918efa08d24a8d4e19
   internal/sdk/models/components/stabletoollistresponsev2.go:
     id: fba211413772
     last_write_checksum: sha1:9089b1108767a9e8b9292d461c147d6e3938e36e
@@ -2838,12 +2838,12 @@ trackedFiles:
     pristine_git_object: 87cfd021a025cfdd36532344b76091bb307ad3b7
   internal/sdk/models/components/stabletoolupdaterequestv2.go:
     id: 3d424b39c30b
-    last_write_checksum: sha1:300edb5446aefc56a56d7b9915f56bf98b7264eb
-    pristine_git_object: 277c373c4e3e5a3b241127f2b934d93a6ec90d6a
+    last_write_checksum: sha1:dc90c2f2fc7b45e21583d9eb50bb3abcdd9f5beb
+    pristine_git_object: 11dbde4905c7c927c8c90e3e4d30cda1bd24bc9b
   internal/sdk/models/components/stabletoolv2.go:
     id: 0969a40ac4f6
-    last_write_checksum: sha1:8eef1541e5b30fb0b9dd36e781b805eca0178eb2
-    pristine_git_object: ea4f911a1a15aac0623bb149b1b74a93d99d3c49
+    last_write_checksum: sha1:0f1e62cc7b3691e41a59fa494cb6dfbcf1961f7e
+    pristine_git_object: 54f16fc791bd83db2b63c53900ad58410f26b184
   internal/sdk/models/components/stabletranscript.go:
     id: 63552df2c9a8
     last_write_checksum: sha1:f53462557434a6064564284271c567a7a02c71c8
@@ -4722,8 +4722,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:61d79614585ca2aeffc76a86bd060ffb1ae4fdac
-    pristine_git_object: 95aecfb4ec6efd4784864c9291bd8470eb06739c
+    last_write_checksum: sha1:0de3b392440c7d9201c63a9037a81efa852df6c0
+    pristine_git_object: 448d843783eddb7a1711cd38d065f7783fbaa169
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -6783,10 +6783,10 @@ examples:
           projectID: "<id>"
           environmentAlias: "<value>"
       requestBody:
-        application/json: {"target": {}, "interruptible": false, "asyncExecution": false, "type": "api", "apiToolID": "<id>"}
+        application/json: {"target": {}, "asyncExecution": false, "type": "api", "apiToolID": "<id>"}
       responses:
         "201":
-          application/json: {"tool": {"id": "<id>", "createdAt": "2024-10-28T15:26:05.765Z", "updatedAt": "2026-04-26T08:15:12.399Z", "messages": {"delayMessageID": null, "failureMessageID": "<id>", "executionMessageID": "<id>", "completionMessageID": "<id>", "delayMessageSeconds": 922.98}, "description": "yak yuck midwife", "captureInputVariables": {}, "interruptible": true, "type": "mcp", "mcpToolID": "<id>", "inputVariables": {}, "captureResponse": {}}}
+          application/json: {"tool": {"id": "<id>", "createdAt": "2024-10-28T15:26:05.765Z", "updatedAt": "2026-04-26T08:15:12.399Z", "messages": {"delayMessageID": null, "failureMessageID": "<id>", "executionMessageID": "<id>", "completionMessageID": "<id>", "delayMessageSeconds": 922.98}, "description": "yak yuck midwife", "captureInputVariables": {}, "type": "mcp", "mcpToolID": "<id>", "inputVariables": {}, "captureResponse": {}}}
   StableToolController_getV2:
     speakeasy-default-stable-tool-controller-get-v2:
       parameters:
@@ -6798,7 +6798,7 @@ examples:
           type: "integration"
       responses:
         "200":
-          application/json: {"tool": {"id": "<id>", "createdAt": "2026-09-19T13:12:27.699Z", "updatedAt": "2025-03-01T13:57:17.911Z", "messages": {"delayMessageID": "<id>", "failureMessageID": "<id>", "executionMessageID": "<id>", "completionMessageID": "<id>", "delayMessageSeconds": 8921.37}, "description": "splendid loyalty ack scarper tedious lone gasp loyalty", "captureInputVariables": {"key": {"variableOrEntityID": "<id>"}}, "interruptible": false, "type": "function", "functionID": "<id>", "asyncExecution": true, "inputVariables": {"key": {"description": null, "defaultValue": null, "functionInputVariableID": "<id>", "required": false}}, "captureResponse": {"key": {"variableOrEntityID": "<id>", "functionOutputVariableID": "<id>"}}}}
+          application/json: {"tool": {"id": "<id>", "createdAt": "2026-09-19T13:12:27.699Z", "updatedAt": "2025-03-01T13:57:17.911Z", "messages": {"delayMessageID": "<id>", "failureMessageID": "<id>", "executionMessageID": "<id>", "completionMessageID": "<id>", "delayMessageSeconds": 8921.37}, "description": "splendid loyalty ack scarper tedious lone gasp loyalty", "captureInputVariables": {"key": {"variableOrEntityID": "<id>"}}, "type": "function", "functionID": "<id>", "asyncExecution": true, "inputVariables": {"key": {"description": null, "defaultValue": null, "functionInputVariableID": "<id>", "required": false}}, "captureResponse": {"key": {"variableOrEntityID": "<id>", "functionOutputVariableID": "<id>"}}}}
   StableToolController_updateV2:
     speakeasy-default-stable-tool-controller-update-v2:
       parameters:

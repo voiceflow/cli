@@ -214,9 +214,7 @@ type StableToolCreateRequestV2Integration struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages4] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
-	Interruptible  *bool                                               `default:"false" json:"interruptible"`
-	InputVariables map[string]StableToolCreateRequestV2InputVariables4 `json:"inputVariables,omitzero"`
+	InputVariables        map[string]StableToolCreateRequestV2InputVariables4                         `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataIntegrationCaptureResponse `json:"captureResponse,omitzero"`
 	// Discriminator indicating this tool calls a connected first-party integration.
@@ -262,13 +260,6 @@ func (s *StableToolCreateRequestV2Integration) GetCaptureInputVariables() option
 		return nil
 	}
 	return s.CaptureInputVariables
-}
-
-func (s *StableToolCreateRequestV2Integration) GetInterruptible() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Interruptible
 }
 
 func (s *StableToolCreateRequestV2Integration) GetInputVariables() map[string]StableToolCreateRequestV2InputVariables4 {
@@ -505,9 +496,7 @@ type StableToolCreateRequestV2Mcp struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages3] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
-	Interruptible  *bool                                               `default:"false" json:"interruptible"`
-	InputVariables map[string]StableToolCreateRequestV2InputVariables3 `json:"inputVariables,omitzero"`
+	InputVariables        map[string]StableToolCreateRequestV2InputVariables3                         `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataMcpIntegrationCaptureResponse `json:"captureResponse,omitzero"`
 	// Discriminator indicating this tool calls a tool from an MCP server.
@@ -553,13 +542,6 @@ func (s *StableToolCreateRequestV2Mcp) GetCaptureInputVariables() optionalnullab
 		return nil
 	}
 	return s.CaptureInputVariables
-}
-
-func (s *StableToolCreateRequestV2Mcp) GetInterruptible() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Interruptible
 }
 
 func (s *StableToolCreateRequestV2Mcp) GetInputVariables() map[string]StableToolCreateRequestV2InputVariables3 {
@@ -796,8 +778,6 @@ type StableToolCreateRequestV2Function struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages2] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
-	Interruptible *bool `default:"false" json:"interruptible"`
 	// When enabled, the tool runs in the background without blocking the conversation.
 	AsyncExecution *bool                                               `default:"false" json:"asyncExecution"`
 	InputVariables map[string]StableToolCreateRequestV2InputVariables2 `json:"inputVariables,omitzero"`
@@ -846,13 +826,6 @@ func (s *StableToolCreateRequestV2Function) GetCaptureInputVariables() optionaln
 		return nil
 	}
 	return s.CaptureInputVariables
-}
-
-func (s *StableToolCreateRequestV2Function) GetInterruptible() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Interruptible
 }
 
 func (s *StableToolCreateRequestV2Function) GetAsyncExecution() *bool {
@@ -1096,8 +1069,6 @@ type StableToolCreateRequestV2API struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages1] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	// When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
-	Interruptible *bool `default:"false" json:"interruptible"`
 	// When enabled, the tool runs in the background without blocking the conversation.
 	AsyncExecution *bool                                               `default:"false" json:"asyncExecution"`
 	InputVariables map[string]StableToolCreateRequestV2InputVariables1 `json:"inputVariables,omitzero"`
@@ -1146,13 +1117,6 @@ func (s *StableToolCreateRequestV2API) GetCaptureInputVariables() optionalnullab
 		return nil
 	}
 	return s.CaptureInputVariables
-}
-
-func (s *StableToolCreateRequestV2API) GetInterruptible() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Interruptible
 }
 
 func (s *StableToolCreateRequestV2API) GetAsyncExecution() *bool {

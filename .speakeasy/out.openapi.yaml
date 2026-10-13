@@ -1801,8 +1801,8 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: update
           operationDescription: |-
-            WHAT — Patch an existing tool attachment — update inputVariables, captureResponse, description override, asyncExecution, or interruptible. Partial PATCH; omitted fields are unchanged.
-            USE WHEN — Changing how a tool's inputs are resolved (switch from LLM-filled to variable-sourced), adding or correcting captureResponse mappings, toggling asyncExecution on a function tool, or toggling interruptible to let the user interrupt a running tool by speaking or sending a message.
+            WHAT — Patch an existing tool attachment — update inputVariables, captureResponse, description override, or asyncExecution. Partial PATCH; omitted fields are unchanged.
+            USE WHEN — Changing how a tool's inputs are resolved (switch from LLM-filled to variable-sourced), adding or correcting captureResponse mappings, or toggling asyncExecution on a function tool.
             BEFORE — voiceflow_tool.get to read current config; use its values as base to avoid accidentally clearing fields.
             AFTER — voiceflow_environment.compile + voiceflow_conversation to confirm the new wiring behaves correctly.
             DO NOT — Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples; secrets are not available there and {name} would be stored as literal text and reported back. Secrets belong in a tool input's defaultValue. Rely on a credential default without checking unresolvedReferences: a mistyped secret name is kept as literal text AND makes the input model-filled, because the injection is inferred from the default actually holding a secret.
@@ -28755,9 +28755,6 @@ components:
         asyncExecution:
           default: false
           type: boolean
-        interruptible:
-          default: false
-          type: boolean
         variables:
           type: object
           additionalProperties:
@@ -28831,9 +28828,6 @@ components:
         asyncExecution:
           default: false
           type: boolean
-        interruptible:
-          default: false
-          type: boolean
         variables:
           type: object
           additionalProperties:
@@ -28905,9 +28899,6 @@ components:
           type: string
         integrationToolID:
           type: string
-        interruptible:
-          default: false
-          type: boolean
         extendedInputVariables:
           nullable: true
           type: object
@@ -28988,9 +28979,6 @@ components:
         description:
           nullable: true
           type: string
-        interruptible:
-          default: false
-          type: boolean
         variables:
           type: object
           additionalProperties:
@@ -29470,9 +29458,6 @@ components:
         asyncExecution:
           default: false
           type: boolean
-        interruptible:
-          default: false
-          type: boolean
         captureInputVariables:
           default: null
           nullable: true
@@ -29602,9 +29587,6 @@ components:
         asyncExecution:
           default: false
           type: boolean
-        interruptible:
-          default: false
-          type: boolean
         captureInputVariables:
           default: null
           nullable: true
@@ -29687,9 +29669,6 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/StableExportAgentToolMessages'
-        interruptible:
-          default: false
-          type: boolean
         captureInputVariables:
           default: null
           nullable: true
@@ -29781,9 +29760,6 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/StableExportAgentToolMessages'
-        interruptible:
-          default: false
-          type: boolean
         captureInputVariables:
           nullable: true
           type: object
@@ -35650,9 +35626,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             type:
               type: string
               enum:
@@ -35704,7 +35677,6 @@ components:
             - messages
             - description
             - captureInputVariables
-            - interruptible
             - type
             - apiToolID
             - asyncExecution
@@ -35736,9 +35708,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             type:
               type: string
               enum:
@@ -35790,7 +35759,6 @@ components:
             - messages
             - description
             - captureInputVariables
-            - interruptible
             - type
             - functionID
             - asyncExecution
@@ -35822,9 +35790,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             type:
               type: string
               enum:
@@ -35873,7 +35838,6 @@ components:
             - messages
             - description
             - captureInputVariables
-            - interruptible
             - type
             - mcpToolID
             - inputVariables
@@ -35904,9 +35868,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             type:
               type: string
               enum:
@@ -35955,7 +35916,6 @@ components:
             - messages
             - description
             - captureInputVariables
-            - interruptible
             - type
             - integrationToolID
             - inputVariables
@@ -36013,10 +35973,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              default: false
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             asyncExecution:
               default: false
               description: When enabled, the tool runs in the background without blocking the conversation.
@@ -36087,10 +36043,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              default: false
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             asyncExecution:
               default: false
               description: When enabled, the tool runs in the background without blocking the conversation.
@@ -36161,10 +36113,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              default: false
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             inputVariables:
               default: {}
               type: object
@@ -36231,10 +36179,6 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            interruptible:
-              default: false
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             inputVariables:
               default: {}
               type: object
@@ -36329,10 +36273,6 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  interruptible:
-                    default: false
-                    type: boolean
-                    description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
                   asyncExecution:
                     default: false
                     description: When enabled, the tool runs in the background without blocking the conversation.
@@ -36410,10 +36350,6 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  interruptible:
-                    default: false
-                    type: boolean
-                    description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
                   asyncExecution:
                     default: false
                     description: When enabled, the tool runs in the background without blocking the conversation.
@@ -36491,10 +36427,6 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  interruptible:
-                    default: false
-                    type: boolean
-                    description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
                   inputVariables:
                     default: {}
                     type: object
@@ -36568,10 +36500,6 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-                  interruptible:
-                    default: false
-                    type: boolean
-                    description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
                   inputVariables:
                     default: {}
                     type: object
@@ -36628,9 +36556,6 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             captureInputVariables:
               nullable: true
               description: A map of tool input names to the variables or entities whose values are captured into them.
@@ -36689,9 +36614,6 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             captureInputVariables:
               nullable: true
               description: A map of tool input names to the variables or entities whose values are captured into them.
@@ -36750,9 +36672,6 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             captureInputVariables:
               nullable: true
               description: A map of tool input names to the variables or entities whose values are captured into them.
@@ -36808,9 +36727,6 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            interruptible:
-              type: boolean
-              description: When enabled, the user can interrupt the tool while it runs, by speaking or sending a message. The tool result is discarded, and anything the tool already did is not undone. Always false on API and function tools with asyncExecution enabled, which are never interrupted.
             captureInputVariables:
               nullable: true
               description: A map of tool input names to the variables or entities whose values are captured into them.
