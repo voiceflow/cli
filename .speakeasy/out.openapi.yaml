@@ -6736,6 +6736,20 @@ paths:
                 x-enumNames:
                   - "TRUE"
                   - "FALSE"
+        - name: singleChunk
+          required: false
+          in: query
+          schema:
+            description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
       requestBody:
         required: true
         content:
@@ -6871,6 +6885,20 @@ paths:
           in: query
           schema:
             description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: singleChunk
+          required: false
+          in: query
+          schema:
+            description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
             anyOf:
               - type: boolean
               - type: string
@@ -7043,6 +7071,20 @@ paths:
                 x-enumNames:
                   - "TRUE"
                   - "FALSE"
+        - name: singleChunk
+          required: false
+          in: query
+          schema:
+            description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
       requestBody:
         required: true
         content:
@@ -7206,6 +7248,20 @@ paths:
           in: query
           schema:
             description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: singleChunk
+          required: false
+          in: query
+          schema:
+            description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
             anyOf:
               - type: boolean
               - type: string
@@ -14419,6 +14475,8 @@ components:
         llmContentSummarization:
           type: boolean
         llmPrependContext:
+          type: boolean
+        singleChunk:
           type: boolean
     DocumentMetadataEntry:
       type: object
@@ -27240,6 +27298,17 @@ components:
                 - "FALSE"
         llmPrependContext:
           description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
+        singleChunk:
+          description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
           anyOf:
             - type: boolean
             - type: string

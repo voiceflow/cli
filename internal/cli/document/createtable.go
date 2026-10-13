@@ -25,10 +25,11 @@ var createTableCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "llm-generated-q", FieldPath: "LlmGeneratedQ", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, Optional: true, TypeDescription: "JSON value (one of: boolean | StableDocumentController_createTable_llmGeneratedQ_enum)"}},
 	{FlagName: "llm-content-summarization", FieldPath: "LlmContentSummarization", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, Optional: true, TypeDescription: "JSON value (one of: boolean | StableDocumentController_createTable_llmContentSummarization_enum)"}},
 	{FlagName: "llm-prepend-context", FieldPath: "LlmPrependContext", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, Optional: true, TypeDescription: "JSON value (one of: boolean | StableDocumentController_createTable_llmPrependContext_enum)"}},
+	{FlagName: "single-chunk", FieldPath: "SingleChunk", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, Optional: true, TypeDescription: "JSON value (one of: boolean | StableDocumentController_createTable_singleChunk_enum)"}},
 	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindString, Optional: true, Description: "An optional source URL to associate with the table document."},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "items", Shorthand: "i", FieldPath: "Body.Items", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"items"`, Description: "The table rows to ingest; each row is a flat object and becomes its own chunk. [required]"},
-	{FlagName: "schema", Shorthand: "s", FieldPath: "Body.Schema", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"schema"`, Description: "Declares which top-level keys of each row are full-text searchable versus row-level metadata. [required]"},
+	{FlagName: "schema", FieldPath: "Body.Schema", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"schema"`, Description: "Declares which top-level keys of each row are full-text searchable versus row-level metadata. [required]"},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
 }
 

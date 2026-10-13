@@ -796,6 +796,122 @@ func (u StableDocumentControllerCreateTableLlmPrependContextUnion) MarshalJSON()
 	return nil, errors.New("could not marshal union type StableDocumentControllerCreateTableLlmPrependContextUnion: all fields are null")
 }
 
+type StableDocumentControllerCreateTableSingleChunkEnum string
+
+const (
+	StableDocumentControllerCreateTableSingleChunkEnumTrue  StableDocumentControllerCreateTableSingleChunkEnum = "true"
+	StableDocumentControllerCreateTableSingleChunkEnumFalse StableDocumentControllerCreateTableSingleChunkEnum = "false"
+)
+
+func (e StableDocumentControllerCreateTableSingleChunkEnum) ToPointer() *StableDocumentControllerCreateTableSingleChunkEnum {
+	return &e
+}
+func (e *StableDocumentControllerCreateTableSingleChunkEnum) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "true":
+		fallthrough
+	case "false":
+		*e = StableDocumentControllerCreateTableSingleChunkEnum(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableDocumentControllerCreateTableSingleChunkEnum: %v", v)
+	}
+}
+
+type StableDocumentControllerCreateTableSingleChunkUnionType string
+
+const (
+	StableDocumentControllerCreateTableSingleChunkUnionTypeBoolean                                            StableDocumentControllerCreateTableSingleChunkUnionType = "boolean"
+	StableDocumentControllerCreateTableSingleChunkUnionTypeStableDocumentControllerCreateTableSingleChunkEnum StableDocumentControllerCreateTableSingleChunkUnionType = "StableDocumentController_createTable_singleChunk_enum"
+)
+
+// StableDocumentControllerCreateTableSingleChunkUnion - When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+type StableDocumentControllerCreateTableSingleChunkUnion struct {
+	Boolean                                            *bool                                               `queryParam:"inline" union:"member"`
+	StableDocumentControllerCreateTableSingleChunkEnum *StableDocumentControllerCreateTableSingleChunkEnum `queryParam:"inline" union:"member"`
+
+	Type StableDocumentControllerCreateTableSingleChunkUnionType
+}
+
+func CreateStableDocumentControllerCreateTableSingleChunkUnionBoolean(boolean bool) StableDocumentControllerCreateTableSingleChunkUnion {
+	typ := StableDocumentControllerCreateTableSingleChunkUnionTypeBoolean
+
+	return StableDocumentControllerCreateTableSingleChunkUnion{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateStableDocumentControllerCreateTableSingleChunkUnionStableDocumentControllerCreateTableSingleChunkEnum(stableDocumentControllerCreateTableSingleChunkEnum StableDocumentControllerCreateTableSingleChunkEnum) StableDocumentControllerCreateTableSingleChunkUnion {
+	typ := StableDocumentControllerCreateTableSingleChunkUnionTypeStableDocumentControllerCreateTableSingleChunkEnum
+
+	return StableDocumentControllerCreateTableSingleChunkUnion{
+		StableDocumentControllerCreateTableSingleChunkEnum: &stableDocumentControllerCreateTableSingleChunkEnum,
+		Type: typ,
+	}
+}
+
+func (u *StableDocumentControllerCreateTableSingleChunkUnion) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableDocumentControllerCreateTableSingleChunkUnionTypeBoolean,
+			Value: &boolean,
+		})
+	}
+
+	var stableDocumentControllerCreateTableSingleChunkEnum StableDocumentControllerCreateTableSingleChunkEnum = StableDocumentControllerCreateTableSingleChunkEnum("")
+	if err := utils.UnmarshalJSON(data, &stableDocumentControllerCreateTableSingleChunkEnum, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableDocumentControllerCreateTableSingleChunkUnionTypeStableDocumentControllerCreateTableSingleChunkEnum,
+			Value: &stableDocumentControllerCreateTableSingleChunkEnum,
+		})
+	}
+
+	if len(candidates) == 0 {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableDocumentControllerCreateTableSingleChunkUnion", string(data))
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableDocumentControllerCreateTableSingleChunkUnion", string(data))
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StableDocumentControllerCreateTableSingleChunkUnionType)
+	switch best.Type {
+	case StableDocumentControllerCreateTableSingleChunkUnionTypeBoolean:
+		u.Boolean = best.Value.(*bool)
+		return nil
+	case StableDocumentControllerCreateTableSingleChunkUnionTypeStableDocumentControllerCreateTableSingleChunkEnum:
+		u.StableDocumentControllerCreateTableSingleChunkEnum = best.Value.(*StableDocumentControllerCreateTableSingleChunkEnum)
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableDocumentControllerCreateTableSingleChunkUnion", string(data))
+}
+
+func (u StableDocumentControllerCreateTableSingleChunkUnion) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.StableDocumentControllerCreateTableSingleChunkEnum != nil {
+		return utils.MarshalJSON(u.StableDocumentControllerCreateTableSingleChunkEnum, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type StableDocumentControllerCreateTableSingleChunkUnion: all fields are null")
+}
+
 type StableDocumentControllerCreateTableRequest struct {
 	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
 	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
@@ -812,7 +928,9 @@ type StableDocumentControllerCreateTableRequest struct {
 	LlmContentSummarization *StableDocumentControllerCreateTableLlmContentSummarizationUnion `queryParam:"style=form,explode=true,name=llmContentSummarization"`
 	// When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 	LlmPrependContext *StableDocumentControllerCreateTableLlmPrependContextUnion `queryParam:"style=form,explode=true,name=llmPrependContext"`
-	Body              components.StableDocumentCreateTableRequest                `request:"mediaType=application/json"`
+	// When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+	SingleChunk *StableDocumentControllerCreateTableSingleChunkUnion `queryParam:"style=form,explode=true,name=singleChunk"`
+	Body        components.StableDocumentCreateTableRequest          `request:"mediaType=application/json"`
 }
 
 func (s *StableDocumentControllerCreateTableRequest) GetProjectID() string {
@@ -876,6 +994,13 @@ func (s *StableDocumentControllerCreateTableRequest) GetLlmPrependContext() *Sta
 		return nil
 	}
 	return s.LlmPrependContext
+}
+
+func (s *StableDocumentControllerCreateTableRequest) GetSingleChunk() *StableDocumentControllerCreateTableSingleChunkUnion {
+	if s == nil {
+		return nil
+	}
+	return s.SingleChunk
 }
 
 func (s *StableDocumentControllerCreateTableRequest) GetBody() components.StableDocumentCreateTableRequest {

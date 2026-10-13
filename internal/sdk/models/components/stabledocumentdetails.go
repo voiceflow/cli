@@ -1758,6 +1758,144 @@ func (u StableDocumentDetailsLlmPrependContextUnion) MarshalJSON() ([]byte, erro
 	return nil, errors.New("could not marshal union type StableDocumentDetailsLlmPrependContextUnion: all fields are null")
 }
 
+type StableDocumentDetailsSingleChunkEnum string
+
+const (
+	StableDocumentDetailsSingleChunkEnumTrue  StableDocumentDetailsSingleChunkEnum = "true"
+	StableDocumentDetailsSingleChunkEnumFalse StableDocumentDetailsSingleChunkEnum = "false"
+)
+
+func (e StableDocumentDetailsSingleChunkEnum) ToPointer() *StableDocumentDetailsSingleChunkEnum {
+	return &e
+}
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *StableDocumentDetailsSingleChunkEnum) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "true", "false":
+			return true
+		}
+	}
+	return false
+}
+
+type StableDocumentDetailsSingleChunkUnionType string
+
+const (
+	StableDocumentDetailsSingleChunkUnionTypeBoolean                              StableDocumentDetailsSingleChunkUnionType = "boolean"
+	StableDocumentDetailsSingleChunkUnionTypeStableDocumentDetailsSingleChunkEnum StableDocumentDetailsSingleChunkUnionType = "StableDocumentDetails_singleChunk_enum"
+	StableDocumentDetailsSingleChunkUnionTypeUnknown                              StableDocumentDetailsSingleChunkUnionType = "Unknown"
+)
+
+// StableDocumentDetailsSingleChunkUnion - When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+type StableDocumentDetailsSingleChunkUnion struct {
+	Boolean                              *bool                                 `queryParam:"inline" union:"member"`
+	StableDocumentDetailsSingleChunkEnum *StableDocumentDetailsSingleChunkEnum `queryParam:"inline" union:"member"`
+	UnknownRaw                           json.RawMessage                       `json:"-" union:"unknown"`
+
+	Type StableDocumentDetailsSingleChunkUnionType
+}
+
+func CreateStableDocumentDetailsSingleChunkUnionBoolean(boolean bool) StableDocumentDetailsSingleChunkUnion {
+	typ := StableDocumentDetailsSingleChunkUnionTypeBoolean
+
+	return StableDocumentDetailsSingleChunkUnion{
+		Boolean: &boolean,
+		Type:    typ,
+	}
+}
+
+func CreateStableDocumentDetailsSingleChunkUnionStableDocumentDetailsSingleChunkEnum(stableDocumentDetailsSingleChunkEnum StableDocumentDetailsSingleChunkEnum) StableDocumentDetailsSingleChunkUnion {
+	typ := StableDocumentDetailsSingleChunkUnionTypeStableDocumentDetailsSingleChunkEnum
+
+	return StableDocumentDetailsSingleChunkUnion{
+		StableDocumentDetailsSingleChunkEnum: &stableDocumentDetailsSingleChunkEnum,
+		Type:                                 typ,
+	}
+}
+
+func CreateStableDocumentDetailsSingleChunkUnionUnknown(raw json.RawMessage) StableDocumentDetailsSingleChunkUnion {
+	return StableDocumentDetailsSingleChunkUnion{
+		UnknownRaw: raw,
+		Type:       StableDocumentDetailsSingleChunkUnionTypeUnknown,
+	}
+}
+
+func (u StableDocumentDetailsSingleChunkUnion) GetUnknownRaw() json.RawMessage {
+	return u.UnknownRaw
+}
+
+func (u StableDocumentDetailsSingleChunkUnion) IsUnknown() bool {
+	return u.Type == StableDocumentDetailsSingleChunkUnionTypeUnknown
+}
+
+func (u *StableDocumentDetailsSingleChunkUnion) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var boolean bool = false
+	if err := utils.UnmarshalJSON(data, &boolean, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableDocumentDetailsSingleChunkUnionTypeBoolean,
+			Value: &boolean,
+		})
+	}
+
+	var stableDocumentDetailsSingleChunkEnum StableDocumentDetailsSingleChunkEnum = StableDocumentDetailsSingleChunkEnum("")
+	if err := utils.UnmarshalJSON(data, &stableDocumentDetailsSingleChunkEnum, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  StableDocumentDetailsSingleChunkUnionTypeStableDocumentDetailsSingleChunkEnum,
+			Value: &stableDocumentDetailsSingleChunkEnum,
+		})
+	}
+
+	if len(candidates) == 0 {
+		u.UnknownRaw = json.RawMessage(data)
+		u.Type = StableDocumentDetailsSingleChunkUnionTypeUnknown
+		return nil
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		u.UnknownRaw = json.RawMessage(data)
+		u.Type = StableDocumentDetailsSingleChunkUnionTypeUnknown
+		return nil
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(StableDocumentDetailsSingleChunkUnionType)
+	switch best.Type {
+	case StableDocumentDetailsSingleChunkUnionTypeBoolean:
+		u.Boolean = best.Value.(*bool)
+		return nil
+	case StableDocumentDetailsSingleChunkUnionTypeStableDocumentDetailsSingleChunkEnum:
+		u.StableDocumentDetailsSingleChunkEnum = best.Value.(*StableDocumentDetailsSingleChunkEnum)
+		return nil
+	}
+
+	u.UnknownRaw = json.RawMessage(data)
+	u.Type = StableDocumentDetailsSingleChunkUnionTypeUnknown
+	return nil
+}
+
+func (u StableDocumentDetailsSingleChunkUnion) MarshalJSON() ([]byte, error) {
+	if u.Boolean != nil {
+		return utils.MarshalJSON(u.Boolean, "", true)
+	}
+
+	if u.StableDocumentDetailsSingleChunkEnum != nil {
+		return utils.MarshalJSON(u.StableDocumentDetailsSingleChunkEnum, "", true)
+	}
+
+	if u.UnknownRaw != nil {
+		return json.RawMessage(u.UnknownRaw), nil
+	}
+	return nil, errors.New("could not marshal union type StableDocumentDetailsSingleChunkUnion: all fields are null")
+}
+
 type StableDocumentDetailsSmartChunking struct {
 	// When enabled, HTML is automatically converted to markdown to generate better chunks.
 	MarkdownConversion *StableDocumentDetailsMarkdownConversionUnion `json:"markdownConversion,omitzero"`
@@ -1768,6 +1906,8 @@ type StableDocumentDetailsSmartChunking struct {
 	LlmContentSummarization *StableDocumentDetailsLlmContentSummarizationUnion `json:"llmContentSummarization,omitzero"`
 	// When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 	LlmPrependContext *StableDocumentDetailsLlmPrependContextUnion `json:"llmPrependContext,omitzero"`
+	// When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+	SingleChunk *StableDocumentDetailsSingleChunkUnion `json:"singleChunk,omitzero"`
 }
 
 func (s *StableDocumentDetailsSmartChunking) GetMarkdownConversion() *StableDocumentDetailsMarkdownConversionUnion {
@@ -1803,6 +1943,13 @@ func (s *StableDocumentDetailsSmartChunking) GetLlmPrependContext() *StableDocum
 		return nil
 	}
 	return s.LlmPrependContext
+}
+
+func (s *StableDocumentDetailsSmartChunking) GetSingleChunk() *StableDocumentDetailsSingleChunkUnion {
+	if s == nil {
+		return nil
+	}
+	return s.SingleChunk
 }
 
 type StableDocumentDetailsMetadatum struct {
