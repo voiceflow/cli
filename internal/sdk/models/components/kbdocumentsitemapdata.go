@@ -35,8 +35,9 @@ func (e *KBDocumentSitemapDataType) UnmarshalJSON(data []byte) error {
 }
 
 type KBDocumentSitemapDataFailure struct {
-	Message string `json:"message"`
-	At      string `json:"at"`
+	Message string                            `json:"message"`
+	At      string                            `json:"at"`
+	Code    *KBDocumentSitemapSyncFailureCode `json:"code,omitzero"`
 }
 
 func (k KBDocumentSitemapDataFailure) MarshalJSON() ([]byte, error) {
@@ -62,6 +63,13 @@ func (k *KBDocumentSitemapDataFailure) GetAt() string {
 		return ""
 	}
 	return k.At
+}
+
+func (k *KBDocumentSitemapDataFailure) GetCode() *KBDocumentSitemapSyncFailureCode {
+	if k == nil {
+		return nil
+	}
+	return k.Code
 }
 
 type KBDocumentSitemapDataSync struct {

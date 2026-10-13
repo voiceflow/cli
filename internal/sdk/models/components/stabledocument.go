@@ -36,8 +36,9 @@ func (e *StableDocumentTypeSitemap) UnmarshalJSON(data []byte) error {
 }
 
 type StableDocumentFailure struct {
-	Message string `json:"message"`
-	At      string `json:"at"`
+	Message string                            `json:"message"`
+	At      string                            `json:"at"`
+	Code    *KBDocumentSitemapSyncFailureCode `json:"code,omitzero"`
 }
 
 func (s StableDocumentFailure) MarshalJSON() ([]byte, error) {
@@ -63,6 +64,13 @@ func (s *StableDocumentFailure) GetAt() string {
 		return ""
 	}
 	return s.At
+}
+
+func (s *StableDocumentFailure) GetCode() *KBDocumentSitemapSyncFailureCode {
+	if s == nil {
+		return nil
+	}
+	return s.Code
 }
 
 type StableDocumentSync struct {

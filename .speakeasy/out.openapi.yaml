@@ -14456,6 +14456,9 @@ components:
               type: string
             at:
               type: string
+            code:
+              allOf:
+                - $ref: '#/components/schemas/KBDocumentSitemapSyncFailureCode'
           required:
             - message
             - at
@@ -14463,6 +14466,12 @@ components:
         - syncedAt
         - addedCount
         - removedCount
+    KBDocumentSitemapSyncFailureCode:
+      type: string
+      enum:
+        - documentLimit
+      x-enumNames:
+        - DOCUMENT_LIMIT
     KBDocumentChunkSmartChunking:
       type: object
       properties:
