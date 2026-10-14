@@ -24,6 +24,7 @@ var updateSettingsCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "temperature", Shorthand: "t", FieldPath: "Body.Temperature", Kind: flagutil.FlagKindFloat64, Optional: true, Description: "number value"},
 	{FlagName: "response-format", FieldPath: "Body.ResponseFormat", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 	{FlagName: "reasoning-effort", FieldPath: "Body.ReasoningEffort", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"off", "adaptive", "minimal", "low", "medium", "high"}, Description: "options: off, adaptive, minimal, low, medium, high"},
+	{FlagName: "service-tier", Shorthand: "s", FieldPath: "Body.ServiceTier", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"default", "flex", "priority"}, Description: "options: default, flex, priority"},
 	{FlagName: "use-structured-output", Shorthand: "u", FieldPath: "Body.UseStructuredOutput", Kind: flagutil.FlagKindBool, Optional: true, Description: "boolean flag"},
 }
 

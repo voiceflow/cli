@@ -135,12 +135,44 @@ func (e *StableEvaluationUpdateRequestReasoningEffort4) UnmarshalJSON(data []byt
 	}
 }
 
+// StableEvaluationUpdateRequestServiceTier4 - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StableEvaluationUpdateRequestServiceTier4 string
+
+const (
+	StableEvaluationUpdateRequestServiceTier4Default  StableEvaluationUpdateRequestServiceTier4 = "default"
+	StableEvaluationUpdateRequestServiceTier4Flex     StableEvaluationUpdateRequestServiceTier4 = "flex"
+	StableEvaluationUpdateRequestServiceTier4Priority StableEvaluationUpdateRequestServiceTier4 = "priority"
+)
+
+func (e StableEvaluationUpdateRequestServiceTier4) ToPointer() *StableEvaluationUpdateRequestServiceTier4 {
+	return &e
+}
+func (e *StableEvaluationUpdateRequestServiceTier4) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StableEvaluationUpdateRequestServiceTier4(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableEvaluationUpdateRequestServiceTier4: %v", v)
+	}
+}
+
 type StableEvaluationUpdateRequestSettings4 struct {
 	Model           *AIModel                                                                         `json:"model,omitzero"`
 	Realtime        *StableEvaluationUpdateRequestRealtime4                                          `json:"realtime,omitzero"`
 	MaxTokens       *float64                                                                         `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                                         `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StableEvaluationUpdateRequestReasoningEffort4] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier4] `json:"serviceTier,omitzero"`
 }
 
 func (s StableEvaluationUpdateRequestSettings4) MarshalJSON() ([]byte, error) {
@@ -187,6 +219,13 @@ func (s *StableEvaluationUpdateRequestSettings4) GetReasoningEffort() optionalnu
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StableEvaluationUpdateRequestSettings4) GetServiceTier() optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier4] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 // #region class-body-stableevaluationupdaterequestsettings4
@@ -364,12 +403,44 @@ func (e *StableEvaluationUpdateRequestReasoningEffort3) UnmarshalJSON(data []byt
 	}
 }
 
+// StableEvaluationUpdateRequestServiceTier3 - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StableEvaluationUpdateRequestServiceTier3 string
+
+const (
+	StableEvaluationUpdateRequestServiceTier3Default  StableEvaluationUpdateRequestServiceTier3 = "default"
+	StableEvaluationUpdateRequestServiceTier3Flex     StableEvaluationUpdateRequestServiceTier3 = "flex"
+	StableEvaluationUpdateRequestServiceTier3Priority StableEvaluationUpdateRequestServiceTier3 = "priority"
+)
+
+func (e StableEvaluationUpdateRequestServiceTier3) ToPointer() *StableEvaluationUpdateRequestServiceTier3 {
+	return &e
+}
+func (e *StableEvaluationUpdateRequestServiceTier3) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StableEvaluationUpdateRequestServiceTier3(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableEvaluationUpdateRequestServiceTier3: %v", v)
+	}
+}
+
 type StableEvaluationUpdateRequestSettings3 struct {
 	Model           *AIModel                                                                         `json:"model,omitzero"`
 	Realtime        *StableEvaluationUpdateRequestRealtime3                                          `json:"realtime,omitzero"`
 	MaxTokens       *float64                                                                         `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                                         `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StableEvaluationUpdateRequestReasoningEffort3] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier3] `json:"serviceTier,omitzero"`
 }
 
 func (s StableEvaluationUpdateRequestSettings3) MarshalJSON() ([]byte, error) {
@@ -416,6 +487,13 @@ func (s *StableEvaluationUpdateRequestSettings3) GetReasoningEffort() optionalnu
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StableEvaluationUpdateRequestSettings3) GetServiceTier() optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier3] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 // #region class-body-stableevaluationupdaterequestsettings3
@@ -582,12 +660,44 @@ func (e *StableEvaluationUpdateRequestReasoningEffort2) UnmarshalJSON(data []byt
 	}
 }
 
+// StableEvaluationUpdateRequestServiceTier2 - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StableEvaluationUpdateRequestServiceTier2 string
+
+const (
+	StableEvaluationUpdateRequestServiceTier2Default  StableEvaluationUpdateRequestServiceTier2 = "default"
+	StableEvaluationUpdateRequestServiceTier2Flex     StableEvaluationUpdateRequestServiceTier2 = "flex"
+	StableEvaluationUpdateRequestServiceTier2Priority StableEvaluationUpdateRequestServiceTier2 = "priority"
+)
+
+func (e StableEvaluationUpdateRequestServiceTier2) ToPointer() *StableEvaluationUpdateRequestServiceTier2 {
+	return &e
+}
+func (e *StableEvaluationUpdateRequestServiceTier2) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StableEvaluationUpdateRequestServiceTier2(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableEvaluationUpdateRequestServiceTier2: %v", v)
+	}
+}
+
 type StableEvaluationUpdateRequestSettings2 struct {
 	Model           *AIModel                                                                         `json:"model,omitzero"`
 	Realtime        *StableEvaluationUpdateRequestRealtime2                                          `json:"realtime,omitzero"`
 	MaxTokens       *float64                                                                         `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                                         `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StableEvaluationUpdateRequestReasoningEffort2] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier2] `json:"serviceTier,omitzero"`
 }
 
 func (s StableEvaluationUpdateRequestSettings2) MarshalJSON() ([]byte, error) {
@@ -634,6 +744,13 @@ func (s *StableEvaluationUpdateRequestSettings2) GetReasoningEffort() optionalnu
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StableEvaluationUpdateRequestSettings2) GetServiceTier() optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier2] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 // #region class-body-stableevaluationupdaterequestsettings2
@@ -836,12 +953,44 @@ func (e *StableEvaluationUpdateRequestReasoningEffort1) UnmarshalJSON(data []byt
 	}
 }
 
+// StableEvaluationUpdateRequestServiceTier1 - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StableEvaluationUpdateRequestServiceTier1 string
+
+const (
+	StableEvaluationUpdateRequestServiceTier1Default  StableEvaluationUpdateRequestServiceTier1 = "default"
+	StableEvaluationUpdateRequestServiceTier1Flex     StableEvaluationUpdateRequestServiceTier1 = "flex"
+	StableEvaluationUpdateRequestServiceTier1Priority StableEvaluationUpdateRequestServiceTier1 = "priority"
+)
+
+func (e StableEvaluationUpdateRequestServiceTier1) ToPointer() *StableEvaluationUpdateRequestServiceTier1 {
+	return &e
+}
+func (e *StableEvaluationUpdateRequestServiceTier1) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StableEvaluationUpdateRequestServiceTier1(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableEvaluationUpdateRequestServiceTier1: %v", v)
+	}
+}
+
 type StableEvaluationUpdateRequestSettings1 struct {
 	Model           *AIModel                                                                         `json:"model,omitzero"`
 	Realtime        *StableEvaluationUpdateRequestRealtime1                                          `json:"realtime,omitzero"`
 	MaxTokens       *float64                                                                         `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                                         `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StableEvaluationUpdateRequestReasoningEffort1] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier1] `json:"serviceTier,omitzero"`
 }
 
 func (s StableEvaluationUpdateRequestSettings1) MarshalJSON() ([]byte, error) {
@@ -888,6 +1037,13 @@ func (s *StableEvaluationUpdateRequestSettings1) GetReasoningEffort() optionalnu
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StableEvaluationUpdateRequestSettings1) GetServiceTier() optionalnullable.OptionalNullable[StableEvaluationUpdateRequestServiceTier1] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 // #region class-body-stableevaluationupdaterequestsettings1

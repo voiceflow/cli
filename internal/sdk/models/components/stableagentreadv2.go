@@ -36,11 +36,37 @@ func (e *StableAgentReadV2ReasoningEffort) IsExact() bool {
 	return false
 }
 
+// StableAgentReadV2ServiceTier - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StableAgentReadV2ServiceTier string
+
+const (
+	StableAgentReadV2ServiceTierDefault  StableAgentReadV2ServiceTier = "default"
+	StableAgentReadV2ServiceTierFlex     StableAgentReadV2ServiceTier = "flex"
+	StableAgentReadV2ServiceTierPriority StableAgentReadV2ServiceTier = "priority"
+)
+
+func (e StableAgentReadV2ServiceTier) ToPointer() *StableAgentReadV2ServiceTier {
+	return &e
+}
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *StableAgentReadV2ServiceTier) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "default", "flex", "priority":
+			return true
+		}
+	}
+	return false
+}
+
 type StableAgentReadV2Defaults struct {
 	Model           *AIModel                                                            `json:"model,omitzero"`
 	MaxTokens       *float64                                                            `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                            `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StableAgentReadV2ReasoningEffort] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StableAgentReadV2ServiceTier] `json:"serviceTier,omitzero"`
 }
 
 func (s *StableAgentReadV2Defaults) GetModel() *AIModel {
@@ -71,10 +97,18 @@ func (s *StableAgentReadV2Defaults) GetReasoningEffort() optionalnullable.Option
 	return s.ReasoningEffort
 }
 
+func (s *StableAgentReadV2Defaults) GetServiceTier() optionalnullable.OptionalNullable[StableAgentReadV2ServiceTier] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
+}
+
 // #region class-body-stableagentreadv2defaults
 // #endregion class-body-stableagentreadv2defaults
 
 type StableAgentReadV2Llm struct {
+	// @deprecated Faster processing is set per model: use `serviceTier: 'priority'` in each model's settings. This project-level flag still applies to any model setting that leaves `serviceTier` unset.
 	PriorityProcessing *bool                      `json:"priorityProcessing,omitzero"`
 	Defaults           *StableAgentReadV2Defaults `json:"defaults,omitzero"`
 }

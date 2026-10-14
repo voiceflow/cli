@@ -13974,6 +13974,21 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/AIReasoningEffort'
+        serviceTier:
+          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
+    AIParamsServiceTier:
+      type: string
+      enum:
+        - default
+        - flex
+        - priority
+      x-enumNames:
+        - DEFAULT
+        - FLEX
+        - PRIORITY
     AgentSkipTurnTool:
       type: object
       properties:
@@ -14120,6 +14135,11 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/AIReasoningEffort'
+        serviceTier:
+          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
         useStructuredOutput:
           type: boolean
     Flow:
@@ -18759,6 +18779,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/AIReasoningEffort'
+            serviceTier:
+              description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/AIParamsServiceTier'
       required:
         - delay
         - enabled
@@ -18789,6 +18814,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/AIReasoningEffort'
+            serviceTier:
+              description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/AIParamsServiceTier'
       required:
         - type
         - settings
@@ -19159,6 +19189,11 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/AIReasoningEffort'
+        serviceTier:
+          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
         realtime:
           type: object
           properties:
@@ -21297,6 +21332,7 @@ components:
           type: object
           properties:
             priorityProcessing:
+              description: '@deprecated Faster processing is set per model: use `serviceTier: ''priority''` in each model''s settings. This project-level flag still applies to any model setting that leaves `serviceTier` unset.'
               type: boolean
             defaults:
               type: object
@@ -21312,6 +21348,11 @@ components:
                   nullable: true
                   allOf:
                     - $ref: '#/components/schemas/AIReasoningEffort'
+                serviceTier:
+                  description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+                  nullable: true
+                  allOf:
+                    - $ref: '#/components/schemas/AIParamsServiceTier'
         prompt:
           allOf:
             - $ref: '#/components/schemas/MarkdownText'
@@ -21868,6 +21909,7 @@ components:
           type: object
           properties:
             priorityProcessing:
+              description: '@deprecated Faster processing is set per model: use `serviceTier: ''priority''` in each model''s settings. This project-level flag still applies to any model setting that leaves `serviceTier` unset.'
               type: boolean
             defaults:
               type: object
@@ -21883,6 +21925,11 @@ components:
                   nullable: true
                   allOf:
                     - $ref: '#/components/schemas/AIReasoningEffort'
+                serviceTier:
+                  description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+                  nullable: true
+                  allOf:
+                    - $ref: '#/components/schemas/AIParamsServiceTier'
         voice:
           type: object
           properties:
@@ -27961,6 +28008,11 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/AIReasoningEffort'
+        serviceTier:
+          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
         useStructuredOutput:
           type: boolean
       additionalProperties: false
@@ -28009,6 +28061,9 @@ components:
         reasoningEffort:
           allOf:
             - $ref: '#/components/schemas/AIReasoningEffort'
+        serviceTier:
+          allOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
         useStructuredOutput:
           type: boolean
       additionalProperties: false
@@ -28348,10 +28403,16 @@ components:
                   nullable: true
                   allOf:
                     - $ref: '#/components/schemas/AIReasoningEffort'
+                serviceTier:
+                  description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+                  nullable: true
+                  allOf:
+                    - $ref: '#/components/schemas/AIParamsServiceTier'
         globalAgentID:
           description: '@deprecated Use globalCrew.agentID instead'
           type: string
         priorityProcessing:
+          description: '@deprecated Faster processing is set per model: use `serviceTier: ''priority''` in each model''s settings. This project-level flag still applies to any model setting that leaves `serviceTier` unset.'
           type: boolean
     ExportTextString:
       type: string

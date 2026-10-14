@@ -53,12 +53,38 @@ func (e *AgentSettingsReasoningEffort) IsExact() bool {
 	return false
 }
 
+// AgentSettingsServiceTier - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type AgentSettingsServiceTier string
+
+const (
+	AgentSettingsServiceTierDefault  AgentSettingsServiceTier = "default"
+	AgentSettingsServiceTierFlex     AgentSettingsServiceTier = "flex"
+	AgentSettingsServiceTierPriority AgentSettingsServiceTier = "priority"
+)
+
+func (e AgentSettingsServiceTier) ToPointer() *AgentSettingsServiceTier {
+	return &e
+}
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *AgentSettingsServiceTier) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "default", "flex", "priority":
+			return true
+		}
+	}
+	return false
+}
+
 type AgentSettings struct {
 	Model           *AIModel                                                        `json:"model,omitzero"`
 	Realtime        *AgentSettingsRealtime                                          `json:"realtime,omitzero"`
 	MaxTokens       *float64                                                        `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                        `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[AgentSettingsReasoningEffort] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[AgentSettingsServiceTier] `json:"serviceTier,omitzero"`
 }
 
 func (a AgentSettings) MarshalJSON() ([]byte, error) {
@@ -105,4 +131,11 @@ func (a *AgentSettings) GetReasoningEffort() optionalnullable.OptionalNullable[A
 		return nil
 	}
 	return a.ReasoningEffort
+}
+
+func (a *AgentSettings) GetServiceTier() optionalnullable.OptionalNullable[AgentSettingsServiceTier] {
+	if a == nil {
+		return nil
+	}
+	return a.ServiceTier
 }

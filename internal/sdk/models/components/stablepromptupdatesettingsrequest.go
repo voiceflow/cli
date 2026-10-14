@@ -5,12 +5,13 @@ package components
 
 // StablePromptUpdateSettingsRequest - The settings keys to set. Keys you leave out keep their stored value. null is not accepted; to clear a key, send the whole settings object through update.
 type StablePromptUpdateSettingsRequest struct {
-	Model               *AIModel           `json:"model,omitzero"`
-	MaxTokens           *float64           `json:"maxTokens,omitzero"`
-	Temperature         *float64           `json:"temperature,omitzero"`
-	ResponseFormat      *string            `json:"responseFormat,omitzero"`
-	ReasoningEffort     *AIReasoningEffort `json:"reasoningEffort,omitzero"`
-	UseStructuredOutput *bool              `json:"useStructuredOutput,omitzero"`
+	Model               *AIModel             `json:"model,omitzero"`
+	MaxTokens           *float64             `json:"maxTokens,omitzero"`
+	Temperature         *float64             `json:"temperature,omitzero"`
+	ResponseFormat      *string              `json:"responseFormat,omitzero"`
+	ReasoningEffort     *AIReasoningEffort   `json:"reasoningEffort,omitzero"`
+	ServiceTier         *AIParamsServiceTier `json:"serviceTier,omitzero"`
+	UseStructuredOutput *bool                `json:"useStructuredOutput,omitzero"`
 }
 
 func (s *StablePromptUpdateSettingsRequest) GetModel() *AIModel {
@@ -46,6 +47,13 @@ func (s *StablePromptUpdateSettingsRequest) GetReasoningEffort() *AIReasoningEff
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StablePromptUpdateSettingsRequest) GetServiceTier() *AIParamsServiceTier {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 func (s *StablePromptUpdateSettingsRequest) GetUseStructuredOutput() *bool {

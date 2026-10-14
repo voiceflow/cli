@@ -1430,12 +1430,44 @@ func (e *StablePlaybookCreateRequestV2ReasoningEffort) UnmarshalJSON(data []byte
 	}
 }
 
+// StablePlaybookCreateRequestV2ServiceTier - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StablePlaybookCreateRequestV2ServiceTier string
+
+const (
+	StablePlaybookCreateRequestV2ServiceTierDefault  StablePlaybookCreateRequestV2ServiceTier = "default"
+	StablePlaybookCreateRequestV2ServiceTierFlex     StablePlaybookCreateRequestV2ServiceTier = "flex"
+	StablePlaybookCreateRequestV2ServiceTierPriority StablePlaybookCreateRequestV2ServiceTier = "priority"
+)
+
+func (e StablePlaybookCreateRequestV2ServiceTier) ToPointer() *StablePlaybookCreateRequestV2ServiceTier {
+	return &e
+}
+func (e *StablePlaybookCreateRequestV2ServiceTier) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StablePlaybookCreateRequestV2ServiceTier(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StablePlaybookCreateRequestV2ServiceTier: %v", v)
+	}
+}
+
 type StablePlaybookCreateRequestV2Settings struct {
 	Model           *AIModel                                                                        `json:"model,omitzero"`
 	Realtime        *StablePlaybookCreateRequestV2Realtime                                          `json:"realtime,omitzero"`
 	MaxTokens       *float64                                                                        `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                                        `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StablePlaybookCreateRequestV2ReasoningEffort] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StablePlaybookCreateRequestV2ServiceTier] `json:"serviceTier,omitzero"`
 }
 
 func (s StablePlaybookCreateRequestV2Settings) MarshalJSON() ([]byte, error) {
@@ -1482,6 +1514,13 @@ func (s *StablePlaybookCreateRequestV2Settings) GetReasoningEffort() optionalnul
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StablePlaybookCreateRequestV2Settings) GetServiceTier() optionalnullable.OptionalNullable[StablePlaybookCreateRequestV2ServiceTier] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 // #region class-body-stableplaybookcreaterequestv2settings
