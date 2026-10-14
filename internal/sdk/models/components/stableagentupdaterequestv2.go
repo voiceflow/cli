@@ -1612,11 +1612,43 @@ func (e *StableAgentUpdateRequestV2ReasoningEffort) UnmarshalJSON(data []byte) e
 	}
 }
 
+// StableAgentUpdateRequestV2ServiceTier - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StableAgentUpdateRequestV2ServiceTier string
+
+const (
+	StableAgentUpdateRequestV2ServiceTierDefault  StableAgentUpdateRequestV2ServiceTier = "default"
+	StableAgentUpdateRequestV2ServiceTierFlex     StableAgentUpdateRequestV2ServiceTier = "flex"
+	StableAgentUpdateRequestV2ServiceTierPriority StableAgentUpdateRequestV2ServiceTier = "priority"
+)
+
+func (e StableAgentUpdateRequestV2ServiceTier) ToPointer() *StableAgentUpdateRequestV2ServiceTier {
+	return &e
+}
+func (e *StableAgentUpdateRequestV2ServiceTier) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StableAgentUpdateRequestV2ServiceTier(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableAgentUpdateRequestV2ServiceTier: %v", v)
+	}
+}
+
 type StableAgentUpdateRequestV2Defaults struct {
 	Model           *AIModel                                                                     `json:"model,omitzero"`
 	MaxTokens       *float64                                                                     `json:"maxTokens,omitzero"`
 	Temperature     *float64                                                                     `json:"temperature,omitzero"`
 	ReasoningEffort optionalnullable.OptionalNullable[StableAgentUpdateRequestV2ReasoningEffort] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier optionalnullable.OptionalNullable[StableAgentUpdateRequestV2ServiceTier] `json:"serviceTier,omitzero"`
 }
 
 func (s *StableAgentUpdateRequestV2Defaults) GetModel() *AIModel {
@@ -1647,10 +1679,18 @@ func (s *StableAgentUpdateRequestV2Defaults) GetReasoningEffort() optionalnullab
 	return s.ReasoningEffort
 }
 
+func (s *StableAgentUpdateRequestV2Defaults) GetServiceTier() optionalnullable.OptionalNullable[StableAgentUpdateRequestV2ServiceTier] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
+}
+
 // #region class-body-stableagentupdaterequestv2defaults
 // #endregion class-body-stableagentupdaterequestv2defaults
 
 type StableAgentUpdateRequestV2Llm struct {
+	// @deprecated Faster processing is set per model: use `serviceTier: 'priority'` in each model's settings. This project-level flag still applies to any model setting that leaves `serviceTier` unset.
 	PriorityProcessing *bool                               `json:"priorityProcessing,omitzero"`
 	Defaults           *StableAgentUpdateRequestV2Defaults `json:"defaults,omitzero"`
 }

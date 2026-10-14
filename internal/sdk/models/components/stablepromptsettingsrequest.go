@@ -47,13 +47,45 @@ func (e *StablePromptSettingsRequestReasoningEffort) UnmarshalJSON(data []byte) 
 	}
 }
 
+// StablePromptSettingsRequestServiceTier - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type StablePromptSettingsRequestServiceTier string
+
+const (
+	StablePromptSettingsRequestServiceTierDefault  StablePromptSettingsRequestServiceTier = "default"
+	StablePromptSettingsRequestServiceTierFlex     StablePromptSettingsRequestServiceTier = "flex"
+	StablePromptSettingsRequestServiceTierPriority StablePromptSettingsRequestServiceTier = "priority"
+)
+
+func (e StablePromptSettingsRequestServiceTier) ToPointer() *StablePromptSettingsRequestServiceTier {
+	return &e
+}
+func (e *StablePromptSettingsRequestServiceTier) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "default":
+		fallthrough
+	case "flex":
+		fallthrough
+	case "priority":
+		*e = StablePromptSettingsRequestServiceTier(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StablePromptSettingsRequestServiceTier: %v", v)
+	}
+}
+
 type StablePromptSettingsRequest struct {
-	Model               *AIModel                                                                      `json:"model,omitzero"`
-	MaxTokens           *float64                                                                      `json:"maxTokens,omitzero"`
-	Temperature         *float64                                                                      `json:"temperature,omitzero"`
-	ResponseFormat      *string                                                                       `json:"responseFormat,omitzero"`
-	ReasoningEffort     optionalnullable.OptionalNullable[StablePromptSettingsRequestReasoningEffort] `json:"reasoningEffort,omitzero"`
-	UseStructuredOutput *bool                                                                         `json:"useStructuredOutput,omitzero"`
+	Model           *AIModel                                                                      `json:"model,omitzero"`
+	MaxTokens       *float64                                                                      `json:"maxTokens,omitzero"`
+	Temperature     *float64                                                                      `json:"temperature,omitzero"`
+	ResponseFormat  *string                                                                       `json:"responseFormat,omitzero"`
+	ReasoningEffort optionalnullable.OptionalNullable[StablePromptSettingsRequestReasoningEffort] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier         optionalnullable.OptionalNullable[StablePromptSettingsRequestServiceTier] `json:"serviceTier,omitzero"`
+	UseStructuredOutput *bool                                                                     `json:"useStructuredOutput,omitzero"`
 }
 
 func (s *StablePromptSettingsRequest) GetModel() *AIModel {
@@ -89,6 +121,13 @@ func (s *StablePromptSettingsRequest) GetReasoningEffort() optionalnullable.Opti
 		return nil
 	}
 	return s.ReasoningEffort
+}
+
+func (s *StablePromptSettingsRequest) GetServiceTier() optionalnullable.OptionalNullable[StablePromptSettingsRequestServiceTier] {
+	if s == nil {
+		return nil
+	}
+	return s.ServiceTier
 }
 
 func (s *StablePromptSettingsRequest) GetUseStructuredOutput() *bool {

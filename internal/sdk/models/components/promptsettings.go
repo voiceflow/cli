@@ -33,13 +33,39 @@ func (e *PromptSettingsReasoningEffort) IsExact() bool {
 	return false
 }
 
+// PromptSettingsServiceTier - The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+type PromptSettingsServiceTier string
+
+const (
+	PromptSettingsServiceTierDefault  PromptSettingsServiceTier = "default"
+	PromptSettingsServiceTierFlex     PromptSettingsServiceTier = "flex"
+	PromptSettingsServiceTierPriority PromptSettingsServiceTier = "priority"
+)
+
+func (e PromptSettingsServiceTier) ToPointer() *PromptSettingsServiceTier {
+	return &e
+}
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *PromptSettingsServiceTier) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "default", "flex", "priority":
+			return true
+		}
+	}
+	return false
+}
+
 type PromptSettings struct {
-	Model               *AIModel                                                         `json:"model,omitzero"`
-	MaxTokens           *float64                                                         `json:"maxTokens,omitzero"`
-	Temperature         *float64                                                         `json:"temperature,omitzero"`
-	ResponseFormat      *string                                                          `json:"responseFormat,omitzero"`
-	ReasoningEffort     optionalnullable.OptionalNullable[PromptSettingsReasoningEffort] `json:"reasoningEffort,omitzero"`
-	UseStructuredOutput *bool                                                            `json:"useStructuredOutput,omitzero"`
+	Model           *AIModel                                                         `json:"model,omitzero"`
+	MaxTokens       *float64                                                         `json:"maxTokens,omitzero"`
+	Temperature     *float64                                                         `json:"temperature,omitzero"`
+	ResponseFormat  *string                                                          `json:"responseFormat,omitzero"`
+	ReasoningEffort optionalnullable.OptionalNullable[PromptSettingsReasoningEffort] `json:"reasoningEffort,omitzero"`
+	// The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.
+	ServiceTier         optionalnullable.OptionalNullable[PromptSettingsServiceTier] `json:"serviceTier,omitzero"`
+	UseStructuredOutput *bool                                                        `json:"useStructuredOutput,omitzero"`
 }
 
 func (p *PromptSettings) GetModel() *AIModel {
@@ -75,6 +101,13 @@ func (p *PromptSettings) GetReasoningEffort() optionalnullable.OptionalNullable[
 		return nil
 	}
 	return p.ReasoningEffort
+}
+
+func (p *PromptSettings) GetServiceTier() optionalnullable.OptionalNullable[PromptSettingsServiceTier] {
+	if p == nil {
+		return nil
+	}
+	return p.ServiceTier
 }
 
 func (p *PromptSettings) GetUseStructuredOutput() *bool {
