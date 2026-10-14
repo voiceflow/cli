@@ -9,8 +9,9 @@ import (
 )
 
 type StableDocumentControllerListRequest struct {
-	ProjectID        string `queryParam:"style=form,explode=true,name=projectID"`
-	EnvironmentAlias string `queryParam:"style=form,explode=true,name=environmentAlias"`
+	ProjectID         string  `queryParam:"style=form,explode=true,name=projectID"`
+	EnvironmentAlias  string  `queryParam:"style=form,explode=true,name=environmentAlias"`
+	SitemapDocumentID *string `queryParam:"style=form,explode=true,name=sitemapDocumentID"`
 }
 
 func (s *StableDocumentControllerListRequest) GetProjectID() string {
@@ -25,6 +26,13 @@ func (s *StableDocumentControllerListRequest) GetEnvironmentAlias() string {
 		return ""
 	}
 	return s.EnvironmentAlias
+}
+
+func (s *StableDocumentControllerListRequest) GetSitemapDocumentID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SitemapDocumentID
 }
 
 type StableDocumentControllerListResponse struct {

@@ -6569,15 +6569,16 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
           operation: list
           operationDescription: |-
-            WHAT — List all documents currently in the Knowledge Base.
-            USE WHEN — Auditing Knowledge Base contents or finding a documentID to update via voiceflow_document.
+            WHAT — List all documents currently in the Knowledge Base, or only the pages one managed sitemap imported.
+            USE WHEN — Auditing Knowledge Base contents, finding a documentID to update via voiceflow_document, or checking which pages a managed sitemap holds after an import or a change to its patterns.
+            HOW — Pass a sitemap document's id as `sitemapDocumentID` to return only its pages: the URL documents whose `data.sitemapDocumentID` is that id. Pages added by voiceflow_document.create_sitemap belong to no sitemap, so no id returns them.
         cli:
           command: document list
       x-speakeasy-group: document
@@ -6597,6 +6598,13 @@ paths:
           schema:
             type: string
             description: The alias of the environment to operate on (e.g. `main`).
+        - name: sitemapDocumentID
+          required: false
+          in: query
+          schema:
+            description: When provided, only the pages imported by the sitemap document with this ID are returned.
+            type: string
+            minLength: 1
       responses:
         "200":
           description: ""
@@ -6615,8 +6623,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -6774,8 +6782,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -6950,8 +6958,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -7109,8 +7117,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -7157,8 +7165,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -7168,6 +7176,7 @@ paths:
             USE WHEN — The user wants a site indexed, and voiceflow_document.preview_sitemap has already shown them which pages that means.
             HOW — Same `sitemapURL` and `exclude` as the preview; `refreshRate` and `metadata` apply to every document created. A page already stored as a URL document is reused, not duplicated. The response repeats `excluded` and `dropped`: tell the user about them rather than reporting that the whole site was imported.
             DO NOT — Call this without previewing first, and do not call it when the preview came back `truncated` — it is rejected above the limit, and the user has not seen what is about to be added.
+            DO NOT — Use this for a site that should stay current: these documents never re-read the sitemap. Where it is enabled, voiceflow_document.create_managed_sitemap keeps a site in sync instead.
         cli:
           command: document create-sitemap
       x-speakeasy-group: document
@@ -7288,6 +7297,206 @@ paths:
         - Document
       security:
         - token: []
+  /v1/stable/document/managed-sitemap:
+    post:
+      operationId: StableDocumentController_createManagedSitemap
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: create_managed_sitemap
+          operationDescription: |-
+            WHAT — Create a managed sitemap: one sitemap document that imports the pages its sitemap lists as URL documents and keeps them in sync, adding the pages the sitemap newly lists and removing the ones it drops each time it re-syncs on `refreshRate`.
+            USE WHEN — The user wants a whole site in the Knowledge Base as one source that stays current, rather than a one-off set of URL documents.
+            HOW — `patterns.include` keeps only the pages matching at least one pattern (every page when empty) and `patterns.exclude` drops any page matching one. The pages are imported in the background: the response is the sitemap document with status `PENDING`, so poll voiceflow_document.get with its id until the status is `SUCCESS` or `ERROR`. On `ERROR`, `data.sync.failure.message` says why. There is no per-import cap: the pages count against the plan's total Knowledge Base source limit, and an import that runs out of it ends in `ERROR`. A page already stored as its own URL document is skipped: it stays a standalone document and is not duplicated or made one of the sitemap's pages.
+            DO NOT — Create a second managed sitemap for a sitemap that already has one. Given the same sitemap URL it is rejected with 409; given a bare site URL, the duplicate is only found once the import resolves it, and the import ends in `ERROR`. Change the existing one with voiceflow_document.update_managed_sitemap instead.
+            DO NOT — Retry after a 403 saying managed sitemaps are not enabled. The workspace does not have them, so import the site as individual URL documents with voiceflow_document.preview_sitemap, then voiceflow_document.create_sitemap.
+        cli:
+          command: document create-managed-sitemap
+      x-speakeasy-group: document
+      x-speakeasy-name-override: create-managed-sitemap
+      summary: Create managed sitemap
+      description: Create a sitemap document that imports the pages its sitemap lists in the background and keeps them in sync.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: markdownConversion
+          required: false
+          in: query
+          schema:
+            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmBasedChunks
+          required: false
+          in: query
+          schema:
+            description: When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmGeneratedQ
+          required: false
+          in: query
+          schema:
+            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmContentSummarization
+          required: false
+          in: query
+          schema:
+            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: llmPrependContext
+          required: false
+          in: query
+          schema:
+            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+        - name: singleChunk
+          required: false
+          in: query
+          schema:
+            description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+            anyOf:
+              - type: boolean
+              - type: string
+                enum:
+                  - "true"
+                  - "false"
+                x-enumNames:
+                  - "TRUE"
+                  - "FALSE"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableDocumentCreateManagedSitemapRequest'
+      responses:
+        "202":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentResponse'
+      tags:
+        - Document
+      security:
+        - token: []
+  /v1/stable/document/managed-sitemap/{documentID}:
+    patch:
+      operationId: StableDocumentController_updateManagedSitemap
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: update_managed_sitemap
+          operationDescription: |-
+            WHAT — Change a managed sitemap's import settings: its URL patterns, its refresh rate and its smart chunking.
+            USE WHEN — Narrowing or widening which pages a managed sitemap keeps, or changing how often it re-syncs — including after voiceflow_document.create_managed_sitemap was rejected with 409 because the URL already has one.
+            HOW — `patterns` replaces the stored set whole and takes effect on the sitemap's next sync, which adds the pages that now match and removes the ones that no longer do; a sync already running keeps the patterns it started with. That is the next one its `refreshRate` schedules, or a re-sync started from the Knowledge Base page. A new `refreshRate` also applies to the pages the sitemap has already imported. Smart chunking applies only to the pages the sitemap adds from then on.
+            DO NOT — Use this on a URL, text, table or file document. Only a sitemap is accepted; anything else is a 404.
+            DO NOT — Retry after a 403 saying sitemaps are not enabled. The workspace does not have managed sitemaps, so its sitemap cannot be changed through this operation — tell the user rather than retrying.
+        cli:
+          command: document update-managed-sitemap
+      x-speakeasy-group: document
+      x-speakeasy-name-override: update-managed-sitemap
+      summary: Update managed sitemap
+      description: Update a managed sitemap's URL patterns, refresh rate or smart chunking.
+      parameters:
+        - name: documentID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableDocumentUpdateManagedSitemapRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentResponse'
+      tags:
+        - Document
+      security:
+        - token: []
   /v1/stable/document/{documentID}:
     get:
       operationId: StableDocumentController_get
@@ -7295,8 +7504,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -7345,8 +7554,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -7402,8 +7611,8 @@ paths:
         mcp:
           tool: voiceflow_document
           toolDescription: |-
-            Individual Knowledge Base documents. Four source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload).
-            A sitemap is not a source type. Importing a site means reading its sitemap for the pages it lists and adding each page as its own URL document — preview that list, then create from it. A sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
             The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
             Predecessor: select the project and environment first.
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
@@ -27604,6 +27813,181 @@ components:
             - NEVER
       required:
         - sitemapURL
+      additionalProperties: false
+    StableDocumentSitemapPatterns:
+      type: object
+      properties:
+        include:
+          default: []
+          description: Patterns a page must match at least one of to be kept. Empty keeps every page the sitemap lists.
+          maxItems: 100
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+        exclude:
+          default: []
+          description: Patterns that drop a page when any one of them matches, even one an `include` pattern kept.
+          maxItems: 100
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+      additionalProperties: false
+    StableDocumentCreateManagedSitemapRequest:
+      type: object
+      properties:
+        sitemapURL:
+          type: string
+          format: uri
+          description: The HTTPS URL of the sitemap to read. A bare site URL works too — when it does not end in `.xml`, `/sitemap.xml`, `/sitemap_index.xml` and `/sitemap/sitemap.xml` are probed in turn.
+        patterns:
+          description: 'Which of the pages the sitemap lists it keeps. Matching is case-insensitive and unanchored: a pattern with no `*` matches any URL containing it as a substring (`/blog/`), while `*` matches any run of characters (`*/tag/*`, `*.pdf`).'
+          allOf:
+            - $ref: '#/components/schemas/StableDocumentSitemapPatterns'
+        refreshRate:
+          default: never
+          description: How often the sitemap is re-read to add the pages it newly lists and remove the ones it no longer does. Its pages are re-crawled on the same schedule.
+          type: string
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - never
+          x-enumNames:
+            - DAILY
+            - WEEKLY
+            - MONTHLY
+            - NEVER
+        metadata:
+          default: []
+          description: Metadata tags attached to the sitemap and to every page it imports, used to filter knowledge base retrieval at runtime.
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                description: The name of the metadata field.
+              values:
+                type: array
+                items:
+                  type: string
+                description: The values assigned to this metadata field.
+            required:
+              - key
+              - values
+      required:
+        - sitemapURL
+      additionalProperties: false
+    StableDocumentUpdateManagedSitemapRequest:
+      type: object
+      properties:
+        patterns:
+          description: 'Replaces the stored patterns whole, so send both lists even when changing one. Matching is case-insensitive and unanchored: a pattern with no `*` matches any URL containing it as a substring (`/blog/`), while `*` matches any run of characters (`*/tag/*`, `*.pdf`).'
+          type: object
+          properties:
+            include:
+              maxItems: 100
+              type: array
+              items:
+                type: string
+                minLength: 1
+                maxLength: 200
+              description: Patterns a page must match at least one of to be kept. Empty keeps every page the sitemap lists.
+            exclude:
+              maxItems: 100
+              type: array
+              items:
+                type: string
+                minLength: 1
+                maxLength: 200
+              description: Patterns that drop a page when any one of them matches, even one an `include` pattern kept.
+          required:
+            - include
+            - exclude
+          additionalProperties: false
+        refreshRate:
+          description: How often the sitemap is re-read to add the pages it newly lists and remove the ones it no longer does. Its pages are re-crawled on the same schedule. Also applied to the pages it has already imported.
+          type: string
+          enum:
+            - daily
+            - weekly
+            - monthly
+            - never
+          x-enumNames:
+            - DAILY
+            - WEEKLY
+            - MONTHLY
+            - NEVER
+        markdownConversion:
+          description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
+        llmBasedChunks:
+          description: When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
+        llmGeneratedQ:
+          description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
+        llmContentSummarization:
+          description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
+        llmPrependContext:
+          description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
+        singleChunk:
+          description: When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
+          anyOf:
+            - type: boolean
+            - type: string
+              enum:
+                - "true"
+                - "false"
+              x-enumNames:
+                - "TRUE"
+                - "FALSE"
       additionalProperties: false
     StableDocumentDetails:
       type: object

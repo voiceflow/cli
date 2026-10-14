@@ -18,6 +18,7 @@ import (
 var listCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
+	{FlagName: "sitemap-document-id", Shorthand: "s", FieldPath: "SitemapDocumentID", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
 }
 
 // initListCmd initializes the list command.

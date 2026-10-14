@@ -464,6 +464,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`create-table`](docs/vf_document_create-table.md) - Create table document
 * [`preview-sitemap`](docs/vf_document_preview-sitemap.md) - Preview sitemap URLs
 * [`create-sitemap`](docs/vf_document_create-sitemap.md) - Create documents from sitemap
+* [`create-managed-sitemap`](docs/vf_document_create-managed-sitemap.md) - Create managed sitemap
+* [`update-managed-sitemap`](docs/vf_document_update-managed-sitemap.md) - Update managed sitemap
 * [`get`](docs/vf_document_get.md) - Get document
 * [`update`](docs/vf_document_update.md) - Update document
 * [`delete`](docs/vf_document_delete.md) - Delete document
