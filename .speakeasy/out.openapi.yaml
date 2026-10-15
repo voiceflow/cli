@@ -26704,54 +26704,7 @@ components:
       anyOf:
         - $ref: '#/components/schemas/LaunchRequest'
         - $ref: '#/components/schemas/TextRequest'
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - file
-              x-enumNames:
-                - FILE
-            payload:
-              type: object
-              properties:
-                text:
-                  type: string
-                files:
-                  minItems: 1
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      url:
-                        type: string
-                        format: uri
-                      mimeType:
-                        type: string
-                      filename:
-                        type: string
-                      size:
-                        type: number
-                      s3Key:
-                        type: string
-                    required:
-                      - mimeType
-                    additionalProperties: {}
-              required:
-                - files
-              additionalProperties: {}
-            diagramID:
-              type: string
-            time:
-              type: number
-            metadata:
-              type: object
-              additionalProperties: {}
-          required:
-            - type
-            - payload
-          additionalProperties: {}
-          description: Send one or more file attachments, with an optional text message.
+        - $ref: '#/components/schemas/FileRequest'
         - $ref: '#/components/schemas/ActionRequest'
         - $ref: '#/components/schemas/IntentRequest'
         - $ref: '#/components/schemas/EventRequest'
@@ -26815,6 +26768,55 @@ components:
         - payload
       additionalProperties: {}
       description: Send the user response as a raw text payload.
+    FileRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - file
+          x-enumNames:
+            - FILE
+        payload:
+          type: object
+          properties:
+            text:
+              type: string
+            files:
+              minItems: 1
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                  mimeType:
+                    type: string
+                  filename:
+                    type: string
+                  size:
+                    type: number
+                  s3Key:
+                    type: string
+                required:
+                  - mimeType
+                additionalProperties: {}
+          required:
+            - files
+          additionalProperties: {}
+        diagramID:
+          type: string
+        time:
+          type: number
+        metadata:
+          type: object
+          additionalProperties: {}
+      required:
+        - type
+        - payload
+      additionalProperties: {}
+      description: Send one or more file attachments, with an optional text message.
     ActionRequest:
       type: object
       properties:

@@ -4,7 +4,6 @@
 package components
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
@@ -13,213 +12,27 @@ import (
 type AnyRequestType string
 
 const (
-	AnyRequestTypeFile AnyRequestType = "file"
-)
-
-func (e AnyRequestType) ToPointer() *AnyRequestType {
-	return &e
-}
-func (e *AnyRequestType) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "file":
-		*e = AnyRequestType(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for AnyRequestType: %v", v)
-	}
-}
-
-type AnyRequestPayloadFile struct {
-	URL                  *string        `json:"url,omitzero"`
-	MimeType             string         `json:"mimeType"`
-	Filename             *string        `json:"filename,omitzero"`
-	Size                 *float64       `json:"size,omitzero"`
-	S3Key                *string        `json:"s3Key,omitzero"`
-	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
-}
-
-func (a AnyRequestPayloadFile) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(a, "", false)
-}
-
-func (a *AnyRequestPayloadFile) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (a *AnyRequestPayloadFile) GetURL() *string {
-	if a == nil {
-		return nil
-	}
-	return a.URL
-}
-
-func (a *AnyRequestPayloadFile) GetMimeType() string {
-	if a == nil {
-		return ""
-	}
-	return a.MimeType
-}
-
-func (a *AnyRequestPayloadFile) GetFilename() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Filename
-}
-
-func (a *AnyRequestPayloadFile) GetSize() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.Size
-}
-
-func (a *AnyRequestPayloadFile) GetS3Key() *string {
-	if a == nil {
-		return nil
-	}
-	return a.S3Key
-}
-
-func (a *AnyRequestPayloadFile) GetAdditionalProperties() map[string]any {
-	if a == nil {
-		return nil
-	}
-	return a.AdditionalProperties
-}
-
-type AnyRequestPayload struct {
-	Text                 *string                 `json:"text,omitzero"`
-	Files                []AnyRequestPayloadFile `json:"files"`
-	AdditionalProperties map[string]any          `additionalProperties:"true" json:"-"`
-}
-
-func (a AnyRequestPayload) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(a, "", false)
-}
-
-func (a *AnyRequestPayload) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (a *AnyRequestPayload) GetText() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Text
-}
-
-func (a *AnyRequestPayload) GetFiles() []AnyRequestPayloadFile {
-	if a == nil {
-		return []AnyRequestPayloadFile{}
-	}
-	return a.Files
-}
-
-func (a *AnyRequestPayload) GetAdditionalProperties() map[string]any {
-	if a == nil {
-		return nil
-	}
-	return a.AdditionalProperties
-}
-
-// AnyRequestFile - Send one or more file attachments, with an optional text message.
-type AnyRequestFile struct {
-	Type                 AnyRequestType    `json:"type"`
-	Payload              AnyRequestPayload `json:"payload"`
-	DiagramID            *string           `json:"diagramID,omitzero"`
-	Time                 *float64          `json:"time,omitzero"`
-	Metadata             map[string]any    `json:"metadata,omitzero"`
-	AdditionalProperties map[string]any    `additionalProperties:"true" json:"-"`
-}
-
-func (a AnyRequestFile) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(a, "", false)
-}
-
-func (a *AnyRequestFile) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (a *AnyRequestFile) GetType() AnyRequestType {
-	if a == nil {
-		return AnyRequestType("")
-	}
-	return a.Type
-}
-
-func (a *AnyRequestFile) GetPayload() AnyRequestPayload {
-	if a == nil {
-		return AnyRequestPayload{}
-	}
-	return a.Payload
-}
-
-func (a *AnyRequestFile) GetDiagramID() *string {
-	if a == nil {
-		return nil
-	}
-	return a.DiagramID
-}
-
-func (a *AnyRequestFile) GetTime() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.Time
-}
-
-func (a *AnyRequestFile) GetMetadata() map[string]any {
-	if a == nil {
-		return nil
-	}
-	return a.Metadata
-}
-
-func (a *AnyRequestFile) GetAdditionalProperties() map[string]any {
-	if a == nil {
-		return nil
-	}
-	return a.AdditionalProperties
-}
-
-type AnyRequestUnionType string
-
-const (
-	AnyRequestUnionTypeLaunchRequest           AnyRequestUnionType = "LaunchRequest"
-	AnyRequestUnionTypeTextRequest             AnyRequestUnionType = "TextRequest"
-	AnyRequestUnionTypeAnyRequestFile          AnyRequestUnionType = "AnyRequest_File"
-	AnyRequestUnionTypeActionRequest           AnyRequestUnionType = "ActionRequest"
-	AnyRequestUnionTypeIntentRequest           AnyRequestUnionType = "IntentRequest"
-	AnyRequestUnionTypeEventRequest            AnyRequestUnionType = "EventRequest"
-	AnyRequestUnionTypePathRequest             AnyRequestUnionType = "PathRequest"
-	AnyRequestUnionTypeNoReplyRequest          AnyRequestUnionType = "NoReplyRequest"
-	AnyRequestUnionTypeMessageRequest          AnyRequestUnionType = "MessageRequest"
-	AnyRequestUnionTypeEndRequest              AnyRequestUnionType = "EndRequest"
-	AnyRequestUnionTypeDTMFRequest             AnyRequestUnionType = "DTMFRequest"
-	AnyRequestUnionTypeLiveAgentHandoffRequest AnyRequestUnionType = "LiveAgentHandoffRequest"
-	AnyRequestUnionTypeGeneralRequest          AnyRequestUnionType = "GeneralRequest"
-	AnyRequestUnionTypeAlexaIntentRequest      AnyRequestUnionType = "AlexaIntentRequest"
-	AnyRequestUnionTypeLegacyIntentRequest     AnyRequestUnionType = "LegacyIntentRequest"
+	AnyRequestTypeLaunchRequest           AnyRequestType = "LaunchRequest"
+	AnyRequestTypeTextRequest             AnyRequestType = "TextRequest"
+	AnyRequestTypeFileRequest             AnyRequestType = "FileRequest"
+	AnyRequestTypeActionRequest           AnyRequestType = "ActionRequest"
+	AnyRequestTypeIntentRequest           AnyRequestType = "IntentRequest"
+	AnyRequestTypeEventRequest            AnyRequestType = "EventRequest"
+	AnyRequestTypePathRequest             AnyRequestType = "PathRequest"
+	AnyRequestTypeNoReplyRequest          AnyRequestType = "NoReplyRequest"
+	AnyRequestTypeMessageRequest          AnyRequestType = "MessageRequest"
+	AnyRequestTypeEndRequest              AnyRequestType = "EndRequest"
+	AnyRequestTypeDTMFRequest             AnyRequestType = "DTMFRequest"
+	AnyRequestTypeLiveAgentHandoffRequest AnyRequestType = "LiveAgentHandoffRequest"
+	AnyRequestTypeGeneralRequest          AnyRequestType = "GeneralRequest"
+	AnyRequestTypeAlexaIntentRequest      AnyRequestType = "AlexaIntentRequest"
+	AnyRequestTypeLegacyIntentRequest     AnyRequestType = "LegacyIntentRequest"
 )
 
 type AnyRequest struct {
 	LaunchRequest           *LaunchRequest           `queryParam:"inline" union:"member"`
 	TextRequest             *TextRequest             `queryParam:"inline" union:"member"`
-	AnyRequestFile          *AnyRequestFile          `queryParam:"inline" union:"member"`
+	FileRequest             *FileRequest             `queryParam:"inline" union:"member"`
 	ActionRequest           *ActionRequest           `queryParam:"inline" union:"member"`
 	IntentRequest           *IntentRequest           `queryParam:"inline" union:"member"`
 	EventRequest            *EventRequest            `queryParam:"inline" union:"member"`
@@ -233,11 +46,11 @@ type AnyRequest struct {
 	AlexaIntentRequest      *AlexaIntentRequest      `queryParam:"inline" union:"member"`
 	LegacyIntentRequest     *LegacyIntentRequest     `queryParam:"inline" union:"member"`
 
-	Type AnyRequestUnionType
+	Type AnyRequestType
 }
 
 func CreateAnyRequestLaunchRequest(launchRequest LaunchRequest) AnyRequest {
-	typ := AnyRequestUnionTypeLaunchRequest
+	typ := AnyRequestTypeLaunchRequest
 
 	return AnyRequest{
 		LaunchRequest: &launchRequest,
@@ -246,7 +59,7 @@ func CreateAnyRequestLaunchRequest(launchRequest LaunchRequest) AnyRequest {
 }
 
 func CreateAnyRequestTextRequest(textRequest TextRequest) AnyRequest {
-	typ := AnyRequestUnionTypeTextRequest
+	typ := AnyRequestTypeTextRequest
 
 	return AnyRequest{
 		TextRequest: &textRequest,
@@ -254,17 +67,17 @@ func CreateAnyRequestTextRequest(textRequest TextRequest) AnyRequest {
 	}
 }
 
-func CreateAnyRequestAnyRequestFile(anyRequestFile AnyRequestFile) AnyRequest {
-	typ := AnyRequestUnionTypeAnyRequestFile
+func CreateAnyRequestFileRequest(fileRequest FileRequest) AnyRequest {
+	typ := AnyRequestTypeFileRequest
 
 	return AnyRequest{
-		AnyRequestFile: &anyRequestFile,
-		Type:           typ,
+		FileRequest: &fileRequest,
+		Type:        typ,
 	}
 }
 
 func CreateAnyRequestActionRequest(actionRequest ActionRequest) AnyRequest {
-	typ := AnyRequestUnionTypeActionRequest
+	typ := AnyRequestTypeActionRequest
 
 	return AnyRequest{
 		ActionRequest: &actionRequest,
@@ -273,7 +86,7 @@ func CreateAnyRequestActionRequest(actionRequest ActionRequest) AnyRequest {
 }
 
 func CreateAnyRequestIntentRequest(intentRequest IntentRequest) AnyRequest {
-	typ := AnyRequestUnionTypeIntentRequest
+	typ := AnyRequestTypeIntentRequest
 
 	return AnyRequest{
 		IntentRequest: &intentRequest,
@@ -282,7 +95,7 @@ func CreateAnyRequestIntentRequest(intentRequest IntentRequest) AnyRequest {
 }
 
 func CreateAnyRequestEventRequest(eventRequest EventRequest) AnyRequest {
-	typ := AnyRequestUnionTypeEventRequest
+	typ := AnyRequestTypeEventRequest
 
 	return AnyRequest{
 		EventRequest: &eventRequest,
@@ -291,7 +104,7 @@ func CreateAnyRequestEventRequest(eventRequest EventRequest) AnyRequest {
 }
 
 func CreateAnyRequestPathRequest(pathRequest PathRequest) AnyRequest {
-	typ := AnyRequestUnionTypePathRequest
+	typ := AnyRequestTypePathRequest
 
 	return AnyRequest{
 		PathRequest: &pathRequest,
@@ -300,7 +113,7 @@ func CreateAnyRequestPathRequest(pathRequest PathRequest) AnyRequest {
 }
 
 func CreateAnyRequestNoReplyRequest(noReplyRequest NoReplyRequest) AnyRequest {
-	typ := AnyRequestUnionTypeNoReplyRequest
+	typ := AnyRequestTypeNoReplyRequest
 
 	return AnyRequest{
 		NoReplyRequest: &noReplyRequest,
@@ -309,7 +122,7 @@ func CreateAnyRequestNoReplyRequest(noReplyRequest NoReplyRequest) AnyRequest {
 }
 
 func CreateAnyRequestMessageRequest(messageRequest MessageRequest) AnyRequest {
-	typ := AnyRequestUnionTypeMessageRequest
+	typ := AnyRequestTypeMessageRequest
 
 	return AnyRequest{
 		MessageRequest: &messageRequest,
@@ -318,7 +131,7 @@ func CreateAnyRequestMessageRequest(messageRequest MessageRequest) AnyRequest {
 }
 
 func CreateAnyRequestEndRequest(endRequest EndRequest) AnyRequest {
-	typ := AnyRequestUnionTypeEndRequest
+	typ := AnyRequestTypeEndRequest
 
 	return AnyRequest{
 		EndRequest: &endRequest,
@@ -327,7 +140,7 @@ func CreateAnyRequestEndRequest(endRequest EndRequest) AnyRequest {
 }
 
 func CreateAnyRequestDTMFRequest(dtmfRequest DTMFRequest) AnyRequest {
-	typ := AnyRequestUnionTypeDTMFRequest
+	typ := AnyRequestTypeDTMFRequest
 
 	return AnyRequest{
 		DTMFRequest: &dtmfRequest,
@@ -336,7 +149,7 @@ func CreateAnyRequestDTMFRequest(dtmfRequest DTMFRequest) AnyRequest {
 }
 
 func CreateAnyRequestLiveAgentHandoffRequest(liveAgentHandoffRequest LiveAgentHandoffRequest) AnyRequest {
-	typ := AnyRequestUnionTypeLiveAgentHandoffRequest
+	typ := AnyRequestTypeLiveAgentHandoffRequest
 
 	return AnyRequest{
 		LiveAgentHandoffRequest: &liveAgentHandoffRequest,
@@ -345,7 +158,7 @@ func CreateAnyRequestLiveAgentHandoffRequest(liveAgentHandoffRequest LiveAgentHa
 }
 
 func CreateAnyRequestGeneralRequest(generalRequest GeneralRequest) AnyRequest {
-	typ := AnyRequestUnionTypeGeneralRequest
+	typ := AnyRequestTypeGeneralRequest
 
 	return AnyRequest{
 		GeneralRequest: &generalRequest,
@@ -354,7 +167,7 @@ func CreateAnyRequestGeneralRequest(generalRequest GeneralRequest) AnyRequest {
 }
 
 func CreateAnyRequestAlexaIntentRequest(alexaIntentRequest AlexaIntentRequest) AnyRequest {
-	typ := AnyRequestUnionTypeAlexaIntentRequest
+	typ := AnyRequestTypeAlexaIntentRequest
 
 	return AnyRequest{
 		AlexaIntentRequest: &alexaIntentRequest,
@@ -363,7 +176,7 @@ func CreateAnyRequestAlexaIntentRequest(alexaIntentRequest AlexaIntentRequest) A
 }
 
 func CreateAnyRequestLegacyIntentRequest(legacyIntentRequest LegacyIntentRequest) AnyRequest {
-	typ := AnyRequestUnionTypeLegacyIntentRequest
+	typ := AnyRequestTypeLegacyIntentRequest
 
 	return AnyRequest{
 		LegacyIntentRequest: &legacyIntentRequest,
@@ -379,7 +192,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var launchRequest LaunchRequest = LaunchRequest{}
 	if err := utils.UnmarshalJSON(data, &launchRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeLaunchRequest,
+			Type:  AnyRequestTypeLaunchRequest,
 			Value: &launchRequest,
 		})
 	}
@@ -387,23 +200,23 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var textRequest TextRequest = TextRequest{}
 	if err := utils.UnmarshalJSON(data, &textRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeTextRequest,
+			Type:  AnyRequestTypeTextRequest,
 			Value: &textRequest,
 		})
 	}
 
-	var anyRequestFile AnyRequestFile = AnyRequestFile{}
-	if err := utils.UnmarshalJSON(data, &anyRequestFile, "", true, nil); err == nil {
+	var fileRequest FileRequest = FileRequest{}
+	if err := utils.UnmarshalJSON(data, &fileRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeAnyRequestFile,
-			Value: &anyRequestFile,
+			Type:  AnyRequestTypeFileRequest,
+			Value: &fileRequest,
 		})
 	}
 
 	var actionRequest ActionRequest = ActionRequest{}
 	if err := utils.UnmarshalJSON(data, &actionRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeActionRequest,
+			Type:  AnyRequestTypeActionRequest,
 			Value: &actionRequest,
 		})
 	}
@@ -411,7 +224,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var intentRequest IntentRequest = IntentRequest{}
 	if err := utils.UnmarshalJSON(data, &intentRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeIntentRequest,
+			Type:  AnyRequestTypeIntentRequest,
 			Value: &intentRequest,
 		})
 	}
@@ -419,7 +232,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var eventRequest EventRequest = EventRequest{}
 	if err := utils.UnmarshalJSON(data, &eventRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeEventRequest,
+			Type:  AnyRequestTypeEventRequest,
 			Value: &eventRequest,
 		})
 	}
@@ -427,7 +240,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var pathRequest PathRequest = PathRequest{}
 	if err := utils.UnmarshalJSON(data, &pathRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypePathRequest,
+			Type:  AnyRequestTypePathRequest,
 			Value: &pathRequest,
 		})
 	}
@@ -435,7 +248,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var noReplyRequest NoReplyRequest = NoReplyRequest{}
 	if err := utils.UnmarshalJSON(data, &noReplyRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeNoReplyRequest,
+			Type:  AnyRequestTypeNoReplyRequest,
 			Value: &noReplyRequest,
 		})
 	}
@@ -443,7 +256,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var messageRequest MessageRequest = MessageRequest{}
 	if err := utils.UnmarshalJSON(data, &messageRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeMessageRequest,
+			Type:  AnyRequestTypeMessageRequest,
 			Value: &messageRequest,
 		})
 	}
@@ -451,7 +264,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var endRequest EndRequest = EndRequest{}
 	if err := utils.UnmarshalJSON(data, &endRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeEndRequest,
+			Type:  AnyRequestTypeEndRequest,
 			Value: &endRequest,
 		})
 	}
@@ -459,7 +272,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var dtmfRequest DTMFRequest = DTMFRequest{}
 	if err := utils.UnmarshalJSON(data, &dtmfRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeDTMFRequest,
+			Type:  AnyRequestTypeDTMFRequest,
 			Value: &dtmfRequest,
 		})
 	}
@@ -467,7 +280,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var liveAgentHandoffRequest LiveAgentHandoffRequest = LiveAgentHandoffRequest{}
 	if err := utils.UnmarshalJSON(data, &liveAgentHandoffRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeLiveAgentHandoffRequest,
+			Type:  AnyRequestTypeLiveAgentHandoffRequest,
 			Value: &liveAgentHandoffRequest,
 		})
 	}
@@ -475,7 +288,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var generalRequest GeneralRequest = GeneralRequest{}
 	if err := utils.UnmarshalJSON(data, &generalRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeGeneralRequest,
+			Type:  AnyRequestTypeGeneralRequest,
 			Value: &generalRequest,
 		})
 	}
@@ -483,7 +296,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var alexaIntentRequest AlexaIntentRequest = AlexaIntentRequest{}
 	if err := utils.UnmarshalJSON(data, &alexaIntentRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeAlexaIntentRequest,
+			Type:  AnyRequestTypeAlexaIntentRequest,
 			Value: &alexaIntentRequest,
 		})
 	}
@@ -491,7 +304,7 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	var legacyIntentRequest LegacyIntentRequest = LegacyIntentRequest{}
 	if err := utils.UnmarshalJSON(data, &legacyIntentRequest, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AnyRequestUnionTypeLegacyIntentRequest,
+			Type:  AnyRequestTypeLegacyIntentRequest,
 			Value: &legacyIntentRequest,
 		})
 	}
@@ -507,51 +320,51 @@ func (u *AnyRequest) UnmarshalJSON(data []byte) error {
 	}
 
 	// Set the union type and value based on the best candidate
-	u.Type = best.Type.(AnyRequestUnionType)
+	u.Type = best.Type.(AnyRequestType)
 	switch best.Type {
-	case AnyRequestUnionTypeLaunchRequest:
+	case AnyRequestTypeLaunchRequest:
 		u.LaunchRequest = best.Value.(*LaunchRequest)
 		return nil
-	case AnyRequestUnionTypeTextRequest:
+	case AnyRequestTypeTextRequest:
 		u.TextRequest = best.Value.(*TextRequest)
 		return nil
-	case AnyRequestUnionTypeAnyRequestFile:
-		u.AnyRequestFile = best.Value.(*AnyRequestFile)
+	case AnyRequestTypeFileRequest:
+		u.FileRequest = best.Value.(*FileRequest)
 		return nil
-	case AnyRequestUnionTypeActionRequest:
+	case AnyRequestTypeActionRequest:
 		u.ActionRequest = best.Value.(*ActionRequest)
 		return nil
-	case AnyRequestUnionTypeIntentRequest:
+	case AnyRequestTypeIntentRequest:
 		u.IntentRequest = best.Value.(*IntentRequest)
 		return nil
-	case AnyRequestUnionTypeEventRequest:
+	case AnyRequestTypeEventRequest:
 		u.EventRequest = best.Value.(*EventRequest)
 		return nil
-	case AnyRequestUnionTypePathRequest:
+	case AnyRequestTypePathRequest:
 		u.PathRequest = best.Value.(*PathRequest)
 		return nil
-	case AnyRequestUnionTypeNoReplyRequest:
+	case AnyRequestTypeNoReplyRequest:
 		u.NoReplyRequest = best.Value.(*NoReplyRequest)
 		return nil
-	case AnyRequestUnionTypeMessageRequest:
+	case AnyRequestTypeMessageRequest:
 		u.MessageRequest = best.Value.(*MessageRequest)
 		return nil
-	case AnyRequestUnionTypeEndRequest:
+	case AnyRequestTypeEndRequest:
 		u.EndRequest = best.Value.(*EndRequest)
 		return nil
-	case AnyRequestUnionTypeDTMFRequest:
+	case AnyRequestTypeDTMFRequest:
 		u.DTMFRequest = best.Value.(*DTMFRequest)
 		return nil
-	case AnyRequestUnionTypeLiveAgentHandoffRequest:
+	case AnyRequestTypeLiveAgentHandoffRequest:
 		u.LiveAgentHandoffRequest = best.Value.(*LiveAgentHandoffRequest)
 		return nil
-	case AnyRequestUnionTypeGeneralRequest:
+	case AnyRequestTypeGeneralRequest:
 		u.GeneralRequest = best.Value.(*GeneralRequest)
 		return nil
-	case AnyRequestUnionTypeAlexaIntentRequest:
+	case AnyRequestTypeAlexaIntentRequest:
 		u.AlexaIntentRequest = best.Value.(*AlexaIntentRequest)
 		return nil
-	case AnyRequestUnionTypeLegacyIntentRequest:
+	case AnyRequestTypeLegacyIntentRequest:
 		u.LegacyIntentRequest = best.Value.(*LegacyIntentRequest)
 		return nil
 	}
@@ -568,8 +381,8 @@ func (u AnyRequest) MarshalJSON() ([]byte, error) {
 		return utils.MarshalJSON(u.TextRequest, "", true)
 	}
 
-	if u.AnyRequestFile != nil {
-		return utils.MarshalJSON(u.AnyRequestFile, "", true)
+	if u.FileRequest != nil {
+		return utils.MarshalJSON(u.FileRequest, "", true)
 	}
 
 	if u.ActionRequest != nil {
