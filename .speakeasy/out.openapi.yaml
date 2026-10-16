@@ -13058,379 +13058,6 @@ components:
       type: http
       description: Voiceflow bearer token
   schemas:
-    TranscriptFilterArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/TranscriptFilter'
-    TranscriptFilter:
-      oneOf:
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - gt
-                - gte
-                - lt
-                - lte
-              x-enumNames:
-                - GREATER_THAN
-                - GREATER_THAN_OR_EQUAL
-                - LESS_THAN
-                - LESS_THAN_OR_EQUAL
-            value:
-              type: number
-          required:
-            - id
-            - op
-            - value
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - eq
-                - neq
-              x-enumNames:
-                - EQUALS
-                - NOT_EQUALS
-            value:
-              anyOf:
-                - anyOf:
-                    - type: string
-                    - type: number
-                - type: boolean
-          required:
-            - id
-            - op
-            - value
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - between
-              x-enumNames:
-                - BETWEEN
-            value:
-              type: array
-              items:
-                anyOf:
-                  - type: number
-                  - type: number
-              minItems: 2
-              maxItems: 2
-          required:
-            - id
-            - op
-            - value
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - in
-                - nin
-              x-enumNames:
-                - IN
-                - NOT_IN
-            value:
-              type: array
-              items:
-                anyOf:
-                  - type: string
-                  - type: number
-          required:
-            - id
-            - op
-            - value
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - contains
-              x-enumNames:
-                - CONTAINS
-            value:
-              type: string
-          required:
-            - id
-            - op
-            - value
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - exists
-                - not_exists
-              x-enumNames:
-                - EXISTS
-                - NOT_EXISTS
-          required:
-            - id
-            - op
-        - type: object
-          properties:
-            id:
-              type: string
-            op:
-              type: string
-              enum:
-                - json_contains
-              x-enumNames:
-                - JSONB_ARRAY_CONTAINS
-            value:
-              type: array
-              items:
-                type: object
-                additionalProperties: {}
-          required:
-            - id
-            - op
-            - value
-    AIModel:
-      type: string
-      enum:
-        - gpt-3.5-turbo-1106
-        - gpt-3.5-turbo
-        - gpt-4
-        - gpt-4o
-        - gpt-4o-mini
-        - gpt-4.1-2025-04-14
-        - gpt-4.1-mini-2025-04-14
-        - gpt-4.1-nano-2025-04-14
-        - gpt-o3-mini
-        - o3-2025-04-16
-        - o4-mini-2025-04-16
-        - gpt-5
-        - gpt-5-mini
-        - gpt-5-nano
-        - gpt-5.2
-        - gpt-5.4
-        - gpt-5.4-mini
-        - gpt-5.5
-        - gpt-5.6-sol
-        - gpt-5.6-terra
-        - gpt-5.6-luna
-        - gpt-6-sol
-        - gpt-6-luna
-        - gpt-6.1-sol
-        - gpt-realtime
-        - gpt-live-1
-        - claude-4-opus
-        - claude-4-sonnet
-        - claude-4.5-sonnet
-        - claude-4.6-sonnet
-        - claude-4.5-haiku
-        - claude-4.5-opus
-        - claude-4.7-opus
-        - bedrock-claude-4-sonnet
-        - bedrock-claude-4.5-sonnet
-        - bedrock-claude-4.6-sonnet
-        - bedrock-claude-5-sonnet
-        - bedrock-claude-5.5-sonnet
-        - bedrock-claude-4.5-haiku
-        - bedrock-claude-4.5-opus
-        - bedrock-claude-4.7-opus
-        - bedrock-claude-4.8-opus
-        - voiceflow-core-4.0
-        - voiceflow-core-4.1
-        - voiceflow-core-4.2
-        - voiceflow-flash-4.2
-        - gemini-2.5-pro
-        - gemini-2.5-flash
-        - gemini-live-2.5-flash
-        - gemini-3-flash
-        - gemini-3.5-flash
-        - gemini-3.1-pro
-        - gpt-oss-20b
-        - gpt-oss-120b
-        - llama-guard-4
-        - llama-3.1-instant
-        - llama-3.3-versatile
-        - qwen3.6-27b
-        - grok-4.6
-        - voiceflow-flash-4.1
-        - kimi-k3
-        - gemini-flash-2
-        - gpt-4-turbo
-        - claude-3.5-haiku
-        - claude-3-opus
-        - claude-3.7-sonnet
-        - claude-v2
-        - llama-3.2-1b-preview
-        - gemini-pro-1.5
-        - claude-3-haiku
-        - claude-3-sonnet
-        - text-davinci-003
-        - claude-v1
-        - claude-instant-v1
-        - deep-seek-r1-distill-llama-70B
-        - claude-3.5-sonnet
-      x-enumNames:
-        - GPT_3_5_TURBO_1106
-        - GPT_3_5_TURBO
-        - GPT_4
-        - GPT_4_O
-        - GPT_4_O_MINI
-        - GPT_4_1
-        - GPT_4_1_MINI
-        - GPT_4_1_NANO
-        - GPT_O_3_MINI
-        - GPT_O_3
-        - GPT_O_4_MINI
-        - GPT_5
-        - GPT_5_MINI
-        - GPT_5_NANO
-        - GPT_5_2
-        - GPT_5_4
-        - GPT_5_4_MINI
-        - GPT_5_5
-        - GPT_5_6_SOL
-        - GPT_5_6_TERRA
-        - GPT_5_6_LUNA
-        - GPT_6_SOL
-        - GPT_6_LUNA
-        - GPT_6_1_SOL
-        - GPT_REALTIME
-        - GPT_LIVE_1
-        - CLAUDE_4_OPUS
-        - CLAUDE_4_SONNET
-        - CLAUDE_4_5_SONNET
-        - CLAUDE_4_6_SONNET
-        - CLAUDE_4_5_HAIKU
-        - CLAUDE_4_5_OPUS
-        - CLAUDE_4_7_OPUS
-        - BEDROCK_CLAUDE_4_SONNET
-        - BEDROCK_CLAUDE_4_5_SONNET
-        - BEDROCK_CLAUDE_4_6_SONNET
-        - BEDROCK_CLAUDE_5_SONNET
-        - BEDROCK_CLAUDE_5_5_SONNET
-        - BEDROCK_CLAUDE_4_5_HAIKU
-        - BEDROCK_CLAUDE_4_5_OPUS
-        - BEDROCK_CLAUDE_4_7_OPUS
-        - BEDROCK_CLAUDE_4_8_OPUS
-        - VOICEFLOW_CORE_4_0
-        - VOICEFLOW_CORE_4_1
-        - VOICEFLOW_CORE_4_2
-        - VOICEFLOW_FLASH_4_2
-        - GEMINI_2_5_PRO
-        - GEMINI_2_5_FLASH
-        - GEMINI_LIVE_2_5_FLASH
-        - GEMINI_3_FLASH
-        - GEMINI_3_5_FLASH
-        - GEMINI_3_1_PRO
-        - GPT_OSS_20_B
-        - GPT_OSS_120_B
-        - LLAMA_GUARD_4
-        - LLAMA_3_1_INSTANT
-        - LLAMA_3_3_VERSATILE
-        - QWEN_3_6_27_B
-        - GROK_4_6
-        - VOICEFLOW_FLASH_4_1
-        - KIMI_K_3
-        - GEMINI_FLASH_2
-        - GPT_4_TURBO
-        - CLAUDE_3_5_HAIKU
-        - CLAUDE_3_OPUS
-        - CLAUDE_3_7_SONNET
-        - CLAUDE_V_2
-        - LLAMA_3_2_1_B_PREVIEW
-        - GEMINI_PRO_1_5
-        - CLAUDE_3_HAIKU
-        - CLAUDE_3_SONNET
-        - DA_VINCI_003
-        - CLAUDE_V_1
-        - CLAUDE_INSTANT_V_1
-        - DEEP_SEEK_R_1_DISTILL_LLAMA_70_B
-        - CLAUDE_3_5_SONNET
-    AIReasoningEffort:
-      type: string
-      enum:
-        - off
-        - adaptive
-        - minimal
-        - low
-        - medium
-        - high
-      x-enumNames:
-        - OFF
-        - ADAPTIVE
-        - MINIMAL
-        - LOW
-        - MEDIUM
-        - HIGH
-    TranscriptEvaluationRunScope:
-      type: string
-      enum:
-        - both
-        - draft
-        - published
-      x-enumNames:
-        - BOTH
-        - DRAFT
-        - PUBLISHED
-    TranscriptEvaluationOptionSchema:
-      type: object
-      properties:
-        value:
-          type: string
-          minLength: 1
-          maxLength: 100
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 10000
-        included:
-          type: boolean
-        color:
-          type: string
-      required:
-        - value
-        - prompt
-        - included
-        - color
-      additionalProperties: false
-    TranscriptEvaluationSettings:
-      nullable: true
-      type: object
-      properties:
-        model:
-          type: string
-        realtime:
-          type: object
-          properties:
-            voice:
-              type: string
-            eagerness:
-              type: string
-          additionalProperties: false
-        maxTokens:
-          type: number
-        temperature:
-          type: number
-        reasoningEffort:
-          anyOf:
-            - $ref: '#/components/schemas/AIReasoningEffort'
-            - type: string
-              nullable: true
-              enum:
-                - null
-      additionalProperties: false
     ToolNodeCaptureType:
       type: string
       enum:
@@ -14188,6 +13815,178 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/AIParamsServiceTier'
+    AIModel:
+      type: string
+      enum:
+        - gpt-3.5-turbo-1106
+        - gpt-3.5-turbo
+        - gpt-4
+        - gpt-4o
+        - gpt-4o-mini
+        - gpt-4.1-2025-04-14
+        - gpt-4.1-mini-2025-04-14
+        - gpt-4.1-nano-2025-04-14
+        - gpt-o3-mini
+        - o3-2025-04-16
+        - o4-mini-2025-04-16
+        - gpt-5
+        - gpt-5-mini
+        - gpt-5-nano
+        - gpt-5.2
+        - gpt-5.4
+        - gpt-5.4-mini
+        - gpt-5.5
+        - gpt-5.6-sol
+        - gpt-5.6-terra
+        - gpt-5.6-luna
+        - gpt-6-sol
+        - gpt-6-luna
+        - gpt-6.1-sol
+        - gpt-realtime
+        - gpt-live-1
+        - claude-4-opus
+        - claude-4-sonnet
+        - claude-4.5-sonnet
+        - claude-4.6-sonnet
+        - claude-4.5-haiku
+        - claude-4.5-opus
+        - claude-4.7-opus
+        - bedrock-claude-4-sonnet
+        - bedrock-claude-4.5-sonnet
+        - bedrock-claude-4.6-sonnet
+        - bedrock-claude-5-sonnet
+        - bedrock-claude-5.5-sonnet
+        - bedrock-claude-4.5-haiku
+        - bedrock-claude-4.5-opus
+        - bedrock-claude-4.7-opus
+        - bedrock-claude-4.8-opus
+        - voiceflow-core-4.0
+        - voiceflow-core-4.1
+        - voiceflow-core-4.2
+        - voiceflow-flash-4.2
+        - gemini-2.5-pro
+        - gemini-2.5-flash
+        - gemini-live-2.5-flash
+        - gemini-3-flash
+        - gemini-3.5-flash
+        - gemini-3.1-pro
+        - gpt-oss-20b
+        - gpt-oss-120b
+        - llama-guard-4
+        - llama-3.1-instant
+        - llama-3.3-versatile
+        - qwen3.6-27b
+        - grok-4.6
+        - voiceflow-flash-4.1
+        - kimi-k3
+        - gemini-flash-2
+        - gpt-4-turbo
+        - claude-3.5-haiku
+        - claude-3-opus
+        - claude-3.7-sonnet
+        - claude-v2
+        - llama-3.2-1b-preview
+        - gemini-pro-1.5
+        - claude-3-haiku
+        - claude-3-sonnet
+        - text-davinci-003
+        - claude-v1
+        - claude-instant-v1
+        - deep-seek-r1-distill-llama-70B
+        - claude-3.5-sonnet
+      x-enumNames:
+        - GPT_3_5_TURBO_1106
+        - GPT_3_5_TURBO
+        - GPT_4
+        - GPT_4_O
+        - GPT_4_O_MINI
+        - GPT_4_1
+        - GPT_4_1_MINI
+        - GPT_4_1_NANO
+        - GPT_O_3_MINI
+        - GPT_O_3
+        - GPT_O_4_MINI
+        - GPT_5
+        - GPT_5_MINI
+        - GPT_5_NANO
+        - GPT_5_2
+        - GPT_5_4
+        - GPT_5_4_MINI
+        - GPT_5_5
+        - GPT_5_6_SOL
+        - GPT_5_6_TERRA
+        - GPT_5_6_LUNA
+        - GPT_6_SOL
+        - GPT_6_LUNA
+        - GPT_6_1_SOL
+        - GPT_REALTIME
+        - GPT_LIVE_1
+        - CLAUDE_4_OPUS
+        - CLAUDE_4_SONNET
+        - CLAUDE_4_5_SONNET
+        - CLAUDE_4_6_SONNET
+        - CLAUDE_4_5_HAIKU
+        - CLAUDE_4_5_OPUS
+        - CLAUDE_4_7_OPUS
+        - BEDROCK_CLAUDE_4_SONNET
+        - BEDROCK_CLAUDE_4_5_SONNET
+        - BEDROCK_CLAUDE_4_6_SONNET
+        - BEDROCK_CLAUDE_5_SONNET
+        - BEDROCK_CLAUDE_5_5_SONNET
+        - BEDROCK_CLAUDE_4_5_HAIKU
+        - BEDROCK_CLAUDE_4_5_OPUS
+        - BEDROCK_CLAUDE_4_7_OPUS
+        - BEDROCK_CLAUDE_4_8_OPUS
+        - VOICEFLOW_CORE_4_0
+        - VOICEFLOW_CORE_4_1
+        - VOICEFLOW_CORE_4_2
+        - VOICEFLOW_FLASH_4_2
+        - GEMINI_2_5_PRO
+        - GEMINI_2_5_FLASH
+        - GEMINI_LIVE_2_5_FLASH
+        - GEMINI_3_FLASH
+        - GEMINI_3_5_FLASH
+        - GEMINI_3_1_PRO
+        - GPT_OSS_20_B
+        - GPT_OSS_120_B
+        - LLAMA_GUARD_4
+        - LLAMA_3_1_INSTANT
+        - LLAMA_3_3_VERSATILE
+        - QWEN_3_6_27_B
+        - GROK_4_6
+        - VOICEFLOW_FLASH_4_1
+        - KIMI_K_3
+        - GEMINI_FLASH_2
+        - GPT_4_TURBO
+        - CLAUDE_3_5_HAIKU
+        - CLAUDE_3_OPUS
+        - CLAUDE_3_7_SONNET
+        - CLAUDE_V_2
+        - LLAMA_3_2_1_B_PREVIEW
+        - GEMINI_PRO_1_5
+        - CLAUDE_3_HAIKU
+        - CLAUDE_3_SONNET
+        - DA_VINCI_003
+        - CLAUDE_V_1
+        - CLAUDE_INSTANT_V_1
+        - DEEP_SEEK_R_1_DISTILL_LLAMA_70_B
+        - CLAUDE_3_5_SONNET
+    AIReasoningEffort:
+      type: string
+      enum:
+        - off
+        - adaptive
+        - minimal
+        - low
+        - medium
+        - high
+      x-enumNames:
+        - OFF
+        - ADAPTIVE
+        - MINIMAL
+        - LOW
+        - MEDIUM
+        - HIGH
     AIParamsServiceTier:
       type: string
       enum:
@@ -15924,6 +15723,63 @@ components:
       required:
         - stepID
         - diagramID
+    TranscriptEvaluationSettings:
+      nullable: true
+      type: object
+      properties:
+        model:
+          type: string
+        realtime:
+          type: object
+          properties:
+            voice:
+              type: string
+            eagerness:
+              type: string
+          additionalProperties: false
+        maxTokens:
+          type: number
+        temperature:
+          type: number
+        reasoningEffort:
+          anyOf:
+            - $ref: '#/components/schemas/AIReasoningEffort'
+            - type: string
+              nullable: true
+              enum:
+                - null
+      additionalProperties: false
+    TranscriptEvaluationRunScope:
+      type: string
+      enum:
+        - both
+        - draft
+        - published
+      x-enumNames:
+        - BOTH
+        - DRAFT
+        - PUBLISHED
+    TranscriptEvaluationOptionSchema:
+      type: object
+      properties:
+        value:
+          type: string
+          minLength: 1
+          maxLength: 100
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        included:
+          type: boolean
+        color:
+          type: string
+      required:
+        - value
+        - prompt
+        - included
+        - color
+      additionalProperties: false
     VersionModel:
       type: object
       properties:
@@ -21534,6 +21390,150 @@ components:
         - metadataFieldID
         - documentID
         - versionID
+    TranscriptFilterArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/TranscriptFilter'
+    TranscriptFilter:
+      oneOf:
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - gt
+                - gte
+                - lt
+                - lte
+              x-enumNames:
+                - GREATER_THAN
+                - GREATER_THAN_OR_EQUAL
+                - LESS_THAN
+                - LESS_THAN_OR_EQUAL
+            value:
+              type: number
+          required:
+            - id
+            - op
+            - value
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - eq
+                - neq
+              x-enumNames:
+                - EQUALS
+                - NOT_EQUALS
+            value:
+              anyOf:
+                - anyOf:
+                    - type: string
+                    - type: number
+                - type: boolean
+          required:
+            - id
+            - op
+            - value
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - between
+              x-enumNames:
+                - BETWEEN
+            value:
+              type: array
+              items:
+                anyOf:
+                  - type: number
+                  - type: number
+              minItems: 2
+              maxItems: 2
+          required:
+            - id
+            - op
+            - value
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - in
+                - nin
+              x-enumNames:
+                - IN
+                - NOT_IN
+            value:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+          required:
+            - id
+            - op
+            - value
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - contains
+              x-enumNames:
+                - CONTAINS
+            value:
+              type: string
+          required:
+            - id
+            - op
+            - value
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - exists
+                - not_exists
+              x-enumNames:
+                - EXISTS
+                - NOT_EXISTS
+          required:
+            - id
+            - op
+        - type: object
+          properties:
+            id:
+              type: string
+            op:
+              type: string
+              enum:
+                - json_contains
+              x-enumNames:
+                - JSONB_ARRAY_CONTAINS
+            value:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+          required:
+            - id
+            - op
+            - value
     StableAgentReadV2:
       type: object
       properties:
