@@ -16712,6 +16712,9 @@ components:
         maxDuration:
           allOf:
             - $ref: '#/components/schemas/VoiceMaxDurationSettings'
+        callerIdentity:
+          allOf:
+            - $ref: '#/components/schemas/VersionSettingsVoiceCallerIdentity'
     STTSettings:
       oneOf:
         - $ref: '#/components/schemas/ElevenLabsSTTSettings'
@@ -18263,6 +18266,14 @@ components:
         - enabled
         - seconds
         - message
+    VersionSettingsVoiceCallerIdentity:
+      type: string
+      enum:
+        - phone-number
+        - call
+      x-enumNames:
+        - PHONE_NUMBER
+        - CALL
     WidgetSettings:
       type: object
       properties:
@@ -22178,6 +22189,9 @@ components:
             maxDuration:
               allOf:
                 - $ref: '#/components/schemas/VoiceMaxDurationSettings'
+            callerIdentity:
+              allOf:
+                - $ref: '#/components/schemas/VersionSettingsVoiceCallerIdentity'
       additionalProperties: false
     StableInstructionsReadResponse:
       type: object

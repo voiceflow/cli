@@ -1736,6 +1736,7 @@ type StableAgentUpdateRequestV2Voice struct {
 	KeypadInput             *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
 	SilenceTimeoutMs        *float64                                   `json:"silenceTimeoutMs,omitzero"`
 	MaxDuration             *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
+	CallerIdentity          *VersionSettingsVoiceCallerIdentity        `json:"callerIdentity,omitzero"`
 }
 
 func (s StableAgentUpdateRequestV2Voice) MarshalJSON() ([]byte, error) {
@@ -1929,6 +1930,13 @@ func (s *StableAgentUpdateRequestV2Voice) GetMaxDuration() *VoiceMaxDurationSett
 		return nil
 	}
 	return s.MaxDuration
+}
+
+func (s *StableAgentUpdateRequestV2Voice) GetCallerIdentity() *VersionSettingsVoiceCallerIdentity {
+	if s == nil {
+		return nil
+	}
+	return s.CallerIdentity
 }
 
 // #region class-body-stableagentupdaterequestv2voice
