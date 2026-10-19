@@ -21,6 +21,7 @@ type VersionSettingsVoice struct {
 	KeypadInput             *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
 	SilenceTimeoutMs        *float64                                   `json:"silenceTimeoutMs,omitzero"`
 	MaxDuration             *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
+	CallerIdentity          *VersionSettingsVoiceCallerIdentity        `json:"callerIdentity,omitzero"`
 }
 
 func (v VersionSettingsVoice) MarshalJSON() ([]byte, error) {
@@ -214,4 +215,11 @@ func (v *VersionSettingsVoice) GetMaxDuration() *VoiceMaxDurationSettings {
 		return nil
 	}
 	return v.MaxDuration
+}
+
+func (v *VersionSettingsVoice) GetCallerIdentity() *VersionSettingsVoiceCallerIdentity {
+	if v == nil {
+		return nil
+	}
+	return v.CallerIdentity
 }
