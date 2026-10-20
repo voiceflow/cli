@@ -4980,6 +4980,58 @@ paths:
         - Transcript
       security:
         - token: []
+  /v1/stable/transcript/{transcriptID}/logs:
+    post:
+      operationId: StableTranscriptController_queryLogs
+      x-vf:
+        mcp:
+          tool: voiceflow_transcript
+          toolDescription: |-
+            Read and search post-hoc transcripts of live conversations. Searchable by date range, tags, custom transcript properties, and evaluation results. The transcript surface is the heart of the iterate loop — it's where you see what actually happened so you can fix the build.
+            Predecessor: read the project first.
+            Successor: run evaluations on the selected transcripts; or head back to the build surfaces (playbooks, functions, and so on) once root cause is identified.
+          operation: query_logs
+          operationDescription: |-
+            WHAT — Query one transcript's logs: filter the entries by kind, level, debug kind, turn or a plain-text search (case-insensitive, with | between alternatives that match any), and page through the matches. Every result also counts the whole log's entries and sums its token use per model.
+            Body: { kinds?, levels?, debugKinds?, turns?, search?, detail?, limit?, offset?, order? }, every field optional. Kinds: user, agent, debug, check, system. Debug kinds: llm, tokens, tool, agent, kb, variables, node, other. { "levels": ["fatal", "error", "warn"] } lists what went wrong; { "debugKinds": ["tool"], "turns": [2] } lists the tool calls of turn 2. Works for live conversations and Debug Mode sessions alike.
+            USE WHEN — Diagnosing one conversation when you need certain entries (errors and warnings, one turn, tool calls, variable changes, model calls or token use) rather than the whole transcript.
+            BEFORE — voiceflow_transcript.search for the transcriptID.
+            DO NOT — Page through the whole log entry by entry. Filter first; the counts in any result show what the log holds.
+        cli:
+          command: transcript query-logs
+      x-speakeasy-group: transcript
+      x-speakeasy-name-override: query-logs
+      summary: Query transcript logs
+      description: Filter and page a transcript's logs.
+      parameters:
+        - name: transcriptID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableLogQueryRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableLogQueryResponse'
+      tags:
+        - Transcript
+      security:
+        - token: []
   /v1/stable/transcript-property:
     get:
       operationId: StableTranscriptPropertyController_list
@@ -11249,6 +11301,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableTestRunResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
+  /v1/stable/test-run/{runID}/logs:
+    post:
+      operationId: StableTestRunController_queryLogs
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: query_run_logs
+          operationDescription: |-
+            WHAT — Query one test run's logs: filter the entries by kind, level, debug kind, turn or text they contain, and page through the matches. Every result also counts the whole log's entries and sums its token use per model.
+            Body: { kinds?, levels?, debugKinds?, turns?, search?, detail?, limit?, offset?, order? }, every field optional. Kinds: user, agent, debug, check, system. Debug kinds: llm, tokens, tool, agent, kb, variables, node, other. { "levels": ["fatal", "error", "warn"] } lists what went wrong; { "debugKinds": ["tool"], "turns": [2] } lists the tool calls of turn 2. Search is plain text, ignoring case: { "search": "timeout|denied" } keeps the entries that contain either word.
+            USE WHEN — A test run failed or behaved unexpectedly and you need certain entries (failed checks, errors and warnings, tool calls, variable changes, model calls or token use) rather than the whole log.
+            BEFORE — voiceflow_test.get_run or voiceflow_test.search_runs for the runID.
+            DO NOT — Page through the whole log entry by entry. Filter first; the counts in any result show what the log holds.
+        cli:
+          command: test run query-logs
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: query-logs
+      summary: Query run logs
+      description: Filter and page a run's logs.
+      parameters:
+        - name: runID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableLogQueryRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableLogQueryResponse'
       tags:
         - Test Run
       security:
@@ -31643,6 +31754,396 @@ components:
           description: The files attached to the transcript that are stored on Voiceflow.
       required:
         - files
+    StableLogCounts:
+      type: object
+      properties:
+        byKind:
+          type: object
+          properties:
+            user:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            agent:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            debug:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            check:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            system:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+          required:
+            - user
+            - agent
+            - debug
+            - check
+            - system
+        byLevel:
+          type: object
+          properties:
+            fatal:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            error:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            warn:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            info:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            debug:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+          required:
+            - fatal
+            - error
+            - warn
+            - info
+            - debug
+        byDebugKind:
+          type: object
+          properties:
+            llm:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            tokens:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            tool:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            agent:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            kb:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            variables:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            node:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+            other:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+          required:
+            - llm
+            - tokens
+            - tool
+            - agent
+            - kb
+            - variables
+            - node
+            - other
+      required:
+        - byKind
+        - byLevel
+        - byDebugKind
+      description: How many entries of each kind, level and debug kind the whole log holds, before any filter.
+    StableLogTokenUsage:
+      type: object
+      properties:
+        model:
+          type: string
+        calls:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Model calls that logged their token use.
+        inputTokens:
+          type: number
+        outputTokens:
+          type: number
+        totalTokens:
+          type: number
+        credits:
+          type: number
+          description: Voiceflow credits the calls used, 0 when the log does not record them.
+      required:
+        - model
+        - calls
+        - inputTokens
+        - outputTokens
+        - totalTokens
+        - credits
+    StableLogEntry:
+      type: object
+      properties:
+        index:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Where the entry sits in the whole log, oldest first, from 0.
+        turn:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: The turn of the entry. Each user input, a launch included, starts the next turn. Anything logged before the first input, such as a test run's greeting, is turn 0.
+        time:
+          type: string
+          description: When the entry was logged, as an ISO 8601 timestamp.
+        kind:
+          $ref: '#/components/schemas/StableLogEntryKind'
+        type:
+          type: string
+          description: The trace or request type as recorded, such as text, debug, launch or end.
+        level:
+          $ref: '#/components/schemas/StableLogLevel'
+        debugKinds:
+          description: Debug entries only. An entry can be of several kinds.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableLogDebugKind'
+        source:
+          description: 'Debug entries only: the part of the runtime that logged it, such as Agent.'
+          type: string
+        ref:
+          allOf:
+            - $ref: '#/components/schemas/StableLogEntryRef'
+        message:
+          type: string
+          description: What happened, in one line of at most 500 characters.
+        fields:
+          description: Up to 24 small values recorded with the entry, such as model, tokens, latency, status or a variable before and after. Nested keys are joined with dots, and strings are cut at 200 characters.
+          type: object
+          additionalProperties:
+            anyOf:
+              - type: string
+              - type: number
+              - type: boolean
+              - type: string
+                nullable: true
+                enum:
+                  - null
+        raw:
+          description: 'With detail full only: the entry as recorded, with strings cut at 4,000 characters and lists at 50 items.'
+          type: object
+          additionalProperties: {}
+      required:
+        - index
+        - turn
+        - time
+        - kind
+        - type
+        - level
+        - message
+    StableLogEntryKind:
+      type: string
+      enum:
+        - user
+        - agent
+        - debug
+        - check
+        - system
+      description: 'user: what the user sent. agent: what the agent said or showed. debug: a runtime debug log. check: a test check result, test runs only. system: any other event, such as a block, a workflow or the end.'
+      x-enumNames:
+        - USER
+        - AGENT
+        - DEBUG
+        - CHECK
+        - SYSTEM
+    StableLogLevel:
+      type: string
+      enum:
+        - fatal
+        - error
+        - warn
+        - info
+        - debug
+      description: A debug log carries its own level. A failed check is error. Every other entry is info.
+      x-enumNames:
+        - FATAL
+        - ERROR
+        - WARN
+        - INFO
+        - DEBUG
+    StableLogDebugKind:
+      type: string
+      enum:
+        - llm
+        - tokens
+        - tool
+        - agent
+        - kb
+        - variables
+        - node
+        - other
+      description: 'llm: a model call and its result. tokens: token and credit use of one model call. tool: a tool call or its result (functions, API tools, integrations, MCP tools). agent: an agent or playbook starting, ending or handing over. kb: a knowledge base search. variables: variable changes. node: a workflow step. other: anything else.'
+      x-enumNames:
+        - LLM
+        - TOKENS
+        - TOOL
+        - AGENT
+        - KB
+        - VARIABLES
+        - NODE
+        - OTHER
+    StableLogEntryRef:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'What the entry is about: agent, function, api-tool, integration-tool, prompt or node.'
+        id:
+          description: The ID of that agent, tool, prompt or workflow step.
+          type: string
+        name:
+          description: Its name; for a workflow step, the name of its workflow.
+          type: string
+      required:
+        - type
+    StableLogQueryResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Entries in the whole log.
+        turnCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: The last turn the log reaches.
+        counts:
+          $ref: '#/components/schemas/StableLogCounts'
+        tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableLogTokenUsage'
+          description: Token use per model over the whole log, largest first.
+        matches:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Entries that pass every filter.
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableLogEntry'
+          description: This page of the matching entries.
+        hasMore:
+          type: boolean
+        nextOffset:
+          nullable: true
+          description: The offset of the next page, or null when this page reaches the last match.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        truncated:
+          type: boolean
+          description: True when the page stopped before limit to stay under about 30,000 tokens. Continue from nextOffset.
+      required:
+        - total
+        - turnCount
+        - counts
+        - tokens
+        - matches
+        - entries
+        - hasMore
+        - nextOffset
+        - truncated
+    StableLogDetail:
+      type: string
+      enum:
+        - summary
+        - full
+      description: 'summary: each entry with a one-line message and its small recorded values. full: also the entry as recorded, with strings cut at 4,000 characters and lists at 50 items.'
+      x-enumNames:
+        - SUMMARY
+        - FULL
+    StableLogOrder:
+      type: string
+      enum:
+        - asc
+        - desc
+      description: 'asc: oldest first. desc: newest first.'
+      x-enumNames:
+        - ASC
+        - DESC
+    StableLogQueryRequest:
+      type: object
+      properties:
+        kinds:
+          description: Keep only entries of these kinds. Omit to keep every kind.
+          minItems: 1
+          maxItems: 5
+          type: array
+          items:
+            $ref: '#/components/schemas/StableLogEntryKind'
+        levels:
+          description: Keep only entries at these levels, for example ["fatal", "error", "warn"] for what went wrong.
+          minItems: 1
+          maxItems: 5
+          type: array
+          items:
+            $ref: '#/components/schemas/StableLogLevel'
+        debugKinds:
+          description: Keep only debug entries of these kinds. Setting it leaves out every entry that is not a debug log.
+          minItems: 1
+          maxItems: 8
+          type: array
+          items:
+            $ref: '#/components/schemas/StableLogDebugKind'
+        turns:
+          description: Keep only entries of these turns. Turn 0 holds anything logged before the first input.
+          minItems: 1
+          maxItems: 100
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            maximum: 9.007199254740991e+15
+        search:
+          description: Keep only entries whose message or recorded data contains this text, ignoring case. It is plain text, not a regular expression. Separate alternatives with |, as in "timeout|denied", to keep entries that contain any of them.
+          type: string
+          minLength: 1
+          maxLength: 256
+        detail:
+          default: summary
+          allOf:
+            - $ref: '#/components/schemas/StableLogDetail'
+        limit:
+          default: 50
+          description: The most entries to return in one page.
+          type: integer
+          minimum: 1
+          maximum: 200
+        offset:
+          default: 0
+          description: How many matching entries to skip, for paging.
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+        order:
+          default: asc
+          allOf:
+            - $ref: '#/components/schemas/StableLogOrder'
+      additionalProperties: false
     StableEvaluation:
       allOf:
         - type: object

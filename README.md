@@ -411,6 +411,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`search`](docs/vf_transcript_search.md) - Search transcripts
 * [`get`](docs/vf_transcript_get.md) - Get transcript
 * [`files`](docs/vf_transcript_files.md) - List transcript files
+* [`query-logs`](docs/vf_transcript_query-logs.md) - Query transcript logs
 
 #### [property](docs/vf_transcript_property.md)
 
@@ -577,6 +578,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`search`](docs/vf_test_run_search.md) - Search runs
 * [`create`](docs/vf_test_run_create.md) - Create run
 * [`get`](docs/vf_test_run_get.md) - Get run
+* [`query-logs`](docs/vf_test_run_query-logs.md) - Query run logs
 
 ### [widget](docs/vf_widget.md)
 

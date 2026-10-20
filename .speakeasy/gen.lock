@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: f1b87b08217fc990855088efd732b9c9
+  docChecksum: 5f15bfad06e3828b37cac36abeffb1cf
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.287
-  configChecksum: 27b746ec6c7a03bd5ee617896d0ead78
+  releaseVersion: 0.2.288
+  configChecksum: b7fa5df2fb4e3843c09da6c04a584c8a
 persistentEdits:
-  generation_id: 890d153c-75be-44db-aa71-865d62506b9e
-  pristine_commit_hash: c8530f0e7f8c4bfe9c888e0278dc9968aa76aaa5
-  pristine_tree_hash: 676f59691591857c72d3700bddcec730ecb835cc
+  generation_id: 208719a2-5b3e-486d-8bae-22edbd3a7379
+  pristine_commit_hash: 71bae4f72e8ab3963e88ab8d0cdeeeb472d312bd
+  pristine_tree_hash: 09cdfcad5db30c5180c226be744f648578a7fb7e
 features:
   cli:
     additionalProperties: 0.0.1
@@ -852,10 +852,14 @@ trackedFiles:
     id: e5dbc1843148
     last_write_checksum: sha1:a8e75dbe2162fc91cbd5da8e68bb7e14cae59c22
     pristine_git_object: c03fd5681bbf649383809782f6345d1faa31039c
+  internal/cli/test/run/querylogs.go:
+    id: 22aa107f08ce
+    last_write_checksum: sha1:4020816d4d4be25c8879dc49c721c5f33369e3bd
+    pristine_git_object: f76745addc7a03b2968e50f7453a84e9aa5eb919
   internal/cli/test/run/root.go:
     id: bbce01081934
-    last_write_checksum: sha1:5db7f1374c4dbac68f4a5171efffb5fbd5200513
-    pristine_git_object: 30922df2d4fcfffdf081d57c8e87cd6ce4aab394
+    last_write_checksum: sha1:9ffbe5a7b26624e0096732419c5fa1044b444a42
+    pristine_git_object: fed0ef0b5872dc41851e608b251b0f3facabfa37
   internal/cli/test/run/search.go:
     id: f39d780b2574
     last_write_checksum: sha1:564017351e2b261ff3f9b020aa67ffdd9553b5c1
@@ -948,10 +952,14 @@ trackedFiles:
     id: 9611d23f2f09
     last_write_checksum: sha1:c614fa05758e828b5344ce89d37e1094530ea308
     pristine_git_object: f7369662cce51d29498b2fb7ba5dfa8d7f44d3e8
+  internal/cli/transcript/querylogs.go:
+    id: 073cb01da98b
+    last_write_checksum: sha1:35a4a4cc4f6600021fc31a1ac2a6c7f602153ac4
+    pristine_git_object: 44cf6c8e0c5f100e58235730280deeb52b6fc1e7
   internal/cli/transcript/root.go:
     id: 1c7b28fbd7c9
-    last_write_checksum: sha1:ff598a696c6139acd117063a7f80c5b91f2dd851
-    pristine_git_object: 1be7ad9783c6d9ec238d9ffaf34b36e3e0ef3423
+    last_write_checksum: sha1:b932cea2043797b34f9ed1ab26f43591b62fd839
+    pristine_git_object: 9bb6f17c5e6f84ed0724a43541e2373633468304
   internal/cli/transcript/search.go:
     id: e21e4645afa9
     last_write_checksum: sha1:169deeef5aeadc1aeee0fcc41502229feb637cef
@@ -982,8 +990,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:73525084e14929c3a8e4c5d4dc48de8c3833ea10
-    pristine_git_object: 0c1a3aaa009a377ce467e55f3573f619bb81ef41
+    last_write_checksum: sha1:edd56dd00c9c2e65ade628458bd34de4cdaf5565
+    pristine_git_object: d11832fa13d318fab9d0a8578048c71b2294099f
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -2488,6 +2496,42 @@ trackedFiles:
     id: 2834642351bc
     last_write_checksum: sha1:4037de74606d7f22b122aa76ea2b6e61d874c2f4
     pristine_git_object: fd75dbea546dd5eda0f1d23563dbab5a55138346
+  internal/sdk/models/components/stablelogcounts.go:
+    id: 98ef3897e05d
+    last_write_checksum: sha1:c85a027a145b4ac33bd05872165481b648842cc0
+    pristine_git_object: f259f664fe5529ac0188a525b677a5b5e3ba589b
+  internal/sdk/models/components/stablelogdebugkind.go:
+    id: 353a51e2beda
+    last_write_checksum: sha1:95d326769498109535bb1027fe8fd844f39929e3
+    pristine_git_object: 2c00d823299401f4a089454fa451502f59e2dd31
+  internal/sdk/models/components/stablelogentry.go:
+    id: d8f8a27fa7cf
+    last_write_checksum: sha1:f0d8afafdc517bc9789f6606e827fcc212e05177
+    pristine_git_object: c1461d9bca0ce09164f3ecafb82015b339748574
+  internal/sdk/models/components/stablelogentrykind.go:
+    id: 77fe39939bbe
+    last_write_checksum: sha1:ee763414dc730611a6ee09b63d36223e93b9734a
+    pristine_git_object: 253511ddae0647173a5940e315831ec8030fe7a8
+  internal/sdk/models/components/stablelogentryref.go:
+    id: 5e9def112183
+    last_write_checksum: sha1:1c5f4dcafcd96988cd979024693db9c19281c5a9
+    pristine_git_object: 212b0aedc8bd8822e144a4e6e5549c8cf7cbd66c
+  internal/sdk/models/components/stableloglevel.go:
+    id: a1c13018debf
+    last_write_checksum: sha1:b1613b2c9b178808cf6dc0ff7d17c36a1680d761
+    pristine_git_object: f7b4db88a11991c36e6da4835ca9ccbc26e986bb
+  internal/sdk/models/components/stablelogqueryrequest.go:
+    id: 0cd6df822d94
+    last_write_checksum: sha1:241b04437110559f57fdc832ce93b5370f767476
+    pristine_git_object: 3162c3893947ecfb095837c0463184bcac764924
+  internal/sdk/models/components/stablelogqueryresponse.go:
+    id: 6b35941295e6
+    last_write_checksum: sha1:a3b20368d5f3ecb933eb36607a5821a7e5968a3a
+    pristine_git_object: 5085f5825e75d3bd1772c13c5c16f45d60b8248d
+  internal/sdk/models/components/stablelogtokenusage.go:
+    id: 237314dfc046
+    last_write_checksum: sha1:61b032ffe23b127efbec22bb104f05ebba52320e
+    pristine_git_object: 02b89b7d2986aae84b9b6c95bba449eee4da75c0
   internal/sdk/models/components/stablemarkdownupdateresponse.go:
     id: 5694c3010d5c
     last_write_checksum: sha1:333f117b70342f5758d42c3d469a0475efb3a013
@@ -4380,6 +4424,10 @@ trackedFiles:
     id: e97a54952b2d
     last_write_checksum: sha1:db655ca2b6450868464ece91fb40a1de61e22313
     pristine_git_object: c41b68e767959001576c7cf58e8243a0d7993bf7
+  internal/sdk/models/operations/stabletestruncontrollerquerylogs.go:
+    id: 81220ace7da2
+    last_write_checksum: sha1:0b3180d1ebb2832eb846a6e35dae1d19f39faf71
+    pristine_git_object: b5711cc5667bcefe7b2bb29ebf3a47a645bc2439
   internal/sdk/models/operations/stabletestruncontrollersearch.go:
     id: a440ba4ad75a
     last_write_checksum: sha1:2c65fe268453d528604c7e113c8d0dd9c1a2e2a5
@@ -4432,6 +4480,10 @@ trackedFiles:
     id: 6d38534e56a0
     last_write_checksum: sha1:a42819530962ff732aa9b9b0d793214ba59884b8
     pristine_git_object: d31bbddbfb0db1121e499c0a525b95bbef646d7a
+  internal/sdk/models/operations/stabletranscriptcontrollerquerylogs.go:
+    id: 43a23d7850c4
+    last_write_checksum: sha1:81dcf7f3cd566fcdf3279be772ec7b589dc6e8fc
+    pristine_git_object: 0f0f38f04b55f682c7b609d62bab335225f03548
   internal/sdk/models/operations/stabletranscriptcontrollersearch.go:
     id: 83eb7c350496
     last_write_checksum: sha1:18425e29adc6ba04cc5f5f3d20e63bf4c14e086c
@@ -4638,8 +4690,8 @@ trackedFiles:
     pristine_git_object: 225f89fa83232afd070195744a60dbcf308996a7
   internal/sdk/run.go:
     id: dca3410eb057
-    last_write_checksum: sha1:828afbe5d64e36c66ef1bf87596885bec93cc45c
-    pristine_git_object: 84578b9598d42742c0db89c54ea88df38510e716
+    last_write_checksum: sha1:200023b9824b719900161a2527a53df10faf1e52
+    pristine_git_object: 9d1b6f0e83a85f93ab8c81415f196cc3a505be69
   internal/sdk/sdkinternal/config/sdkconfiguration.go:
     id: f175ab9b0273
     last_write_checksum: sha1:9f5606102d50fb2feccd2d043cc7565139ae9144
@@ -4718,8 +4770,8 @@ trackedFiles:
     pristine_git_object: f4e87c4940f2b74583628a67c2ea475041ae95cb
   internal/sdk/transcript.go:
     id: 35ddeb311dd8
-    last_write_checksum: sha1:26c7a072621ce93daa4fc9efabf2fb066ac5e98f
-    pristine_git_object: 5b682eda89d2906f1225f0cc04e205a1dd14dd7c
+    last_write_checksum: sha1:700b95a7b42ec11c23f7898177c980370ff62904
+    pristine_git_object: ff45fc2826148048fdd8e7663ce45c811712adbe
   internal/sdk/turn.go:
     id: bc0cca750730
     last_write_checksum: sha1:8a7fbad9527cd110be7cdf20561b201e360d0182
@@ -4766,8 +4818,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:5b128b226ed46ed0d833c0aae34a0f1a6f4879b4
-    pristine_git_object: 32c94a9e601cfcafd92a16a6b7ad418c0c2f20e8
+    last_write_checksum: sha1:4e120ce0f77c5794f3cb2d02254d015adb661473
+    pristine_git_object: 265bc648d3b61ada0e643c453f08b5e10aa00bfe
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -7744,4 +7796,29 @@ examples:
       responses:
         "200":
           application/json: {"document": {"id": "<id>", "data": {"type": "pdf", "name": "<value>"}, "status": {"type": "INITIALIZED"}, "smartChunking": {}}}
+  StableTranscriptController_queryLogs:
+    speakeasy-default-stable-transcript-controller-query-logs:
+      parameters:
+        path:
+          transcriptID: "<id>"
+        query:
+          projectID: "<id>"
+      requestBody:
+        application/json: {"detail": "summary", "limit": 50, "offset": 0, "order": "asc"}
+      responses:
+        "200":
+          application/json: {"total": 349174, "turnCount": 456975, "counts": {"byKind": {"user": 949716, "agent": 312485, "debug": 822957, "check": 437371, "system": 392356}, "byLevel": {"fatal": 953453, "error": 336134, "warn": 432951, "info": 414309, "debug": 373368}, "byDebugKind": {"llm": 473905, "tokens": 20751, "tool": 664459, "agent": 720622, "kb": 360202, "variables": 423333, "node": 802984, "other": 90676}}, "tokens": [{"model": "F-150", "calls": 622106, "inputTokens": 5746.92, "outputTokens": 4137.23, "totalTokens": 7213.26, "credits": 8763.29}], "matches": 752868, "entries": [{"index": 101833, "turn": 818734, "time": "<value>", "kind": "agent", "type": "<value>", "level": "warn", "message": "<value>"}], "hasMore": false, "nextOffset": 407255, "truncated": true}
+  StableTestRunController_queryLogs:
+    speakeasy-default-stable-test-run-controller-query-logs:
+      parameters:
+        path:
+          runID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"detail": "summary", "limit": 50, "offset": 0, "order": "asc"}
+      responses:
+        "200":
+          application/json: {"total": 525911, "turnCount": 752577, "counts": {"byKind": {"user": 73219, "agent": 546486, "debug": 10563, "check": 414161, "system": 334803}, "byLevel": {"fatal": 275718, "error": 785217, "warn": 824183, "info": 523773, "debug": 948370}, "byDebugKind": {"llm": 71933, "tokens": 812961, "tool": 985040, "agent": 404801, "kb": 493929, "variables": 214841, "node": 486827, "other": 300666}}, "tokens": [], "matches": 181868, "entries": [], "hasMore": false, "nextOffset": 8167, "truncated": false}
 examplesVersion: 1.0.2
