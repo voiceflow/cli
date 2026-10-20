@@ -33,6 +33,10 @@ func InitRunRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initQueryLogsCmd(RunCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(RunCmd)
 	return nil
 }
