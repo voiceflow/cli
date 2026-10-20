@@ -6,8 +6,10 @@ package components
 type StableAnalyticsQueryProjectTranscriptCostResponseRow struct {
 	IntervalStartDate string  `json:"intervalStartDate"`
 	TranscriptCount   float64 `json:"transcriptCount"`
-	// The total cost incurred by transcripts for this row.
+	// The total cost incurred by transcripts for this row, in raw usage units, not credits.
 	Cost float64 `json:"cost"`
+	// The cost in credits, as the Usage page shows it. Copy this, not `cost`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (s *StableAnalyticsQueryProjectTranscriptCostResponseRow) GetIntervalStartDate() string {
@@ -29,6 +31,13 @@ func (s *StableAnalyticsQueryProjectTranscriptCostResponseRow) GetCost() float64
 		return 0.0
 	}
 	return s.Cost
+}
+
+func (s *StableAnalyticsQueryProjectTranscriptCostResponseRow) GetCredits() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.Credits
 }
 
 type StableAnalyticsQueryProjectTranscriptCostResponse struct {

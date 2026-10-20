@@ -4,9 +4,12 @@
 package components
 
 type StableAnalyticsQueryProjectTokenUsageResponseRow struct {
-	Model             *string `json:"model"`
+	Model *string `json:"model"`
+	// The tokens used, in raw usage units, not credits.
 	Count             float64 `json:"count"`
 	IntervalStartDate string  `json:"intervalStartDate"`
+	// The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (s *StableAnalyticsQueryProjectTokenUsageResponseRow) GetModel() *string {
@@ -28,6 +31,13 @@ func (s *StableAnalyticsQueryProjectTokenUsageResponseRow) GetIntervalStartDate(
 		return ""
 	}
 	return s.IntervalStartDate
+}
+
+func (s *StableAnalyticsQueryProjectTokenUsageResponseRow) GetCredits() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.Credits
 }
 
 type StableAnalyticsQueryProjectTokenUsageResponse struct {
