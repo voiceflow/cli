@@ -23594,11 +23594,16 @@ components:
               playbookID:
                 type: string
                 description: The ID of the playbook this usage row refers to.
+              name:
+                nullable: true
+                description: The playbook's name, or the Main Agent's name for its row. null when the playbook no longer exists.
+                type: string
             required:
               - count
               - successCount
               - averageLatencyMS
               - playbookID
+              - name
       required:
         - rows
     StableAnalyticsQueryPlaybookUsageRequest:

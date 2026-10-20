@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 5f15bfad06e3828b37cac36abeffb1cf
+  docChecksum: 2ccfa9a0c68e66ce3b10ed22a4fed6be
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.288
-  configChecksum: b7fa5df2fb4e3843c09da6c04a584c8a
+  releaseVersion: 0.2.289
+  configChecksum: 80a8094cfd9eca53ddcd537a54340a76
 persistentEdits:
-  generation_id: 208719a2-5b3e-486d-8bae-22edbd3a7379
-  pristine_commit_hash: 71bae4f72e8ab3963e88ab8d0cdeeeb472d312bd
-  pristine_tree_hash: 09cdfcad5db30c5180c226be744f648578a7fb7e
+  generation_id: 13bc735c-b0ab-48a1-b14e-8e7dd20899b4
+  pristine_commit_hash: d858deaa23148a2355a959267a72181a7bb51d52
+  pristine_tree_hash: 38987938040fc99424cbb4fcc094661c6edbafb9
 features:
   cli:
     additionalProperties: 0.0.1
@@ -990,8 +990,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:edd56dd00c9c2e65ade628458bd34de4cdaf5565
-    pristine_git_object: d11832fa13d318fab9d0a8578048c71b2294099f
+    last_write_checksum: sha1:5a9dab5dfe39dea4a942f3b80b763c3d1491f948
+    pristine_git_object: 54b30c35f8b577855da9ae49381fc0f18894b774
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -2010,8 +2010,8 @@ trackedFiles:
     pristine_git_object: 1a0b494caf06c8b57247141f57a5fce5f6fa372d
   internal/sdk/models/components/stableanalyticsqueryplaybookusageresponse.go:
     id: 7df55d899d23
-    last_write_checksum: sha1:c56cf5e7e50590aa7b20f1dfbf79fa9b05494ce4
-    pristine_git_object: 9d5ea257df0052e507ce84bd32d41b3b8da36f95
+    last_write_checksum: sha1:2f02a57eef71622603976fcdb71ae96a485dfd42
+    pristine_git_object: eee7e4ccfec64b537eb1ab03a4fd75346b31c03e
   internal/sdk/models/components/stableanalyticsqueryprojecthourlytokenusagerequest.go:
     id: be4458813843
     last_write_checksum: sha1:918d635b30b379cce6e09033c1bdc1b5aa7c101b
@@ -4818,8 +4818,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:4e120ce0f77c5794f3cb2d02254d015adb661473
-    pristine_git_object: 265bc648d3b61ada0e643c453f08b5e10aa00bfe
+    last_write_checksum: sha1:f2f6c45c158251a008f9090ea81599e0080fcd73
+    pristine_git_object: 5ff4cbde8030920e89d9452169cc9adb75426bee
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -6101,7 +6101,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>", "limit": 10}
       responses:
         "200":
-          application/json: {"rows": [{"count": 525.43, "successCount": 9301.93, "averageLatencyMS": 3516.61, "playbookID": "<id>"}]}
+          application/json: {"rows": [{"count": 525.43, "successCount": 9301.93, "averageLatencyMS": 3516.61, "playbookID": "<id>", "name": "<value>"}]}
   StableAnalyticsController_queryWorkflowUsage:
     speakeasy-default-stable-analytics-controller-query-workflow-usage:
       parameters:

@@ -9,6 +9,8 @@ type StableAnalyticsQueryPlaybookUsageResponseRow struct {
 	AverageLatencyMS float64 `json:"averageLatencyMS"`
 	// The ID of the playbook this usage row refers to.
 	PlaybookID string `json:"playbookID"`
+	// The playbook's name, or the Main Agent's name for its row. null when the playbook no longer exists.
+	Name *string `json:"name"`
 }
 
 func (s *StableAnalyticsQueryPlaybookUsageResponseRow) GetCount() float64 {
@@ -37,6 +39,13 @@ func (s *StableAnalyticsQueryPlaybookUsageResponseRow) GetPlaybookID() string {
 		return ""
 	}
 	return s.PlaybookID
+}
+
+func (s *StableAnalyticsQueryPlaybookUsageResponseRow) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
 }
 
 type StableAnalyticsQueryPlaybookUsageResponse struct {
