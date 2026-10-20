@@ -9,7 +9,10 @@ type StableAnalyticsQueryDailyTokenUsageResponseRow struct {
 	UsageCategory     *string `json:"usageCategory"`
 	Model             *string `json:"model"`
 	Misclassified     bool    `json:"misclassified"`
-	Count             float64 `json:"count"`
+	// The tokens used, in raw usage units, not credits.
+	Count float64 `json:"count"`
+	// The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (s *StableAnalyticsQueryDailyTokenUsageResponseRow) GetIntervalStartDate() string {
@@ -52,6 +55,13 @@ func (s *StableAnalyticsQueryDailyTokenUsageResponseRow) GetCount() float64 {
 		return 0.0
 	}
 	return s.Count
+}
+
+func (s *StableAnalyticsQueryDailyTokenUsageResponseRow) GetCredits() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.Credits
 }
 
 type StableAnalyticsQueryDailyTokenUsageResponse struct {

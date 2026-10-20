@@ -22863,11 +22863,15 @@ components:
                 type: number
               cost:
                 type: number
-                description: The total cost incurred by transcripts for this row.
+                description: The total cost incurred by transcripts for this row, in raw usage units, not credits.
+              credits:
+                type: number
+                description: The cost in credits, as the Usage page shows it. Copy this, not `cost`, when you show a cost.
             required:
               - intervalStartDate
               - transcriptCount
               - cost
+              - credits
       required:
         - rows
     StableAnalyticsQueryProjectTranscriptCostRequest:
@@ -23060,9 +23064,14 @@ components:
                 type: string
               count:
                 type: number
+                description: The tokens used, in raw usage units, not credits.
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - model
               - count
+              - credits
       required:
         - rows
     StableAnalyticsQueryOrganizationTokenUsageRequest:
@@ -23109,9 +23118,14 @@ components:
                 type: string
               count:
                 type: number
+                description: The tokens used, in raw usage units, not credits.
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - model
               - count
+              - credits
       required:
         - rows
     StableAnalyticsQueryWorkspaceTokenUsageRequest:
@@ -23155,6 +23169,7 @@ components:
                 type: string
               count:
                 type: number
+                description: The tokens used, in raw usage units, not credits.
               intervalStartDate:
                 type: string
                 allOf:
@@ -23162,10 +23177,14 @@ components:
                     pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
                   - type: string
                     pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - model
               - count
               - intervalStartDate
+              - credits
       required:
         - rows
     StableAnalyticsQueryProjectTokenUsageRequest:
@@ -23394,6 +23413,10 @@ components:
                 type: boolean
               count:
                 type: number
+                description: The tokens used, in raw usage units, not credits.
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - intervalStartDate
               - usageClass
@@ -23401,6 +23424,7 @@ components:
               - model
               - misclassified
               - count
+              - credits
       required:
         - rows
     StableAnalyticsQueryDailyTokenUsageRequest:
@@ -23447,9 +23471,14 @@ components:
                 type: string
               count:
                 type: number
+                description: The tokens used, in raw usage units, not credits.
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - workspaceID
               - count
+              - credits
         projects:
           type: array
           items:
@@ -23460,10 +23489,14 @@ components:
                 description: The ID of the project.
               count:
                 type: number
-                description: The number of tokens used by the project.
+                description: The tokens used, in raw usage units, not credits.
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - projectID
               - count
+              - credits
           description: The token usage broken down by project.
       required:
         - workspaces
@@ -23504,6 +23537,7 @@ components:
                 type: string
               count:
                 type: number
+                description: The tokens used, in raw usage units, not credits.
               intervalStartDate:
                 type: string
                 allOf:
@@ -23511,10 +23545,14 @@ components:
                     pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
                   - type: string
                     pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+              credits:
+                type: number
+                description: The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
             required:
               - usageCategory
               - count
               - intervalStartDate
+              - credits
       required:
         - rows
     StableAnalyticsQueryCategoryTokenUsageRequest:

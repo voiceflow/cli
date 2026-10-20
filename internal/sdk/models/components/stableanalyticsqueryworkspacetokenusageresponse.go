@@ -4,8 +4,11 @@
 package components
 
 type StableAnalyticsQueryWorkspaceTokenUsageResponseRow struct {
-	Model string  `json:"model"`
+	Model string `json:"model"`
+	// The tokens used, in raw usage units, not credits.
 	Count float64 `json:"count"`
+	// The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (s *StableAnalyticsQueryWorkspaceTokenUsageResponseRow) GetModel() string {
@@ -20,6 +23,13 @@ func (s *StableAnalyticsQueryWorkspaceTokenUsageResponseRow) GetCount() float64 
 		return 0.0
 	}
 	return s.Count
+}
+
+func (s *StableAnalyticsQueryWorkspaceTokenUsageResponseRow) GetCredits() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.Credits
 }
 
 type StableAnalyticsQueryWorkspaceTokenUsageResponse struct {

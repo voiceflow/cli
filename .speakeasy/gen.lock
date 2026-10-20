@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 2ccfa9a0c68e66ce3b10ed22a4fed6be
+  docChecksum: 0cf32750e5a123b05f463822cf430e9d
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.289
-  configChecksum: 80a8094cfd9eca53ddcd537a54340a76
+  releaseVersion: 0.2.290
+  configChecksum: 306c2c35a03de7f2c9c7be00be128b20
 persistentEdits:
-  generation_id: 13bc735c-b0ab-48a1-b14e-8e7dd20899b4
-  pristine_commit_hash: d858deaa23148a2355a959267a72181a7bb51d52
-  pristine_tree_hash: 38987938040fc99424cbb4fcc094661c6edbafb9
+  generation_id: 62fbf6b5-f429-492e-85a9-02405974ca1a
+  pristine_commit_hash: 0ccd4747550dddb4618b745d64d2cbee68c53937
+  pristine_tree_hash: cc88cd3ea7ae0cb158b9a2075b5555786877dd61
 features:
   cli:
     additionalProperties: 0.0.1
@@ -990,8 +990,8 @@ trackedFiles:
     pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:5a9dab5dfe39dea4a942f3b80b763c3d1491f948
-    pristine_git_object: 54b30c35f8b577855da9ae49381fc0f18894b774
+    last_write_checksum: sha1:5f08f8c7efcb2ce6ba84cc77009d9d80d3451735
+    pristine_git_object: f3bb25ad6b09641dc6245b57fd7b7bfa6658cfc6
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1922,24 +1922,24 @@ trackedFiles:
     pristine_git_object: 2261544ed3f1a330b4f256630b1b48509c2b15df
   internal/sdk/models/components/stableanalyticsquerycategorytokenusageresponse.go:
     id: 623275bdafcb
-    last_write_checksum: sha1:629b4cdc7a87fa7776d2f94bc354774b5fdc0643
-    pristine_git_object: de168a52558d874ae2c20b081a1a834896a6985d
+    last_write_checksum: sha1:0aab3238a1f191ed55840df086785890210fdb3a
+    pristine_git_object: 3228c5e1d4374b4b50772f52083740ab6a8df3c7
   internal/sdk/models/components/stableanalyticsquerydailytokenusagerequest.go:
     id: d1eb26e8a467
     last_write_checksum: sha1:7c3af69f71f4c6a3198cb2cd77d36289e4a12a95
     pristine_git_object: 965ffc252e22e6c88044d31133d0d6c6f2f506dc
   internal/sdk/models/components/stableanalyticsquerydailytokenusageresponse.go:
     id: 482ae588fc6c
-    last_write_checksum: sha1:1e59f56e0c0276dd3fa65537c5f5552e46dffd6b
-    pristine_git_object: 33a1fc4d249b75be810d3fe00a8cece942c6f3ee
+    last_write_checksum: sha1:90e1ea65764bd2f538a9081642b245ef847ff47c
+    pristine_git_object: 643ba1faaa77d61194edb54a22122b288f0ea909
   internal/sdk/models/components/stableanalyticsqueryentitytokenusagerequest.go:
     id: 725cc851aad6
     last_write_checksum: sha1:0c262bce811688ed338d8a5f233399d80d865afa
     pristine_git_object: b239faf7887895cee13cebeb977fcda997b623db
   internal/sdk/models/components/stableanalyticsqueryentitytokenusageresponse.go:
     id: 98a831c8d7a2
-    last_write_checksum: sha1:ad0aa0ebcade06131960c19d12609878bc0834cc
-    pristine_git_object: a20feb3f9479c817981b6e8b76dbdbbeabbb1741
+    last_write_checksum: sha1:e4c0e9b99fef13778277c2b0e45c6438296ffe66
+    pristine_git_object: ed6f3b2464b6952a06c13fe9d1216342087c959c
   internal/sdk/models/components/stableanalyticsqueryfunctionusagerequest.go:
     id: 8eb6333f71c1
     last_write_checksum: sha1:97ea520fc9af3a51884379fb84d60dc5d51941a6
@@ -2002,8 +2002,8 @@ trackedFiles:
     pristine_git_object: 13dceb05bb7577b081e749375f22f85e3707d0b6
   internal/sdk/models/components/stableanalyticsqueryorganizationtokenusageresponse.go:
     id: c02790e6d00b
-    last_write_checksum: sha1:8e0c35b3bea111466d4a2debffae647ac01ff5b7
-    pristine_git_object: f9510d783d129bc711cc57feaf61cbddc049c15a
+    last_write_checksum: sha1:1f2da6af97ab06b528fc9812f929f995118dd795
+    pristine_git_object: 2546aa9780a9f63c5d6464df4f74f273c4ddd8fc
   internal/sdk/models/components/stableanalyticsqueryplaybookusagerequest.go:
     id: a7f6afeec26d
     last_write_checksum: sha1:13b6614fe840976d3086c52f4a7dfb29831f3467
@@ -2034,16 +2034,16 @@ trackedFiles:
     pristine_git_object: c50d5a047425c673241f20e10faebccd46954529
   internal/sdk/models/components/stableanalyticsqueryprojecttokenusageresponse.go:
     id: 7c06b3619589
-    last_write_checksum: sha1:b0bab7a430321717c14fc9ca9b5b254def5313d3
-    pristine_git_object: 33b5934a7a0efcbf31e58ae22a5fcba3c340e52d
+    last_write_checksum: sha1:e2b0bdb88b1e156d73623ff777c5dc12c64ee021
+    pristine_git_object: 708744cefa27cfa7a910097b4442938982ad7153
   internal/sdk/models/components/stableanalyticsqueryprojecttranscriptcostrequest.go:
     id: 7190e83bbaac
     last_write_checksum: sha1:68fa30469f1a0d76e6a7a9eaad0197e8443633cc
     pristine_git_object: f94138784825228afc71c59290471b1765b4f664
   internal/sdk/models/components/stableanalyticsqueryprojecttranscriptcostresponse.go:
     id: 13caeec59173
-    last_write_checksum: sha1:880df6f7ee5f7bed25939a299f8fd273fd90988f
-    pristine_git_object: 1f291fc142e3364f00ecaa1d20274fce7060fe8e
+    last_write_checksum: sha1:5b6688910f3160132b15d580c07743a20861b27e
+    pristine_git_object: 32a1dbac5dcc11f0728b9bf9872c6651d92ff8d4
   internal/sdk/models/components/stableanalyticsqueryprojecttranscriptcountrequest.go:
     id: e057379c92b5
     last_write_checksum: sha1:4a84ca8157b212f8a8a9559e4af1058bc888c5ce
@@ -2090,8 +2090,8 @@ trackedFiles:
     pristine_git_object: ca24001df2e54878ed51677e41102bc39ad1cb0f
   internal/sdk/models/components/stableanalyticsqueryworkspacetokenusageresponse.go:
     id: b5dae5a5dbeb
-    last_write_checksum: sha1:d1b9ec19f1a6e5e6344847dfa1a68cb104ca2195
-    pristine_git_object: 4f8896227f203d9a1a1011be11dfba02304424b8
+    last_write_checksum: sha1:3708685b6bfd9c6c4b44197ac2b331a2c062d01c
+    pristine_git_object: 575007d2c6287fd438b56ebe30d3baea058b52d5
   internal/sdk/models/components/stableanalyticsqueryworkspacetranscriptcountrequest.go:
     id: 811f6a9c8da1
     last_write_checksum: sha1:9ec1c150d275829937d395f9a56e81bd86ffa6ea
@@ -4818,8 +4818,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:f2f6c45c158251a008f9090ea81599e0080fcd73
-    pristine_git_object: 5ff4cbde8030920e89d9452169cc9adb75426bee
+    last_write_checksum: sha1:6d6e89e66901826069cc7c2b6d0294bd02198425
+    pristine_git_object: 7a28dae276914f6b187705deb3137426a6d4f124
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -5991,7 +5991,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>", "interval": "month"}
       responses:
         "200":
-          application/json: {"rows": [{"intervalStartDate": "<value>", "transcriptCount": 5402.63, "cost": 8269.92}]}
+          application/json: {"rows": [{"intervalStartDate": "<value>", "transcriptCount": 5402.63, "cost": 8269.92, "credits": 8523.83}]}
   StableAnalyticsController_queryInteractionCountByWorkspace:
     speakeasy-default-stable-analytics-controller-query-interaction-count-by-workspace:
       parameters:
@@ -6021,7 +6021,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>"}
       responses:
         "200":
-          application/json: {"rows": [{"model": "Impala", "count": 3790.04}]}
+          application/json: {"rows": [{"model": "Impala", "count": 3790.04, "credits": 5288.27}]}
   StableAnalyticsController_queryTokenUsageByWorkspace:
     speakeasy-default-stable-analytics-controller-query-token-usage-by-workspace:
       parameters:
@@ -6041,7 +6041,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>", "interval": "hour"}
       responses:
         "200":
-          application/json: {"rows": [{"model": "V90", "count": 160.29, "intervalStartDate": "<value>"}]}
+          application/json: {"rows": [{"model": "V90", "count": 160.29, "intervalStartDate": "<value>", "credits": 805.39}]}
   StableAnalyticsController_queryHourlyTokenUsageByOrganization:
     speakeasy-default-stable-analytics-controller-query-hourly-token-usage-by-organization:
       parameters:
@@ -6071,7 +6071,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>"}
       responses:
         "200":
-          application/json: {"rows": [{"intervalStartDate": "<value>", "usageClass": "<value>", "usageCategory": null, "model": "Wrangler", "misclassified": true, "count": 3825.88}]}
+          application/json: {"rows": [{"intervalStartDate": "<value>", "usageClass": "<value>", "usageCategory": null, "model": "Wrangler", "misclassified": true, "count": 3825.88, "credits": 6479.74}]}
   StableAnalyticsController_queryTokenUsageByEntity:
     speakeasy-default-stable-analytics-controller-query-token-usage-by-entity:
       parameters:
@@ -6081,7 +6081,7 @@ examples:
         application/json: {"endDate": "<value>", "startDate": "<value>"}
       responses:
         "200":
-          application/json: {"workspaces": [{"workspaceID": "<id>", "count": 1987.73}], "projects": []}
+          application/json: {"workspaces": [{"workspaceID": "<id>", "count": 1987.73, "credits": 7429.55}], "projects": []}
   StableAnalyticsController_queryTokenUsageByCategory:
     speakeasy-default-stable-analytics-controller-query-token-usage-by-category:
       parameters:

@@ -4,9 +4,12 @@
 package components
 
 type StableAnalyticsQueryCategoryTokenUsageResponseRow struct {
-	UsageCategory     *string `json:"usageCategory"`
+	UsageCategory *string `json:"usageCategory"`
+	// The tokens used, in raw usage units, not credits.
 	Count             float64 `json:"count"`
 	IntervalStartDate string  `json:"intervalStartDate"`
+	// The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (s *StableAnalyticsQueryCategoryTokenUsageResponseRow) GetUsageCategory() *string {
@@ -28,6 +31,13 @@ func (s *StableAnalyticsQueryCategoryTokenUsageResponseRow) GetIntervalStartDate
 		return ""
 	}
 	return s.IntervalStartDate
+}
+
+func (s *StableAnalyticsQueryCategoryTokenUsageResponseRow) GetCredits() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.Credits
 }
 
 type StableAnalyticsQueryCategoryTokenUsageResponse struct {

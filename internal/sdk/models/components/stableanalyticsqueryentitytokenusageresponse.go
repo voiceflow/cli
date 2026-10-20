@@ -4,8 +4,11 @@
 package components
 
 type Workspace struct {
-	WorkspaceID string  `json:"workspaceID"`
-	Count       float64 `json:"count"`
+	WorkspaceID string `json:"workspaceID"`
+	// The tokens used, in raw usage units, not credits.
+	Count float64 `json:"count"`
+	// The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (w *Workspace) GetWorkspaceID() string {
@@ -22,11 +25,20 @@ func (w *Workspace) GetCount() float64 {
 	return w.Count
 }
 
+func (w *Workspace) GetCredits() float64 {
+	if w == nil {
+		return 0.0
+	}
+	return w.Credits
+}
+
 type Project struct {
 	// The ID of the project.
 	ProjectID string `json:"projectID"`
-	// The number of tokens used by the project.
+	// The tokens used, in raw usage units, not credits.
 	Count float64 `json:"count"`
+	// The tokens used, in credits, as the Usage page shows them. Copy this, not `count`, when you show a cost.
+	Credits float64 `json:"credits"`
 }
 
 func (p *Project) GetProjectID() string {
@@ -41,6 +53,13 @@ func (p *Project) GetCount() float64 {
 		return 0.0
 	}
 	return p.Count
+}
+
+func (p *Project) GetCredits() float64 {
+	if p == nil {
+		return 0.0
+	}
+	return p.Credits
 }
 
 type StableAnalyticsQueryEntityTokenUsageResponse struct {

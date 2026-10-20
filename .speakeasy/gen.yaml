@@ -32,7 +32,7 @@ generation:
     generateNewTests: true
     skipResponseBodyAssertions: false
 cli:
-  version: 0.2.289
+  version: 0.2.290
   additionalDependencies: {}
   cliName: vf
   distribution:
