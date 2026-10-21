@@ -30,6 +30,10 @@ func InitConversationRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initRunScriptCmd(ConversationCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(ConversationCmd)
 	return nil
 }

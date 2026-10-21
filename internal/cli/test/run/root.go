@@ -29,6 +29,10 @@ func InitRunRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initCancelCmd(RunCmd); err != nil {
+		return err
+	}
+
 	if err := initGetCmd(RunCmd); err != nil {
 		return err
 	}
