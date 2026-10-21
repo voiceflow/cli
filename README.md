@@ -517,6 +517,7 @@ server's dynamic client registration endpoint and caches the resulting
 ### [conversation](docs/vf_conversation.md)
 
 * [`send`](docs/vf_conversation_send.md) - Send
+* [`run-script`](docs/vf_conversation_run-script.md) - Run script
 
 #### [state](docs/vf_conversation_state.md)
 
@@ -584,6 +585,7 @@ server's dynamic client registration endpoint and caches the resulting
 
 * [`search`](docs/vf_test_run_search.md) - Search runs
 * [`create`](docs/vf_test_run_create.md) - Create run
+* [`cancel`](docs/vf_test_run_cancel.md) - Cancel runs
 * [`get`](docs/vf_test_run_get.md) - Get run
 * [`query-logs`](docs/vf_test_run_query-logs.md) - Query run logs
 

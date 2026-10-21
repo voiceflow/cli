@@ -8970,7 +8970,7 @@ paths:
           operation: send
           operationDescription: |-
             WHAT — Send a turn input to the runtime. Action types: text (most common), intent (test a specific intent branch), event (extension-emitted), launch (start).
-            USE WHEN — Driving a multi-turn conversation, simulating a user message.
+            USE WHEN — Driving a conversation one message at a time, when each next message depends on the last reply. For a fixed list of messages, use voiceflow_conversation.run_script: one call for the whole exchange.
             AFTER — Inspect the returned trace array carefully: right trace type for the channel (text on chat, speak/audio on voice); tool called when expected and with the right args; error paths handled; no information leakage ("I checked the knowledge base..."); no re-greeting; variables not showing as literal "0" because they weren't pre-resolved. If needsRecompile is true, call voiceflow_environment.compile then send again; do not treat those traces as proof the latest edits work.
             DO NOT — Conclude success based on the visible agent reply alone. The reply often looks fine while a tool silently failed or returned empty — you'll only catch it by reading the trace.
         cli:
@@ -9010,6 +9010,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableConversationSendResponse'
+      tags:
+        - Conversation
+      security:
+        - token: []
+  /v1/stable/conversation/script:
+    post:
+      operationId: StableConversationController_runScript
+      x-vf:
+        mcp:
+          tool: voiceflow_conversation
+          toolDescription: |-
+            Drive a live test session against the agent runtime, turn by turn. You send actions (launch, text, intent, event) and the runtime returns trace arrays you inspect (text, speak, cardV2, choice, end, debug). The most common build-loop smoke test — verify a change actually works before publishing.
+            Predecessor: select the project and environment first, and recompile the environment after any edits (otherwise the test runs against the last-compiled version and changes won't be reflected). If send returns needsRecompile true, compile then send again — those traces are not proof the latest edits work.
+            Successor: search transcripts to find the resulting one for deeper inspection, or head back to the build surfaces to apply a fix.
+          operation: run_script
+          operationDescription: |-
+            WHAT — Run a scripted conversation in one call: start a fresh conversation, send each message in order, and return a short digest of every turn — the agent's replies, the tools it called, the variables that changed and any errors.
+            It never compiles. When needsRecompile is true the turns ran against the last compiled version: call voiceflow_environment.compile, then run the script again, and do not treat those turns as proof the latest edits work. The script stops early when the agent ends the conversation, a turn fails or reports errors, or the caller stops it; the unsent messages come back in notSent.
+            USE WHEN — Checking how the agent handles a known sequence of user messages, such as a happy path or an edge case, instead of sending each message separately. Pass variables to start as a known caller. Compile the environment first after any edit.
+            DO NOT — Use it when the next message depends on the reply; use voiceflow_conversation.send turn by turn for that.
+            DO NOT — Treat a reply as proof a tool worked; read the turn's tool calls and errors.
+            NOTE — Every tool the agent calls runs for real, including tools that write to outside systems.
+        cli:
+          command: conversation run-script
+      x-speakeasy-group: conversation
+      x-speakeasy-name-override: run-script
+      summary: Run script
+      description: Run a list of user messages as one new conversation.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableConversationScriptRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableConversationScriptResponse'
       tags:
         - Conversation
       security:
@@ -11378,7 +11432,7 @@ paths:
           operationDescription: |-
             WHAT — Trigger a new run of a test. Execution is asynchronous — the run starts queued and moves through its lifecycle in the background.
             USE WHEN — Verifying a test after building or editing its turns and checks, or confirming a fix actually resolved a prior failure.
-            AFTER — voiceflow_test.get_run to poll for the outcome.
+            AFTER — voiceflow_test.get_run once the run has had time to finish. A run usually takes from tens of seconds to a few minutes. Read again later if it is still running. voiceflow_test.cancel_runs stops it.
         cli:
           command: test run create
       x-speakeasy-group: test.run
@@ -11430,7 +11484,7 @@ paths:
           operationDescription: |-
             WHAT — Trigger a run for each of several tests in one call.
             USE WHEN — Running a full regression suite at once (e.g. before publishing) instead of triggering each test individually.
-            AFTER — voiceflow_test.get_run on the returned runs to track their progress.
+            AFTER — voiceflow_test.get_run on the returned runs once they have had time to finish. A run usually takes from tens of seconds to a few minutes. Read again later if any is still running. voiceflow_test.cancel_runs stops them.
         cli:
           command: test run create-many
       x-speakeasy-group: test.run
@@ -11468,6 +11522,58 @@ paths:
         - Test Run
       security:
         - token: []
+  /v1/stable/test-run/cancel:
+    post:
+      operationId: StableTestRunController_cancel
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: cancel_runs
+          operationDescription: |-
+            WHAT — Cancel runs that have not finished: queued, starting or running. A queued run never starts; a finished run keeps its result.
+            USE WHEN — A run was started by mistake or against the wrong environment, takes too long, or must be stopped before you start it again after a fix.
+            DO NOT — Cancel a finished run to clear its result; start a new run instead.
+        cli:
+          command: test run cancel
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: cancel
+      summary: Cancel runs
+      description: Cancel runs that have not finished.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunCancelRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunCancelResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
   /v1/stable/test-run/{runID}:
     get:
       operationId: StableTestRunController_get
@@ -11482,7 +11588,7 @@ paths:
           operation: get_run
           operationDescription: |-
             WHAT — Fetch a single run by ID.
-            USE WHEN — Polling for a run's outcome, or inspecting what happened during execution after a test fails.
+            USE WHEN — Reading a run's status, check results and logs once it has had time to finish, or inspecting what happened during execution after a test fails.
         cli:
           command: test run get
       x-speakeasy-group: test.run
@@ -27728,6 +27834,125 @@ components:
       required:
         - action
         - version
+    StableConversationScriptTurn:
+      type: object
+      properties:
+        user:
+          nullable: true
+          description: The message sent in this turn. Null for the launch turn that starts the conversation.
+          type: string
+        agent:
+          type: array
+          items:
+            type: string
+          description: 'The agent''s replies in this turn, in order, at most 10, each cut to 1,000 characters. Buttons, cards and carousels come summarised, such as "[buttons: Yes | No]" or "[card: <title>]".'
+        toolCalls:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableConversationScriptToolCall'
+          description: The tools the agent called and the tools its workflow steps ran in this turn, at most 20.
+        variableChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableConversationScriptVariableChange'
+          description: The variables this turn set, changed or cleared, at most 30. Leaves out the variables that change every turn (vf_now, vf_time, timestamp, vf_memory, last_utterance, last_response, last_event, intent_confidence). The launch turn lists the preset variables and the variables the launch set, not the system variables or the starting values.
+        errors:
+          type: array
+          items:
+            type: string
+          description: Errors, failed tool calls, HTTP failures and credit limits the runtime reported in this turn, at most 10, each cut to 300 characters.
+        ended:
+          type: boolean
+          description: True when the agent ended the conversation in this turn.
+      required:
+        - user
+        - agent
+        - toolCalls
+        - variableChanges
+        - errors
+        - ended
+    StableConversationScriptToolCall:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'The tool that ran: by the name the agent called it, or its own name when a workflow step ran it.'
+        arguments:
+          type: string
+          description: The arguments the agent passed, as JSON, cut to 300 characters. {} when a workflow step ran the tool.
+      required:
+        - name
+        - arguments
+    StableConversationScriptVariableChange:
+      type: object
+      properties:
+        name:
+          type: string
+        before:
+          nullable: true
+          description: The value before the turn, as JSON cut to 200 characters. Null when it was not set; a null value is the string "null".
+          type: string
+        after:
+          nullable: true
+          description: The value after the turn, as JSON cut to 200 characters. Null when it is not set; a null value is the string "null".
+          type: string
+      required:
+        - name
+        - before
+        - after
+    StableConversationScriptResponse:
+      type: object
+      properties:
+        userID:
+          type: string
+          description: The conversation user ID the script ran as, for reading its state afterwards.
+        needsRecompile:
+          type: boolean
+          description: When true, the script ran against a stale prototype. Compile the environment and run it again; do not treat these turns as proof the latest edits work.
+        turns:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableConversationScriptTurn'
+          description: The launch turn first, then one turn per message sent.
+        notSent:
+          type: array
+          items:
+            type: string
+          description: Messages that were not sent because the agent ended the conversation, a turn failed or reported errors, or the caller stopped the script first.
+      required:
+        - userID
+        - needsRecompile
+        - turns
+        - notSent
+    StableConversationScriptRequest:
+      type: object
+      properties:
+        messages:
+          minItems: 1
+          maxItems: 10
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 2000
+          description: The user messages to send, in order, after the launch that starts the conversation.
+        variables:
+          description: Variable values to set before the launch, keyed by variable name, to start as a known caller.
+          type: object
+          additionalProperties: {}
+        version:
+          default: draft
+          description: Whether to talk to the draft or the published version of the environment. Draft unless you pass it.
+          type: string
+          enum:
+            - draft
+            - published
+          x-enumNames:
+            - DRAFT
+            - PUBLISHED
+      required:
+        - messages
+      additionalProperties: false
     StableConversationState:
       type: object
       properties:
@@ -36475,6 +36700,66 @@ components:
           description: The IDs of the tests to run, one run created per test.
       required:
         - testIDs
+      additionalProperties: false
+    StableTestRunCancelFinishedRun:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - idle
+            - pending
+            - running
+            - failed
+            - passed
+            - canceled
+          description: The status the run kept.
+          x-enumNames:
+            - IDLE
+            - PENDING
+            - RUNNING
+            - FAILED
+            - PASSED
+            - CANCELED
+      required:
+        - id
+        - status
+    StableTestRunCancelResponse:
+      type: object
+      properties:
+        canceledRunIDs:
+          type: array
+          items:
+            type: string
+          description: The runs this call canceled. A run that had not started yet will never start.
+        finishedRuns:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestRunCancelFinishedRun'
+          description: Runs that had already finished, so the call left them as they were.
+        notFoundRunIDs:
+          type: array
+          items:
+            type: string
+          description: IDs with no run in this environment.
+      required:
+        - canceledRunIDs
+        - finishedRuns
+        - notFoundRunIDs
+    StableTestRunCancelRequest:
+      type: object
+      properties:
+        runIDs:
+          minItems: 1
+          maxItems: 50
+          type: array
+          items:
+            type: string
+          description: The IDs of the runs to cancel.
+      required:
+        - runIDs
       additionalProperties: false
     StableTest:
       type: object
