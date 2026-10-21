@@ -62,11 +62,11 @@ func InitDocumentRoot(parent *cobra.Command) error {
 		return err
 	}
 
-	if err := initUpdateCmd(DocumentCmd); err != nil {
+	if err := initDeleteCmd(DocumentCmd); err != nil {
 		return err
 	}
 
-	if err := initDeleteCmd(DocumentCmd); err != nil {
+	if err := initUpdateCmd(DocumentCmd); err != nil {
 		return err
 	}
 

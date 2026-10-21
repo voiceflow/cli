@@ -86,7 +86,7 @@ paths:
             USE WHEN — Changing the agent's identity, brand voice, tone, or cross-cutting guardrails; adding or removing routing targets; tuning model, voice, or timeout behavior; or enabling/configuring system tools.
             BEFORE — voiceflow_agent.get to see current state and merge changes against it — each playbookID/workflowID in playbooks/workflows must already exist.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send to verify the change — include at least one adversarial probe for tone or guardrail edits.
-            DO NOT — Use this for a targeted edit to prompt or instructions; it re-sends the whole document, so reach for voiceflow_agent.patch_prompt or voiceflow_agent.patch_instructions for anything short of a rewrite. Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples, in knowledgeBaseTool.query, in callForwardTool.address or .extension, or in a playbooks[] / workflows[] routing condition operand — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in prompt or instructions for a tool, playbook or workflow this agent does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool with voiceflow_tool.create or register the target in playbooks/workflows first, then write the text that uses it.
+            DO NOT — Use this for a targeted edit to prompt or instructions; it re-sends the whole document, so reach for voiceflow_agent.patch_prompt or voiceflow_agent.patch_instructions for anything short of a rewrite, and voiceflow_agent.patch_pronunciation to add, change or remove single pronunciation dictionary entries. Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples, in knowledgeBaseTool.query, in callForwardTool.address or .extension, or in a playbooks[] / workflows[] routing condition operand — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in prompt or instructions for a tool, playbook or workflow this agent does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool with voiceflow_tool.create or register the target in playbooks/workflows first, then write the text that uses it.
         cli:
           command: agent update
       x-speakeasy-group: agent
@@ -737,6 +737,179 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/pronunciation:
+    patch:
+      operationId: StableAgentController_patchPronunciation
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: patch_pronunciation
+          operationDescription: |-
+            WHAT — Add, change or remove single entries of the pronunciation dictionary: the list of written words the voice says another way. Send only the words that change; every other entry stays as it is.
+            USE WHEN — Teaching a voice agent how to say a name, an abbreviation, a code or a number, or dropping an entry that no longer helps.
+            BEFORE — voiceflow_agent.get to read the current dictionary (voice.pronunciationDictionary).
+            AFTER — voiceflow_environment.compile; the dictionary changes what the voice says, not the text.
+            HOW — set adds each word, or replaces every stored entry for a word it already has. remove deletes every entry for each word. Words match ignoring letter case, as the runtime does, so setting "Dr." replaces a stored "dr.". A remove word the dictionary lacks is listed in notFound and nothing else changes. An empty to makes the voice skip the word.
+            DO NOT — Send the whole dictionary through voiceflow_agent.update to change a few words. That replaces every entry and loses any change made since your read.
+            DO NOT — Name the same word twice in one call, in set or remove or both; the request is refused.
+            NOTE — The dictionary holds at most 500 entries. A change that would go over is refused and nothing is written. A project without voice settings answers 404.
+        cli:
+          command: agent patch-pronunciation
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: patch-pronunciation
+      summary: Patch pronunciation dictionary
+      description: Add, change or remove single entries of the agent's pronunciation dictionary.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableAgentPronunciationPatchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableAgentPronunciationPatchResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/initialization-workflow:
+    get:
+      operationId: StableAgentController_getInitializationWorkflow
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: get_initialization_workflow
+          operationDescription: |-
+            WHAT — Which workflow the agent runs before the user's first turn: the Initialization workflow in the agent's Behaviour settings. Returns its workflowID and name. Both are null when none is set, and when this project has no initialization workflow setting: a conversation-framework project, or one that is not an agent project.
+            USE WHEN — Before building or changing what happens at launch (loading data, a fixed greeting, copying launch values into variables), to see whether a workflow already does it.
+            AFTER — voiceflow_workflow.get to read that workflow.
+            NOTE — A workflowID with a null name points at a workflow that no longer exists.
+        cli:
+          command: agent get-initialization-workflow
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: get-initialization-workflow
+      summary: Get initialization workflow
+      description: Read which workflow runs before the user's first turn.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableAgentInitializationWorkflowResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+    put:
+      operationId: StableAgentController_setInitializationWorkflow
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature + max tokens, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: set_initialization_workflow
+          operationDescription: |-
+            WHAT — Choose the workflow the agent runs before the user's first turn (the Initialization workflow in the agent's Behaviour settings), or clear it with null. At most one is set: setting one replaces the one before.
+            USE WHEN — The user wants something to happen at launch, before they say anything: load customer data, greet with fixed text, or copy launch values into variables.
+            BEFORE — voiceflow_agent.get_initialization_workflow to see what runs now, and voiceflow_workflow.create or voiceflow_workflow.list for the workflowID.
+            AFTER — voiceflow_environment.compile before a test conversation uses it.
+            DO NOT — Pass a playbook, block or step ID. Only a workflow ID from voiceflow_workflow.list is accepted; anything else answers 404.
+        cli:
+          command: agent set-initialization-workflow
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: set-initialization-workflow
+      summary: Set initialization workflow
+      description: Choose the workflow that runs before the user's first turn, or clear it.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableAgentInitializationWorkflowRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
       tags:
         - Agent
       security:
@@ -1549,7 +1722,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: list
           operationDescription: |-
@@ -1622,13 +1795,13 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create
           operationDescription: |-
             WHAT — Attach one tool (function | api | mcp | integration) to a target and wire its inputs and outputs.
             USE WHEN — Enabling a specific tool on the global agent or a single playbook for the first time.
-            BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first. Integration tools are not creatable through this API — the integration must already be connected in the Creator UI. An integrationToolID is only visible on an attachment that already exists (voiceflow_tool.list reports it); nothing in this API lists integration tools that have never been attached, so the first attachment has to be made in the Creator UI.
+            BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first. For an integration tool, take integrationToolID from voiceflow_integration.get_schema; when it is null, voiceflow_integration.add_tool adds the tool to the environment and returns it.
             AFTER — Set captureResponse so tool output lands in project variables; omitting it means the response is silently discarded. Then voiceflow_environment.compile + voiceflow_conversation.
             DO NOT — Attach the same tool twice to the same target without allowDuplicate: true (function type only) — the second attach will fail. Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples; secrets are not available there and {name} would be stored as literal text and reported back. Secrets belong in a tool input's defaultValue. Rely on a credential default without checking unresolvedReferences: a mistyped secret name is kept as literal text AND makes the input model-filled, because the injection is inferred from the default actually holding a secret.
         cli:
@@ -1676,7 +1849,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create_many
           operationDescription: |-
@@ -1731,7 +1904,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: get
           operationDescription: |-
@@ -1797,7 +1970,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: update
           operationDescription: |-
@@ -1857,7 +2030,7 @@ paths:
           toolDescription: |-
             The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
             Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
-            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. Integration tools are the exception: they come from connecting the integration in the Creator UI and cannot be created through this API. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: delete
           operationDescription: |-
@@ -7605,64 +7778,6 @@ paths:
         - Document
       security:
         - token: []
-    patch:
-      operationId: StableDocumentController_update
-      x-vf:
-        mcp:
-          tool: voiceflow_document
-          toolDescription: |-
-            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
-            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
-            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
-            Predecessor: select the project and environment first.
-            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
-          operation: update
-          operationDescription: |-
-            WHAT — Patch a document's metadata, or move it into another Knowledge Base folder.
-            USE WHEN — Renaming, replacing content, adjusting chunking settings, or filing a document under a folder.
-            HOW — `folderID` moves the document into that folder — find one with voiceflow_document.list_folders — and null moves it to the top level.
-        cli:
-          command: document update
-      x-speakeasy-group: document
-      x-speakeasy-name-override: update
-      summary: Update document
-      description: Update a document by ID.
-      parameters:
-        - name: documentID
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: projectID
-          required: true
-          in: query
-          schema:
-            type: string
-            description: The ID of the project to operate on.
-        - name: environmentAlias
-          required: true
-          in: query
-          schema:
-            type: string
-            description: The alias of the environment to operate on (e.g. `main`).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/StableDocumentUpdateRequest'
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StableUpdateResponse'
-      tags:
-        - Document
-      security:
-        - token: []
     delete:
       operationId: StableDocumentController_delete
       x-vf:
@@ -7709,6 +7824,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Document
+      security:
+        - token: []
+  /v2/stable/document/{documentID}:
+    patch:
+      operationId: StableDocumentController_updateV2
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: update
+          operationDescription: |-
+            WHAT — Replace a text or markdown document's content or its metadata tags, or move it into another Knowledge Base folder. The document keeps its ID and name.
+            USE WHEN — Changing what a text or markdown document says (send content, the whole new text), or replacing the metadata tags retrieval filters on, or filing a document under a folder.
+            BEFORE — voiceflow_document.get to check the document's type, status and metadata. It returns the document's chunks, not its source text: chunks overlap, and smart chunking rewrites them. Send content only when you have the whole new text, from the user or from a document of one chunk with no smart chunking. Otherwise ask the user for the full text.
+            AFTER — voiceflow_document.get until its status is SUCCESS, then voiceflow_knowledge_base.query to check the new text is found.
+            HOW — `folderID` moves the document into that folder — find one with voiceflow_document.list_folders — and null moves it to the top level.
+            DO NOT — Delete a document and create it again to change its text; that gives it a new ID. Send content here instead.
+            DO NOT — Send content for a URL, sitemap, table or uploaded PDF, DOCX, CSV or XLSX document; it is refused, and the refusal names the step to take instead.
+            DO NOT — Send part of the text expecting the rest to stay; content replaces the whole document.
+            NOTE — Metadata and a folder you leave out are kept. A document that is still being processed cannot be replaced and is refused with 409; wait until its status is SUCCESS or ERROR. A document whose processing failed (status ERROR) can be replaced, and sending new content is how to fix it. New content is chunked at the default chunk size, because a custom chunk size the document was created with is not stored. A document's text is shared by the whole project, so every environment and published version that holds the document gets the new text, not only the environment you name.
+        cli:
+          command: document update
+      x-speakeasy-group: document
+      x-speakeasy-name-override: update
+      summary: Update document
+      description: Update a document by ID.
+      parameters:
+        - name: documentID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableDocumentUpdateRequestV2'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
       tags:
         - Document
       security:
@@ -7928,9 +8108,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → add_tool to add one to the environment → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
           operation: list
           operationDescription: |-
             WHAT — List the full integration catalog with a connected flag per integration. Never returns credential values.
@@ -7967,9 +8147,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → add_tool to add one to the environment → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
           operation: connect
           operationDescription: |-
             WHAT — Store credentials for an api-key integration.
@@ -8019,9 +8199,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → add_tool to add one to the environment → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
           operation: disconnect
           operationDescription: |-
             WHAT — Clear every stored credential slot an integration owns on this project.
@@ -8063,9 +8243,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → add_tool to add one to the environment → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
           operation: get_schema
           operationDescription: |-
             WHAT — The tools one integration offers, each with its inputs, its catalog toolName and the integrationToolID it has in this environment (null until it is added), plus whether the project has credentials stored for the integration.
@@ -8105,6 +8285,64 @@ paths:
         - Integration
       security:
         - token: []
+  /v1/stable/integration/{integration}/tool:
+    post:
+      operationId: StableIntegrationController_addTool
+      x-vf:
+        mcp:
+          tool: voiceflow_integration
+          toolDescription: |-
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → add_tool to add one to the environment → execute to check one → disconnect to clear stored credentials.
+            Predecessor: select the project first.
+            Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
+          operation: add_tool
+          operationDescription: |-
+            WHAT — Add one of an integration's catalog tools to this environment and return its integrationToolID, the ID voiceflow_tool.create attaches. This is what the builder's "Add tool" does. A tool that is already added returns its existing ID and nothing changes.
+            USE WHEN — voiceflow_integration.get_schema shows integrationToolID null for the tool you want to attach.
+            BEFORE — voiceflow_integration.get_schema for the toolName.
+            AFTER — voiceflow_tool.create with type integration and this integrationToolID, to attach it to the agent or a playbook.
+            DO NOT — Expect the tool to work before the integration is connected. Adding it connects nothing, so when the integration is not connected yet, ask the user to connect it first.
+        cli:
+          command: integration add-tool
+      x-speakeasy-group: integration
+      x-speakeasy-name-override: add-tool
+      summary: Add integration tool
+      description: Add one catalog tool of an integration to this environment, so it can be attached.
+      parameters:
+        - name: integration
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableIntegrationAddToolRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableIntegrationAddToolResponse'
+      tags:
+        - Integration
+      security:
+        - token: []
   /v1/stable/integration/{integration}/execute:
     post:
       operationId: StableIntegrationController_execute
@@ -8112,9 +8350,9 @@ paths:
         mcp:
           tool: voiceflow_integration
           toolDescription: |-
-            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → execute to check one → disconnect to clear stored credentials.
+            Inspect and manage the third-party integrations a project can use (Zendesk, Twilio, Salesforce, Shopify, ElevenLabs and friends). Standard flow: list the catalog to see what exists and what is already connected → connect the api-key ones with credentials → get_schema to see an integration's tools → add_tool to add one to the environment → execute to check one → disconnect to clear stored credentials.
             Predecessor: select the project first.
-            Successor: read the tools with get_schema, run one with execute to check the connection works, then attach integration tools to a playbook or to the agent.
+            Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
           operation: execute
           operationDescription: |-
             WHAT — Run one integration tool, named by its catalog toolName, once with the inputs you give and the project's stored connection. Returns what the tool returned. A top-level string input may hold {secret_name}, which the server fills in; it reads [secret] in the result. Inside a nested object or array, {secret_name} is sent as written and no secret is filled in.
@@ -22897,6 +23135,89 @@ components:
           description: A human-readable message confirming the deletion.
       required:
         - message
+    StableAgentPronunciationPatchResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message confirming the update.
+        added:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many new words the dictionary gained.
+        replaced:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many stored words got the pronunciation this call sent.
+        removed:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many entries were deleted.
+        notFound:
+          type: array
+          items:
+            type: string
+          description: Words in `remove` the dictionary did not have. Nothing was deleted for them.
+        totalEntries:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many entries the dictionary holds now.
+      required:
+        - message
+        - added
+        - replaced
+        - removed
+        - notFound
+        - totalEntries
+    StableAgentPronunciationPatchRequest:
+      type: object
+      properties:
+        set:
+          description: Words to add, or to change when the dictionary already has them. `from` is the written word and `to` is how the voice says it; an empty `to` makes the voice skip the word.
+          minItems: 1
+          maxItems: 500
+          type: array
+          items:
+            $ref: '#/components/schemas/PronunciationDictionaryEntry'
+        remove:
+          description: Written words whose entries to delete.
+          minItems: 1
+          maxItems: 500
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+      additionalProperties: false
+    StableAgentInitializationWorkflowResponse:
+      type: object
+      properties:
+        workflowID:
+          nullable: true
+          description: The workflow that runs before the user's first turn, or null when none is set or this project has no initialization workflow setting.
+          type: string
+        name:
+          nullable: true
+          description: That workflow's name. Null when none is set, or when the stored ID names a workflow that no longer exists.
+          type: string
+      required:
+        - workflowID
+        - name
+    StableAgentInitializationWorkflowRequest:
+      type: object
+      properties:
+        workflowID:
+          nullable: true
+          description: The workflow to run before the user's first turn, or null to run none.
+          type: string
+          minLength: 1
+      required:
+        - workflowID
+      additionalProperties: false
     StableAnalyticsQueryCallCountResponse:
       type: object
       properties:
@@ -28751,10 +29072,11 @@ components:
           $ref: '#/components/schemas/StableDocumentDetails'
       required:
         - document
-    StableDocumentUpdateRequest:
+    StableDocumentUpdateRequestV2:
       type: object
       properties:
         metadata:
+          description: Replaces the document's metadata tags. Leave it out to keep them.
           type: array
           items:
             type: object
@@ -28770,10 +29092,13 @@ components:
             required:
               - key
               - values
-          description: Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
         folderID:
-          description: The ID of the Knowledge Base folder to move the document into, or null to move it to the top level.
+          description: The ID of the Knowledge Base folder to move the document into, or null to move it to the top level. Leave it out to keep its folder.
           nullable: true
+          type: string
+          minLength: 1
+        content:
+          description: The whole new text of a text or markdown document. It replaces the stored text; the document keeps its ID and name and is processed again. Refused for every other document type.
           type: string
           minLength: 1
       additionalProperties: false
@@ -34252,6 +34577,106 @@ components:
       required:
         - connected
         - tools
+    StableIntegrationAddToolResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message confirming the update.
+        integrationToolID:
+          type: string
+          description: The ID to attach the tool with, through the tool create operation.
+        created:
+          type: boolean
+          description: False when the tool was already added to this environment; nothing changed then.
+      required:
+        - message
+        - integrationToolID
+        - created
+    StableIntegrationAddToolRequest:
+      type: object
+      properties:
+        toolName:
+          description: The catalog tool to add, as get_schema lists it, such as `google_sheets_update_spreadsheet`. It must belong to the integration in the path.
+          allOf:
+            - $ref: '#/components/schemas/IntegrationToolName'
+          enum:
+            - example_dynamic_schema
+            - zendesk_find_user
+            - zendesk_find_group
+            - zendesk_find_ticket
+            - zendesk_create_ticket
+            - zendesk_update_ticket
+            - zendesk_add_ticket_comment
+            - zendesk_update_organization
+            - zendesk_find_latest_comment
+            - salesforce_create_lead
+            - salesforce_update_lead
+            - salesforce_create_contact
+            - salesforce_update_contact
+            - salesforce_create_case
+            - salesforce_update_case
+            - salesforce_add_comment_to_case
+            - shopify_get_products
+            - shopify_get_order
+            - shopify_cancel_order
+            - shopify_update_order
+            - google_sheets_create_spreadsheet
+            - google_sheets_update_spreadsheet
+            - google_sheets_read_spreadsheet
+            - google_sheets_append_spreadsheet
+            - google_sheets_read_row
+            - google_gmail_send_email
+            - airtable_create_records
+            - airtable_delete_records
+            - airtable_get_record
+            - airtable_list_records
+            - airtable_update_records
+            - make_run_scenario
+            - twilio_send_sms
+            - hubspot_create_contact
+            - hubspot_create_lead
+            - hubspot_create_ticket
+          x-enumNames:
+            - EXAMPLE_DYNAMIC_SCHEMA
+            - ZENDESK_FIND_USER
+            - ZENDESK_FIND_GROUP
+            - ZENDESK_FIND_TICKET
+            - ZENDESK_CREATE_TICKET
+            - ZENDESK_UPDATE_TICKET
+            - ZENDESK_ADD_TICKET_COMMENT
+            - ZENDESK_UPDATE_ORGANIZATION
+            - ZENDESK_FIND_LATEST_TICKET_COMMENT
+            - SALESFORCE_CREATE_LEAD
+            - SALESFORCE_UPDATE_LEAD
+            - SALESFORCE_CREATE_CONTACT
+            - SALESFORCE_UPDATE_CONTACT
+            - SALESFORCE_CREATE_CASE
+            - SALESFORCE_UPDATE_CASE
+            - SALESFORCE_ADD_COMMENT_TO_CASE
+            - SHOPIFY_GET_PRODUCTS
+            - SHOPIFY_GET_ORDER
+            - SHOPIFY_CANCEL_ORDER
+            - SHOPIFY_UPDATE_ORDER
+            - GOOGLE_SHEETS_CREATE_SPREADSHEET
+            - GOOGLE_SHEETS_UPDATE_SPREADSHEET
+            - GOOGLE_SHEETS_READ_SPREADSHEET
+            - GOOGLE_SHEETS_APPEND_SPREADSHEET
+            - GOOGLE_SHEETS_READ_ROW
+            - GOOGLE_GMAIL_SEND_EMAIL
+            - AIRTABLE_CREATE_RECORDS
+            - AIRTABLE_DELETE_RECORDS
+            - AIRTABLE_GET_RECORD
+            - AIRTABLE_LIST_RECORDS
+            - AIRTABLE_UPDATE_RECORDS
+            - MAKE_RUN_SCENARIO
+            - TWILIO_SEND_SMS
+            - HUBSPOT_CREATE_CONTACT
+            - HUBSPOT_CREATE_LEAD
+            - HUBSPOT_CREATE_TICKET
+      required:
+        - toolName
+      additionalProperties: false
     StableIntegrationExecuteResponse:
       type: object
       properties:

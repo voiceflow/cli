@@ -302,6 +302,9 @@ server's dynamic client registration endpoint and caches the resulting
 * [`add-tool-message`](docs/vf_agent_add-tool-message.md) - Add agent tool message
 * [`update-tool-message`](docs/vf_agent_update-tool-message.md) - Update agent tool message
 * [`delete-tool-message`](docs/vf_agent_delete-tool-message.md) - Delete agent tool message
+* [`patch-pronunciation`](docs/vf_agent_patch-pronunciation.md) - Patch pronunciation dictionary
+* [`get-initialization-workflow`](docs/vf_agent_get-initialization-workflow.md) - Get initialization workflow
+* [`set-initialization-workflow`](docs/vf_agent_set-initialization-workflow.md) - Set initialization workflow
 
 ### [playbook](docs/vf_playbook.md)
 
@@ -468,8 +471,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`create-managed-sitemap`](docs/vf_document_create-managed-sitemap.md) - Create managed sitemap
 * [`update-managed-sitemap`](docs/vf_document_update-managed-sitemap.md) - Update managed sitemap
 * [`get`](docs/vf_document_get.md) - Get document
-* [`update`](docs/vf_document_update.md) - Update document
 * [`delete`](docs/vf_document_delete.md) - Delete document
+* [`update`](docs/vf_document_update.md) - Update document
 
 #### [folder](docs/vf_document_folder.md)
 
@@ -484,6 +487,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`connect`](docs/vf_integration_connect.md) - Connect integration
 * [`disconnect`](docs/vf_integration_disconnect.md) - Disconnect integration
 * [`get-schema`](docs/vf_integration_get-schema.md) - Get integration tool schemas
+* [`add-tool`](docs/vf_integration_add-tool.md) - Add integration tool
 * [`execute`](docs/vf_integration_execute.md) - Execute integration tool
 
 ### [mcp-server](docs/vf_mcp-server.md)
