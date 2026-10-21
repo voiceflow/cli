@@ -10,7 +10,7 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-// StableToolControllerListV2Type - When provided, only tools of this type are returned.
+// StableToolControllerListV2Type - When provided, only tools of this type are returned. `workflow` returns the workflow tools.
 type StableToolControllerListV2Type string
 
 const (
@@ -18,6 +18,7 @@ const (
 	StableToolControllerListV2TypeMcp         StableToolControllerListV2Type = "mcp"
 	StableToolControllerListV2TypeFunction    StableToolControllerListV2Type = "function"
 	StableToolControllerListV2TypeIntegration StableToolControllerListV2Type = "integration"
+	StableToolControllerListV2TypeWorkflow    StableToolControllerListV2Type = "workflow"
 )
 
 func (e StableToolControllerListV2Type) ToPointer() *StableToolControllerListV2Type {
@@ -36,6 +37,8 @@ func (e *StableToolControllerListV2Type) UnmarshalJSON(data []byte) error {
 	case "function":
 		fallthrough
 	case "integration":
+		fallthrough
+	case "workflow":
 		*e = StableToolControllerListV2Type(v)
 		return nil
 	default:
@@ -48,7 +51,7 @@ type StableToolControllerListV2Request struct {
 	PlaybookID       *string `queryParam:"style=form,explode=true,name=playbookID"`
 	ProjectID        string  `queryParam:"style=form,explode=true,name=projectID"`
 	EnvironmentAlias string  `queryParam:"style=form,explode=true,name=environmentAlias"`
-	// When provided, only tools of this type are returned.
+	// When provided, only tools of this type are returned. `workflow` returns the workflow tools.
 	Type *StableToolControllerListV2Type `queryParam:"style=form,explode=true,name=type"`
 }
 

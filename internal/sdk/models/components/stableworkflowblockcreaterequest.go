@@ -7,46 +7,46 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-// Placement - Place the new block to the right of this block. Without it, the block goes next to the block of from.stepID, or right of the right-most block.
-type Placement struct {
+// StableWorkflowBlockCreateRequestPlacement - Place the new block to the right of this block. Without it, the block goes next to the block of from.stepID, or right of the right-most block.
+type StableWorkflowBlockCreateRequestPlacement struct {
 	AfterBlockID string `json:"afterBlockID"`
 }
 
-func (p *Placement) GetAfterBlockID() string {
-	if p == nil {
+func (s *StableWorkflowBlockCreateRequestPlacement) GetAfterBlockID() string {
+	if s == nil {
 		return ""
 	}
-	return p.AfterBlockID
+	return s.AfterBlockID
 }
 
-// From - Also link this port to the new block in the same call, with the same checks as voiceflow_workflow.link.
-type From struct {
+// StableWorkflowBlockCreateRequestFrom - Also link this port to the new block in the same call, with the same checks as voiceflow_workflow.link.
+type StableWorkflowBlockCreateRequestFrom struct {
 	StepID string `json:"stepID"`
 	Port   string `json:"port"`
 }
 
-func (f *From) GetStepID() string {
-	if f == nil {
+func (s *StableWorkflowBlockCreateRequestFrom) GetStepID() string {
+	if s == nil {
 		return ""
 	}
-	return f.StepID
+	return s.StepID
 }
 
-func (f *From) GetPort() string {
-	if f == nil {
+func (s *StableWorkflowBlockCreateRequestFrom) GetPort() string {
+	if s == nil {
 		return ""
 	}
-	return f.Port
+	return s.Port
 }
 
 type StableWorkflowBlockCreateRequest struct {
 	Name  string  `json:"name"`
 	Color *string `json:"color,omitzero"`
 	// Place the new block to the right of this block. Without it, the block goes next to the block of from.stepID, or right of the right-most block.
-	Placement *Placement `json:"placement,omitzero"`
+	Placement *StableWorkflowBlockCreateRequestPlacement `json:"placement,omitzero"`
 	// Also link this port to the new block in the same call, with the same checks as voiceflow_workflow.link.
-	From  *From                     `json:"from,omitzero"`
-	Steps []StableWorkflowStepInput `json:"steps"`
+	From  *StableWorkflowBlockCreateRequestFrom `json:"from,omitzero"`
+	Steps []StableWorkflowStepInput             `json:"steps"`
 }
 
 func (s StableWorkflowBlockCreateRequest) MarshalJSON() ([]byte, error) {
@@ -74,14 +74,14 @@ func (s *StableWorkflowBlockCreateRequest) GetColor() *string {
 	return s.Color
 }
 
-func (s *StableWorkflowBlockCreateRequest) GetPlacement() *Placement {
+func (s *StableWorkflowBlockCreateRequest) GetPlacement() *StableWorkflowBlockCreateRequestPlacement {
 	if s == nil {
 		return nil
 	}
 	return s.Placement
 }
 
-func (s *StableWorkflowBlockCreateRequest) GetFrom() *From {
+func (s *StableWorkflowBlockCreateRequest) GetFrom() *StableWorkflowBlockCreateRequestFrom {
 	if s == nil {
 		return nil
 	}

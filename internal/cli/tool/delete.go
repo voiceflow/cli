@@ -19,7 +19,7 @@ var deleteCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "type", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration"}, Description: "The type of the tool to delete. (options: api, mcp, function, integration) [required]"},
+	{FlagName: "type", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration", "workflow"}, Description: "The type of the tool to delete. `workflow` removes a workflow tool; the workflow stays. (options: api, mcp, function, integration, workflow) [required]"},
 }
 
 // initDeleteCmd initializes the delete command.
@@ -27,12 +27,12 @@ func initDeleteCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete tool",
-		Long:    "Delete a tool by ID.",
+		Long:    "Delete a tool by ID, including a workflow tool.",
 		Example: "  vf tool delete --tool-id <id> --project-id <id> --environment-alias <value> --type mcp",
 		RunE:    runDeleteCmd,
 	}
 	flagutil.RegisterFlags(cmd, deleteCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableToolControllerDeleteRequest](deleteCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableToolControllerDeleteV2Request](deleteCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for delete: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -49,7 +49,7 @@ func runDeleteCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableToolControllerDeleteRequest](cmd, deleteCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableToolControllerDeleteV2Request](cmd, deleteCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

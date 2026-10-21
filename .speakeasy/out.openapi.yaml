@@ -1726,15 +1726,16 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: list
           operationDescription: |-
-            WHAT — List all tool attachments on a target (the agent or a specific playbook).
-            USE WHEN — Auditing which tools are wired to a target before adding or removing; or reading current inputVariables / captureResponse config before a patch.
+            WHAT — List all tool attachments on a target (the agent or a specific playbook), including the agent's workflow tools (type workflow).
+            USE WHEN — Auditing which tools are wired to a target before adding or removing; reading current inputVariables / captureResponse config before a patch; or checking whether the agent already has a workflow tool before voiceflow_tool.create.
             BEFORE — voiceflow_project.get for projectID and voiceflow_environment.list for environmentAlias; voiceflow_playbook.list if you need a playbookID.
+            DO NOT — Look here for the workflows the agent routes to; those are `workflows` on voiceflow_agent.get.
         cli:
           command: tool list
       x-speakeasy-group: tool
       x-speakeasy-name-override: list
       summary: List tools
-      description: List all tools for the agent or a specific playbook.
+      description: List all tools for the agent or a specific playbook, including workflow tools.
       parameters:
         - name: global
           required: false
@@ -1764,18 +1765,20 @@ paths:
           required: false
           in: query
           schema:
-            description: When provided, only tools of this type are returned.
+            description: When provided, only tools of this type are returned. `workflow` returns the workflow tools.
             type: string
             enum:
               - api
               - mcp
               - function
               - integration
+              - workflow
             x-enumNames:
               - API
               - MCP
               - FUNCTION
               - INTEGRATION
+              - WORKFLOW
       responses:
         "200":
           description: ""
@@ -1799,17 +1802,17 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: create
           operationDescription: |-
-            WHAT — Attach one tool (function | api | mcp | integration) to a target and wire its inputs and outputs.
-            USE WHEN — Enabling a specific tool on the global agent or a single playbook for the first time.
-            BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first. For an integration tool, take integrationToolID from voiceflow_integration.get_schema; when it is null, voiceflow_integration.add_tool adds the tool to the environment and returns it.
-            AFTER — Set captureResponse so tool output lands in project variables; omitting it means the response is silently discarded. Then voiceflow_environment.compile + voiceflow_conversation.
-            DO NOT — Attach the same tool twice to the same target without allowDuplicate: true (function type only) — the second attach will fail. Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples; secrets are not available there and {name} would be stored as literal text and reported back. Secrets belong in a tool input's defaultValue. Rely on a credential default without checking unresolvedReferences: a mistyped secret name is kept as literal text AND makes the input model-filled, because the injection is inferred from the default actually holding a secret.
+            WHAT — Attach one tool (function | api | mcp | integration) to a target and wire its inputs and outputs, or give the agent a workflow tool (type workflow) that it and every playbook can call.
+            USE WHEN — Enabling a specific tool on the global agent or a single playbook for the first time, or when the user asks for a workflow tool on the agent.
+            BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first. For an integration tool, take integrationToolID from voiceflow_integration.get_schema; when it is null, voiceflow_integration.add_tool adds the tool to the environment and returns it. For type workflow, take workflowID from voiceflow_workflow.list and send target: { global: true }.
+            AFTER — Set captureResponse so tool output lands in project variables; omitting it means the response is silently discarded. Then voiceflow_environment.compile + voiceflow_conversation. A workflow tool returns its id: read it with voiceflow_tool.get and remove it with voiceflow_tool.delete, both with type workflow.
+            DO NOT — Attach the same tool twice to the same target without allowDuplicate: true (function type only) — the second attach will fail. Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples; secrets are not available there and {name} would be stored as literal text and reported back. Secrets belong in a tool input's defaultValue. Rely on a credential default without checking unresolvedReferences: a mistyped secret name is kept as literal text AND makes the input model-filled, because the injection is inferred from the default actually holding a secret. Send a playbookID with type workflow; workflow tools go on the agent only. Use type workflow to route the agent to a workflow; that is `workflows` on voiceflow_agent.update. Retry after a 409; the agent already has that workflow tool and the error names it.
         cli:
           command: tool create
       x-speakeasy-group: tool
       x-speakeasy-name-override: create
       summary: Create tool
-      description: Create a new tool.
+      description: Create a new tool, or give the agent a workflow tool.
       parameters:
         - name: projectID
           required: true
@@ -1908,15 +1911,15 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: get
           operationDescription: |-
-            WHAT — Fetch the full attachment for one tool.
+            WHAT — Fetch the full attachment for one tool. For type workflow it returns the workflow the tool runs and its description.
             USE WHEN — Inspecting a single wiring before patching it, or debugging why inputs aren't resolving or outputs aren't captured.
-            BEFORE — voiceflow_tool.list to obtain the toolID.
+            BEFORE — voiceflow_tool.list to obtain the toolID and its type.
         cli:
           command: tool get
       x-speakeasy-group: tool
       x-speakeasy-name-override: get
       summary: Get tool
-      description: Get a tool by ID.
+      description: Get a tool by ID, including a workflow tool.
       parameters:
         - name: toolID
           required: true
@@ -1945,12 +1948,14 @@ paths:
               - mcp
               - function
               - integration
+              - workflow
             description: The type of the tool to fetch.
             x-enumNames:
               - API
               - MCP
               - FUNCTION
               - INTEGRATION
+              - WORKFLOW
       responses:
         "200":
           description: ""
@@ -2021,9 +2026,8 @@ paths:
         - Tool
       security:
         - token: []
-  /v1/stable/tool/{toolID}:
     delete:
-      operationId: StableToolController_delete
+      operationId: StableToolController_deleteV2
       x-vf:
         mcp:
           tool: voiceflow_tool
@@ -2034,15 +2038,16 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: delete
           operationDescription: |-
-            WHAT — Detach a tool from its target (agent level or playbook). The underlying tool definition stays — only the attachment is removed.
-            USE WHEN — The tool is no longer relevant at this scope, or you're moving it to per-playbook scope.
-            BEFORE — Confirm which playbooks rely on this tool. Removing an agent-level attachment also removes it from every playbook (unless individually re-attached).
+            WHAT — Detach a tool from its target (agent level or playbook). The underlying tool definition stays — only the attachment is removed. With type workflow it removes the agent's workflow tool; the workflow stays.
+            USE WHEN — The tool is no longer relevant at this scope, you're moving it to per-playbook scope, or a workflow tool was added by mistake.
+            BEFORE — Confirm which playbooks rely on this tool. Removing an agent-level attachment also removes it from every playbook (unless individually re-attached). Take toolID and type from voiceflow_tool.list; a workflow tool's id is also what voiceflow_tool.create returned.
+            DO NOT — Remove a workflow from the agent's routing list here; that is `workflows` on voiceflow_agent.update.
         cli:
           command: tool delete
       x-speakeasy-group: tool
       x-speakeasy-name-override: delete
       summary: Delete tool
-      description: Delete a tool by ID.
+      description: Delete a tool by ID, including a workflow tool.
       parameters:
         - name: toolID
           required: true
@@ -2071,12 +2076,14 @@ paths:
               - mcp
               - function
               - integration
-            description: The type of the tool to delete.
+              - workflow
+            description: The type of the tool to delete. `workflow` removes a workflow tool; the workflow stays.
             x-enumNames:
               - API
               - MCP
               - FUNCTION
               - INTEGRATION
+              - WORKFLOW
       responses:
         "200":
           description: ""
@@ -2787,6 +2794,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableEnvironmentExportResponseV2'
+      tags:
+        - Environment
+      security:
+        - token: []
+  /v1/stable/environment/{environmentAlias}/search:
+    post:
+      operationId: StableEnvironmentController_searchText
+      x-vf:
+        mcp:
+          tool: voiceflow_environment
+          toolDescription: |-
+            Manage the versioned copies of a Project — every Project starts with one Main environment and can have up to nine more, each with its own draft + live version. Environments are how Voiceflow ships changes: publish promotes a draft to live within one environment, merge promotes one environment into Main, and traffic-split routes live traffic across them.
+            Predecessor: select the project first.
+            Successor: run a test conversation after a clone, or publish to ship the draft.
+          operation: search_text
+          operationDescription: |-
+            WHAT — Finds a word, phrase, ID or regular expression in the text of the whole project and returns exactly where each match is: the resource and its ID, the field and line, and on a workflow canvas the block and step. For a message or prompt, usedBy lists the steps that hold it.
+            Searches the agent and its settings, the project name and description, playbooks, workflows with their descriptions and every step and link caption on their canvases, messages, prompts, tools, functions, variables, entities, intents, events, tests, evaluations, personas, attachments and folders. Text reads as the get operations return it: {name} for a variable or entity, and `name` for a tool, playbook or workflow. A secret reads as {name}, except in instructions and prompts, where it reads as its ID in braces. notSearched lists what is never read, such as knowledge base documents, secret names, MCP header values and transcripts. The pattern is literal text unless regex is true, and case is ignored unless ignoreCase is false. A regular expression may hold one open quantifier (*, +, ?, {n,} or {n,m}), and reads the first 1,000 characters of a longer line. A lookahead finds nothing on such a line.
+            USE WHEN — the user wants to check an exact word, phrase, ID or pattern across the whole project or in several places at once, and no targeted read can answer it.
+            BEFORE — try the targeted read first: voiceflow_workflow.get for one workflow, voiceflow_agent.search_instructions for the agent's instructions, voiceflow_message.get for one message.
+            AFTER — read the resource a hit names with its own get before you change it.
+            DO NOT — use it to read a resource you can already name; use that resource's get.
+            DO NOT — use voiceflow_environment.export to find text; it returns the whole project.
+            DO NOT — write two open quantifiers, a backreference or an alternation inside a group in a regular expression; the pattern is refused. Use exact counts such as \d{3}, or a top-level alternation such as refund|return.
+        cli:
+          command: environment search-text
+      x-speakeasy-group: environment
+      x-speakeasy-name-override: search-text
+      summary: Search project text
+      description: Find a word, phrase, ID or regular expression in the text of a whole environment.
+      parameters:
+        - name: environmentAlias
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableEnvironmentSearchTextRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEnvironmentSearchTextReadResponse'
       tags:
         - Environment
       security:
@@ -12238,7 +12300,7 @@ paths:
           operation: get
           operationDescription: |-
             WHAT — A workflow as blocks of steps: each step's kind, content, exit class and links, and for a step that is not last, the step it falls through to. Steps show message and prompt IDs, not their words.
-            An exit can show actions, which run in order before the path reaches to; entry can show them too.
+            An exit can show actions, which run in order before the path reaches to; entry can show them too. For a stored field this view leaves out, or where blocks sit, voiceflow_workflow.get_raw reads the raw canvas; read it only when this view cannot answer.
             USE WHEN — before any edit, whenever you need block or step IDs, and before you explain a path. To say what someone hears, read the messages of every step on the path, starting at entry, with voiceflow_message.get_many.
             DO NOT — read a null else as "continue". On a step that is not last every other port continues to the next step, but a null else stops there.
         cli:
@@ -12457,7 +12519,7 @@ paths:
           operation: update_step
           operationDescription: |-
             WHAT — Changes one step's content.
-            To change the words a step says, update its message with the message operations or its prompt with the prompt operations. Here you can point the step at another message or prompt, or switch it between a message and a prompt. An action ID edits that action; leave out failPath on a Tool action, paths and fallback on a Code action, and returnPath and failPath on a Handoff action, because the canvas does not offer them there.
+            To change the words a step says, update its message with the message operations or its prompt with the prompt operations. Here you can point the step at another message or prompt, or switch it between a message and a prompt. An action ID edits that action; leave out failPath on a Tool action, paths and fallback on a Code action, and returnPath and failPath on a Handoff action, because the canvas does not offer them there. To swap an action for one of another kind, use voiceflow_workflow.replace_action.
             USE WHEN — changing a step's settings, or which message or prompt it uses. Branches have their own operations. Send only a message or prompt ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message or prompt with that text.
             BEFORE — voiceflow_workflow.get_step for the step's current content.
         cli:
@@ -12567,6 +12629,130 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableWorkflowRemovalResponse'
+      tags:
+        - Workflow
+      security:
+        - token: []
+  /v1/stable/workflow/{workflowID}/raw:
+    get:
+      operationId: StableWorkflowController_getRaw
+      x-vf:
+        mcp:
+          tool: voiceflow_workflow
+          toolDescription: |-
+            A Workflow is a canvas: an ordered list of blocks, and each block holds an ordered list of steps. Order is control flow. A step that is not last in its block continues to the step below it.
+            Only two kinds of link survive on a step that is not last: its else port, and the linked ports of a Card or Carousel. A null else stops there. So a step that branches must be the last step of its block: Condition, Buttons, Listen with a linked no-reply, Playbook, Operator, Crew and Handoff. Cards and Carousel may sit anywhere because they do not wait. Tool and Code steps branch only when last; anywhere else their paths do not run. Links point at blocks, never at a step inside one, and a block is entered at its first step. A step that speaks holds the ID of a message or a prompt, not the words. Give every such step its own new message or prompt, and never reuse an ID another step holds. Every ID is issued by the server: copy IDs from a read and never invent one. An exit can run port actions before it reaches its block. They show as `actions` on the link, and `to` is where the path goes after them. End, Go to block, Handoff and Call forward end the path.
+            Predecessor: read the workflow with voiceflow_workflow.get before any edit, and create the messages new steps will say with voiceflow_message.create_many.
+            Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
+          operation: get_raw
+          operationDescription: |-
+            WHAT — The workflow's canvas nodes exactly as they are stored, with real coordinates; rich text reads as a string. An unoptimised, large view.
+            Each node is an open object: nodeID, type, coords and data. Blocks list their step IDs in data.steps, and ports keep their targets in data.portsV2. blockIDs narrows the read to those blocks, their steps and the actions on their exits.
+            USE WHEN — only in edge cases that voiceflow_workflow.get and voiceflow_workflow.get_step cannot answer: a stored field they do not show, a step they read as readOnly, or where blocks sit on the canvas.
+            DO NOT — use it in place of voiceflow_workflow.get; that read is shorter and shows how the steps run.
+            DO NOT — plan an edit from it. The block and step operations take the IDs and shapes voiceflow_workflow.get returns.
+            DO NOT — read every node when blockIDs can narrow it.
+        cli:
+          command: workflow get-raw
+      x-speakeasy-group: workflow
+      x-speakeasy-name-override: get-raw
+      summary: Get raw workflow
+      description: Get the stored canvas nodes of a workflow, with rich text rendered as strings.
+      parameters:
+        - name: workflowID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: blockIDs
+          required: false
+          in: query
+          schema:
+            description: 'Read only these blocks, or the Start step ID, with their steps and the actions on their exits, as an array: ["blk_1", "blk_2"]. Leave it out to read every node.'
+            minItems: 1
+            maxItems: 50
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWorkflowRawReadResponse'
+      tags:
+        - Workflow
+      security:
+        - token: []
+  /v1/stable/workflow/{workflowID}/duplicate:
+    post:
+      operationId: StableWorkflowController_duplicate
+      x-vf:
+        mcp:
+          tool: voiceflow_workflow
+          toolDescription: |-
+            A Workflow is a canvas: an ordered list of blocks, and each block holds an ordered list of steps. Order is control flow. A step that is not last in its block continues to the step below it.
+            Only two kinds of link survive on a step that is not last: its else port, and the linked ports of a Card or Carousel. A null else stops there. So a step that branches must be the last step of its block: Condition, Buttons, Listen with a linked no-reply, Playbook, Operator, Crew and Handoff. Cards and Carousel may sit anywhere because they do not wait. Tool and Code steps branch only when last; anywhere else their paths do not run. Links point at blocks, never at a step inside one, and a block is entered at its first step. A step that speaks holds the ID of a message or a prompt, not the words. Give every such step its own new message or prompt, and never reuse an ID another step holds. Every ID is issued by the server: copy IDs from a read and never invent one. An exit can run port actions before it reaches its block. They show as `actions` on the link, and `to` is where the path goes after them. End, Go to block, Handoff and Call forward end the path.
+            Predecessor: read the workflow with voiceflow_workflow.get before any edit, and create the messages new steps will say with voiceflow_message.create_many.
+            Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
+          operation: duplicate
+          operationDescription: |-
+            WHAT — Copies a workflow under a new name in one call. The copy gets its own copies of the messages and prompts its steps use, of the playbooks its Playbook and Crew steps run, and of the agents its Operator steps run.
+            Blocks and steps keep their IDs and their places on the canvas. A Go to block into the original points into the copy. A copied playbook has the original's instructions, paths and tool messages, and attaches the same tools and functions. Workflow steps and tools still name the same workflows and tools as the original, and a step that names the project's main agent keeps naming it. ids maps each copied message, prompt, playbook and Operator agent from the original's ID to the copy's.
+            USE WHEN — the user wants a variant of an existing workflow, or a copy under another name. Copy it, then change the copy with the block and step operations.
+            AFTER — change the copy's text and playbooks through the IDs in ids. When the copy should run, register it as a new workflow: read the agent with voiceflow_agent.get, send every workflow already in its workflows plus the copy with voiceflow_agent.update, then add a routing rule with voiceflow_agent.patch_instructions.
+            DO NOT — rebuild a workflow block by block to copy it.
+            DO NOT — edit a message, prompt or playbook by its ID in the original; the original still uses it.
+        cli:
+          command: workflow duplicate
+      x-speakeasy-group: workflow
+      x-speakeasy-name-override: duplicate
+      summary: Duplicate workflow
+      description: Copy a workflow under a new name, with its own copies of the messages, prompts and playbooks its steps use.
+      parameters:
+        - name: workflowID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableWorkflowDuplicateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWorkflowDuplicateResponse'
       tags:
         - Workflow
       security:
@@ -12705,6 +12891,67 @@ paths:
         - Workflow
       security:
         - token: []
+  /v1/stable/workflow/{workflowID}/links:
+    put:
+      operationId: StableWorkflowController_linkMany
+      x-vf:
+        mcp:
+          tool: voiceflow_workflow
+          toolDescription: |-
+            A Workflow is a canvas: an ordered list of blocks, and each block holds an ordered list of steps. Order is control flow. A step that is not last in its block continues to the step below it.
+            Only two kinds of link survive on a step that is not last: its else port, and the linked ports of a Card or Carousel. A null else stops there. So a step that branches must be the last step of its block: Condition, Buttons, Listen with a linked no-reply, Playbook, Operator, Crew and Handoff. Cards and Carousel may sit anywhere because they do not wait. Tool and Code steps branch only when last; anywhere else their paths do not run. Links point at blocks, never at a step inside one, and a block is entered at its first step. A step that speaks holds the ID of a message or a prompt, not the words. Give every such step its own new message or prompt, and never reuse an ID another step holds. Every ID is issued by the server: copy IDs from a read and never invent one. An exit can run port actions before it reaches its block. They show as `actions` on the link, and `to` is where the path goes after them. End, Go to block, Handoff and Call forward end the path.
+            Predecessor: read the workflow with voiceflow_workflow.get before any edit, and create the messages new steps will say with voiceflow_message.create_many.
+            Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
+          operation: link_many
+          operationDescription: |-
+            WHAT — Points up to 50 ports at blocks in one write, each with the same checks as voiceflow_workflow.link. Every link is checked before anything is saved, and they save together.
+            linked says, for each port, the block it led to before. A port that led somewhere else now leads to the new block, and its actions stay.
+            USE WHEN — wiring several ports at once, such as every button of a step or every path of a new branch.
+            BEFORE — voiceflow_workflow.get, for the port keys and the block IDs.
+            AFTER — when a port's replaced is neither null nor its to, tell the user that port now leads elsewhere.
+            DO NOT — send the same port twice.
+            DO NOT — target a step; links point at blocks.
+        cli:
+          command: workflow link-many
+      x-speakeasy-group: workflow
+      x-speakeasy-name-override: link-many
+      summary: Link many ports
+      description: Point up to 50 ports at blocks in one write.
+      parameters:
+        - name: workflowID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableWorkflowLinkManyRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWorkflowLinkManyResponse'
+      tags:
+        - Workflow
+      security:
+        - token: []
   /v2/stable/workflow/{workflowID}/block:
     post:
       operationId: StableWorkflowController_createBlockV2
@@ -12761,6 +13008,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableWorkflowBlockWriteResponseV2'
+      tags:
+        - Workflow
+      security:
+        - token: []
+  /v1/stable/workflow/{workflowID}/blocks:
+    post:
+      operationId: StableWorkflowController_addBlocks
+      x-vf:
+        mcp:
+          tool: voiceflow_workflow
+          toolDescription: |-
+            A Workflow is a canvas: an ordered list of blocks, and each block holds an ordered list of steps. Order is control flow. A step that is not last in its block continues to the step below it.
+            Only two kinds of link survive on a step that is not last: its else port, and the linked ports of a Card or Carousel. A null else stops there. So a step that branches must be the last step of its block: Condition, Buttons, Listen with a linked no-reply, Playbook, Operator, Crew and Handoff. Cards and Carousel may sit anywhere because they do not wait. Tool and Code steps branch only when last; anywhere else their paths do not run. Links point at blocks, never at a step inside one, and a block is entered at its first step. A step that speaks holds the ID of a message or a prompt, not the words. Give every such step its own new message or prompt, and never reuse an ID another step holds. Every ID is issued by the server: copy IDs from a read and never invent one. An exit can run port actions before it reaches its block. They show as `actions` on the link, and `to` is where the path goes after them. End, Go to block, Handoff and Call forward end the path.
+            Predecessor: read the workflow with voiceflow_workflow.get before any edit, and create the messages new steps will say with voiceflow_message.create_many.
+            Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
+          operation: add_blocks
+          operationDescription: |-
+            WHAT — Creates up to 20 blocks with their steps in one write, links them to each other and to existing blocks, and can link existing ports to them. The server lays the new blocks out in columns by their links.
+            Give every block a key. A step's links and a branch's to name a block key from this call or an existing block ID. from links an existing port to a new block, with the same checks as voiceflow_workflow.link, and linked says what each of those ports led to before. The response maps every key to its new ID.
+            USE WHEN — adding two or more blocks to an existing workflow, such as a new path of several blocks. For one block, use voiceflow_workflow.create_block. Send only a message or prompt ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message or prompt with that text.
+            BEFORE — voiceflow_workflow.get, for the ports to link and the block IDs, and create the messages the new steps say with voiceflow_message.create_many, one per step.
+            AFTER — when a linked port's replaced is neither null nor its to, tell the user that port now leads to the new block.
+            DO NOT — send coordinates; the server places blocks.
+            DO NOT — use it to build a new workflow; voiceflow_workflow.create does that.
+        cli:
+          command: workflow add-blocks
+      x-speakeasy-group: workflow
+      x-speakeasy-name-override: add-blocks
+      summary: Add workflow blocks
+      description: Create several blocks with their steps and links in one write; the server places them.
+      parameters:
+        - name: workflowID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableWorkflowBlocksAddRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWorkflowBlocksAddResponse'
       tags:
         - Workflow
       security:
@@ -12886,6 +13194,64 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableWorkflowRemovalResponse'
+      tags:
+        - Workflow
+      security:
+        - token: []
+  /v1/stable/workflow/{workflowID}/arrange:
+    post:
+      operationId: StableWorkflowController_arrangeBlocks
+      x-vf:
+        mcp:
+          tool: voiceflow_workflow
+          toolDescription: |-
+            A Workflow is a canvas: an ordered list of blocks, and each block holds an ordered list of steps. Order is control flow. A step that is not last in its block continues to the step below it.
+            Only two kinds of link survive on a step that is not last: its else port, and the linked ports of a Card or Carousel. A null else stops there. So a step that branches must be the last step of its block: Condition, Buttons, Listen with a linked no-reply, Playbook, Operator, Crew and Handoff. Cards and Carousel may sit anywhere because they do not wait. Tool and Code steps branch only when last; anywhere else their paths do not run. Links point at blocks, never at a step inside one, and a block is entered at its first step. A step that speaks holds the ID of a message or a prompt, not the words. Give every such step its own new message or prompt, and never reuse an ID another step holds. Every ID is issued by the server: copy IDs from a read and never invent one. An exit can run port actions before it reaches its block. They show as `actions` on the link, and `to` is where the path goes after them. End, Go to block, Handoff and Call forward end the path.
+            Predecessor: read the workflow with voiceflow_workflow.get before any edit, and create the messages new steps will say with voiceflow_message.create_many.
+            Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
+          operation: arrange_blocks
+          operationDescription: |-
+            WHAT — Moves blocks into columns by their links, the way a new workflow is laid out: the Start, then one column for each link away from it, with blocks stacked by their height. Steps, links and names do not change.
+            With blockIDs, only those blocks move: they are laid out by the links between them, from where the top-left one sits, then moved right until they overlap no other block. Without it, every block moves and the Start stays where it is.
+            USE WHEN — the user asks to arrange or tidy the canvas. When they mean only some blocks, such as the ones you just added, pass those blockIDs.
+            DO NOT — arrange when the user did not ask; people place blocks on purpose.
+        cli:
+          command: workflow arrange-blocks
+      x-speakeasy-group: workflow
+      x-speakeasy-name-override: arrange-blocks
+      summary: Arrange workflow blocks
+      description: Move blocks into columns by their links.
+      parameters:
+        - name: workflowID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableWorkflowArrangeRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWorkflowArrangeResponse'
       tags:
         - Workflow
       security:
@@ -13350,6 +13716,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableWorkflowPortActionsOrderResponse'
+      tags:
+        - Workflow
+      security:
+        - token: []
+  /v1/stable/workflow/{workflowID}/action/{actionID}:
+    put:
+      operationId: StableWorkflowController_replaceAction
+      x-vf:
+        mcp:
+          tool: voiceflow_workflow
+          toolDescription: |-
+            A Workflow is a canvas: an ordered list of blocks, and each block holds an ordered list of steps. Order is control flow. A step that is not last in its block continues to the step below it.
+            Only two kinds of link survive on a step that is not last: its else port, and the linked ports of a Card or Carousel. A null else stops there. So a step that branches must be the last step of its block: Condition, Buttons, Listen with a linked no-reply, Playbook, Operator, Crew and Handoff. Cards and Carousel may sit anywhere because they do not wait. Tool and Code steps branch only when last; anywhere else their paths do not run. Links point at blocks, never at a step inside one, and a block is entered at its first step. A step that speaks holds the ID of a message or a prompt, not the words. Give every such step its own new message or prompt, and never reuse an ID another step holds. Every ID is issued by the server: copy IDs from a read and never invent one. An exit can run port actions before it reaches its block. They show as `actions` on the link, and `to` is where the path goes after them. End, Go to block, Handoff and Call forward end the path.
+            Predecessor: read the workflow with voiceflow_workflow.get before any edit, and create the messages new steps will say with voiceflow_message.create_many.
+            Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
+          operation: replace_action
+          operationDescription: |-
+            WHAT — Replaces one action on an exit with a new action of any kind, in the same place in the run order, in one write. The path keeps going to the same block, unless the new action ends it.
+            The new action gets a new ID. When it replaces the last action, it takes over where the path goes; an action that ends the path (End, Go to block, Handoff, Call forward) drops it, and clearedTo names the block the path reached before.
+            USE WHEN — an action has to become another kind, such as a Set that should be a Code action. To change an action's settings and keep its kind, use voiceflow_workflow.update_step. Send only a message or prompt ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message or prompt with that text.
+            BEFORE — voiceflow_workflow.get, for the action ID and expectedActions: the IDs of that exit's actions, in order.
+            DO NOT — delete the action and add a new one; between the two calls the path runs without it.
+        cli:
+          command: workflow replace-action
+      x-speakeasy-group: workflow
+      x-speakeasy-name-override: replace-action
+      summary: Replace port action
+      description: Replace one action on an exit with a new action of any kind, in one write.
+      parameters:
+        - name: workflowID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: actionID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableWorkflowActionReplaceRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableWorkflowPortActionsWriteResponse'
       tags:
         - Workflow
       security:
@@ -32151,6 +32581,203 @@ components:
       description: 'A full export of the environment. Rich text is rendered as a string, with {name} for a variable, entity or secret reference and `name` for a tool, playbook or workflow reference. A chat-text leaf (a tool message example, a card or attachment description, a static no-match or no-reply prompt) carries markdown marks and escapes a literal *, _, ~, [, <u> or </u> with a backslash, as a message read does. A prompt leaf (instructions, persona, guidelines) carries markdown. Every other leaf is plain text with {name} references, no marks and no escapes: a URL, a header, query or body value, a default value, a condition operand, a set value, a code leaf, and an utterance leaf (entity references only). Outside a prompt-kind leaf, a variable, entity or secret whose name is outside the token grammar (letters, digits and underscores, at most 64 characters) renders as its id. A secret inside a prompt-kind leaf renders as its id rather than its name, matching the dedicated agent read. Inside diagrams{}.nodes{}.data only the node types whose data carries rich text are rendered; every other node type ships in its stored object form. messages[] and prompts[] carry the same objects the message and prompt get reads return, rendered the same way, so the text fields of an item can be written back unchanged. The whole item cannot: the write schemas refuse its id, timestamps and user IDs. Read-only.'
       allOf:
         - $ref: '#/components/schemas/StableExportAssistantExportDataV2'
+    StableSearchTextHit:
+      type: object
+      properties:
+        resourceType:
+          $ref: '#/components/schemas/StableSearchResourceType'
+        resourceID:
+          type: string
+          description: 'The ID to read the resource with. For a workflow, the workflow ID. A canvas no workflow owns carries its diagram ID and the Initialization Workflow its own ID; no workflow read takes either. When ownerID is set, the row lives inside that owner: read the owner.'
+        resourceName:
+          type: string
+        ownerID:
+          description: 'For a row inside another resource, such as a function path, a tool attachment or a test assertion: the owner to read it with.'
+          type: string
+        blockID:
+          description: 'For a hit on a workflow canvas: the block.'
+          type: string
+        stepID:
+          description: 'For a hit on a workflow canvas: the step or action.'
+          type: string
+        stepKind:
+          type: string
+        field:
+          type: string
+          description: Where in the resource the text is, as a path such as instructions, data.name or variants[0].text.
+        line:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: The 1-based line within that field.
+        count:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Matches on that line.
+        snippet:
+          type: string
+          description: The line around the first match, at most 120 characters.
+        usedBy:
+          description: 'For a message or prompt: the steps and resources that hold its ID, at most 20. A holder inside another resource carries ownerID.'
+          type: array
+          items:
+            $ref: '#/components/schemas/StableSearchTextHolder'
+      required:
+        - resourceType
+        - resourceID
+        - field
+        - line
+        - count
+        - snippet
+    StableSearchResourceType:
+      type: string
+      enum:
+        - agent
+        - playbook
+        - workflow
+        - message
+        - prompt
+        - agent_tool
+        - function
+        - api_tool
+        - integration_tool
+        - mcp_tool
+        - mcp_server
+        - variable
+        - entity
+        - intent
+        - event
+        - test
+        - evaluation
+        - persona
+        - attachment
+        - folder
+        - initialization_workflow
+        - canvas
+        - project
+      x-enumNames:
+        - AGENT
+        - PLAYBOOK
+        - WORKFLOW
+        - MESSAGE
+        - PROMPT
+        - AGENT_TOOL
+        - FUNCTION
+        - API_TOOL
+        - INTEGRATION_TOOL
+        - MCP_TOOL
+        - MCP_SERVER
+        - VARIABLE
+        - ENTITY
+        - INTENT
+        - EVENT
+        - TEST
+        - EVALUATION
+        - PERSONA
+        - ATTACHMENT
+        - FOLDER
+        - INITIALIZATION_WORKFLOW
+        - CANVAS
+        - PROJECT
+    StableSearchTextHolder:
+      type: object
+      properties:
+        resourceType:
+          $ref: '#/components/schemas/StableSearchResourceType'
+        resourceID:
+          type: string
+        resourceName:
+          type: string
+        ownerID:
+          description: 'For a row inside another resource, such as a tool attachment: the owner to read it with.'
+          type: string
+        blockID:
+          type: string
+        stepID:
+          type: string
+      required:
+        - resourceType
+        - resourceID
+    StableEnvironmentSearchTextReadResponse:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableSearchTextHit'
+        totalMatches:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Matches in everything searched, not only this page.
+        byResourceType:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: -9.007199254740991e+15
+            maximum: 9.007199254740991e+15
+          description: Matching lines per resource type, in everything searched.
+        hasMore:
+          type: boolean
+        nextOffset:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        incomplete:
+          description: 'Present when the search did not read everything: it stopped at its time limit, or a regular expression read only the first 1,000 characters of a longer line. The counts cover only what it read.'
+          type: boolean
+          enum:
+            - true
+          x-enumNames:
+            - "TRUE"
+        notSearched:
+          type: array
+          items:
+            type: string
+          description: What this search never reads.
+      required:
+        - hits
+        - totalMatches
+        - byResourceType
+        - hasMore
+        - notSearched
+    StableEnvironmentSearchTextRequest:
+      type: object
+      properties:
+        pattern:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: The word, phrase or ID to find. With regex, a JavaScript regular expression.
+        regex:
+          description: 'Read pattern as a regular expression. Default false: literal text.'
+          type: boolean
+        ignoreCase:
+          description: Ignore case. Default true.
+          type: boolean
+        wholeWord:
+          description: Match only where no letter, digit or underscore touches the match on either side. Default false.
+          type: boolean
+        resourceTypes:
+          description: 'Search only these kinds of resource. Default: all of them.'
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/StableSearchResourceType'
+        limit:
+          description: Hits per page. Default 50.
+          type: integer
+          minimum: 1
+          maximum: 200
+        offset:
+          description: 'Hits to skip: nextOffset from the previous page.'
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+      required:
+        - pattern
+      additionalProperties: false
     StableEnvironmentCompileResponse:
       type: object
       properties:
@@ -37711,6 +38338,691 @@ components:
           required:
             - type
           additionalProperties: false
+    StableToolAttachmentV2:
+      oneOf:
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating this tool executes a saved API request.
+              x-enumNames:
+                - API
+            apiToolID:
+              type: string
+              description: The ID of the API resource this tool executes.
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  apiToolInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - apiToolInputVariableID
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - apiToolID
+            - asyncExecution
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating this tool executes a custom function.
+              x-enumNames:
+                - FUNCTION
+            functionID:
+              type: string
+              description: The ID of the function resource this tool executes.
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  functionInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - functionInputVariableID
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - functionID
+            - asyncExecution
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating this tool calls a tool from an MCP server.
+              x-enumNames:
+                - MCP
+            mcpToolID:
+              type: string
+              description: The ID of the MCP tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  mcpIntegrationVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - mcpIntegrationVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - mcpToolID
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - description
+            - captureInputVariables
+            - type
+            - integrationToolID
+            - inputVariables
+            - captureResponse
+        - $ref: '#/components/schemas/StableWorkflowTool'
+    StableWorkflowTool:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - workflow
+          description: Discriminator indicating a workflow the agent can run as a tool.
+          x-enumNames:
+            - WORKFLOW
+        workflowID:
+          type: string
+          description: The workflow the tool runs.
+        description:
+          nullable: true
+          description: When the agent should run the workflow; null uses the workflow's own.
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - type
+        - workflowID
+        - description
+        - createdAt
+        - updatedAt
+    StableToolListResponseV2:
+      type: object
+      properties:
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableToolAttachmentV2'
+      required:
+        - tools
+    StableToolTarget:
+      type: object
+      properties:
+        global:
+          description: Target the agent. Cannot be used with playbookID.
+          type: boolean
+        playbookID:
+          description: Target a specific playbook. Cannot be used with global.
+          type: string
+      additionalProperties: false
+    StableToolResponseV2:
+      type: object
+      properties:
+        tool:
+          $ref: '#/components/schemas/StableToolAttachmentV2'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - tool
+    StableToolCreateRequestV2:
+      oneOf:
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            asyncExecution:
+              default: false
+              description: When enabled, the tool runs in the background without blocking the conversation.
+              type: boolean
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  apiToolInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - apiToolInputVariableID
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating this tool executes a saved API request.
+              x-enumNames:
+                - API
+            apiToolID:
+              type: string
+              description: The ID of the API resource this tool executes.
+          required:
+            - target
+            - type
+            - apiToolID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            asyncExecution:
+              default: false
+              description: When enabled, the tool runs in the background without blocking the conversation.
+              type: boolean
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  functionInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - functionInputVariableID
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating this tool executes a custom function.
+              x-enumNames:
+                - FUNCTION
+            functionID:
+              type: string
+              description: The ID of the function resource this tool executes.
+          required:
+            - target
+            - type
+            - functionID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  mcpIntegrationVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - mcpIntegrationVariableName
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating this tool calls a tool from an MCP server.
+              x-enumNames:
+                - MCP
+            mcpToolID:
+              type: string
+              description: The ID of the MCP tool resource this tool calls.
+          required:
+            - target
+            - type
+            - mcpToolID
+          additionalProperties: false
+        - type: object
+          properties:
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            messages:
+              default: null
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              default: {}
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            inputVariables:
+              default: {}
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+            captureResponse:
+              default: {}
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+          required:
+            - target
+            - type
+            - integrationToolID
+          additionalProperties: false
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - workflow
+              description: 'Give the agent a tool that runs a workflow. Send target: { global: true }; playbooks take none.'
+              x-enumNames:
+                - WORKFLOW
+            target:
+              $ref: '#/components/schemas/StableToolTarget'
+            workflowID:
+              type: string
+              description: The workflow to attach, from voiceflow_workflow.list.
+            description:
+              description: When the agent should run the workflow. Omit it to use the workflow's own description.
+              nullable: true
+              type: string
+          required:
+            - type
+            - target
+            - workflowID
+          additionalProperties: false
     StableToolV2:
       oneOf:
         - type: object
@@ -38033,311 +39345,6 @@ components:
             - integrationToolID
             - inputVariables
             - captureResponse
-    StableToolListResponseV2:
-      type: object
-      properties:
-        tools:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableToolV2'
-      required:
-        - tools
-    StableToolTarget:
-      type: object
-      properties:
-        global:
-          description: Target the agent. Cannot be used with playbookID.
-          type: boolean
-        playbookID:
-          description: Target a specific playbook. Cannot be used with global.
-          type: string
-      additionalProperties: false
-    StableToolResponseV2:
-      type: object
-      properties:
-        tool:
-          $ref: '#/components/schemas/StableToolV2'
-        unresolvedReferences:
-          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedReference'
-      required:
-        - tool
-    StableToolCreateRequestV2:
-      oneOf:
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            asyncExecution:
-              default: false
-              description: When enabled, the tool runs in the background without blocking the conversation.
-              type: boolean
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  apiToolInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - apiToolInputVariableID
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - api
-              description: Discriminator indicating this tool executes a saved API request.
-              x-enumNames:
-                - API
-            apiToolID:
-              type: string
-              description: The ID of the API resource this tool executes.
-          required:
-            - target
-            - type
-            - apiToolID
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            asyncExecution:
-              default: false
-              description: When enabled, the tool runs in the background without blocking the conversation.
-              type: boolean
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  functionInputVariableID:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - functionInputVariableID
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - function
-              description: Discriminator indicating this tool executes a custom function.
-              x-enumNames:
-                - FUNCTION
-            functionID:
-              type: string
-              description: The ID of the function resource this tool executes.
-          required:
-            - target
-            - type
-            - functionID
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  mcpIntegrationVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - mcpIntegrationVariableName
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - mcp
-              description: Discriminator indicating this tool calls a tool from an MCP server.
-              x-enumNames:
-                - MCP
-            mcpToolID:
-              type: string
-              description: The ID of the MCP tool resource this tool calls.
-          required:
-            - target
-            - type
-            - mcpToolID
-          additionalProperties: false
-        - type: object
-          properties:
-            description:
-              nullable: true
-              description: A description of what the tool does, used by the agent to decide when to call it.
-              type: string
-            target:
-              $ref: '#/components/schemas/StableToolTarget'
-            messages:
-              default: null
-              nullable: true
-              allOf:
-                - $ref: '#/components/schemas/StableToolMessages'
-            captureInputVariables:
-              default: {}
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
-            inputVariables:
-              default: {}
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  description:
-                    default: null
-                    nullable: true
-                    type: string
-                  defaultValue:
-                    default: null
-                    nullable: true
-                    allOf:
-                      - $ref: '#/components/schemas/DefaultValueString'
-                  integrationToolVariableName:
-                    type: string
-                  captureType:
-                    allOf:
-                      - $ref: '#/components/schemas/ToolNodeCaptureType'
-                  required:
-                    type: boolean
-                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
-                required:
-                  - integrationToolVariableName
-            captureResponse:
-              default: {}
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
-            type:
-              type: string
-              enum:
-                - integration
-              description: Discriminator indicating this tool calls a connected first-party integration.
-              x-enumNames:
-                - INTEGRATION
-            integrationToolID:
-              type: string
-              description: The ID of the integration tool resource this tool calls.
-          required:
-            - target
-            - type
-            - integrationToolID
-          additionalProperties: false
     StableToolCreateManyResponse:
       type: object
       properties:
@@ -38658,7 +39665,7 @@ components:
       type: object
       properties:
         tool:
-          $ref: '#/components/schemas/StableToolV2'
+          $ref: '#/components/schemas/StableToolAttachmentV2'
       required:
         - tool
     StableToolUpdateRequestV2:
@@ -41086,6 +42093,38 @@ components:
         - workflowID
         - blockID
         - step
+    StableWorkflowRawReadResponse:
+      type: object
+      properties:
+        workflow:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            diagramID:
+              type: string
+              description: The canvas the nodes belong to. A Go to block into this workflow names it.
+          required:
+            - id
+            - name
+            - diagramID
+        nodes:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: {}
+            description: 'One stored node: nodeID, type, coords when it has them, and data.'
+          description: 'The stored nodes by ID: blocks, steps, the Start and action lists. A block lists its step IDs in data.steps, and ports keep their targets in data.portsV2. Text the canvas stores as rich text reads as a string, with {name} for a variable, entity or secret and `name` for a tool, playbook or workflow. Every other field is exactly as stored, and its shape can change without notice.'
+        missingBlockIDs:
+          description: IDs in blockIDs that name no block or Start in this workflow.
+          type: array
+          items:
+            type: string
+      required:
+        - workflow
+        - nodes
     StableWorkflowCreateResponse:
       type: object
       properties:
@@ -41167,7 +42206,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepMessageContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41190,7 +42229,7 @@ components:
               allOf:
                 - $ref: '#/components/schemas/StableWorkflowStepEndContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41211,7 +42250,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepSetContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41233,7 +42272,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepWorkflowContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41255,7 +42294,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepListenContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41277,7 +42316,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepConditionContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41299,7 +42338,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepButtonsContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41321,7 +42360,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepCardContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41343,7 +42382,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepCarouselContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41365,7 +42404,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepCodeContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41387,7 +42426,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepApiContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41409,7 +42448,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepFunctionContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41431,7 +42470,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepIntegrationContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41453,7 +42492,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepMcpContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41475,7 +42514,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepPlaybookContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41497,7 +42536,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepOperatorContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41519,7 +42558,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepCrewContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41541,7 +42580,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepHandoffContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41563,7 +42602,7 @@ components:
             content:
               $ref: '#/components/schemas/StableWorkflowStepCallForwardContentInput'
             links:
-              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.'
+              description: 'Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.'
               type: object
               additionalProperties:
                 type: string
@@ -41859,7 +42898,7 @@ components:
             additionalProperties: false
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
       required:
         - assertions
       additionalProperties: false
@@ -41898,7 +42937,7 @@ components:
             - $ref: '#/components/schemas/VariableReferenceString'
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
       required:
         - label
       additionalProperties: false
@@ -42011,7 +43050,7 @@ components:
           type: string
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
       required:
         - label
       additionalProperties: false
@@ -42437,7 +43476,7 @@ components:
           maximum: 9.007199254740991e+15
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
       required:
         - name
       additionalProperties: false
@@ -42740,6 +43779,66 @@ components:
           nullable: true
           type: string
       additionalProperties: false
+    StableWorkflowDuplicateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        workflow:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+          required:
+            - id
+            - name
+          description: The copy.
+        ids:
+          type: object
+          properties:
+            messages:
+              type: object
+              additionalProperties:
+                type: string
+              description: Each message the original's steps say, mapped to its copy.
+            prompts:
+              type: object
+              additionalProperties:
+                type: string
+              description: Each prompt the original's steps and their messages use, mapped to its copy.
+            playbooks:
+              type: object
+              additionalProperties:
+                type: string
+              description: Each playbook a Playbook or Crew step runs, mapped to its copy. The copy attaches the same tools.
+            operatorAgents:
+              type: object
+              additionalProperties:
+                type: string
+              description: Each agent an Operator step runs, mapped to its copy.
+          required:
+            - messages
+            - prompts
+            - playbooks
+            - operatorAgents
+          description: The original ID of each copied resource, mapped to the ID of its copy. Block and step IDs do not change.
+      required:
+        - message
+        - workflow
+        - ids
+    StableWorkflowDuplicateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the copy.
+      required:
+        - name
+      additionalProperties: false
     StableWorkflowLinkResponse:
       type: object
       properties:
@@ -42815,6 +43914,68 @@ components:
       required:
         - message
         - link
+    StableWorkflowLinkedExit:
+      type: object
+      properties:
+        stepID:
+          type: string
+          description: The step that owns the port, or the start node.
+        port:
+          type: string
+        to:
+          type: string
+          description: The block the port leads to now.
+        replaced:
+          nullable: true
+          description: 'What the port led to before this call, after any actions: a block, or a step an older link stored. null when it led nowhere. When it is neither null nor to, the port no longer leads there: tell the user.'
+          type: string
+      required:
+        - stepID
+        - port
+        - to
+        - replaced
+    StableWorkflowLinkManyResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: What was written.
+        linked:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableWorkflowLinkedExit'
+          description: Every port in the order you sent them, with the block it led to before.
+      required:
+        - message
+        - linked
+    StableWorkflowLinkManyRequest:
+      type: object
+      properties:
+        links:
+          minItems: 1
+          maxItems: 50
+          type: array
+          items:
+            type: object
+            properties:
+              stepID:
+                type: string
+                description: The step that owns the port, or entry.stepID for the Start.
+              port:
+                type: string
+                description: 'The port key: next, else, fail, no-reply, conversation-turn, or the ID of a branch or path.'
+              toBlockID:
+                type: string
+                description: The block the port will lead to. Links point at blocks, never at a step.
+            required:
+              - stepID
+              - port
+              - toBlockID
+            additionalProperties: false
+          description: 1 to 50 ports to link, each once.
+      required:
+        - links
+      additionalProperties: false
     StableWorkflowBlockCreateRequest:
       type: object
       properties:
@@ -42880,6 +44041,81 @@ components:
         - message
         - block
         - ids
+    StableWorkflowBlocksAddResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: What was written.
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableWorkflowBlock'
+          description: The new blocks, in the order you sent them.
+        ids:
+          type: object
+          additionalProperties:
+            type: string
+          description: Every key in the request, mapped to the ID the server created.
+        linked:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableWorkflowLinkedExit'
+          description: The from ports, each with the block it led to before.
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+      required:
+        - message
+        - blocks
+        - ids
+        - linked
+    StableWorkflowBlocksAddRequest:
+      type: object
+      properties:
+        blocks:
+          minItems: 1
+          maxItems: 20
+          type: array
+          items:
+            $ref: '#/components/schemas/StableWorkflowSeedBlock'
+          description: The new blocks. A step's links and a branch's to name a block key from this call or an existing block ID.
+        from:
+          description: Existing ports to link to new blocks in the same call, with the same checks as voiceflow_workflow.link.
+          maxItems: 20
+          type: array
+          items:
+            type: object
+            properties:
+              stepID:
+                type: string
+                description: The step that owns the port, or entry.stepID for the Start.
+              port:
+                type: string
+                description: 'The port key: next, else, fail, no-reply, conversation-turn, or a branch or path ID.'
+              to:
+                description: The key of a block in this call.
+                allOf:
+                  - $ref: '#/components/schemas/StableWorkflowSeedKey'
+            required:
+              - stepID
+              - port
+              - to
+            additionalProperties: false
+        placement:
+          description: Place the new blocks to the right of this block. Without it, they go right of the block of the first from step, or right of the right-most block.
+          type: object
+          properties:
+            afterBlockID:
+              type: string
+          required:
+            - afterBlockID
+          additionalProperties: false
+      required:
+        - blocks
+      additionalProperties: false
     StableWorkflowBlockUpdateRequest:
       type: object
       properties:
@@ -42889,6 +44125,42 @@ components:
         color:
           type: string
           maxLength: 64
+      additionalProperties: false
+    StableWorkflowArrangeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: What was written.
+        moved:
+          type: array
+          items:
+            type: object
+            properties:
+              blockID:
+                type: string
+              x:
+                type: number
+              y:
+                type: number
+            required:
+              - blockID
+              - x
+              - y
+          description: Each block that moved, with its new position.
+      required:
+        - message
+        - moved
+    StableWorkflowArrangeRequest:
+      type: object
+      properties:
+        blockIDs:
+          description: Move only these blocks, as a group laid out by the links between them. Leave it out to arrange every block from the Start.
+          minItems: 1
+          maxItems: 50
+          type: array
+          items:
+            type: string
       additionalProperties: false
     StableWorkflowRemovalResponse:
       type: object
@@ -44132,7 +45404,7 @@ components:
             additionalProperties: false
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
         kind:
           type: string
           enum:
@@ -44154,7 +45426,7 @@ components:
             - $ref: '#/components/schemas/VariableReferenceString'
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
         kind:
           type: string
           enum:
@@ -44176,7 +45448,7 @@ components:
             - $ref: '#/components/schemas/VariableReferenceString'
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
         kind:
           type: string
           enum:
@@ -44198,7 +45470,7 @@ components:
             - $ref: '#/components/schemas/VariableReferenceString'
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
         kind:
           type: string
           enum:
@@ -44220,7 +45492,7 @@ components:
           type: string
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
         kind:
           type: string
           enum:
@@ -44282,7 +45554,7 @@ components:
           maximum: 9.007199254740991e+15
         to:
           type: string
-          description: The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+          description: The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
         kind:
           type: string
           enum:
@@ -44729,6 +46001,22 @@ components:
           description: Every action ID of this exit, in the new order.
       required:
         - order
+      additionalProperties: false
+    StableWorkflowActionReplaceRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/StableWorkflowPortActionInput'
+        expectedActions:
+          minItems: 1
+          maxItems: 20
+          type: array
+          items:
+            type: string
+          description: The IDs in this exit's actions from your last read, in order.
+      required:
+        - action
+        - expectedActions
       additionalProperties: false
     StableWorkspace:
       type: object

@@ -359,6 +359,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_environment_get.md) - Get environment
 * [`update`](docs/vf_environment_update.md) - Update environment
 * [`delete`](docs/vf_environment_delete.md) - Delete environment
+* [`search-text`](docs/vf_environment_search-text.md) - Search project text
 * [`compile`](docs/vf_environment_compile.md) - Compile environment
 * [`clone`](docs/vf_environment_clone.md) - Clone environment
 * [`publish`](docs/vf_environment_publish.md) - Publish environment
@@ -609,11 +610,16 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get-step`](docs/vf_workflow_get-step.md) - Get workflow step
 * [`update-step`](docs/vf_workflow_update-step.md) - Update workflow step
 * [`delete-step`](docs/vf_workflow_delete-step.md) - Delete workflow step
+* [`get-raw`](docs/vf_workflow_get-raw.md) - Get raw workflow
+* [`duplicate`](docs/vf_workflow_duplicate.md) - Duplicate workflow
 * [`link`](docs/vf_workflow_link.md) - Link a port
 * [`unlink`](docs/vf_workflow_unlink.md) - Unlink a port
+* [`link-many`](docs/vf_workflow_link-many.md) - Link many ports
 * [`create-block`](docs/vf_workflow_create-block.md) - Create block
+* [`add-blocks`](docs/vf_workflow_add-blocks.md) - Add workflow blocks
 * [`update-block`](docs/vf_workflow_update-block.md) - Update block
 * [`delete-block`](docs/vf_workflow_delete-block.md) - Delete workflow block
+* [`arrange-blocks`](docs/vf_workflow_arrange-blocks.md) - Arrange workflow blocks
 * [`split-block`](docs/vf_workflow_split-block.md) - Split workflow block
 * [`insert-step`](docs/vf_workflow_insert-step.md) - Insert workflow step
 * [`add-branch`](docs/vf_workflow_add-branch.md) - Add workflow branch
@@ -621,6 +627,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`delete-branch`](docs/vf_workflow_delete-branch.md) - Delete workflow branch
 * [`add-actions`](docs/vf_workflow_add-actions.md) - Add port actions
 * [`reorder-actions`](docs/vf_workflow_reorder-actions.md) - Reorder port actions
+* [`replace-action`](docs/vf_workflow_replace-action.md) - Replace port action
 
 ### [phone-number](docs/vf_phone-number.md)
 

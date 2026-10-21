@@ -92,7 +92,7 @@ type StableWorkflowConditionItemInput struct {
 	Label      optionalnullable.OptionalNullable[string]   `json:"label,omitzero"`
 	MatchAll   *bool                                       `json:"matchAll,omitzero"`
 	Assertions []StableWorkflowConditionItemInputAssertion `json:"assertions"`
-	// The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+	// The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
 	To *string `json:"to,omitzero"`
 }
 

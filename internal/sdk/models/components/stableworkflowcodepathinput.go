@@ -10,7 +10,7 @@ import (
 type StableWorkflowCodePathInput struct {
 	Key   *string `json:"key,omitzero"`
 	Label string  `json:"label"`
-	// The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+	// The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
 	To *string `json:"to,omitzero"`
 }
 

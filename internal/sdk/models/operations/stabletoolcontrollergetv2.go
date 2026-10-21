@@ -18,6 +18,7 @@ const (
 	StableToolControllerGetV2TypeMcp         StableToolControllerGetV2Type = "mcp"
 	StableToolControllerGetV2TypeFunction    StableToolControllerGetV2Type = "function"
 	StableToolControllerGetV2TypeIntegration StableToolControllerGetV2Type = "integration"
+	StableToolControllerGetV2TypeWorkflow    StableToolControllerGetV2Type = "workflow"
 )
 
 func (e StableToolControllerGetV2Type) ToPointer() *StableToolControllerGetV2Type {
@@ -36,6 +37,8 @@ func (e *StableToolControllerGetV2Type) UnmarshalJSON(data []byte) error {
 	case "function":
 		fallthrough
 	case "integration":
+		fallthrough
+	case "workflow":
 		*e = StableToolControllerGetV2Type(v)
 		return nil
 	default:

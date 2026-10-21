@@ -19,7 +19,7 @@ var getCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "type", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration"}, Description: "The type of the tool to fetch. (options: api, mcp, function, integration) [required]"},
+	{FlagName: "type", FieldPath: "Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration", "workflow"}, Description: "The type of the tool to fetch. (options: api, mcp, function, integration, workflow) [required]"},
 }
 
 // initGetCmd initializes the get command.
@@ -27,7 +27,7 @@ func initGetCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "get",
 		Short:   "Get tool",
-		Long:    "Get a tool by ID.",
+		Long:    "Get a tool by ID, including a workflow tool.",
 		Example: "  vf tool get --tool-id <id> --project-id <id> --environment-alias <value> --type integration",
 		RunE:    runGetCmd,
 	}

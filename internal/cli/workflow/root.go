@@ -53,6 +53,14 @@ func InitWorkflowRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initGetRawCmd(WorkflowCmd); err != nil {
+		return err
+	}
+
+	if err := initDuplicateCmd(WorkflowCmd); err != nil {
+		return err
+	}
+
 	if err := initLinkCmd(WorkflowCmd); err != nil {
 		return err
 	}
@@ -61,7 +69,15 @@ func InitWorkflowRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initLinkManyCmd(WorkflowCmd); err != nil {
+		return err
+	}
+
 	if err := initCreateBlockCmd(WorkflowCmd); err != nil {
+		return err
+	}
+
+	if err := initAddBlocksCmd(WorkflowCmd); err != nil {
 		return err
 	}
 
@@ -70,6 +86,10 @@ func InitWorkflowRoot(parent *cobra.Command) error {
 	}
 
 	if err := initDeleteBlockCmd(WorkflowCmd); err != nil {
+		return err
+	}
+
+	if err := initArrangeBlocksCmd(WorkflowCmd); err != nil {
 		return err
 	}
 
@@ -98,6 +118,10 @@ func InitWorkflowRoot(parent *cobra.Command) error {
 	}
 
 	if err := initReorderActionsCmd(WorkflowCmd); err != nil {
+		return err
+	}
+
+	if err := initReplaceActionCmd(WorkflowCmd); err != nil {
 		return err
 	}
 

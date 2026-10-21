@@ -8,7 +8,7 @@ import (
 )
 
 type StableToolResponseV2 struct {
-	Tool StableToolV2 `json:"tool"`
+	Tool StableToolAttachmentV2 `json:"tool"`
 	// References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
 	UnresolvedReferences []StableUnresolvedReference `json:"unresolvedReferences,omitzero"`
 }
@@ -24,27 +24,31 @@ func (s *StableToolResponseV2) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableToolResponseV2) GetTool() StableToolV2 {
+func (s *StableToolResponseV2) GetTool() StableToolAttachmentV2 {
 	if s == nil {
-		return StableToolV2{}
+		return StableToolAttachmentV2{}
 	}
 	return s.Tool
 }
 
-func (s *StableToolResponseV2) GetToolAPI() *StableToolV2API {
-	return s.GetTool().StableToolV2API
+func (s *StableToolResponseV2) GetToolAPI() *StableToolAttachmentV2API {
+	return s.GetTool().StableToolAttachmentV2API
 }
 
-func (s *StableToolResponseV2) GetToolFunction() *StableToolV2Function {
-	return s.GetTool().StableToolV2Function
+func (s *StableToolResponseV2) GetToolFunction() *StableToolAttachmentV2Function {
+	return s.GetTool().StableToolAttachmentV2Function
 }
 
-func (s *StableToolResponseV2) GetToolMcp() *StableToolV2Mcp {
-	return s.GetTool().StableToolV2Mcp
+func (s *StableToolResponseV2) GetToolMcp() *StableToolAttachmentV2Mcp {
+	return s.GetTool().StableToolAttachmentV2Mcp
 }
 
-func (s *StableToolResponseV2) GetToolIntegration() *StableToolV2Integration {
-	return s.GetTool().StableToolV2Integration
+func (s *StableToolResponseV2) GetToolIntegration() *StableToolAttachmentV2Integration {
+	return s.GetTool().StableToolAttachmentV2Integration
+}
+
+func (s *StableToolResponseV2) GetToolWorkflow() *StableWorkflowTool {
+	return s.GetTool().StableWorkflowTool
 }
 
 func (s *StableToolResponseV2) GetUnresolvedReferences() []StableUnresolvedReference {

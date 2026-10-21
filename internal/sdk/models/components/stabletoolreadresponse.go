@@ -4,28 +4,32 @@
 package components
 
 type StableToolReadResponse struct {
-	Tool StableToolV2 `json:"tool"`
+	Tool StableToolAttachmentV2 `json:"tool"`
 }
 
-func (s *StableToolReadResponse) GetTool() StableToolV2 {
+func (s *StableToolReadResponse) GetTool() StableToolAttachmentV2 {
 	if s == nil {
-		return StableToolV2{}
+		return StableToolAttachmentV2{}
 	}
 	return s.Tool
 }
 
-func (s *StableToolReadResponse) GetToolAPI() *StableToolV2API {
-	return s.GetTool().StableToolV2API
+func (s *StableToolReadResponse) GetToolAPI() *StableToolAttachmentV2API {
+	return s.GetTool().StableToolAttachmentV2API
 }
 
-func (s *StableToolReadResponse) GetToolFunction() *StableToolV2Function {
-	return s.GetTool().StableToolV2Function
+func (s *StableToolReadResponse) GetToolFunction() *StableToolAttachmentV2Function {
+	return s.GetTool().StableToolAttachmentV2Function
 }
 
-func (s *StableToolReadResponse) GetToolMcp() *StableToolV2Mcp {
-	return s.GetTool().StableToolV2Mcp
+func (s *StableToolReadResponse) GetToolMcp() *StableToolAttachmentV2Mcp {
+	return s.GetTool().StableToolAttachmentV2Mcp
 }
 
-func (s *StableToolReadResponse) GetToolIntegration() *StableToolV2Integration {
-	return s.GetTool().StableToolV2Integration
+func (s *StableToolReadResponse) GetToolIntegration() *StableToolAttachmentV2Integration {
+	return s.GetTool().StableToolAttachmentV2Integration
+}
+
+func (s *StableToolReadResponse) GetToolWorkflow() *StableWorkflowTool {
+	return s.GetTool().StableWorkflowTool
 }

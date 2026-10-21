@@ -990,7 +990,7 @@ type StableWorkflowCrewBranchAdd struct {
 	// One message per slot. null clears the slot; a slot you leave out keeps its message.
 	Messages            *StableWorkflowCrewBranchAddMessages     `json:"messages,omitzero"`
 	DelayMessageSeconds optionalnullable.OptionalNullable[int64] `json:"delayMessageSeconds,omitzero"`
-	// The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID.
+	// The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID.
 	To   *string                         `json:"to,omitzero"`
 	Kind StableWorkflowCrewBranchAddKind `json:"kind"`
 }

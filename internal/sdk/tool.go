@@ -32,7 +32,7 @@ func newTool(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks *ho
 }
 
 // List tools
-// List all tools for the agent or a specific playbook.
+// List all tools for the agent or a specific playbook, including workflow tools.
 func (s *Tool) List(ctx context.Context, request operations.StableToolControllerListV2Request, opts ...operations.Option) (*operations.StableToolControllerListV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -181,7 +181,7 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 }
 
 // Create tool
-// Create a new tool.
+// Create a new tool, or give the agent a workflow tool.
 func (s *Tool) Create(ctx context.Context, request operations.StableToolControllerCreateV2Request, opts ...operations.Option) (*operations.StableToolControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -337,7 +337,7 @@ func (s *Tool) Create(ctx context.Context, request operations.StableToolControll
 }
 
 // Get tool
-// Get a tool by ID.
+// Get a tool by ID, including a workflow tool.
 func (s *Tool) Get(ctx context.Context, request operations.StableToolControllerGetV2Request, opts ...operations.Option) (*operations.StableToolControllerGetV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -642,8 +642,8 @@ func (s *Tool) Update(ctx context.Context, request operations.StableToolControll
 }
 
 // Delete tool
-// Delete a tool by ID.
-func (s *Tool) Delete(ctx context.Context, request operations.StableToolControllerDeleteRequest, opts ...operations.Option) (*operations.StableToolControllerDeleteResponse, error) {
+// Delete a tool by ID, including a workflow tool.
+func (s *Tool) Delete(ctx context.Context, request operations.StableToolControllerDeleteV2Request, opts ...operations.Option) (*operations.StableToolControllerDeleteV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -662,7 +662,7 @@ func (s *Tool) Delete(ctx context.Context, request operations.StableToolControll
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/tool/{toolID}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/tool/{toolID}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -672,7 +672,7 @@ func (s *Tool) Delete(ctx context.Context, request operations.StableToolControll
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableToolController_delete",
+		OperationID:      "StableToolController_deleteV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
@@ -735,7 +735,7 @@ func (s *Tool) Delete(ctx context.Context, request operations.StableToolControll
 		}
 	}
 
-	res := &operations.StableToolControllerDeleteResponse{
+	res := &operations.StableToolControllerDeleteV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,

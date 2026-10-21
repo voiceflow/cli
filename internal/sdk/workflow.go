@@ -1244,6 +1244,311 @@ func (s *Workflow) DeleteStep(ctx context.Context, request operations.StableWork
 
 }
 
+// GetRaw - Get raw workflow
+// Get the stored canvas nodes of a workflow, with rich text rendered as strings.
+func (s *Workflow) GetRaw(ctx context.Context, request operations.StableWorkflowControllerGetRawRequest, opts ...operations.Option) (*operations.StableWorkflowControllerGetRawResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/raw", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableWorkflowController_getRaw",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", opURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableWorkflowControllerGetRawResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableWorkflowRawReadResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableWorkflowRawReadResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// Duplicate workflow
+// Copy a workflow under a new name, with its own copies of the messages, prompts and playbooks its steps use.
+func (s *Workflow) Duplicate(ctx context.Context, request operations.StableWorkflowControllerDuplicateRequest, opts ...operations.Option) (*operations.StableWorkflowControllerDuplicateResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/duplicate", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableWorkflowController_duplicate",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableWorkflowControllerDuplicateResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 201:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableWorkflowDuplicateResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableWorkflowDuplicateResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
 // Link a port
 // Point one port of a step at a block.
 func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowControllerLinkV2Request, opts ...operations.Option) (*operations.StableWorkflowControllerLinkV2Response, error) {
@@ -1549,6 +1854,162 @@ func (s *Workflow) Unlink(ctx context.Context, request operations.StableWorkflow
 
 }
 
+// LinkMany - Link many ports
+// Point up to 50 ports at blocks in one write.
+func (s *Workflow) LinkMany(ctx context.Context, request operations.StableWorkflowControllerLinkManyRequest, opts ...operations.Option) (*operations.StableWorkflowControllerLinkManyResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/links", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableWorkflowController_linkMany",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "PUT", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableWorkflowControllerLinkManyResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableWorkflowLinkManyResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableWorkflowLinkManyResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
 // CreateBlock - Create block
 // Create a block with its steps; the server places it.
 func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWorkflowControllerCreateBlockV2Request, opts ...operations.Option) (*operations.StableWorkflowControllerCreateBlockV2Response, error) {
@@ -1673,6 +2134,162 @@ func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWor
 				}
 
 				res.StableWorkflowBlockWriteResponseV2 = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// AddBlocks - Add workflow blocks
+// Create several blocks with their steps and links in one write; the server places them.
+func (s *Workflow) AddBlocks(ctx context.Context, request operations.StableWorkflowControllerAddBlocksRequest, opts ...operations.Option) (*operations.StableWorkflowControllerAddBlocksResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/blocks", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableWorkflowController_addBlocks",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableWorkflowControllerAddBlocksResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 201:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableWorkflowBlocksAddResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableWorkflowBlocksAddResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -1978,6 +2595,162 @@ func (s *Workflow) DeleteBlock(ctx context.Context, request operations.StableWor
 				}
 
 				res.StableWorkflowRemovalResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// ArrangeBlocks - Arrange workflow blocks
+// Move blocks into columns by their links.
+func (s *Workflow) ArrangeBlocks(ctx context.Context, request operations.StableWorkflowControllerArrangeBlocksRequest, opts ...operations.Option) (*operations.StableWorkflowControllerArrangeBlocksResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/arrange", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableWorkflowController_arrangeBlocks",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableWorkflowControllerArrangeBlocksResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableWorkflowArrangeResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableWorkflowArrangeResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -3063,6 +3836,162 @@ func (s *Workflow) ReorderActions(ctx context.Context, request operations.Stable
 				}
 
 				res.StableWorkflowPortActionsOrderResponse = &out
+			}
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, sdkerrors.NewSDKDefaultError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, sdkerrors.NewSDKDefaultError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// ReplaceAction - Replace port action
+// Replace one action on an exit with a new action of any kind, in one write.
+func (s *Workflow) ReplaceAction(ctx context.Context, request operations.StableWorkflowControllerReplaceActionRequest, opts ...operations.Option) (*operations.StableWorkflowControllerReplaceActionResponse, error) {
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionTimeout,
+		operations.SupportedOptionSkipDeserialization,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/action/{actionID}", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "StableWorkflowController_replaceAction",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "PUT", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpRes, err := s.sdkConfiguration.Client.Do(req)
+	if err != nil || httpRes == nil {
+		if err != nil {
+			err = fmt.Errorf("error sending request: %w", err)
+		} else {
+			err = fmt.Errorf("error sending request: no response")
+		}
+
+		_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+		return nil, err
+	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+		_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+		if err != nil {
+			return nil, err
+		} else if _httpRes != nil {
+			httpRes = _httpRes
+		}
+	} else {
+		httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res := &operations.StableWorkflowControllerReplaceActionResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			if o.SkipDeserialization == nil || !*o.SkipDeserialization {
+				rawBody, err := utils.ConsumeRawBody(httpRes)
+				if err != nil {
+					return nil, err
+				}
+
+				var out components.StableWorkflowPortActionsWriteResponse
+				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+					return nil, err
+				}
+
+				res.StableWorkflowPortActionsWriteResponse = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
