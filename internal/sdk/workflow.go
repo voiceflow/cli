@@ -1246,7 +1246,7 @@ func (s *Workflow) DeleteStep(ctx context.Context, request operations.StableWork
 
 // Link a port
 // Point one port of a step at a block.
-func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowControllerLinkRequest, opts ...operations.Option) (*operations.StableWorkflowControllerLinkResponse, error) {
+func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowControllerLinkV2Request, opts ...operations.Option) (*operations.StableWorkflowControllerLinkV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -1265,7 +1265,7 @@ func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowCo
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/step/{stepID}/link/{portKey}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/workflow/{workflowID}/step/{stepID}/link/{portKey}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1275,7 +1275,7 @@ func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowCo
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableWorkflowController_link",
+		OperationID:      "StableWorkflowController_linkV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -1345,7 +1345,7 @@ func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowCo
 		}
 	}
 
-	res := &operations.StableWorkflowControllerLinkResponse{
+	res := &operations.StableWorkflowControllerLinkV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -1362,12 +1362,12 @@ func (s *Workflow) Link(ctx context.Context, request operations.StableWorkflowCo
 					return nil, err
 				}
 
-				var out components.StableWorkflowLinkResponse
+				var out components.StableWorkflowLinkResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableWorkflowLinkResponse = &out
+				res.StableWorkflowLinkResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -1551,7 +1551,7 @@ func (s *Workflow) Unlink(ctx context.Context, request operations.StableWorkflow
 
 // CreateBlock - Create block
 // Create a block with its steps; the server places it.
-func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWorkflowControllerCreateBlockRequest, opts ...operations.Option) (*operations.StableWorkflowControllerCreateBlockResponse, error) {
+func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWorkflowControllerCreateBlockV2Request, opts ...operations.Option) (*operations.StableWorkflowControllerCreateBlockV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -1570,7 +1570,7 @@ func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWor
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/stable/workflow/{workflowID}/block", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v2/stable/workflow/{workflowID}/block", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1580,7 +1580,7 @@ func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWor
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "StableWorkflowController_createBlock",
+		OperationID:      "StableWorkflowController_createBlockV2",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
@@ -1650,7 +1650,7 @@ func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWor
 		}
 	}
 
-	res := &operations.StableWorkflowControllerCreateBlockResponse{
+	res := &operations.StableWorkflowControllerCreateBlockV2Response{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -1667,12 +1667,12 @@ func (s *Workflow) CreateBlock(ctx context.Context, request operations.StableWor
 					return nil, err
 				}
 
-				var out components.StableWorkflowBlockWriteResponse
+				var out components.StableWorkflowBlockWriteResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableWorkflowBlockWriteResponse = &out
+				res.StableWorkflowBlockWriteResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

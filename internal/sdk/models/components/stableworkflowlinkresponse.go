@@ -3,37 +3,37 @@
 
 package components
 
-type Link struct {
+type StableWorkflowLinkResponseLink struct {
 	StepID string `json:"stepID"`
 	Port   string `json:"port"`
 	// The block the port leads to now, or null.
 	To *string `json:"to"`
 }
 
-func (l *Link) GetStepID() string {
-	if l == nil {
+func (s *StableWorkflowLinkResponseLink) GetStepID() string {
+	if s == nil {
 		return ""
 	}
-	return l.StepID
+	return s.StepID
 }
 
-func (l *Link) GetPort() string {
-	if l == nil {
+func (s *StableWorkflowLinkResponseLink) GetPort() string {
+	if s == nil {
 		return ""
 	}
-	return l.Port
+	return s.Port
 }
 
-func (l *Link) GetTo() *string {
-	if l == nil {
+func (s *StableWorkflowLinkResponseLink) GetTo() *string {
+	if s == nil {
 		return nil
 	}
-	return l.To
+	return s.To
 }
 
 type StableWorkflowLinkResponse struct {
-	Message string `json:"message"`
-	Link    Link   `json:"link"`
+	Message string                         `json:"message"`
+	Link    StableWorkflowLinkResponseLink `json:"link"`
 }
 
 func (s *StableWorkflowLinkResponse) GetMessage() string {
@@ -43,9 +43,9 @@ func (s *StableWorkflowLinkResponse) GetMessage() string {
 	return s.Message
 }
 
-func (s *StableWorkflowLinkResponse) GetLink() Link {
+func (s *StableWorkflowLinkResponse) GetLink() StableWorkflowLinkResponseLink {
 	if s == nil {
-		return Link{}
+		return StableWorkflowLinkResponseLink{}
 	}
 	return s.Link
 }

@@ -32,12 +32,12 @@ func initCreateBlockCmd(parent *cobra.Command) error {
 		Use:     "create-block",
 		Short:   "Create block",
 		Long:    "Create a block with its steps; the server places it.",
-		Example: "  vf workflow create-block --workflow-id <id> --project-id <id> --environment-alias <value> --name <value> --steps '[{\"kind\":\"condition\",\"content\":{\"items\":[{\"assertions\":[{\"lhs\":{\"variableID\":\"<id>\"},\"rhs\":\"<value>\"}]}]} }]'",
+		Example: "  vf workflow create-block --workflow-id <id> --project-id <id> --environment-alias <value> --name <value> --steps '[]'",
 		RunE:    runCreateBlockCmd,
 		Aliases: []string{"cb"},
 	}
 	flagutil.RegisterFlags(cmd, createBlockCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableWorkflowControllerCreateBlockRequest](createBlockCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableWorkflowControllerCreateBlockV2Request](createBlockCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for create-block: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -55,7 +55,7 @@ func runCreateBlockCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableWorkflowControllerCreateBlockRequest](cmd, createBlockCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableWorkflowControllerCreateBlockV2Request](cmd, createBlockCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

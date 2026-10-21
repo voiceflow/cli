@@ -1801,10 +1801,11 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: update
           operationDescription: |-
-            WHAT — Patch an existing tool attachment — update inputVariables, captureResponse, description override, or asyncExecution. Partial PATCH; omitted fields are unchanged.
+            WHAT — Patch an existing tool attachment — update inputVariables, captureResponse, captureInputVariables, description override, or asyncExecution. Partial PATCH; omitted fields are unchanged, and the three maps merge by key.
             USE WHEN — Changing how a tool's inputs are resolved (switch from LLM-filled to variable-sourced), adding or correcting captureResponse mappings, or toggling asyncExecution on a function tool.
-            BEFORE — voiceflow_tool.get to read current config; use its values as base to avoid accidentally clearing fields.
+            BEFORE — voiceflow_tool.get to read the current config and the keys of its maps.
             AFTER — voiceflow_environment.compile + voiceflow_conversation to confirm the new wiring behaves correctly.
+            inputVariables, captureResponse and captureInputVariables each merge into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Send only the entries you change.
             DO NOT — Send required: true on an input whose defaultValue holds a secret reference — the request is rejected. Omit required there and the secret is injected without the model ever being asked for it. Put a secret reference in generative message examples; secrets are not available there and {name} would be stored as literal text and reported back. Secrets belong in a tool input's defaultValue. Rely on a credential default without checking unresolvedReferences: a mistyped secret name is kept as literal text AND makes the input model-filled, because the injection is inferred from the default actually holding a secret.
         cli:
           command: tool update
@@ -12332,9 +12333,9 @@ paths:
         - Workflow
       security:
         - token: []
-  /v1/stable/workflow/{workflowID}/step/{stepID}/link/{portKey}:
+  /v2/stable/workflow/{workflowID}/step/{stepID}/link/{portKey}:
     put:
-      operationId: StableWorkflowController_link
+      operationId: StableWorkflowController_linkV2
       x-vf:
         mcp:
           tool: voiceflow_workflow
@@ -12346,9 +12347,10 @@ paths:
           operation: link
           operationDescription: |-
             WHAT — Points one port of one step at one block, replacing what the port pointed at before.
-            On an exit with actions, it sets the block the path reaches after the last action, and the actions stay.
+            On an exit with actions, it sets the block the path reaches after the last action, and the actions stay. If other edits keep changing the workflow while this call saves, nothing is written and the call returns 409. Then read the workflow again with voiceflow_workflow.get and send the call again.
             USE WHEN — wiring a branch, or the next port of a block's last step.
             BEFORE — voiceflow_workflow.get, for the port key: next, fail, else, no-reply, or the ID of a branch.
+            AFTER — when the message says which block the port led to before, tell the user that the port no longer leads there.
             DO NOT — target a step; links point at blocks.
             DO NOT — link a port on a step that is not last, except the else port and the ports of a Card or Carousel. Any other port there does not run.
         cli:
@@ -12397,11 +12399,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableWorkflowLinkResponse'
+                $ref: '#/components/schemas/StableWorkflowLinkResponseV2'
       tags:
         - Workflow
       security:
         - token: []
+  /v1/stable/workflow/{workflowID}/step/{stepID}/link/{portKey}:
     delete:
       operationId: StableWorkflowController_unlink
       x-vf:
@@ -12464,9 +12467,9 @@ paths:
         - Workflow
       security:
         - token: []
-  /v1/stable/workflow/{workflowID}/block:
+  /v2/stable/workflow/{workflowID}/block:
     post:
-      operationId: StableWorkflowController_createBlock
+      operationId: StableWorkflowController_createBlockV2
       x-vf:
         mcp:
           tool: voiceflow_workflow
@@ -12477,10 +12480,11 @@ paths:
             Successor: a new workflow runs only after voiceflow_agent.update adds it to the agent's workflows and voiceflow_agent.patch_instructions adds a routing rule for it.
           operation: create_block
           operationDescription: |-
-            WHAT — Creates a block with 1 to 20 steps next to placement.afterBlockID. With from, it also links that port to the new block in the same call.
+            WHAT — Creates a block with 1 to 20 steps next to placement.afterBlockID. With from, it also links that port to the new block in the same call, replacing the block that port led to.
+            With from, if other edits keep changing the workflow while this call saves, nothing is written and the call returns 409. Then read the workflow again with voiceflow_workflow.get and send the call again.
             USE WHEN — the next steps belong after a branch, or the block you would add to already ends in a branch. Send only a message or prompt ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message or prompt with that text.
             BEFORE — voiceflow_workflow.get, to choose the port that should reach the new block.
-            AFTER — without from, link a port to the new block with voiceflow_workflow.link. A block that nothing links to never runs.
+            AFTER — without from, link a port to the new block with voiceflow_workflow.link. A block that nothing links to never runs. With from, when the message says which block that port led to before, tell the user that the port no longer leads there.
             DO NOT — send coordinates.
         cli:
           command: workflow create-block
@@ -12518,7 +12522,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableWorkflowBlockWriteResponse'
+                $ref: '#/components/schemas/StableWorkflowBlockWriteResponseV2'
       tags:
         - Workflow
       security:
@@ -38240,16 +38244,18 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             messages:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              nullable: true
+              description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
+              type: object
+              additionalProperties:
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             type:
               type: string
               enum:
@@ -38261,8 +38267,10 @@ components:
               type: boolean
               description: When enabled, the tool runs in the background without blocking the conversation.
             inputVariables:
+              description: 'A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
+                nullable: true
                 type: object
                 properties:
                   description:
@@ -38285,10 +38293,12 @@ components:
                 required:
                   - apiToolInputVariableID
             captureResponse:
+              description: 'A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
           required:
             - type
           additionalProperties: false
@@ -38298,16 +38308,18 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             messages:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              nullable: true
+              description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
+              type: object
+              additionalProperties:
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             type:
               type: string
               enum:
@@ -38319,8 +38331,10 @@ components:
               type: boolean
               description: When enabled, the tool runs in the background without blocking the conversation.
             inputVariables:
+              description: 'A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
+                nullable: true
                 type: object
                 properties:
                   description:
@@ -38343,10 +38357,12 @@ components:
                 required:
                   - functionInputVariableID
             captureResponse:
+              description: 'A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
           required:
             - type
           additionalProperties: false
@@ -38356,16 +38372,18 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             messages:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              nullable: true
+              description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
+              type: object
+              additionalProperties:
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             type:
               type: string
               enum:
@@ -38374,8 +38392,10 @@ components:
               x-enumNames:
                 - MCP
             inputVariables:
+              description: 'A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
+                nullable: true
                 type: object
                 properties:
                   description:
@@ -38398,10 +38418,12 @@ components:
                 required:
                   - mcpIntegrationVariableName
             captureResponse:
+              description: 'A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
           required:
             - type
           additionalProperties: false
@@ -38411,16 +38433,18 @@ components:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
               type: string
-            captureInputVariables:
-              nullable: true
-              description: A map of tool input names to the variables or entities whose values are captured into them.
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             messages:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            captureInputVariables:
+              nullable: true
+              description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
+              type: object
+              additionalProperties:
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/AgentToolCaptureInputVariable'
             type:
               type: string
               enum:
@@ -38429,8 +38453,10 @@ components:
               x-enumNames:
                 - INTEGRATION
             inputVariables:
+              description: 'A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
+                nullable: true
                 type: object
                 properties:
                   description:
@@ -38453,10 +38479,12 @@ components:
                 required:
                   - integrationToolVariableName
             captureResponse:
+              description: 'A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.'
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
-              description: A map of variable names to the parts of the tool response captured into them.
+                nullable: true
+                allOf:
+                  - $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
           required:
             - type
           additionalProperties: false
@@ -41182,7 +41210,7 @@ components:
           description: Whether the End says its message or prompt. Defaults to true when you send an ID.
           type: boolean
       additionalProperties: false
-      description: 'Leave out content for an End that says nothing: { "kind": "end" }. For an End that speaks first, send one messageID or promptID.'
+      description: 'Leave out content for an End that says nothing: { "kind": "end" }. In a block, say something first with a Message step before the End. An End action on an exit can speak itself: send one messageID or promptID.'
     StableWorkflowStepSetContentInput:
       type: object
       properties:
@@ -42319,24 +42347,49 @@ components:
       required:
         - toBlockID
       additionalProperties: false
-    StableWorkflowBlockWriteResponse:
+    StableWorkflowReplacedLink:
       type: object
       properties:
-        block:
-          $ref: '#/components/schemas/StableWorkflowBlock'
-        ids:
-          type: object
-          additionalProperties:
-            type: string
-          description: Every key in the request, mapped to the ID the server created.
-        unresolvedReferences:
-          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
-          type: array
-          items:
-            $ref: '#/components/schemas/StableUnresolvedReference'
+        stepID:
+          type: string
+          description: The step whose port the call re-pointed.
+        port:
+          type: string
+          description: The port key, for example fail or a branch ID.
+        to:
+          type: string
+          description: The block the port led to before this call. It no longer leads there.
       required:
-        - block
-        - ids
+        - stepID
+        - port
+        - to
+    StableWorkflowLinkResponseV2:
+      type: object
+      properties:
+        message:
+          type: string
+        link:
+          type: object
+          properties:
+            stepID:
+              type: string
+            port:
+              type: string
+            to:
+              nullable: true
+              description: The block the port leads to now, or null.
+              type: string
+          required:
+            - stepID
+            - port
+            - to
+        replacedLink:
+          description: 'Present when the port already led to another block: the link this call replaced.'
+          allOf:
+            - $ref: '#/components/schemas/StableWorkflowReplacedLink'
+      required:
+        - message
+        - link
     StableWorkflowBlockCreateRequest:
       type: object
       properties:
@@ -42377,6 +42430,31 @@ components:
         - name
         - steps
       additionalProperties: false
+    StableWorkflowBlockWriteResponseV2:
+      type: object
+      properties:
+        message:
+          type: string
+        block:
+          $ref: '#/components/schemas/StableWorkflowBlock'
+        ids:
+          type: object
+          additionalProperties:
+            type: string
+          description: Every key in the request, mapped to the ID the server created.
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
+        replacedLink:
+          description: 'Present when from already led to another block: the link this call replaced.'
+          allOf:
+            - $ref: '#/components/schemas/StableWorkflowReplacedLink'
+      required:
+        - message
+        - block
+        - ids
     StableWorkflowBlockUpdateRequest:
       type: object
       properties:
