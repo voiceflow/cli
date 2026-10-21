@@ -19,7 +19,8 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "document-id", FieldPath: "DocumentID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "metadata", Shorthand: "m", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"metadata"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime. [required]"},
+	{FlagName: "metadata", Shorthand: "m", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
+	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"folderID,omitempty"`, Description: "The ID of the Knowledge Base folder to move the document into, or null to move it to the top level."},
 }
 
 // initUpdateCmd initializes the update command.
@@ -28,7 +29,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 		Use:     "update",
 		Short:   "Update document",
 		Long:    "Update a document by ID.",
-		Example: "  vf document update --document-id <id> --project-id <id> --environment-alias <value> --metadata '[]'",
+		Example: "  vf document update --document-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)

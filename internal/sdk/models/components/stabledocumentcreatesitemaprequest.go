@@ -72,6 +72,8 @@ type StableDocumentCreateSitemapRequest struct {
 	Metadata []StableDocumentCreateSitemapRequestMetadatum `json:"metadata,omitzero"`
 	// How often the URL is automatically re-crawled to refresh the document content.
 	RefreshRate *StableDocumentCreateSitemapRequestRefreshRate `default:"never" json:"refreshRate"`
+	// The ID of the Knowledge Base folder to file every document the import creates or reuses under. Without it, new documents start at the top level and reused ones keep their folder.
+	FolderID *string `json:"folderID,omitzero"`
 }
 
 func (s StableDocumentCreateSitemapRequest) MarshalJSON() ([]byte, error) {
@@ -111,4 +113,11 @@ func (s *StableDocumentCreateSitemapRequest) GetRefreshRate() *StableDocumentCre
 		return nil
 	}
 	return s.RefreshRate
+}
+
+func (s *StableDocumentCreateSitemapRequest) GetFolderID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }

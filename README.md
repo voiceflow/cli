@@ -471,6 +471,13 @@ server's dynamic client registration endpoint and caches the resulting
 * [`update`](docs/vf_document_update.md) - Update document
 * [`delete`](docs/vf_document_delete.md) - Delete document
 
+#### [folder](docs/vf_document_folder.md)
+
+* [`list`](docs/vf_document_folder_list.md) - List document folders
+* [`create`](docs/vf_document_folder_create.md) - Create document folder
+* [`update`](docs/vf_document_folder_update.md) - Update document folder
+* [`delete`](docs/vf_document_folder_delete.md) - Delete document folder
+
 ### [integration](docs/vf_integration.md)
 
 * [`list`](docs/vf_integration_list.md) - List integrations

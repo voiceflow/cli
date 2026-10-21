@@ -72,6 +72,8 @@ type StableDocumentCreateManagedSitemapRequest struct {
 	RefreshRate *StableDocumentCreateManagedSitemapRequestRefreshRate `default:"never" json:"refreshRate"`
 	// Metadata tags attached to the sitemap and to every page it imports, used to filter knowledge base retrieval at runtime.
 	Metadata []StableDocumentCreateManagedSitemapRequestMetadatum `json:"metadata,omitzero"`
+	// The ID of the Knowledge Base folder to file the sitemap and the pages it imports under. Omit to create them at the top level.
+	FolderID *string `json:"folderID,omitzero"`
 }
 
 func (s StableDocumentCreateManagedSitemapRequest) MarshalJSON() ([]byte, error) {
@@ -111,4 +113,11 @@ func (s *StableDocumentCreateManagedSitemapRequest) GetMetadata() []StableDocume
 		return nil
 	}
 	return s.Metadata
+}
+
+func (s *StableDocumentCreateManagedSitemapRequest) GetFolderID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }

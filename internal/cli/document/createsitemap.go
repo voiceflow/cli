@@ -28,6 +28,7 @@ var createSitemapCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "exclude", FieldPath: "Body.Exclude", Kind: flagutil.FlagKindStringArray, Optional: true, Description: "Patterns that drop a URL from the import when any one of them matches. Matching is case-insensitive and unanchored: a pattern with no `*` matches any URL containing it as a substring (`/blog/`), while `*` matches any run of characters (`*/tag/*`, `*.pdf`)."},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
 	{FlagName: "refresh-rate", Shorthand: "r", FieldPath: "Body.RefreshRate", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "never", EnumValues: []string{"daily", "weekly", "monthly", "never"}, Description: "How often the URL is automatically re-crawled to refresh the document content. (options: daily, weekly, monthly, never)"},
+	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindString, Optional: true, Description: "The ID of the Knowledge Base folder to file every document the import creates or reuses under. Without it, new documents start at the top level and reused ones keep their folder."},
 }
 
 // initCreateSitemapCmd initializes the create-sitemap command.

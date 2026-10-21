@@ -6985,6 +6985,10 @@ paths:
                 metadata:
                   description: A JSON-encoded array of `{ key, values }` metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
                   type: string
+                folderID:
+                  description: 'The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder.'
+                  type: string
+                  minLength: 1
                 file:
                   type: string
                   format: binary
@@ -7613,8 +7617,9 @@ paths:
             Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
           operation: update
           operationDescription: |-
-            WHAT — Patch a document metadata.
-            USE WHEN — Renaming, replacing content, or adjusting chunking settings.
+            WHAT — Patch a document's metadata, or move it into another Knowledge Base folder.
+            USE WHEN — Renaming, replacing content, adjusting chunking settings, or filing a document under a folder.
+            HOW — `folderID` moves the document into that folder — find one with voiceflow_document.list_folders — and null moves it to the top level.
         cli:
           command: document update
       x-speakeasy-group: document
@@ -7705,6 +7710,214 @@ paths:
                 $ref: '#/components/schemas/StableDeleteResponse'
       tags:
         - Document
+      security:
+        - token: []
+  /v1/stable/document-folder:
+    get:
+      operationId: StableDocumentFolderController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: list_folders
+          operationDescription: |-
+            WHAT — List the folders that organize the Knowledge Base's documents. Folders nest: `parentID` is the folder a folder sits in, null at the top level.
+            USE WHEN — Finding a folder's `id` to nest a new folder under, to file a document under, or to move a document into with voiceflow_document.update.
+        cli:
+          command: document folder list
+      x-speakeasy-group: document.folder
+      x-speakeasy-name-override: list
+      summary: List document folders
+      description: List all Knowledge Base folders by project ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentFolderListResponse'
+      tags:
+        - Document Folder
+      security:
+        - token: []
+    post:
+      operationId: StableDocumentFolderController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: create_folder
+          operationDescription: |-
+            WHAT — Create a Knowledge Base folder, at the top level or inside another folder.
+            USE WHEN — Grouping documents by source, product or team, so they are filed together in the Knowledge Base.
+            HOW — Pass the returned `id` as `folderID` when creating a document, or to voiceflow_document.update to move an existing one. Folders only organize documents: retrieval searches every document regardless of its folder.
+            DO NOT — Create a folder without checking voiceflow_document.list_folders first — names are not unique, so a second folder with the same name is created rather than the existing one reused.
+        cli:
+          command: document folder create
+      x-speakeasy-group: document.folder
+      x-speakeasy-name-override: create
+      summary: Create document folder
+      description: Create a new Knowledge Base folder.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableDocumentFolderCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentFolderResponse'
+      tags:
+        - Document Folder
+      security:
+        - token: []
+  /v1/stable/document-folder/{folderID}:
+    patch:
+      operationId: StableDocumentFolderController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: update_folder
+          operationDescription: |-
+            WHAT — Rename a Knowledge Base folder, or move it into another folder or to the top level.
+            HOW — A moved folder takes its documents and subfolders with it. `parentID` null moves it to the top level.
+            DO NOT — Move a folder into itself or into one of its own subfolders. It is rejected with 400.
+        cli:
+          command: document folder update
+      x-speakeasy-group: document.folder
+      x-speakeasy-name-override: update
+      summary: Update document folder
+      description: Rename or move a Knowledge Base folder by ID.
+      parameters:
+        - name: folderID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableDocumentFolderUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Document Folder
+      security:
+        - token: []
+    delete:
+      operationId: StableDocumentFolderController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate; it is not enabled on every workspace. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: delete_folder
+          operationDescription: |-
+            WHAT — Delete a Knowledge Base folder together with its subfolders and every document inside them.
+            DO NOT — Delete a folder to tidy up while it still holds documents the agent answers from — they are deleted with it. Move them out first with voiceflow_document.update, or check with voiceflow_document.list that no document sits in the folder or in any of its subfolders.
+        cli:
+          command: document folder delete
+      x-speakeasy-group: document.folder
+      x-speakeasy-name-override: delete
+      summary: Delete document folder
+      description: Delete a Knowledge Base folder by ID, with its subfolders and documents.
+      parameters:
+        - name: folderID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Document Folder
       security:
         - token: []
   /v1/stable/integration:
@@ -27665,6 +27878,78 @@ components:
       required:
         - variables
       additionalProperties: false
+    StableDocumentFolder:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the folder.
+        parentID:
+          nullable: true
+          description: The ID of the folder this folder is nested in, or null for a top-level folder.
+          type: string
+          minLength: 1
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - name
+        - parentID
+        - createdAt
+        - updatedAt
+    StableDocumentFolderListResponse:
+      type: object
+      properties:
+        folders:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableDocumentFolder'
+      required:
+        - folders
+    StableDocumentFolderResponse:
+      type: object
+      properties:
+        folder:
+          $ref: '#/components/schemas/StableDocumentFolder'
+      required:
+        - folder
+    StableDocumentFolderCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the folder.
+        parentID:
+          default: null
+          description: The ID of the folder to nest this folder in. Omit or pass null for a top-level folder.
+          nullable: true
+          type: string
+          minLength: 1
+      required:
+        - name
+      additionalProperties: false
+    StableDocumentFolderUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the folder.
+        parentID:
+          description: The ID of the folder to move this folder into, or null to move it to the top level. Omit it to keep the folder where it is.
+          nullable: true
+          type: string
+          minLength: 1
+      additionalProperties: false
     StableDocument:
       type: object
       properties:
@@ -27680,11 +27965,17 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/SmartChunking'
+        folderID:
+          nullable: true
+          description: The ID of the Knowledge Base folder the document is filed under, or null when it sits at the top level.
+          type: string
+          minLength: 1
       required:
         - id
         - data
         - status
         - smartChunking
+        - folderID
     SmartChunking:
       type: object
       properties:
@@ -27807,6 +28098,10 @@ components:
             - WEEKLY
             - MONTHLY
             - NEVER
+        folderID:
+          description: 'The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder.'
+          type: string
+          minLength: 1
       required:
         - url
       additionalProperties: false
@@ -27860,6 +28155,10 @@ components:
             required:
               - key
               - values
+        folderID:
+          description: 'The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder.'
+          type: string
+          minLength: 1
       required:
         - name
         - items
@@ -27981,6 +28280,10 @@ components:
             - WEEKLY
             - MONTHLY
             - NEVER
+        folderID:
+          description: The ID of the Knowledge Base folder to file every document the import creates or reuses under. Without it, new documents start at the top level and reused ones keep their folder.
+          type: string
+          minLength: 1
       required:
         - sitemapURL
       additionalProperties: false
@@ -28049,6 +28352,10 @@ components:
             required:
               - key
               - values
+        folderID:
+          description: The ID of the Knowledge Base folder to file the sitemap and the pages it imports under. Omit to create them at the top level.
+          type: string
+          minLength: 1
       required:
         - sitemapURL
       additionalProperties: false
@@ -28174,6 +28481,11 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/SmartChunking'
+        folderID:
+          nullable: true
+          description: The ID of the Knowledge Base folder the document is filed under, or null when it sits at the top level.
+          type: string
+          minLength: 1
         chunks:
           type: array
           items:
@@ -28200,6 +28512,7 @@ components:
         - data
         - status
         - smartChunking
+        - folderID
         - chunks
         - metadata
     StableDocumentDetailsResponse:
@@ -28229,8 +28542,11 @@ components:
               - key
               - values
           description: Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
-      required:
-        - metadata
+        folderID:
+          description: The ID of the Knowledge Base folder to move the document into, or null to move it to the top level.
+          nullable: true
+          type: string
+          minLength: 1
       additionalProperties: false
     StableMessage:
       type: object

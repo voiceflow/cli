@@ -18,6 +18,8 @@ import (
 )
 
 type Document struct {
+	Folder *Folder
+
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -28,6 +30,7 @@ func newDocument(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks
 		rootSDK:          rootSDK,
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
+		Folder:           newFolder(rootSDK, sdkConfig, hooks),
 	}
 }
 

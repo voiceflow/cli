@@ -31,6 +31,7 @@ var createTableCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "items", Shorthand: "i", FieldPath: "Body.Items", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"items"`, Description: "The table rows to ingest; each row is a flat object and becomes its own chunk. [required]"},
 	{FlagName: "schema", FieldPath: "Body.Schema", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"schema"`, Description: "Declares which top-level keys of each row are full-text searchable versus row-level metadata. [required]"},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
+	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindString, Optional: true, Description: "The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder."},
 }
 
 // initCreateTableCmd initializes the create-table command.
