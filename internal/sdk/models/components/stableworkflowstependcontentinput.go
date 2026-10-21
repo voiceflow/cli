@@ -37,7 +37,7 @@ func (e *StableWorkflowStepEndContentInputResponseType) UnmarshalJSON(data []byt
 	}
 }
 
-// StableWorkflowStepEndContentInput - Leave out content for an End that says nothing: { "kind": "end" }. For an End that speaks first, send one messageID or promptID.
+// StableWorkflowStepEndContentInput - Leave out content for an End that says nothing: { "kind": "end" }. In a block, say something first with a Message step before the End. An End action on an exit can speak itself: send one messageID or promptID.
 type StableWorkflowStepEndContentInput struct {
 	// message or prompt. Defaults to the kind of ID you send.
 	ResponseType *StableWorkflowStepEndContentInputResponseType `json:"responseType,omitzero"`

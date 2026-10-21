@@ -34,7 +34,7 @@ func initLinkCmd(parent *cobra.Command) error {
 		RunE:    runLinkCmd,
 	}
 	flagutil.RegisterFlags(cmd, linkCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableWorkflowControllerLinkRequest](linkCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableWorkflowControllerLinkV2Request](linkCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for link: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -52,7 +52,7 @@ func runLinkCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableWorkflowControllerLinkRequest](cmd, linkCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableWorkflowControllerLinkV2Request](cmd, linkCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

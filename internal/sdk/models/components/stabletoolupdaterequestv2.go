@@ -125,6 +125,39 @@ func (s *StableToolUpdateRequestV2Messages4) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolupdaterequestv2messages4
 // #endregion class-body-stabletoolupdaterequestv2messages4
 
+type CaptureInputVariables4 struct {
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (c CaptureInputVariables4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *CaptureInputVariables4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CaptureInputVariables4) GetVariableOrEntityID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariableOrEntityID
+}
+
+func (c *CaptureInputVariables4) GetCaptureType() *ToolNodeCaptureType {
+	if c == nil {
+		return nil
+	}
+	return c.CaptureType
+}
+
+// #region class-body-captureinputvariables4
+// #endregion class-body-captureinputvariables4
+
 // StableToolUpdateRequestV2TypeIntegration - Discriminator indicating this tool calls a connected first-party integration.
 type StableToolUpdateRequestV2TypeIntegration string
 
@@ -207,17 +240,59 @@ func (s *StableToolUpdateRequestV2InputVariables4) GetRequired() *bool {
 // #region class-body-stabletoolupdaterequestv2inputvariables4
 // #endregion class-body-stabletoolupdaterequestv2inputvariables4
 
+type StableToolUpdateRequestV2CaptureResponse4 struct {
+	Path               string               `json:"path"`
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (s StableToolUpdateRequestV2CaptureResponse4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse4) GetPath() string {
+	if s == nil {
+		return ""
+	}
+	return s.Path
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse4) GetVariableOrEntityID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.VariableOrEntityID
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse4) GetCaptureType() *ToolNodeCaptureType {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureType
+}
+
+// #region class-body-stabletoolupdaterequestv2captureresponse4
+// #endregion class-body-stabletoolupdaterequestv2captureresponse4
+
 type StableToolUpdateRequestV2Integration struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
-	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
-	// A map of tool input names to the variables or entities whose values are captured into them.
-	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages4]       `json:"messages,omitzero"`
+	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
+	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages4] `json:"messages,omitzero"`
+	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
+	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables4] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool calls a connected first-party integration.
-	Type           StableToolUpdateRequestV2TypeIntegration            `json:"type"`
-	InputVariables map[string]StableToolUpdateRequestV2InputVariables4 `json:"inputVariables,omitzero"`
-	// A map of variable names to the parts of the tool response captured into them.
-	CaptureResponse map[string]ToolNodeDataIntegrationCaptureResponse `json:"captureResponse,omitzero"`
+	Type StableToolUpdateRequestV2TypeIntegration `json:"type"`
+	// A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	InputVariables map[string]*StableToolUpdateRequestV2InputVariables4 `json:"inputVariables,omitzero"`
+	// A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	CaptureResponse map[string]*StableToolUpdateRequestV2CaptureResponse4 `json:"captureResponse,omitzero"`
 }
 
 func (s StableToolUpdateRequestV2Integration) MarshalJSON() ([]byte, error) {
@@ -238,18 +313,18 @@ func (s *StableToolUpdateRequestV2Integration) GetDescription() optionalnullable
 	return s.Description
 }
 
-func (s *StableToolUpdateRequestV2Integration) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureInputVariables
-}
-
 func (s *StableToolUpdateRequestV2Integration) GetMessages() optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages4] {
 	if s == nil {
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2Integration) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables4] {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureInputVariables
 }
 
 func (s *StableToolUpdateRequestV2Integration) GetType() StableToolUpdateRequestV2TypeIntegration {
@@ -259,14 +334,14 @@ func (s *StableToolUpdateRequestV2Integration) GetType() StableToolUpdateRequest
 	return s.Type
 }
 
-func (s *StableToolUpdateRequestV2Integration) GetInputVariables() map[string]StableToolUpdateRequestV2InputVariables4 {
+func (s *StableToolUpdateRequestV2Integration) GetInputVariables() map[string]*StableToolUpdateRequestV2InputVariables4 {
 	if s == nil {
 		return nil
 	}
 	return s.InputVariables
 }
 
-func (s *StableToolUpdateRequestV2Integration) GetCaptureResponse() map[string]ToolNodeDataIntegrationCaptureResponse {
+func (s *StableToolUpdateRequestV2Integration) GetCaptureResponse() map[string]*StableToolUpdateRequestV2CaptureResponse4 {
 	if s == nil {
 		return nil
 	}
@@ -390,6 +465,39 @@ func (s *StableToolUpdateRequestV2Messages3) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolupdaterequestv2messages3
 // #endregion class-body-stabletoolupdaterequestv2messages3
 
+type CaptureInputVariables3 struct {
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (c CaptureInputVariables3) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *CaptureInputVariables3) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CaptureInputVariables3) GetVariableOrEntityID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariableOrEntityID
+}
+
+func (c *CaptureInputVariables3) GetCaptureType() *ToolNodeCaptureType {
+	if c == nil {
+		return nil
+	}
+	return c.CaptureType
+}
+
+// #region class-body-captureinputvariables3
+// #endregion class-body-captureinputvariables3
+
 // StableToolUpdateRequestV2TypeMcp - Discriminator indicating this tool calls a tool from an MCP server.
 type StableToolUpdateRequestV2TypeMcp string
 
@@ -472,17 +580,59 @@ func (s *StableToolUpdateRequestV2InputVariables3) GetRequired() *bool {
 // #region class-body-stabletoolupdaterequestv2inputvariables3
 // #endregion class-body-stabletoolupdaterequestv2inputvariables3
 
+type StableToolUpdateRequestV2CaptureResponse3 struct {
+	Path               string               `json:"path"`
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (s StableToolUpdateRequestV2CaptureResponse3) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse3) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse3) GetPath() string {
+	if s == nil {
+		return ""
+	}
+	return s.Path
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse3) GetVariableOrEntityID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.VariableOrEntityID
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse3) GetCaptureType() *ToolNodeCaptureType {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureType
+}
+
+// #region class-body-stabletoolupdaterequestv2captureresponse3
+// #endregion class-body-stabletoolupdaterequestv2captureresponse3
+
 type StableToolUpdateRequestV2Mcp struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
-	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
-	// A map of tool input names to the variables or entities whose values are captured into them.
-	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages3]       `json:"messages,omitzero"`
+	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
+	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages3] `json:"messages,omitzero"`
+	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
+	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables3] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool calls a tool from an MCP server.
-	Type           StableToolUpdateRequestV2TypeMcp                    `json:"type"`
-	InputVariables map[string]StableToolUpdateRequestV2InputVariables3 `json:"inputVariables,omitzero"`
-	// A map of variable names to the parts of the tool response captured into them.
-	CaptureResponse map[string]ToolNodeDataMcpIntegrationCaptureResponse `json:"captureResponse,omitzero"`
+	Type StableToolUpdateRequestV2TypeMcp `json:"type"`
+	// A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	InputVariables map[string]*StableToolUpdateRequestV2InputVariables3 `json:"inputVariables,omitzero"`
+	// A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	CaptureResponse map[string]*StableToolUpdateRequestV2CaptureResponse3 `json:"captureResponse,omitzero"`
 }
 
 func (s StableToolUpdateRequestV2Mcp) MarshalJSON() ([]byte, error) {
@@ -503,18 +653,18 @@ func (s *StableToolUpdateRequestV2Mcp) GetDescription() optionalnullable.Optiona
 	return s.Description
 }
 
-func (s *StableToolUpdateRequestV2Mcp) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureInputVariables
-}
-
 func (s *StableToolUpdateRequestV2Mcp) GetMessages() optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages3] {
 	if s == nil {
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2Mcp) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables3] {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureInputVariables
 }
 
 func (s *StableToolUpdateRequestV2Mcp) GetType() StableToolUpdateRequestV2TypeMcp {
@@ -524,14 +674,14 @@ func (s *StableToolUpdateRequestV2Mcp) GetType() StableToolUpdateRequestV2TypeMc
 	return s.Type
 }
 
-func (s *StableToolUpdateRequestV2Mcp) GetInputVariables() map[string]StableToolUpdateRequestV2InputVariables3 {
+func (s *StableToolUpdateRequestV2Mcp) GetInputVariables() map[string]*StableToolUpdateRequestV2InputVariables3 {
 	if s == nil {
 		return nil
 	}
 	return s.InputVariables
 }
 
-func (s *StableToolUpdateRequestV2Mcp) GetCaptureResponse() map[string]ToolNodeDataMcpIntegrationCaptureResponse {
+func (s *StableToolUpdateRequestV2Mcp) GetCaptureResponse() map[string]*StableToolUpdateRequestV2CaptureResponse3 {
 	if s == nil {
 		return nil
 	}
@@ -655,6 +805,39 @@ func (s *StableToolUpdateRequestV2Messages2) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolupdaterequestv2messages2
 // #endregion class-body-stabletoolupdaterequestv2messages2
 
+type CaptureInputVariables2 struct {
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (c CaptureInputVariables2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *CaptureInputVariables2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CaptureInputVariables2) GetVariableOrEntityID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariableOrEntityID
+}
+
+func (c *CaptureInputVariables2) GetCaptureType() *ToolNodeCaptureType {
+	if c == nil {
+		return nil
+	}
+	return c.CaptureType
+}
+
+// #region class-body-captureinputvariables2
+// #endregion class-body-captureinputvariables2
+
 // StableToolUpdateRequestV2TypeFunction - Discriminator indicating this tool executes a custom function.
 type StableToolUpdateRequestV2TypeFunction string
 
@@ -737,19 +920,61 @@ func (s *StableToolUpdateRequestV2InputVariables2) GetRequired() *bool {
 // #region class-body-stabletoolupdaterequestv2inputvariables2
 // #endregion class-body-stabletoolupdaterequestv2inputvariables2
 
+type StableToolUpdateRequestV2CaptureResponse2 struct {
+	VariableOrEntityID       *string              `json:"variableOrEntityID"`
+	FunctionOutputVariableID string               `json:"functionOutputVariableID"`
+	CaptureType              *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (s StableToolUpdateRequestV2CaptureResponse2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse2) GetVariableOrEntityID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.VariableOrEntityID
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse2) GetFunctionOutputVariableID() string {
+	if s == nil {
+		return ""
+	}
+	return s.FunctionOutputVariableID
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse2) GetCaptureType() *ToolNodeCaptureType {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureType
+}
+
+// #region class-body-stabletoolupdaterequestv2captureresponse2
+// #endregion class-body-stabletoolupdaterequestv2captureresponse2
+
 type StableToolUpdateRequestV2Function struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
-	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
-	// A map of tool input names to the variables or entities whose values are captured into them.
-	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages2]       `json:"messages,omitzero"`
+	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
+	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages2] `json:"messages,omitzero"`
+	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
+	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables2] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool executes a custom function.
 	Type StableToolUpdateRequestV2TypeFunction `json:"type"`
 	// When enabled, the tool runs in the background without blocking the conversation.
-	AsyncExecution *bool                                               `json:"asyncExecution,omitzero"`
-	InputVariables map[string]StableToolUpdateRequestV2InputVariables2 `json:"inputVariables,omitzero"`
-	// A map of variable names to the parts of the tool response captured into them.
-	CaptureResponse map[string]ToolNodeDataFunctionCaptureResponse `json:"captureResponse,omitzero"`
+	AsyncExecution *bool `json:"asyncExecution,omitzero"`
+	// A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	InputVariables map[string]*StableToolUpdateRequestV2InputVariables2 `json:"inputVariables,omitzero"`
+	// A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	CaptureResponse map[string]*StableToolUpdateRequestV2CaptureResponse2 `json:"captureResponse,omitzero"`
 }
 
 func (s StableToolUpdateRequestV2Function) MarshalJSON() ([]byte, error) {
@@ -770,18 +995,18 @@ func (s *StableToolUpdateRequestV2Function) GetDescription() optionalnullable.Op
 	return s.Description
 }
 
-func (s *StableToolUpdateRequestV2Function) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureInputVariables
-}
-
 func (s *StableToolUpdateRequestV2Function) GetMessages() optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages2] {
 	if s == nil {
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2Function) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables2] {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureInputVariables
 }
 
 func (s *StableToolUpdateRequestV2Function) GetType() StableToolUpdateRequestV2TypeFunction {
@@ -798,14 +1023,14 @@ func (s *StableToolUpdateRequestV2Function) GetAsyncExecution() *bool {
 	return s.AsyncExecution
 }
 
-func (s *StableToolUpdateRequestV2Function) GetInputVariables() map[string]StableToolUpdateRequestV2InputVariables2 {
+func (s *StableToolUpdateRequestV2Function) GetInputVariables() map[string]*StableToolUpdateRequestV2InputVariables2 {
 	if s == nil {
 		return nil
 	}
 	return s.InputVariables
 }
 
-func (s *StableToolUpdateRequestV2Function) GetCaptureResponse() map[string]ToolNodeDataFunctionCaptureResponse {
+func (s *StableToolUpdateRequestV2Function) GetCaptureResponse() map[string]*StableToolUpdateRequestV2CaptureResponse2 {
 	if s == nil {
 		return nil
 	}
@@ -929,6 +1154,39 @@ func (s *StableToolUpdateRequestV2Messages1) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolupdaterequestv2messages1
 // #endregion class-body-stabletoolupdaterequestv2messages1
 
+type CaptureInputVariables1 struct {
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (c CaptureInputVariables1) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *CaptureInputVariables1) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CaptureInputVariables1) GetVariableOrEntityID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariableOrEntityID
+}
+
+func (c *CaptureInputVariables1) GetCaptureType() *ToolNodeCaptureType {
+	if c == nil {
+		return nil
+	}
+	return c.CaptureType
+}
+
+// #region class-body-captureinputvariables1
+// #endregion class-body-captureinputvariables1
+
 // StableToolUpdateRequestV2TypeAPI - Discriminator indicating this tool executes a saved API request.
 type StableToolUpdateRequestV2TypeAPI string
 
@@ -1011,19 +1269,61 @@ func (s *StableToolUpdateRequestV2InputVariables1) GetRequired() *bool {
 // #region class-body-stabletoolupdaterequestv2inputvariables1
 // #endregion class-body-stabletoolupdaterequestv2inputvariables1
 
+type StableToolUpdateRequestV2CaptureResponse1 struct {
+	Path               string               `json:"path"`
+	VariableOrEntityID *string              `json:"variableOrEntityID"`
+	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
+}
+
+func (s StableToolUpdateRequestV2CaptureResponse1) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse1) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse1) GetPath() string {
+	if s == nil {
+		return ""
+	}
+	return s.Path
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse1) GetVariableOrEntityID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.VariableOrEntityID
+}
+
+func (s *StableToolUpdateRequestV2CaptureResponse1) GetCaptureType() *ToolNodeCaptureType {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureType
+}
+
+// #region class-body-stabletoolupdaterequestv2captureresponse1
+// #endregion class-body-stabletoolupdaterequestv2captureresponse1
+
 type StableToolUpdateRequestV2API struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
-	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
-	// A map of tool input names to the variables or entities whose values are captured into them.
-	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	Messages              optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages1]       `json:"messages,omitzero"`
+	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
+	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages1] `json:"messages,omitzero"`
+	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
+	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables1] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool executes a saved API request.
 	Type StableToolUpdateRequestV2TypeAPI `json:"type"`
 	// When enabled, the tool runs in the background without blocking the conversation.
-	AsyncExecution *bool                                               `json:"asyncExecution,omitzero"`
-	InputVariables map[string]StableToolUpdateRequestV2InputVariables1 `json:"inputVariables,omitzero"`
-	// A map of variable names to the parts of the tool response captured into them.
-	CaptureResponse map[string]ToolNodeDataAPICaptureResponse `json:"captureResponse,omitzero"`
+	AsyncExecution *bool `json:"asyncExecution,omitzero"`
+	// A map of input names to the values the agent supplies when calling the tool. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	InputVariables map[string]*StableToolUpdateRequestV2InputVariables1 `json:"inputVariables,omitzero"`
+	// A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
+	CaptureResponse map[string]*StableToolUpdateRequestV2CaptureResponse1 `json:"captureResponse,omitzero"`
 }
 
 func (s StableToolUpdateRequestV2API) MarshalJSON() ([]byte, error) {
@@ -1044,18 +1344,18 @@ func (s *StableToolUpdateRequestV2API) GetDescription() optionalnullable.Optiona
 	return s.Description
 }
 
-func (s *StableToolUpdateRequestV2API) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] {
-	if s == nil {
-		return nil
-	}
-	return s.CaptureInputVariables
-}
-
 func (s *StableToolUpdateRequestV2API) GetMessages() optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages1] {
 	if s == nil {
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2API) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables1] {
+	if s == nil {
+		return nil
+	}
+	return s.CaptureInputVariables
 }
 
 func (s *StableToolUpdateRequestV2API) GetType() StableToolUpdateRequestV2TypeAPI {
@@ -1072,14 +1372,14 @@ func (s *StableToolUpdateRequestV2API) GetAsyncExecution() *bool {
 	return s.AsyncExecution
 }
 
-func (s *StableToolUpdateRequestV2API) GetInputVariables() map[string]StableToolUpdateRequestV2InputVariables1 {
+func (s *StableToolUpdateRequestV2API) GetInputVariables() map[string]*StableToolUpdateRequestV2InputVariables1 {
 	if s == nil {
 		return nil
 	}
 	return s.InputVariables
 }
 
-func (s *StableToolUpdateRequestV2API) GetCaptureResponse() map[string]ToolNodeDataAPICaptureResponse {
+func (s *StableToolUpdateRequestV2API) GetCaptureResponse() map[string]*StableToolUpdateRequestV2CaptureResponse1 {
 	if s == nil {
 		return nil
 	}
