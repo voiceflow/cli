@@ -11,6 +11,82 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+// StableToolCreateRequestV2TypeWorkflow - Give the agent a tool that runs a workflow. Send target: { global: true }; playbooks take none.
+type StableToolCreateRequestV2TypeWorkflow string
+
+const (
+	StableToolCreateRequestV2TypeWorkflowWorkflow StableToolCreateRequestV2TypeWorkflow = "workflow"
+)
+
+func (e StableToolCreateRequestV2TypeWorkflow) ToPointer() *StableToolCreateRequestV2TypeWorkflow {
+	return &e
+}
+func (e *StableToolCreateRequestV2TypeWorkflow) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "workflow":
+		*e = StableToolCreateRequestV2TypeWorkflow(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableToolCreateRequestV2TypeWorkflow: %v", v)
+	}
+}
+
+type StableToolCreateRequestV2Workflow struct {
+	// Give the agent a tool that runs a workflow. Send target: { global: true }; playbooks take none.
+	Type   StableToolCreateRequestV2TypeWorkflow `json:"type"`
+	Target StableToolTarget                      `json:"target"`
+	// The workflow to attach, from voiceflow_workflow.list.
+	WorkflowID string `json:"workflowID"`
+	// When the agent should run the workflow. Omit it to use the workflow's own description.
+	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+}
+
+func (s StableToolCreateRequestV2Workflow) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestV2Workflow) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestV2Workflow) GetType() StableToolCreateRequestV2TypeWorkflow {
+	if s == nil {
+		return StableToolCreateRequestV2TypeWorkflow("")
+	}
+	return s.Type
+}
+
+func (s *StableToolCreateRequestV2Workflow) GetTarget() StableToolTarget {
+	if s == nil {
+		return StableToolTarget{}
+	}
+	return s.Target
+}
+
+func (s *StableToolCreateRequestV2Workflow) GetWorkflowID() string {
+	if s == nil {
+		return ""
+	}
+	return s.WorkflowID
+}
+
+func (s *StableToolCreateRequestV2Workflow) GetDescription() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.Description
+}
+
+// #region class-body-stabletoolcreaterequestv2workflow
+// #endregion class-body-stabletoolcreaterequestv2workflow
+
 type StableToolCreateRequestV2Generative4 struct {
 	Execution  *StableToolMessageGenerative `json:"execution,omitzero"`
 	Failure    *StableToolMessageGenerative `json:"failure,omitzero"`
@@ -1164,6 +1240,7 @@ const (
 	StableToolCreateRequestV2TypeFunctionValue    StableToolCreateRequestV2Type = "function"
 	StableToolCreateRequestV2TypeMcpValue         StableToolCreateRequestV2Type = "mcp"
 	StableToolCreateRequestV2TypeIntegrationValue StableToolCreateRequestV2Type = "integration"
+	StableToolCreateRequestV2TypeWorkflowValue    StableToolCreateRequestV2Type = "workflow"
 )
 
 type StableToolCreateRequestV2 struct {
@@ -1171,6 +1248,7 @@ type StableToolCreateRequestV2 struct {
 	StableToolCreateRequestV2Function    *StableToolCreateRequestV2Function    `queryParam:"inline" union:"member"`
 	StableToolCreateRequestV2Mcp         *StableToolCreateRequestV2Mcp         `queryParam:"inline" union:"member"`
 	StableToolCreateRequestV2Integration *StableToolCreateRequestV2Integration `queryParam:"inline" union:"member"`
+	StableToolCreateRequestV2Workflow    *StableToolCreateRequestV2Workflow    `queryParam:"inline" union:"member"`
 
 	Type StableToolCreateRequestV2Type
 }
@@ -1223,6 +1301,18 @@ func CreateStableToolCreateRequestV2Integration(integration StableToolCreateRequ
 	}
 }
 
+func CreateStableToolCreateRequestV2Workflow(workflow StableToolCreateRequestV2Workflow) StableToolCreateRequestV2 {
+	typ := StableToolCreateRequestV2TypeWorkflowValue
+
+	typStr := StableToolCreateRequestV2TypeWorkflow(typ)
+	workflow.Type = typStr
+
+	return StableToolCreateRequestV2{
+		StableToolCreateRequestV2Workflow: &workflow,
+		Type:                              typ,
+	}
+}
+
 func (u *StableToolCreateRequestV2) UnmarshalJSON(data []byte) error {
 
 	type discriminator struct {
@@ -1271,6 +1361,15 @@ func (u *StableToolCreateRequestV2) UnmarshalJSON(data []byte) error {
 		u.StableToolCreateRequestV2Integration = stableToolCreateRequestV2Integration
 		u.Type = StableToolCreateRequestV2TypeIntegrationValue
 		return nil
+	case "workflow":
+		stableToolCreateRequestV2Workflow := new(StableToolCreateRequestV2Workflow)
+		if err := utils.UnmarshalJSON(data, &stableToolCreateRequestV2Workflow, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == workflow) type StableToolCreateRequestV2Workflow within StableToolCreateRequestV2: %w", string(data), err)
+		}
+
+		u.StableToolCreateRequestV2Workflow = stableToolCreateRequestV2Workflow
+		u.Type = StableToolCreateRequestV2TypeWorkflowValue
+		return nil
 	}
 
 	return fmt.Errorf("could not unmarshal `%s` into any supported union types for StableToolCreateRequestV2", string(data))
@@ -1291,6 +1390,10 @@ func (u StableToolCreateRequestV2) MarshalJSON() ([]byte, error) {
 
 	if u.StableToolCreateRequestV2Integration != nil {
 		return utils.MarshalJSON(u.StableToolCreateRequestV2Integration, "", true)
+	}
+
+	if u.StableToolCreateRequestV2Workflow != nil {
+		return utils.MarshalJSON(u.StableToolCreateRequestV2Workflow, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type StableToolCreateRequestV2: all fields are null")

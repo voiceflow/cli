@@ -38,7 +38,7 @@ type StableWorkflowStepInputCallForward struct {
 	Key  *string                                `json:"key,omitzero"`
 	// Call forward works only in a phone project. In a chat project, do not add it as a step or an action: tell the user it needs a phone project.
 	Content StableWorkflowStepCallForwardContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -108,7 +108,7 @@ type StableWorkflowStepInputHandoff struct {
 	Kind    StableWorkflowStepInputKindHandoff    `json:"kind"`
 	Key     *string                               `json:"key,omitzero"`
 	Content StableWorkflowStepHandoffContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -178,7 +178,7 @@ type StableWorkflowStepInputCrew struct {
 	Kind    StableWorkflowStepInputKindCrew    `json:"kind"`
 	Key     *string                            `json:"key,omitzero"`
 	Content StableWorkflowStepCrewContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -248,7 +248,7 @@ type StableWorkflowStepInputOperator struct {
 	Kind    StableWorkflowStepInputKindOperator    `json:"kind"`
 	Key     *string                                `json:"key,omitzero"`
 	Content StableWorkflowStepOperatorContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -318,7 +318,7 @@ type StableWorkflowStepInputPlaybook struct {
 	Kind    StableWorkflowStepInputKindPlaybook    `json:"kind"`
 	Key     *string                                `json:"key,omitzero"`
 	Content StableWorkflowStepPlaybookContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -388,7 +388,7 @@ type StableWorkflowStepInputMcp struct {
 	Kind    StableWorkflowStepInputKindMcp    `json:"kind"`
 	Key     *string                           `json:"key,omitzero"`
 	Content StableWorkflowStepMcpContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -458,7 +458,7 @@ type StableWorkflowStepInputIntegration struct {
 	Kind    StableWorkflowStepInputKindIntegration    `json:"kind"`
 	Key     *string                                   `json:"key,omitzero"`
 	Content StableWorkflowStepIntegrationContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -528,7 +528,7 @@ type StableWorkflowStepInputFunction struct {
 	Kind    StableWorkflowStepInputKindFunction    `json:"kind"`
 	Key     *string                                `json:"key,omitzero"`
 	Content StableWorkflowStepFunctionContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -598,7 +598,7 @@ type StableWorkflowStepInputAPI struct {
 	Kind    StableWorkflowStepInputKindAPI    `json:"kind"`
 	Key     *string                           `json:"key,omitzero"`
 	Content StableWorkflowStepAPIContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -668,7 +668,7 @@ type StableWorkflowStepInputCode struct {
 	Kind    StableWorkflowStepInputKindCode    `json:"kind"`
 	Key     *string                            `json:"key,omitzero"`
 	Content StableWorkflowStepCodeContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -738,7 +738,7 @@ type StableWorkflowStepInputCarousel struct {
 	Kind    StableWorkflowStepInputKindCarousel    `json:"kind"`
 	Key     *string                                `json:"key,omitzero"`
 	Content StableWorkflowStepCarouselContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -808,7 +808,7 @@ type StableWorkflowStepInputCard struct {
 	Kind    StableWorkflowStepInputKindCard    `json:"kind"`
 	Key     *string                            `json:"key,omitzero"`
 	Content StableWorkflowStepCardContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -878,7 +878,7 @@ type StableWorkflowStepInputButtons struct {
 	Kind    StableWorkflowStepInputKindButtons    `json:"kind"`
 	Key     *string                               `json:"key,omitzero"`
 	Content StableWorkflowStepButtonsContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -948,7 +948,7 @@ type StableWorkflowStepInputCondition struct {
 	Kind    StableWorkflowStepInputKindCondition    `json:"kind"`
 	Key     *string                                 `json:"key,omitzero"`
 	Content StableWorkflowStepConditionContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -1018,7 +1018,7 @@ type StableWorkflowStepInputListen struct {
 	Kind    StableWorkflowStepInputKindListen    `json:"kind"`
 	Key     *string                              `json:"key,omitzero"`
 	Content StableWorkflowStepListenContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -1088,7 +1088,7 @@ type StableWorkflowStepInputWorkflow struct {
 	Kind    StableWorkflowStepInputKindWorkflow    `json:"kind"`
 	Key     *string                                `json:"key,omitzero"`
 	Content StableWorkflowStepWorkflowContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -1158,7 +1158,7 @@ type StableWorkflowStepInputSet struct {
 	Kind    StableWorkflowStepInputKindSet    `json:"kind"`
 	Key     *string                           `json:"key,omitzero"`
 	Content StableWorkflowStepSetContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -1228,7 +1228,7 @@ type StableWorkflowStepInputEnd struct {
 	Kind    StableWorkflowStepInputKindEnd     `json:"kind"`
 	Key     *string                            `json:"key,omitzero"`
 	Content *StableWorkflowStepEndContentInput `json:"content,omitzero"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 
@@ -1298,7 +1298,7 @@ type StableWorkflowStepInputMessage struct {
 	Kind    StableWorkflowStepInputKindMessage    `json:"kind"`
 	Key     *string                               `json:"key,omitzero"`
 	Content StableWorkflowStepMessageContentInput `json:"content"`
-	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; everywhere else, existing block IDs. A branch you create links through its own `to`.
+	// Ports to link, keyed by port: next, else, fail, no-reply, conversation-turn, or a function or playbook path ID. In create, values are block keys from this request; in add_blocks, block keys from this request or existing block IDs; everywhere else, existing block IDs. A branch you create links through its own `to`.
 	Links map[string]string `json:"links,omitzero"`
 }
 

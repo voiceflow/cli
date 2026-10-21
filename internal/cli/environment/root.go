@@ -45,6 +45,10 @@ func InitEnvironmentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initSearchTextCmd(EnvironmentCmd); err != nil {
+		return err
+	}
+
 	if err := initCompileCmd(EnvironmentCmd); err != nil {
 		return err
 	}

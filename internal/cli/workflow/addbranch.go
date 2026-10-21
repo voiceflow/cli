@@ -25,22 +25,22 @@ var addBranchCmdMeta = []flagutil.FlagMeta{
 		{DiscriminatorValue: "buttons", FlagName: "body-param.buttons", FieldName: "StableWorkflowButtonsBranchAdd", CanExpand: true, Description: "StableWorkflowButtonsBranchAdd variant as JSON", Fields: []flagutil.FlagMeta{
 			{FlagName: "body-param.buttons.label", FieldPath: "Label", Kind: flagutil.FlagKindString, Required: true, Description: "Plain text; markdown is not interpreted. {variable_name} inserts a variable or entity, {variable_name.path} a field of a variable. Escape a literal { or \\ with a backslash. A name matching neither is stored as literal text and reported in unresolvedReferences; secrets are not available here. [required]"},
 			{FlagName: "body-param.buttons.url", FieldPath: "URL", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
-			{FlagName: "body-param.buttons.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID."},
+			{FlagName: "body-param.buttons.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID."},
 		}},
 		{DiscriminatorValue: "card", FlagName: "body-param.card", FieldName: "StableWorkflowCardBranchAdd", CanExpand: true, Description: "StableWorkflowCardBranchAdd variant as JSON", Fields: []flagutil.FlagMeta{
 			{FlagName: "body-param.card.label", FieldPath: "Label", Kind: flagutil.FlagKindString, Required: true, Description: "Plain text; markdown is not interpreted. {variable_name} inserts a variable or entity, {variable_name.path} a field of a variable. Escape a literal { or \\ with a backslash. A name matching neither is stored as literal text and reported in unresolvedReferences; secrets are not available here. [required]"},
 			{FlagName: "body-param.card.url", FieldPath: "URL", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
-			{FlagName: "body-param.card.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID."},
+			{FlagName: "body-param.card.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID."},
 		}},
 		{DiscriminatorValue: "carousel", FlagName: "body-param.carousel", FieldName: "StableWorkflowCarouselBranchAdd", CanExpand: true, Description: "StableWorkflowCarouselBranchAdd variant as JSON", Fields: []flagutil.FlagMeta{
 			{FlagName: "body-param.carousel.label", FieldPath: "Label", Kind: flagutil.FlagKindString, Required: true, Description: "Plain text; markdown is not interpreted. {variable_name} inserts a variable or entity, {variable_name.path} a field of a variable. Escape a literal { or \\ with a backslash. A name matching neither is stored as literal text and reported in unresolvedReferences; secrets are not available here. [required]"},
 			{FlagName: "body-param.carousel.url", FieldPath: "URL", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
-			{FlagName: "body-param.carousel.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID."},
+			{FlagName: "body-param.carousel.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID."},
 			{FlagName: "body-param.carousel.card-id", FieldPath: "CardID", Kind: flagutil.FlagKindString, Required: true, Description: "The card the new button goes on. [required]"},
 		}},
 		{DiscriminatorValue: "code", FlagName: "body-param.code", FieldName: "StableWorkflowCodeBranchAdd", CanExpand: true, Description: "StableWorkflowCodeBranchAdd variant as JSON", Fields: []flagutil.FlagMeta{
 			{FlagName: "body-param.code.label", FieldPath: "Label", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-			{FlagName: "body-param.code.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; everywhere else, an existing block ID."},
+			{FlagName: "body-param.code.to", FieldPath: "To", Kind: flagutil.FlagKindString, Optional: true, Description: "The block this branch leads to. In create, a block key from this request; in add_blocks, a block key from this request or an existing block ID; everywhere else, an existing block ID."},
 		}},
 		{DiscriminatorValue: "crew", FlagName: "body-param.crew", FieldName: "StableWorkflowCrewBranchAdd", CanExpand: false, Description: "StableWorkflowCrewBranchAdd variant as JSON"},
 	}}},
@@ -54,7 +54,7 @@ func initAddBranchCmd(parent *cobra.Command) error {
 		Long:    "Add one branch and its port to a step.",
 		Example: "  vf workflow add-branch --workflow-id <id> --step-id <id> --project-id <id> --environment-alias <value>",
 		RunE:    runAddBranchCmd,
-		Aliases: []string{"ab"},
+		Aliases: []string{"abr"},
 	}
 	flagutil.RegisterFlags(cmd, addBranchCmdMeta)
 	if err := flagutil.ValidateMeta[operations.StableWorkflowControllerAddBranchRequest](addBranchCmdMeta); err != nil {
