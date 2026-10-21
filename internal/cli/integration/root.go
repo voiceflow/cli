@@ -37,6 +37,10 @@ func InitIntegrationRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initAddToolCmd(IntegrationCmd); err != nil {
+		return err
+	}
+
 	if err := initExecuteCmd(IntegrationCmd); err != nil {
 		return err
 	}

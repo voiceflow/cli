@@ -65,6 +65,18 @@ func InitAgentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initPatchPronunciationCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initGetInitializationWorkflowCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initSetInitializationWorkflowCmd(AgentCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(AgentCmd)
 	return nil
 }

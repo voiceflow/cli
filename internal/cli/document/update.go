@@ -19,8 +19,9 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "document-id", FieldPath: "DocumentID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "metadata", Shorthand: "m", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
-	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"folderID,omitempty"`, Description: "The ID of the Knowledge Base folder to move the document into, or null to move it to the top level."},
+	{FlagName: "metadata", Shorthand: "m", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Replaces the document's metadata tags. Leave it out to keep them."},
+	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"folderID,omitempty"`, Description: "The ID of the Knowledge Base folder to move the document into, or null to move it to the top level. Leave it out to keep its folder."},
+	{FlagName: "content", Shorthand: "c", FieldPath: "Body.Content", Kind: flagutil.FlagKindString, Optional: true, Description: "The whole new text of a text or markdown document. It replaces the stored text; the document keeps its ID and name and is processed again. Refused for every other document type."},
 }
 
 // initUpdateCmd initializes the update command.
@@ -33,7 +34,7 @@ func initUpdateCmd(parent *cobra.Command) error {
 		RunE:    runUpdateCmd,
 	}
 	flagutil.RegisterFlags(cmd, updateCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableDocumentControllerUpdateRequest](updateCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableDocumentControllerUpdateV2Request](updateCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for update: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -51,7 +52,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableDocumentControllerUpdateRequest](cmd, updateCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableDocumentControllerUpdateV2Request](cmd, updateCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}
