@@ -3,6 +3,11 @@
 
 package components
 
+import (
+	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
+	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
+)
+
 type StableDocumentUpdateRequestMetadatum struct {
 	// The name of the metadata field.
 	Key string `json:"key"`
@@ -26,12 +31,32 @@ func (s *StableDocumentUpdateRequestMetadatum) GetValues() []string {
 
 type StableDocumentUpdateRequest struct {
 	// Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
-	Metadata []StableDocumentUpdateRequestMetadatum `json:"metadata"`
+	Metadata []StableDocumentUpdateRequestMetadatum `json:"metadata,omitzero"`
+	// The ID of the Knowledge Base folder to move the document into, or null to move it to the top level.
+	FolderID optionalnullable.OptionalNullable[string] `json:"folderID,omitzero"`
+}
+
+func (s StableDocumentUpdateRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableDocumentUpdateRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StableDocumentUpdateRequest) GetMetadata() []StableDocumentUpdateRequestMetadatum {
 	if s == nil {
-		return []StableDocumentUpdateRequestMetadatum{}
+		return nil
 	}
 	return s.Metadata
+}
+
+func (s *StableDocumentUpdateRequest) GetFolderID() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }

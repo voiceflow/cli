@@ -1986,7 +1986,9 @@ type StableDocumentDetails struct {
 	Data          *StableDocumentDetailsData          `json:"data"`
 	Status        KBDocumentStatus                    `json:"status"`
 	SmartChunking *StableDocumentDetailsSmartChunking `json:"smartChunking"`
-	Chunks        []KBDocumentChunk                   `json:"chunks"`
+	// The ID of the Knowledge Base folder the document is filed under, or null when it sits at the top level.
+	FolderID *string           `json:"folderID"`
+	Chunks   []KBDocumentChunk `json:"chunks"`
 	// Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
 	Metadata []StableDocumentDetailsMetadatum `json:"metadata"`
 }
@@ -2080,6 +2082,13 @@ func (s *StableDocumentDetails) GetSmartChunking() *StableDocumentDetailsSmartCh
 		return nil
 	}
 	return s.SmartChunking
+}
+
+func (s *StableDocumentDetails) GetFolderID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }
 
 func (s *StableDocumentDetails) GetChunks() []KBDocumentChunk {

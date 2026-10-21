@@ -28,6 +28,7 @@ var createManagedSitemapCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "patterns", FieldPath: "Body.Patterns", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"patterns,omitempty"`, Description: "Which of the pages the sitemap lists it keeps. Matching is case-insensitive and unanchored: a pattern with no `*` matches any URL containing it as a substring (`/blog/`), while `*` matches any run of characters (`*/tag/*`, `*.pdf`)."},
 	{FlagName: "refresh-rate", Shorthand: "r", FieldPath: "Body.RefreshRate", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "never", EnumValues: []string{"daily", "weekly", "monthly", "never"}, Description: "How often the sitemap is re-read to add the pages it newly lists and remove the ones it no longer does. Its pages are re-crawled on the same schedule. (options: daily, weekly, monthly, never)"},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the sitemap and to every page it imports, used to filter knowledge base retrieval at runtime."},
+	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindString, Optional: true, Description: "The ID of the Knowledge Base folder to file the sitemap and the pages it imports under. Omit to create them at the top level."},
 }
 
 // initCreateManagedSitemapCmd initializes the create-managed-sitemap command.

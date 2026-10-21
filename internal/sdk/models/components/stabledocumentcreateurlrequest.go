@@ -70,6 +70,8 @@ type StableDocumentCreateURLRequest struct {
 	Metadata []StableDocumentCreateURLRequestMetadatum `json:"metadata,omitzero"`
 	// How often the URL is automatically re-crawled to refresh the document content.
 	RefreshRate *StableDocumentCreateURLRequestRefreshRate `json:"refreshRate,omitzero"`
+	// The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder.
+	FolderID *string `json:"folderID,omitzero"`
 }
 
 func (s StableDocumentCreateURLRequest) MarshalJSON() ([]byte, error) {
@@ -102,4 +104,11 @@ func (s *StableDocumentCreateURLRequest) GetRefreshRate() *StableDocumentCreateU
 		return nil
 	}
 	return s.RefreshRate
+}
+
+func (s *StableDocumentCreateURLRequest) GetFolderID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }

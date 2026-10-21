@@ -71,6 +71,8 @@ type StableDocumentCreateTableRequest struct {
 	Schema Schema `json:"schema"`
 	// Metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
 	Metadata []StableDocumentCreateTableRequestMetadatum `json:"metadata,omitzero"`
+	// The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder.
+	FolderID *string `json:"folderID,omitzero"`
 }
 
 func (s StableDocumentCreateTableRequest) MarshalJSON() ([]byte, error) {
@@ -117,4 +119,11 @@ func (s *StableDocumentCreateTableRequest) GetMetadata() []StableDocumentCreateT
 		return nil
 	}
 	return s.Metadata
+}
+
+func (s *StableDocumentCreateTableRequest) GetFolderID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }

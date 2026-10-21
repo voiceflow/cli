@@ -938,6 +938,8 @@ type StableDocumentControllerCreateTextRequestBody struct {
 	CanEdit *bool `default:"false" multipartForm:"name=canEdit"`
 	// A JSON-encoded array of `{ key, values }` metadata tags attached to the document, used to filter knowledge base retrieval at runtime.
 	Metadata *string `multipartForm:"name=metadata"`
+	// The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder.
+	FolderID *string `multipartForm:"name=folderID"`
 	File     File    `multipartForm:"file,name=file"`
 }
 
@@ -971,6 +973,13 @@ func (s *StableDocumentControllerCreateTextRequestBody) GetMetadata() *string {
 		return nil
 	}
 	return s.Metadata
+}
+
+func (s *StableDocumentControllerCreateTextRequestBody) GetFolderID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FolderID
 }
 
 func (s *StableDocumentControllerCreateTextRequestBody) GetFile() File {

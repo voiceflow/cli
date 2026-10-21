@@ -29,6 +29,7 @@ var createURLCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "url", Shorthand: "u", FieldPath: "Body.URL", Kind: flagutil.FlagKindString, Required: true, Description: "The URL of the web page to crawl and ingest into the knowledge base. [required]"},
 	{FlagName: "metadata", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Metadata tags attached to the document, used to filter knowledge base retrieval at runtime."},
 	{FlagName: "refresh-rate", Shorthand: "r", FieldPath: "Body.RefreshRate", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"daily", "weekly", "monthly", "never"}, Description: "How often the URL is automatically re-crawled to refresh the document content. (options: daily, weekly, monthly, never)"},
+	{FlagName: "folder-id", Shorthand: "f", FieldPath: "Body.FolderID", Kind: flagutil.FlagKindString, Optional: true, Description: "The ID of the Knowledge Base folder to file the document under. Without it, a new document starts at the top level and a document this overwrites keeps its folder; move one to the top level with `folderID: null` on the document update. File names and URLs are unique across the whole Knowledge Base, not per folder, so an overwrite replaces the one document with that name or URL and, with `folderID`, moves it into this folder."},
 }
 
 // initCreateUrlCmd initializes the create-url command.

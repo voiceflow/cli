@@ -5,6 +5,7 @@ package document
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/document/folder"
 	"github.com/voiceflow/cli/internal/usage"
 )
 
@@ -19,6 +20,10 @@ func InitDocumentRoot(parent *cobra.Command) error {
 			}
 			return cmd.Help()
 		},
+	}
+
+	if err := folder.InitFolderRoot(DocumentCmd); err != nil {
+		return err
 	}
 
 	if err := initListCmd(DocumentCmd); err != nil {
