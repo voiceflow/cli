@@ -20037,6 +20037,7 @@ components:
         - $ref: '#/components/schemas/IntentClassificationLLMSettings'
         - $ref: '#/components/schemas/IntentClassificationNLUSettings'
         - $ref: '#/components/schemas/IntentClassificationRAGSettings'
+        - $ref: '#/components/schemas/IntentClassificationSystemOneSettings'
     IntentClassificationLLMSettings:
       type: object
       properties:
@@ -20116,6 +20117,34 @@ components:
         - type
         - params
         - promptWrapper
+    IntentClassificationSystemOneSettings:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - system-one
+          x-enumNames:
+            - SYSTEM_ONE
+        params:
+          type: object
+          properties:
+            confidence:
+              type: number
+            model:
+              $ref: '#/components/schemas/SystemOneModel'
+          required:
+            - confidence
+            - model
+      required:
+        - type
+        - params
+    SystemOneModel:
+      type: string
+      enum:
+        - clef-flash
+      x-enumNames:
+        - CLEF_FLASH
     VersionPlatformData:
       type: object
       properties:
