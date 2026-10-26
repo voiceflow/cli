@@ -34,16 +34,18 @@ func (e *KBDocumentURLDataType) UnmarshalJSON(data []byte) error {
 }
 
 type KBDocumentURLData struct {
-	Type                  KBDocumentURLDataType                     `json:"type"`
-	Name                  string                                    `json:"name"`
-	URL                   string                                    `json:"url"`
-	Title                 *string                                   `json:"title,omitzero"`
-	RefreshRate           *KnowledgeBaseDocumentRefreshRate         `json:"refreshRate,omitzero"`
-	LastSuccessUpdate     *string                                   `json:"lastSuccessUpdate,omitzero"`
-	AccessTokenID         *float64                                  `json:"accessTokenID,omitzero"`
-	IntegrationExternalID *string                                   `json:"integrationExternalID,omitzero"`
-	Source                *KnowledgeBaseDocumentIntegrationType     `json:"source,omitzero"`
-	SitemapDocumentID     optionalnullable.OptionalNullable[string] `json:"sitemapDocumentID,omitzero"`
+	Type                  KBDocumentURLDataType                       `json:"type"`
+	Name                  string                                      `json:"name"`
+	URL                   string                                      `json:"url"`
+	Title                 *string                                     `json:"title,omitzero"`
+	RefreshRate           *KnowledgeBaseDocumentRefreshRate           `json:"refreshRate,omitzero"`
+	LastSuccessUpdate     *string                                     `json:"lastSuccessUpdate,omitzero"`
+	AccessTokenID         *float64                                    `json:"accessTokenID,omitzero"`
+	IntegrationExternalID *string                                     `json:"integrationExternalID,omitzero"`
+	Source                *KnowledgeBaseDocumentIntegrationType       `json:"source,omitzero"`
+	SitemapDocumentID     optionalnullable.OptionalNullable[string]   `json:"sitemapDocumentID,omitzero"`
+	IntegrationDocumentID optionalnullable.OptionalNullable[string]   `json:"integrationDocumentID,omitzero"`
+	IntegrationPath       optionalnullable.OptionalNullable[[]string] `json:"integrationPath,omitzero"`
 }
 
 func (k KBDocumentURLData) MarshalJSON() ([]byte, error) {
@@ -125,4 +127,18 @@ func (k *KBDocumentURLData) GetSitemapDocumentID() optionalnullable.OptionalNull
 		return nil
 	}
 	return k.SitemapDocumentID
+}
+
+func (k *KBDocumentURLData) GetIntegrationDocumentID() optionalnullable.OptionalNullable[string] {
+	if k == nil {
+		return nil
+	}
+	return k.IntegrationDocumentID
+}
+
+func (k *KBDocumentURLData) GetIntegrationPath() optionalnullable.OptionalNullable[[]string] {
+	if k == nil {
+		return nil
+	}
+	return k.IntegrationPath
 }

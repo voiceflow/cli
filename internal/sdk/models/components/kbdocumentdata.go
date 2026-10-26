@@ -13,29 +13,31 @@ import (
 type KBDocumentDataType string
 
 const (
-	KBDocumentDataTypeURLObj  KBDocumentDataType = "url"
-	KBDocumentDataTypeDocx    KBDocumentDataType = "docx"
-	KBDocumentDataTypePdf     KBDocumentDataType = "pdf"
-	KBDocumentDataTypeText    KBDocumentDataType = "text"
-	KBDocumentDataTypeMd      KBDocumentDataType = "md"
-	KBDocumentDataTypeCsv     KBDocumentDataType = "csv"
-	KBDocumentDataTypeXlsx    KBDocumentDataType = "xlsx"
-	KBDocumentDataTypeTable   KBDocumentDataType = "table"
-	KBDocumentDataTypeSitemap KBDocumentDataType = "sitemap"
-	KBDocumentDataTypeUnknown KBDocumentDataType = "UNKNOWN"
+	KBDocumentDataTypeURLObj      KBDocumentDataType = "url"
+	KBDocumentDataTypeDocx        KBDocumentDataType = "docx"
+	KBDocumentDataTypePdf         KBDocumentDataType = "pdf"
+	KBDocumentDataTypeText        KBDocumentDataType = "text"
+	KBDocumentDataTypeMd          KBDocumentDataType = "md"
+	KBDocumentDataTypeCsv         KBDocumentDataType = "csv"
+	KBDocumentDataTypeXlsx        KBDocumentDataType = "xlsx"
+	KBDocumentDataTypeTable       KBDocumentDataType = "table"
+	KBDocumentDataTypeSitemap     KBDocumentDataType = "sitemap"
+	KBDocumentDataTypeIntegration KBDocumentDataType = "integration"
+	KBDocumentDataTypeUnknown     KBDocumentDataType = "UNKNOWN"
 )
 
 type KBDocumentData struct {
-	KBDocumentURLData      *KBDocumentURLData      `queryParam:"inline" union:"member"`
-	KBDocumentDocxData     *KBDocumentDocxData     `queryParam:"inline" union:"member"`
-	KBDocumentPDFData      *KBDocumentPDFData      `queryParam:"inline" union:"member"`
-	KBDocumentTextData     *KBDocumentTextData     `queryParam:"inline" union:"member"`
-	KBDocumentMarkdownData *KBDocumentMarkdownData `queryParam:"inline" union:"member"`
-	KBDocumentCSVData      *KBDocumentCSVData      `queryParam:"inline" union:"member"`
-	KBDocumentXLSXData     *KBDocumentXLSXData     `queryParam:"inline" union:"member"`
-	KBDocumentTableData    *KBDocumentTableData    `queryParam:"inline" union:"member"`
-	KBDocumentSitemapData  *KBDocumentSitemapData  `queryParam:"inline" union:"member"`
-	UnknownRaw             json.RawMessage         `json:"-" union:"unknown"`
+	KBDocumentURLData         *KBDocumentURLData         `queryParam:"inline" union:"member"`
+	KBDocumentDocxData        *KBDocumentDocxData        `queryParam:"inline" union:"member"`
+	KBDocumentPDFData         *KBDocumentPDFData         `queryParam:"inline" union:"member"`
+	KBDocumentTextData        *KBDocumentTextData        `queryParam:"inline" union:"member"`
+	KBDocumentMarkdownData    *KBDocumentMarkdownData    `queryParam:"inline" union:"member"`
+	KBDocumentCSVData         *KBDocumentCSVData         `queryParam:"inline" union:"member"`
+	KBDocumentXLSXData        *KBDocumentXLSXData        `queryParam:"inline" union:"member"`
+	KBDocumentTableData       *KBDocumentTableData       `queryParam:"inline" union:"member"`
+	KBDocumentSitemapData     *KBDocumentSitemapData     `queryParam:"inline" union:"member"`
+	KBDocumentIntegrationData *KBDocumentIntegrationData `queryParam:"inline" union:"member"`
+	UnknownRaw                json.RawMessage            `json:"-" union:"unknown"`
 
 	Type KBDocumentDataType
 }
@@ -145,6 +147,18 @@ func CreateKBDocumentDataSitemap(sitemap KBDocumentSitemapData) KBDocumentData {
 	return KBDocumentData{
 		KBDocumentSitemapData: &sitemap,
 		Type:                  typ,
+	}
+}
+
+func CreateKBDocumentDataIntegration(integration KBDocumentIntegrationData) KBDocumentData {
+	typ := KBDocumentDataTypeIntegration
+
+	typStr := KBDocumentIntegrationDataType(typ)
+	integration.Type = typStr
+
+	return KBDocumentData{
+		KBDocumentIntegrationData: &integration,
+		Type:                      typ,
 	}
 }
 
@@ -263,6 +277,15 @@ func (u *KBDocumentData) UnmarshalJSON(data []byte) error {
 		u.KBDocumentSitemapData = kbDocumentSitemapData
 		u.Type = KBDocumentDataTypeSitemap
 		return nil
+	case "integration":
+		kbDocumentIntegrationData := new(KBDocumentIntegrationData)
+		if err := utils.UnmarshalJSON(data, &kbDocumentIntegrationData, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == integration) type KBDocumentIntegrationData within KBDocumentData: %w", string(data), err)
+		}
+
+		u.KBDocumentIntegrationData = kbDocumentIntegrationData
+		u.Type = KBDocumentDataTypeIntegration
+		return nil
 	default:
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = KBDocumentDataTypeUnknown
@@ -306,6 +329,10 @@ func (u KBDocumentData) MarshalJSON() ([]byte, error) {
 
 	if u.KBDocumentSitemapData != nil {
 		return utils.MarshalJSON(u.KBDocumentSitemapData, "", true)
+	}
+
+	if u.KBDocumentIntegrationData != nil {
+		return utils.MarshalJSON(u.KBDocumentIntegrationData, "", true)
 	}
 
 	if u.UnknownRaw != nil {

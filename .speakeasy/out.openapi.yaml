@@ -15325,6 +15325,14 @@ components:
         sitemapDocumentID:
           nullable: true
           type: string
+        integrationDocumentID:
+          nullable: true
+          type: string
+        integrationPath:
+          nullable: true
+          type: array
+          items:
+            type: string
       required:
         - type
         - name
@@ -15501,6 +15509,7 @@ components:
         - $ref: '#/components/schemas/KBDocumentXLSXData'
         - $ref: '#/components/schemas/KBDocumentTableData'
         - $ref: '#/components/schemas/KBDocumentSitemapData'
+        - $ref: '#/components/schemas/KBDocumentIntegrationData'
     KBDocumentTableData:
       type: object
       properties:
@@ -15600,8 +15609,80 @@ components:
       type: string
       enum:
         - documentLimit
+        - integrationDisconnected
+        - integrationUnauthorized
+        - integrationAccountChanged
+        - rateLimited
       x-enumNames:
         - DOCUMENT_LIMIT
+        - INTEGRATION_DISCONNECTED
+        - INTEGRATION_UNAUTHORIZED
+        - INTEGRATION_ACCOUNT_CHANGED
+        - RATE_LIMITED
+    KBDocumentIntegrationData:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - integration
+          x-enumNames:
+            - INTEGRATION
+        name:
+          type: string
+        source:
+          $ref: '#/components/schemas/KnowledgeBaseDocumentIntegrationType'
+        config:
+          $ref: '#/components/schemas/KBDocumentIntegrationConfig'
+        refreshRate:
+          allOf:
+            - $ref: '#/components/schemas/KnowledgeBaseDocumentRefreshRate'
+        lastSuccessUpdate:
+          type: string
+        sync:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/KBDocumentSitemapSync'
+      required:
+        - type
+        - name
+        - source
+        - config
+    KBDocumentIntegrationConfig:
+      type: object
+      properties:
+        filters:
+          type: object
+          additionalProperties: {}
+        preserveStructure:
+          type: boolean
+        importMetadata:
+          type: boolean
+        connection:
+          type: object
+          properties:
+            fingerprint:
+              type: string
+          required:
+            - fingerprint
+        exclude:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              name:
+                type: string
+            required:
+              - key
+              - name
+      required:
+        - filters
+        - preserveStructure
+        - importMetadata
+        - connection
+        - exclude
     KBDocumentChunkSmartChunking:
       type: object
       properties:
