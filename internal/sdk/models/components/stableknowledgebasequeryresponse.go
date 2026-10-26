@@ -264,6 +264,10 @@ func (s *StableKnowledgeBaseQueryResponseChunk) GetSourceSitemap() *KBDocumentSi
 	return s.GetSource().KBDocumentSitemapData
 }
 
+func (s *StableKnowledgeBaseQueryResponseChunk) GetSourceIntegration() *KBDocumentIntegrationData {
+	return s.GetSource().KBDocumentIntegrationData
+}
+
 func (s *StableKnowledgeBaseQueryResponseChunk) GetMetadata() map[string]any {
 	if s == nil {
 		return map[string]any{}

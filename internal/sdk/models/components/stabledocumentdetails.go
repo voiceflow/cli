@@ -12,6 +12,191 @@ import (
 	"time"
 )
 
+type StableDocumentDetailsTypeIntegration string
+
+const (
+	StableDocumentDetailsTypeIntegrationIntegration StableDocumentDetailsTypeIntegration = "integration"
+)
+
+func (e StableDocumentDetailsTypeIntegration) ToPointer() *StableDocumentDetailsTypeIntegration {
+	return &e
+}
+func (e *StableDocumentDetailsTypeIntegration) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "integration":
+		*e = StableDocumentDetailsTypeIntegration(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableDocumentDetailsTypeIntegration: %v", v)
+	}
+}
+
+type StableDocumentDetailsFailureIntegration struct {
+	Message string                            `json:"message"`
+	At      string                            `json:"at"`
+	Code    *KBDocumentSitemapSyncFailureCode `json:"code,omitzero"`
+}
+
+func (s StableDocumentDetailsFailureIntegration) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableDocumentDetailsFailureIntegration) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableDocumentDetailsFailureIntegration) GetMessage() string {
+	if s == nil {
+		return ""
+	}
+	return s.Message
+}
+
+func (s *StableDocumentDetailsFailureIntegration) GetAt() string {
+	if s == nil {
+		return ""
+	}
+	return s.At
+}
+
+func (s *StableDocumentDetailsFailureIntegration) GetCode() *KBDocumentSitemapSyncFailureCode {
+	if s == nil {
+		return nil
+	}
+	return s.Code
+}
+
+type StableDocumentDetailsSyncIntegration struct {
+	SyncedAt     string                                                                     `json:"syncedAt"`
+	StartedAt    optionalnullable.OptionalNullable[time.Time]                               `json:"startedAt,omitzero"`
+	AddedCount   float64                                                                    `json:"addedCount"`
+	RemovedCount float64                                                                    `json:"removedCount"`
+	Failure      optionalnullable.OptionalNullable[StableDocumentDetailsFailureIntegration] `json:"failure,omitzero"`
+}
+
+func (s StableDocumentDetailsSyncIntegration) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableDocumentDetailsSyncIntegration) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableDocumentDetailsSyncIntegration) GetSyncedAt() string {
+	if s == nil {
+		return ""
+	}
+	return s.SyncedAt
+}
+
+func (s *StableDocumentDetailsSyncIntegration) GetStartedAt() optionalnullable.OptionalNullable[time.Time] {
+	if s == nil {
+		return nil
+	}
+	return s.StartedAt
+}
+
+func (s *StableDocumentDetailsSyncIntegration) GetAddedCount() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.AddedCount
+}
+
+func (s *StableDocumentDetailsSyncIntegration) GetRemovedCount() float64 {
+	if s == nil {
+		return 0.0
+	}
+	return s.RemovedCount
+}
+
+func (s *StableDocumentDetailsSyncIntegration) GetFailure() optionalnullable.OptionalNullable[StableDocumentDetailsFailureIntegration] {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+type StableDocumentDetailsKBDocumentIntegrationData struct {
+	Type              StableDocumentDetailsTypeIntegration                                    `json:"type"`
+	Name              string                                                                  `json:"name"`
+	Source            KnowledgeBaseDocumentIntegrationType                                    `json:"source"`
+	Config            KBDocumentIntegrationConfig                                             `json:"config"`
+	RefreshRate       *KnowledgeBaseDocumentRefreshRate                                       `json:"refreshRate,omitzero"`
+	LastSuccessUpdate *string                                                                 `json:"lastSuccessUpdate,omitzero"`
+	Sync              optionalnullable.OptionalNullable[StableDocumentDetailsSyncIntegration] `json:"sync,omitzero"`
+}
+
+func (s StableDocumentDetailsKBDocumentIntegrationData) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetType() StableDocumentDetailsTypeIntegration {
+	if s == nil {
+		return StableDocumentDetailsTypeIntegration("")
+	}
+	return s.Type
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetName() string {
+	if s == nil {
+		return ""
+	}
+	return s.Name
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetSource() KnowledgeBaseDocumentIntegrationType {
+	if s == nil {
+		return KnowledgeBaseDocumentIntegrationType("")
+	}
+	return s.Source
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetConfig() KBDocumentIntegrationConfig {
+	if s == nil {
+		return KBDocumentIntegrationConfig{}
+	}
+	return s.Config
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetRefreshRate() *KnowledgeBaseDocumentRefreshRate {
+	if s == nil {
+		return nil
+	}
+	return s.RefreshRate
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetLastSuccessUpdate() *string {
+	if s == nil {
+		return nil
+	}
+	return s.LastSuccessUpdate
+}
+
+func (s *StableDocumentDetailsKBDocumentIntegrationData) GetSync() optionalnullable.OptionalNullable[StableDocumentDetailsSyncIntegration] {
+	if s == nil {
+		return nil
+	}
+	return s.Sync
+}
+
 type StableDocumentDetailsTypeSitemap string
 
 const (
@@ -35,92 +220,92 @@ func (e *StableDocumentDetailsTypeSitemap) UnmarshalJSON(data []byte) error {
 	}
 }
 
-type StableDocumentDetailsFailure struct {
+type StableDocumentDetailsFailureSitemap struct {
 	Message string                            `json:"message"`
 	At      string                            `json:"at"`
 	Code    *KBDocumentSitemapSyncFailureCode `json:"code,omitzero"`
 }
 
-func (s StableDocumentDetailsFailure) MarshalJSON() ([]byte, error) {
+func (s StableDocumentDetailsFailureSitemap) MarshalJSON() ([]byte, error) {
 	return utils.MarshalJSON(s, "", false)
 }
 
-func (s *StableDocumentDetailsFailure) UnmarshalJSON(data []byte) error {
+func (s *StableDocumentDetailsFailureSitemap) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *StableDocumentDetailsFailure) GetMessage() string {
+func (s *StableDocumentDetailsFailureSitemap) GetMessage() string {
 	if s == nil {
 		return ""
 	}
 	return s.Message
 }
 
-func (s *StableDocumentDetailsFailure) GetAt() string {
+func (s *StableDocumentDetailsFailureSitemap) GetAt() string {
 	if s == nil {
 		return ""
 	}
 	return s.At
 }
 
-func (s *StableDocumentDetailsFailure) GetCode() *KBDocumentSitemapSyncFailureCode {
+func (s *StableDocumentDetailsFailureSitemap) GetCode() *KBDocumentSitemapSyncFailureCode {
 	if s == nil {
 		return nil
 	}
 	return s.Code
 }
 
-type StableDocumentDetailsSync struct {
-	SyncedAt     string                                                          `json:"syncedAt"`
-	StartedAt    optionalnullable.OptionalNullable[time.Time]                    `json:"startedAt,omitzero"`
-	AddedCount   float64                                                         `json:"addedCount"`
-	RemovedCount float64                                                         `json:"removedCount"`
-	Failure      optionalnullable.OptionalNullable[StableDocumentDetailsFailure] `json:"failure,omitzero"`
+type StableDocumentDetailsSyncSitemap struct {
+	SyncedAt     string                                                                 `json:"syncedAt"`
+	StartedAt    optionalnullable.OptionalNullable[time.Time]                           `json:"startedAt,omitzero"`
+	AddedCount   float64                                                                `json:"addedCount"`
+	RemovedCount float64                                                                `json:"removedCount"`
+	Failure      optionalnullable.OptionalNullable[StableDocumentDetailsFailureSitemap] `json:"failure,omitzero"`
 }
 
-func (s StableDocumentDetailsSync) MarshalJSON() ([]byte, error) {
+func (s StableDocumentDetailsSyncSitemap) MarshalJSON() ([]byte, error) {
 	return utils.MarshalJSON(s, "", false)
 }
 
-func (s *StableDocumentDetailsSync) UnmarshalJSON(data []byte) error {
+func (s *StableDocumentDetailsSyncSitemap) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *StableDocumentDetailsSync) GetSyncedAt() string {
+func (s *StableDocumentDetailsSyncSitemap) GetSyncedAt() string {
 	if s == nil {
 		return ""
 	}
 	return s.SyncedAt
 }
 
-func (s *StableDocumentDetailsSync) GetStartedAt() optionalnullable.OptionalNullable[time.Time] {
+func (s *StableDocumentDetailsSyncSitemap) GetStartedAt() optionalnullable.OptionalNullable[time.Time] {
 	if s == nil {
 		return nil
 	}
 	return s.StartedAt
 }
 
-func (s *StableDocumentDetailsSync) GetAddedCount() float64 {
+func (s *StableDocumentDetailsSyncSitemap) GetAddedCount() float64 {
 	if s == nil {
 		return 0.0
 	}
 	return s.AddedCount
 }
 
-func (s *StableDocumentDetailsSync) GetRemovedCount() float64 {
+func (s *StableDocumentDetailsSyncSitemap) GetRemovedCount() float64 {
 	if s == nil {
 		return 0.0
 	}
 	return s.RemovedCount
 }
 
-func (s *StableDocumentDetailsSync) GetFailure() optionalnullable.OptionalNullable[StableDocumentDetailsFailure] {
+func (s *StableDocumentDetailsSyncSitemap) GetFailure() optionalnullable.OptionalNullable[StableDocumentDetailsFailureSitemap] {
 	if s == nil {
 		return nil
 	}
@@ -128,13 +313,13 @@ func (s *StableDocumentDetailsSync) GetFailure() optionalnullable.OptionalNullab
 }
 
 type StableDocumentDetailsKBDocumentSitemapData struct {
-	Type              StableDocumentDetailsTypeSitemap                             `json:"type"`
-	Name              string                                                       `json:"name"`
-	URL               string                                                       `json:"url"`
-	RefreshRate       *KnowledgeBaseDocumentRefreshRate                            `json:"refreshRate,omitzero"`
-	LastSuccessUpdate *string                                                      `json:"lastSuccessUpdate,omitzero"`
-	Patterns          *KBDocumentSitemapPatterns                                   `json:"patterns,omitzero"`
-	Sync              optionalnullable.OptionalNullable[StableDocumentDetailsSync] `json:"sync,omitzero"`
+	Type              StableDocumentDetailsTypeSitemap                                    `json:"type"`
+	Name              string                                                              `json:"name"`
+	URL               string                                                              `json:"url"`
+	RefreshRate       *KnowledgeBaseDocumentRefreshRate                                   `json:"refreshRate,omitzero"`
+	LastSuccessUpdate *string                                                             `json:"lastSuccessUpdate,omitzero"`
+	Patterns          *KBDocumentSitemapPatterns                                          `json:"patterns,omitzero"`
+	Sync              optionalnullable.OptionalNullable[StableDocumentDetailsSyncSitemap] `json:"sync,omitzero"`
 }
 
 func (s StableDocumentDetailsKBDocumentSitemapData) MarshalJSON() ([]byte, error) {
@@ -190,7 +375,7 @@ func (s *StableDocumentDetailsKBDocumentSitemapData) GetPatterns() *KBDocumentSi
 	return s.Patterns
 }
 
-func (s *StableDocumentDetailsKBDocumentSitemapData) GetSync() optionalnullable.OptionalNullable[StableDocumentDetailsSync] {
+func (s *StableDocumentDetailsKBDocumentSitemapData) GetSync() optionalnullable.OptionalNullable[StableDocumentDetailsSyncSitemap] {
 	if s == nil {
 		return nil
 	}
@@ -680,16 +865,18 @@ func (e *StableDocumentDetailsTypeURL) UnmarshalJSON(data []byte) error {
 }
 
 type StableDocumentDetailsKBDocumentURLData struct {
-	Type                  StableDocumentDetailsTypeURL              `json:"type"`
-	Name                  string                                    `json:"name"`
-	URL                   string                                    `json:"url"`
-	Title                 *string                                   `json:"title,omitzero"`
-	RefreshRate           *KnowledgeBaseDocumentRefreshRate         `json:"refreshRate,omitzero"`
-	LastSuccessUpdate     *string                                   `json:"lastSuccessUpdate,omitzero"`
-	AccessTokenID         *float64                                  `json:"accessTokenID,omitzero"`
-	IntegrationExternalID *string                                   `json:"integrationExternalID,omitzero"`
-	Source                *KnowledgeBaseDocumentIntegrationType     `json:"source,omitzero"`
-	SitemapDocumentID     optionalnullable.OptionalNullable[string] `json:"sitemapDocumentID,omitzero"`
+	Type                  StableDocumentDetailsTypeURL                `json:"type"`
+	Name                  string                                      `json:"name"`
+	URL                   string                                      `json:"url"`
+	Title                 *string                                     `json:"title,omitzero"`
+	RefreshRate           *KnowledgeBaseDocumentRefreshRate           `json:"refreshRate,omitzero"`
+	LastSuccessUpdate     *string                                     `json:"lastSuccessUpdate,omitzero"`
+	AccessTokenID         *float64                                    `json:"accessTokenID,omitzero"`
+	IntegrationExternalID *string                                     `json:"integrationExternalID,omitzero"`
+	Source                *KnowledgeBaseDocumentIntegrationType       `json:"source,omitzero"`
+	SitemapDocumentID     optionalnullable.OptionalNullable[string]   `json:"sitemapDocumentID,omitzero"`
+	IntegrationDocumentID optionalnullable.OptionalNullable[string]   `json:"integrationDocumentID,omitzero"`
+	IntegrationPath       optionalnullable.OptionalNullable[[]string] `json:"integrationPath,omitzero"`
 }
 
 func (s StableDocumentDetailsKBDocumentURLData) MarshalJSON() ([]byte, error) {
@@ -773,32 +960,48 @@ func (s *StableDocumentDetailsKBDocumentURLData) GetSitemapDocumentID() optional
 	return s.SitemapDocumentID
 }
 
+func (s *StableDocumentDetailsKBDocumentURLData) GetIntegrationDocumentID() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.IntegrationDocumentID
+}
+
+func (s *StableDocumentDetailsKBDocumentURLData) GetIntegrationPath() optionalnullable.OptionalNullable[[]string] {
+	if s == nil {
+		return nil
+	}
+	return s.IntegrationPath
+}
+
 type StableDocumentDetailsDataType string
 
 const (
-	StableDocumentDetailsDataTypeURLObj  StableDocumentDetailsDataType = "url"
-	StableDocumentDetailsDataTypeDocx    StableDocumentDetailsDataType = "docx"
-	StableDocumentDetailsDataTypePdf     StableDocumentDetailsDataType = "pdf"
-	StableDocumentDetailsDataTypeText    StableDocumentDetailsDataType = "text"
-	StableDocumentDetailsDataTypeMd      StableDocumentDetailsDataType = "md"
-	StableDocumentDetailsDataTypeCsv     StableDocumentDetailsDataType = "csv"
-	StableDocumentDetailsDataTypeXlsx    StableDocumentDetailsDataType = "xlsx"
-	StableDocumentDetailsDataTypeTable   StableDocumentDetailsDataType = "table"
-	StableDocumentDetailsDataTypeSitemap StableDocumentDetailsDataType = "sitemap"
-	StableDocumentDetailsDataTypeUnknown StableDocumentDetailsDataType = "UNKNOWN"
+	StableDocumentDetailsDataTypeURLObj      StableDocumentDetailsDataType = "url"
+	StableDocumentDetailsDataTypeDocx        StableDocumentDetailsDataType = "docx"
+	StableDocumentDetailsDataTypePdf         StableDocumentDetailsDataType = "pdf"
+	StableDocumentDetailsDataTypeText        StableDocumentDetailsDataType = "text"
+	StableDocumentDetailsDataTypeMd          StableDocumentDetailsDataType = "md"
+	StableDocumentDetailsDataTypeCsv         StableDocumentDetailsDataType = "csv"
+	StableDocumentDetailsDataTypeXlsx        StableDocumentDetailsDataType = "xlsx"
+	StableDocumentDetailsDataTypeTable       StableDocumentDetailsDataType = "table"
+	StableDocumentDetailsDataTypeSitemap     StableDocumentDetailsDataType = "sitemap"
+	StableDocumentDetailsDataTypeIntegration StableDocumentDetailsDataType = "integration"
+	StableDocumentDetailsDataTypeUnknown     StableDocumentDetailsDataType = "UNKNOWN"
 )
 
 type StableDocumentDetailsData struct {
-	StableDocumentDetailsKBDocumentURLData      *StableDocumentDetailsKBDocumentURLData      `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentDocxData     *StableDocumentDetailsKBDocumentDocxData     `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentPDFData      *StableDocumentDetailsKBDocumentPDFData      `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentTextData     *StableDocumentDetailsKBDocumentTextData     `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentMarkdownData *StableDocumentDetailsKBDocumentMarkdownData `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentCSVData      *StableDocumentDetailsKBDocumentCSVData      `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentXLSXData     *StableDocumentDetailsKBDocumentXLSXData     `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentTableData    *StableDocumentDetailsKBDocumentTableData    `queryParam:"inline" union:"member"`
-	StableDocumentDetailsKBDocumentSitemapData  *StableDocumentDetailsKBDocumentSitemapData  `queryParam:"inline" union:"member"`
-	UnknownRaw                                  json.RawMessage                              `json:"-" union:"unknown"`
+	StableDocumentDetailsKBDocumentURLData         *StableDocumentDetailsKBDocumentURLData         `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentDocxData        *StableDocumentDetailsKBDocumentDocxData        `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentPDFData         *StableDocumentDetailsKBDocumentPDFData         `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentTextData        *StableDocumentDetailsKBDocumentTextData        `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentMarkdownData    *StableDocumentDetailsKBDocumentMarkdownData    `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentCSVData         *StableDocumentDetailsKBDocumentCSVData         `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentXLSXData        *StableDocumentDetailsKBDocumentXLSXData        `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentTableData       *StableDocumentDetailsKBDocumentTableData       `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentSitemapData     *StableDocumentDetailsKBDocumentSitemapData     `queryParam:"inline" union:"member"`
+	StableDocumentDetailsKBDocumentIntegrationData *StableDocumentDetailsKBDocumentIntegrationData `queryParam:"inline" union:"member"`
+	UnknownRaw                                     json.RawMessage                                 `json:"-" union:"unknown"`
 
 	Type StableDocumentDetailsDataType
 }
@@ -907,6 +1110,18 @@ func CreateStableDocumentDetailsDataSitemap(sitemap StableDocumentDetailsKBDocum
 
 	return StableDocumentDetailsData{
 		StableDocumentDetailsKBDocumentSitemapData: &sitemap,
+		Type: typ,
+	}
+}
+
+func CreateStableDocumentDetailsDataIntegration(integration StableDocumentDetailsKBDocumentIntegrationData) StableDocumentDetailsData {
+	typ := StableDocumentDetailsDataTypeIntegration
+
+	typStr := StableDocumentDetailsTypeIntegration(typ)
+	integration.Type = typStr
+
+	return StableDocumentDetailsData{
+		StableDocumentDetailsKBDocumentIntegrationData: &integration,
 		Type: typ,
 	}
 }
@@ -1026,6 +1241,15 @@ func (u *StableDocumentDetailsData) UnmarshalJSON(data []byte) error {
 		u.StableDocumentDetailsKBDocumentSitemapData = stableDocumentDetailsKBDocumentSitemapData
 		u.Type = StableDocumentDetailsDataTypeSitemap
 		return nil
+	case "integration":
+		stableDocumentDetailsKBDocumentIntegrationData := new(StableDocumentDetailsKBDocumentIntegrationData)
+		if err := utils.UnmarshalJSON(data, &stableDocumentDetailsKBDocumentIntegrationData, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == integration) type StableDocumentDetailsKBDocumentIntegrationData within StableDocumentDetailsData: %w", string(data), err)
+		}
+
+		u.StableDocumentDetailsKBDocumentIntegrationData = stableDocumentDetailsKBDocumentIntegrationData
+		u.Type = StableDocumentDetailsDataTypeIntegration
+		return nil
 	default:
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = StableDocumentDetailsDataTypeUnknown
@@ -1069,6 +1293,10 @@ func (u StableDocumentDetailsData) MarshalJSON() ([]byte, error) {
 
 	if u.StableDocumentDetailsKBDocumentSitemapData != nil {
 		return utils.MarshalJSON(u.StableDocumentDetailsKBDocumentSitemapData, "", true)
+	}
+
+	if u.StableDocumentDetailsKBDocumentIntegrationData != nil {
+		return utils.MarshalJSON(u.StableDocumentDetailsKBDocumentIntegrationData, "", true)
 	}
 
 	if u.UnknownRaw != nil {
@@ -2066,6 +2294,13 @@ func (s *StableDocumentDetails) GetDataTable() *StableDocumentDetailsKBDocumentT
 func (s *StableDocumentDetails) GetDataSitemap() *StableDocumentDetailsKBDocumentSitemapData {
 	if v := s.GetData(); v != nil {
 		return v.StableDocumentDetailsKBDocumentSitemapData
+	}
+	return nil
+}
+
+func (s *StableDocumentDetails) GetDataIntegration() *StableDocumentDetailsKBDocumentIntegrationData {
+	if v := s.GetData(); v != nil {
+		return v.StableDocumentDetailsKBDocumentIntegrationData
 	}
 	return nil
 }

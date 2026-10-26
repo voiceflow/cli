@@ -3,30 +3,27 @@
 
 package components
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 type KBDocumentSitemapSyncFailureCode string
 
 const (
-	KBDocumentSitemapSyncFailureCodeDocumentLimit KBDocumentSitemapSyncFailureCode = "documentLimit"
+	KBDocumentSitemapSyncFailureCodeDocumentLimit             KBDocumentSitemapSyncFailureCode = "documentLimit"
+	KBDocumentSitemapSyncFailureCodeIntegrationDisconnected   KBDocumentSitemapSyncFailureCode = "integrationDisconnected"
+	KBDocumentSitemapSyncFailureCodeIntegrationUnauthorized   KBDocumentSitemapSyncFailureCode = "integrationUnauthorized"
+	KBDocumentSitemapSyncFailureCodeIntegrationAccountChanged KBDocumentSitemapSyncFailureCode = "integrationAccountChanged"
+	KBDocumentSitemapSyncFailureCodeRateLimited               KBDocumentSitemapSyncFailureCode = "rateLimited"
 )
 
 func (e KBDocumentSitemapSyncFailureCode) ToPointer() *KBDocumentSitemapSyncFailureCode {
 	return &e
 }
-func (e *KBDocumentSitemapSyncFailureCode) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *KBDocumentSitemapSyncFailureCode) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "documentLimit", "integrationDisconnected", "integrationUnauthorized", "integrationAccountChanged", "rateLimited":
+			return true
+		}
 	}
-	switch v {
-	case "documentLimit":
-		*e = KBDocumentSitemapSyncFailureCode(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for KBDocumentSitemapSyncFailureCode: %v", v)
-	}
+	return false
 }
