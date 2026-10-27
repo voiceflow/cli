@@ -15378,9 +15378,11 @@ components:
       enum:
         - zendesk
         - shopify
+        - kustomer
       x-enumNames:
         - ZENDESK
         - SHOPIFY
+        - KUSTOMER
     KBDocumentStatus:
       type: object
       properties:
