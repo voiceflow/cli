@@ -12,8 +12,8 @@ type KustomerIntegrationCredentialsValue struct {
 	OrgName string `json:"orgName"`
 	// Kustomer org-level Bearer API key.
 	APIKey string `json:"apiKey"`
-	// Kustomer outbound webhook signing secret.
-	SecretKey string `json:"secretKey"`
+	// Kustomer outbound webhook signing secret. Only required for live agent handoff.
+	SecretKey *string `default:"" json:"secretKey"`
 }
 
 func (k KustomerIntegrationCredentialsValue) MarshalJSON() ([]byte, error) {
@@ -41,9 +41,9 @@ func (k *KustomerIntegrationCredentialsValue) GetAPIKey() string {
 	return k.APIKey
 }
 
-func (k *KustomerIntegrationCredentialsValue) GetSecretKey() string {
+func (k *KustomerIntegrationCredentialsValue) GetSecretKey() *string {
 	if k == nil {
-		return ""
+		return nil
 	}
 	return k.SecretKey
 }
