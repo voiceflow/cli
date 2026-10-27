@@ -14743,6 +14743,18 @@ components:
         - hubspot_create_contact
         - hubspot_create_lead
         - hubspot_create_ticket
+        - kustomer_find_customer
+        - kustomer_create_customer
+        - kustomer_update_customer
+        - kustomer_find_conversation
+        - kustomer_find_customer_conversations
+        - kustomer_create_conversation
+        - kustomer_update_conversation
+        - kustomer_add_conversation_note
+        - kustomer_add_conversation_tags
+        - kustomer_find_latest_message
+        - kustomer_find_team
+        - kustomer_update_company
       x-enumNames:
         - EXAMPLE_DYNAMIC_SCHEMA
         - ZENDESK_FIND_USER
@@ -14780,6 +14792,18 @@ components:
         - HUBSPOT_CREATE_CONTACT
         - HUBSPOT_CREATE_LEAD
         - HUBSPOT_CREATE_TICKET
+        - KUSTOMER_FIND_CUSTOMER
+        - KUSTOMER_CREATE_CUSTOMER
+        - KUSTOMER_UPDATE_CUSTOMER
+        - KUSTOMER_FIND_CONVERSATION
+        - KUSTOMER_FIND_CUSTOMER_CONVERSATIONS
+        - KUSTOMER_CREATE_CONVERSATION
+        - KUSTOMER_UPDATE_CONVERSATION
+        - KUSTOMER_ADD_CONVERSATION_NOTE
+        - KUSTOMER_ADD_CONVERSATION_TAGS
+        - KUSTOMER_FIND_LATEST_MESSAGE
+        - KUSTOMER_FIND_TEAM
+        - KUSTOMER_UPDATE_COMPANY
     IntegrationToolProvider:
       type: string
       enum:
@@ -34916,12 +34940,12 @@ components:
           type: string
           description: Kustomer org-level Bearer API key.
         secretKey:
+          default: ""
+          description: Kustomer outbound webhook signing secret. Only required for live agent handoff.
           type: string
-          description: Kustomer outbound webhook signing secret.
       required:
         - orgName
         - apiKey
-        - secretKey
     DixaIntegrationCredentialsValue:
       type: object
       properties:
@@ -35242,6 +35266,18 @@ components:
             - hubspot_create_contact
             - hubspot_create_lead
             - hubspot_create_ticket
+            - kustomer_find_customer
+            - kustomer_create_customer
+            - kustomer_update_customer
+            - kustomer_find_conversation
+            - kustomer_find_customer_conversations
+            - kustomer_create_conversation
+            - kustomer_update_conversation
+            - kustomer_add_conversation_note
+            - kustomer_add_conversation_tags
+            - kustomer_find_latest_message
+            - kustomer_find_team
+            - kustomer_update_company
           x-enumNames:
             - EXAMPLE_DYNAMIC_SCHEMA
             - ZENDESK_FIND_USER
@@ -35279,6 +35315,18 @@ components:
             - HUBSPOT_CREATE_CONTACT
             - HUBSPOT_CREATE_LEAD
             - HUBSPOT_CREATE_TICKET
+            - KUSTOMER_FIND_CUSTOMER
+            - KUSTOMER_CREATE_CUSTOMER
+            - KUSTOMER_UPDATE_CUSTOMER
+            - KUSTOMER_FIND_CONVERSATION
+            - KUSTOMER_FIND_CUSTOMER_CONVERSATIONS
+            - KUSTOMER_CREATE_CONVERSATION
+            - KUSTOMER_UPDATE_CONVERSATION
+            - KUSTOMER_ADD_CONVERSATION_NOTE
+            - KUSTOMER_ADD_CONVERSATION_TAGS
+            - KUSTOMER_FIND_LATEST_MESSAGE
+            - KUSTOMER_FIND_TEAM
+            - KUSTOMER_UPDATE_COMPANY
         name:
           type: string
           description: The human-readable name of the tool.
@@ -35374,6 +35422,18 @@ components:
             - hubspot_create_contact
             - hubspot_create_lead
             - hubspot_create_ticket
+            - kustomer_find_customer
+            - kustomer_create_customer
+            - kustomer_update_customer
+            - kustomer_find_conversation
+            - kustomer_find_customer_conversations
+            - kustomer_create_conversation
+            - kustomer_update_conversation
+            - kustomer_add_conversation_note
+            - kustomer_add_conversation_tags
+            - kustomer_find_latest_message
+            - kustomer_find_team
+            - kustomer_update_company
           x-enumNames:
             - EXAMPLE_DYNAMIC_SCHEMA
             - ZENDESK_FIND_USER
@@ -35411,6 +35471,18 @@ components:
             - HUBSPOT_CREATE_CONTACT
             - HUBSPOT_CREATE_LEAD
             - HUBSPOT_CREATE_TICKET
+            - KUSTOMER_FIND_CUSTOMER
+            - KUSTOMER_CREATE_CUSTOMER
+            - KUSTOMER_UPDATE_CUSTOMER
+            - KUSTOMER_FIND_CONVERSATION
+            - KUSTOMER_FIND_CUSTOMER_CONVERSATIONS
+            - KUSTOMER_CREATE_CONVERSATION
+            - KUSTOMER_UPDATE_CONVERSATION
+            - KUSTOMER_ADD_CONVERSATION_NOTE
+            - KUSTOMER_ADD_CONVERSATION_TAGS
+            - KUSTOMER_FIND_LATEST_MESSAGE
+            - KUSTOMER_FIND_TEAM
+            - KUSTOMER_UPDATE_COMPANY
       required:
         - toolName
       additionalProperties: false
@@ -35482,6 +35554,18 @@ components:
             - hubspot_create_contact
             - hubspot_create_lead
             - hubspot_create_ticket
+            - kustomer_find_customer
+            - kustomer_create_customer
+            - kustomer_update_customer
+            - kustomer_find_conversation
+            - kustomer_find_customer_conversations
+            - kustomer_create_conversation
+            - kustomer_update_conversation
+            - kustomer_add_conversation_note
+            - kustomer_add_conversation_tags
+            - kustomer_find_latest_message
+            - kustomer_find_team
+            - kustomer_update_company
           x-enumNames:
             - EXAMPLE_DYNAMIC_SCHEMA
             - ZENDESK_FIND_USER
@@ -35519,6 +35603,18 @@ components:
             - HUBSPOT_CREATE_CONTACT
             - HUBSPOT_CREATE_LEAD
             - HUBSPOT_CREATE_TICKET
+            - KUSTOMER_FIND_CUSTOMER
+            - KUSTOMER_CREATE_CUSTOMER
+            - KUSTOMER_UPDATE_CUSTOMER
+            - KUSTOMER_FIND_CONVERSATION
+            - KUSTOMER_FIND_CUSTOMER_CONVERSATIONS
+            - KUSTOMER_CREATE_CONVERSATION
+            - KUSTOMER_UPDATE_CONVERSATION
+            - KUSTOMER_ADD_CONVERSATION_NOTE
+            - KUSTOMER_ADD_CONVERSATION_TAGS
+            - KUSTOMER_FIND_LATEST_MESSAGE
+            - KUSTOMER_FIND_TEAM
+            - KUSTOMER_UPDATE_COMPANY
         inputs:
           default: {}
           description: 'The tool''s inputs, keyed by input name and typed as get_schema says. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.'
