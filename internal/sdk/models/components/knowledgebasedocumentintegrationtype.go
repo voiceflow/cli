@@ -6,8 +6,9 @@ package components
 type KnowledgeBaseDocumentIntegrationType string
 
 const (
-	KnowledgeBaseDocumentIntegrationTypeZendesk KnowledgeBaseDocumentIntegrationType = "zendesk"
-	KnowledgeBaseDocumentIntegrationTypeShopify KnowledgeBaseDocumentIntegrationType = "shopify"
+	KnowledgeBaseDocumentIntegrationTypeZendesk  KnowledgeBaseDocumentIntegrationType = "zendesk"
+	KnowledgeBaseDocumentIntegrationTypeShopify  KnowledgeBaseDocumentIntegrationType = "shopify"
+	KnowledgeBaseDocumentIntegrationTypeKustomer KnowledgeBaseDocumentIntegrationType = "kustomer"
 )
 
 func (e KnowledgeBaseDocumentIntegrationType) ToPointer() *KnowledgeBaseDocumentIntegrationType {
@@ -18,7 +19,7 @@ func (e KnowledgeBaseDocumentIntegrationType) ToPointer() *KnowledgeBaseDocument
 func (e *KnowledgeBaseDocumentIntegrationType) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "zendesk", "shopify":
+		case "zendesk", "shopify", "kustomer":
 			return true
 		}
 	}
