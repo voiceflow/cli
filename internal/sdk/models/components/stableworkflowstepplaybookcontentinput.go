@@ -11,6 +11,8 @@ type StableWorkflowStepPlaybookContentInput struct {
 	AgentID                     string `json:"agentID"`
 	ExitEveryConversationalTurn *bool  `json:"exitEveryConversationalTurn,omitzero"`
 	ListenForOtherTriggers      *bool  `json:"listenForOtherTriggers,omitzero"`
+	// True: the Playbook also gets the global prompt's persona and guidelines, before its own instructions. False: only its own instructions, the canvas default.
+	IncludeGlobalPrompt *bool `json:"includeGlobalPrompt,omitzero"`
 }
 
 func (s StableWorkflowStepPlaybookContentInput) MarshalJSON() ([]byte, error) {
@@ -43,4 +45,11 @@ func (s *StableWorkflowStepPlaybookContentInput) GetListenForOtherTriggers() *bo
 		return nil
 	}
 	return s.ListenForOtherTriggers
+}
+
+func (s *StableWorkflowStepPlaybookContentInput) GetIncludeGlobalPrompt() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.IncludeGlobalPrompt
 }

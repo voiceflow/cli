@@ -41497,6 +41497,9 @@ components:
         waitForUserResponse:
           type: boolean
           description: 'Read-only. True: the step waits for the user to speak first. False: the Playbook talks first, the canvas default.'
+        includeGlobalPrompt:
+          type: boolean
+          description: 'True: the Playbook also gets the global prompt''s persona and guidelines, before its own instructions. False: only its own instructions, the canvas default.'
       required:
         - agentID
         - agentName
@@ -41504,6 +41507,7 @@ components:
         - exitEveryConversationalTurn
         - listenForOtherTriggers
         - waitForUserResponse
+        - includeGlobalPrompt
     StableWorkflowStepCrewContent:
       type: object
       properties:
@@ -43511,6 +43515,9 @@ components:
           type: boolean
         listenForOtherTriggers:
           type: boolean
+        includeGlobalPrompt:
+          description: 'True: the Playbook also gets the global prompt''s persona and guidelines, before its own instructions. False: only its own instructions, the canvas default.'
+          type: boolean
       required:
         - agentID
       additionalProperties: false
@@ -45064,6 +45071,9 @@ components:
         exitEveryConversationalTurn:
           type: boolean
         listenForOtherTriggers:
+          type: boolean
+        includeGlobalPrompt:
+          description: 'True: the Playbook also gets the global prompt''s persona and guidelines, before its own instructions. False: only its own instructions, the canvas default.'
           type: boolean
       additionalProperties: false
     StableWorkflowStepOperatorContentPatch:

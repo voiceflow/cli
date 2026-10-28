@@ -47,6 +47,8 @@ type StableWorkflowStepPlaybookContent struct {
 	ListenForOtherTriggers      bool                                    `json:"listenForOtherTriggers"`
 	// Read-only. True: the step waits for the user to speak first. False: the Playbook talks first, the canvas default.
 	WaitForUserResponse bool `json:"waitForUserResponse"`
+	// True: the Playbook also gets the global prompt's persona and guidelines, before its own instructions. False: only its own instructions, the canvas default.
+	IncludeGlobalPrompt bool `json:"includeGlobalPrompt"`
 }
 
 func (s StableWorkflowStepPlaybookContent) MarshalJSON() ([]byte, error) {
@@ -100,4 +102,11 @@ func (s *StableWorkflowStepPlaybookContent) GetWaitForUserResponse() bool {
 		return false
 	}
 	return s.WaitForUserResponse
+}
+
+func (s *StableWorkflowStepPlaybookContent) GetIncludeGlobalPrompt() bool {
+	if s == nil {
+		return false
+	}
+	return s.IncludeGlobalPrompt
 }
