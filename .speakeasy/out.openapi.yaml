@@ -16077,6 +16077,10 @@ components:
         createdByUserID:
           nullable: true
           type: number
+        pullBase:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/ProjectEnvironmentPullBase'
       required:
         - name
         - backupID
