@@ -20254,8 +20254,10 @@ components:
       type: string
       enum:
         - clef-flash
+        - voiceflow-classify
       x-enumNames:
         - CLEF_FLASH
+        - VOICEFLOW_CLASSIFY
     VersionPlatformData:
       type: object
       properties:
