@@ -56,10 +56,44 @@ func (e *CompletionTraceStateEnd) UnmarshalJSON(data []byte) error {
 	}
 }
 
+type CompletionTraceSourceURL2 struct {
+	URL  string  `json:"url"`
+	Name *string `json:"name,omitzero"`
+}
+
+func (c CompletionTraceSourceURL2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *CompletionTraceSourceURL2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CompletionTraceSourceURL2) GetURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.URL
+}
+
+func (c *CompletionTraceSourceURL2) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+// #region class-body-completiontracesourceurl2
+// #endregion class-body-completiontracesourceurl2
+
 type CompletionTracePayloadEnd struct {
-	State     CompletionTraceStateEnd `json:"state"`
-	Ref       *DebugTraceRef          `json:"ref,omitzero"`
-	MessageID *string                 `json:"messageID,omitzero"`
+	State      CompletionTraceStateEnd     `json:"state"`
+	Ref        *DebugTraceRef              `json:"ref,omitzero"`
+	SourceUrls []CompletionTraceSourceURL2 `json:"sourceUrls,omitzero"`
+	MessageID  *string                     `json:"messageID,omitzero"`
 }
 
 func (c CompletionTracePayloadEnd) MarshalJSON() ([]byte, error) {
@@ -134,6 +168,13 @@ func (c *CompletionTracePayloadEnd) GetRefMcpIntegrationTool() *DebugTraceMcpInt
 		return v.DebugTraceMcpIntegrationToolRef
 	}
 	return nil
+}
+
+func (c *CompletionTracePayloadEnd) GetSourceUrls() []CompletionTraceSourceURL2 {
+	if c == nil {
+		return nil
+	}
+	return c.SourceUrls
 }
 
 func (c *CompletionTracePayloadEnd) GetMessageID() *string {
@@ -227,43 +268,46 @@ func (e *CompletionTraceStateStart) UnmarshalJSON(data []byte) error {
 	}
 }
 
-type CompletionTraceSourceURL struct {
+type CompletionTraceSourceURL1 struct {
 	URL  string  `json:"url"`
 	Name *string `json:"name,omitzero"`
 }
 
-func (c CompletionTraceSourceURL) MarshalJSON() ([]byte, error) {
+func (c CompletionTraceSourceURL1) MarshalJSON() ([]byte, error) {
 	return utils.MarshalJSON(c, "", false)
 }
 
-func (c *CompletionTraceSourceURL) UnmarshalJSON(data []byte) error {
+func (c *CompletionTraceSourceURL1) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *CompletionTraceSourceURL) GetURL() string {
+func (c *CompletionTraceSourceURL1) GetURL() string {
 	if c == nil {
 		return ""
 	}
 	return c.URL
 }
 
-func (c *CompletionTraceSourceURL) GetName() *string {
+func (c *CompletionTraceSourceURL1) GetName() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Name
 }
 
+// #region class-body-completiontracesourceurl1
+// #endregion class-body-completiontracesourceurl1
+
 type CompletionTracePayloadStart struct {
-	State      CompletionTraceStateStart  `json:"state"`
-	Ai         *bool                      `json:"ai,omitzero"`
-	SourceUrls []CompletionTraceSourceURL `json:"sourceUrls,omitzero"`
-	Delay      *float64                   `json:"delay,omitzero"`
-	MessageID  string                     `json:"messageID"`
-	Ref        *DebugTraceRef             `json:"ref,omitzero"`
+	State      CompletionTraceStateStart   `json:"state"`
+	Ai         *bool                       `json:"ai,omitzero"`
+	SourceUrls []CompletionTraceSourceURL1 `json:"sourceUrls,omitzero"`
+	Delay      *float64                    `json:"delay,omitzero"`
+	MessageID  string                      `json:"messageID"`
+	Ref        *DebugTraceRef              `json:"ref,omitzero"`
 }
 
 func (c CompletionTracePayloadStart) MarshalJSON() ([]byte, error) {
@@ -291,7 +335,7 @@ func (c *CompletionTracePayloadStart) GetAi() *bool {
 	return c.Ai
 }
 
-func (c *CompletionTracePayloadStart) GetSourceUrls() []CompletionTraceSourceURL {
+func (c *CompletionTracePayloadStart) GetSourceUrls() []CompletionTraceSourceURL1 {
 	if c == nil {
 		return nil
 	}

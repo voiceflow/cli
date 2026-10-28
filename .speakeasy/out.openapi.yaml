@@ -26927,6 +26927,17 @@ components:
                 ref:
                   allOf:
                     - $ref: '#/components/schemas/DebugTraceRef'
+                sourceUrls:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                      - url
                 messageID:
                   type: string
               required:
