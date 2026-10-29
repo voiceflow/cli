@@ -14659,16 +14659,6 @@ components:
         metadata:
           type: object
           additionalProperties: {}
-        draft:
-          allOf:
-            - $ref: '#/components/schemas/ToolExtendedInputVariableSlot'
-    ToolExtendedInputVariableSlot:
-      type: object
-      properties:
-        schema: {}
-        metadata:
-          type: object
-          additionalProperties: {}
     IntegrationTool:
       type: object
       properties:
@@ -14993,7 +14983,6 @@ components:
         - bedrock-claude-5-sonnet
         - bedrock-claude-5.5-sonnet
         - bedrock-claude-4.5-haiku
-        - bedrock-claude-5.5-haiku
         - bedrock-claude-4.5-opus
         - bedrock-claude-4.7-opus
         - bedrock-claude-4.8-opus
@@ -15071,7 +15060,6 @@ components:
         - BEDROCK_CLAUDE_5_SONNET
         - BEDROCK_CLAUDE_5_5_SONNET
         - BEDROCK_CLAUDE_4_5_HAIKU
-        - BEDROCK_CLAUDE_5_5_HAIKU
         - BEDROCK_CLAUDE_4_5_OPUS
         - BEDROCK_CLAUDE_4_7_OPUS
         - BEDROCK_CLAUDE_4_8_OPUS
@@ -20644,8 +20632,6 @@ components:
           type: boolean
         defaultValue:
           nullable: true
-          type: string
-        draftDefaultValue:
           type: string
       required:
         - defaultValue
@@ -31808,7 +31794,7 @@ components:
         inputVariables:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/StableExportToolNodeDataIntegrationStoredInputVariable'
+            $ref: '#/components/schemas/StableExportToolNodeDataIntegrationInputVariable'
         captureResponse:
           default: null
           nullable: true
@@ -31851,7 +31837,7 @@ components:
         - inputVariables
         - integrationToolID
         - agentID
-    StableExportToolNodeDataIntegrationStoredInputVariable:
+    StableExportToolNodeDataIntegrationInputVariable:
       type: object
       properties:
         description:
@@ -31871,10 +31857,6 @@ components:
         captureType:
           allOf:
             - $ref: '#/components/schemas/ToolNodeCaptureType'
-        draftDefaultValue:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/ExportTextString'
       required:
         - integrationToolVariableName
     StableExportAgentMcpIntegrationTool:
@@ -35708,7 +35690,6 @@ components:
                 - bedrock-claude-5-sonnet
                 - bedrock-claude-5.5-sonnet
                 - bedrock-claude-4.5-haiku
-                - bedrock-claude-5.5-haiku
                 - bedrock-claude-4.5-opus
                 - bedrock-claude-4.7-opus
                 - bedrock-claude-4.8-opus
@@ -35787,7 +35768,6 @@ components:
                 - BEDROCK_CLAUDE_5_SONNET
                 - BEDROCK_CLAUDE_5_5_SONNET
                 - BEDROCK_CLAUDE_4_5_HAIKU
-                - BEDROCK_CLAUDE_5_5_HAIKU
                 - BEDROCK_CLAUDE_4_5_OPUS
                 - BEDROCK_CLAUDE_4_7_OPUS
                 - BEDROCK_CLAUDE_4_8_OPUS
@@ -35994,7 +35974,6 @@ components:
             - bedrock-claude-5-sonnet
             - bedrock-claude-5.5-sonnet
             - bedrock-claude-4.5-haiku
-            - bedrock-claude-5.5-haiku
             - bedrock-claude-4.5-opus
             - bedrock-claude-4.7-opus
             - bedrock-claude-4.8-opus
@@ -36072,7 +36051,6 @@ components:
             - BEDROCK_CLAUDE_5_SONNET
             - BEDROCK_CLAUDE_5_5_SONNET
             - BEDROCK_CLAUDE_4_5_HAIKU
-            - BEDROCK_CLAUDE_5_5_HAIKU
             - BEDROCK_CLAUDE_4_5_OPUS
             - BEDROCK_CLAUDE_4_7_OPUS
             - BEDROCK_CLAUDE_4_8_OPUS
