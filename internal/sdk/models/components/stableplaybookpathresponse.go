@@ -3,8 +3,25 @@
 
 package components
 
+import (
+	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
+)
+
 type StablePlaybookPathResponse struct {
 	Path StablePlaybookPath `json:"path"`
+	// References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+	UnresolvedReferences []StableUnresolvedReference `json:"unresolvedReferences,omitzero"`
+}
+
+func (s StablePlaybookPathResponse) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookPathResponse) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookPathResponse) GetPath() StablePlaybookPath {
@@ -12,4 +29,11 @@ func (s *StablePlaybookPathResponse) GetPath() StablePlaybookPath {
 		return StablePlaybookPath{}
 	}
 	return s.Path
+}
+
+func (s *StablePlaybookPathResponse) GetUnresolvedReferences() []StableUnresolvedReference {
+	if s == nil {
+		return nil
+	}
+	return s.UnresolvedReferences
 }

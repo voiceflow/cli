@@ -8,6 +8,115 @@ import (
 	"time"
 )
 
+type StablePlaybookPathGenerative struct {
+	Execution  *StableToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *StableToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *StableToolMessageGenerative `json:"delay,omitzero"`
+	Completion *StableToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookPathGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookPathGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookPathGenerative) GetExecution() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookPathGenerative) GetFailure() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookPathGenerative) GetDelay() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookPathGenerative) GetCompletion() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
+// StablePlaybookPathMessages - What the agent says as it leaves through this path, in the shape tool messages take: a message ID per slot, and generative examples. Null when it says nothing.
+type StablePlaybookPathMessages struct {
+	Generative          *StablePlaybookPathGenerative `json:"generative,omitzero"`
+	DelayMessageID      *string                       `json:"delayMessageID"`
+	FailureMessageID    *string                       `json:"failureMessageID"`
+	ExecutionMessageID  *string                       `json:"executionMessageID"`
+	CompletionMessageID *string                       `json:"completionMessageID"`
+	DelayMessageSeconds *float64                      `json:"delayMessageSeconds"`
+}
+
+func (s StablePlaybookPathMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookPathMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookPathMessages) GetGenerative() *StablePlaybookPathGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
+}
+
+func (s *StablePlaybookPathMessages) GetDelayMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.DelayMessageID
+}
+
+func (s *StablePlaybookPathMessages) GetFailureMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FailureMessageID
+}
+
+func (s *StablePlaybookPathMessages) GetExecutionMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ExecutionMessageID
+}
+
+func (s *StablePlaybookPathMessages) GetCompletionMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CompletionMessageID
+}
+
+func (s *StablePlaybookPathMessages) GetDelayMessageSeconds() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.DelayMessageSeconds
+}
+
 type StablePlaybookPath struct {
 	ID string `json:"id"`
 	// The ID of the playbook this exit path belongs to.
@@ -15,9 +124,13 @@ type StablePlaybookPath struct {
 	// The name of the exit path. It labels the port on every Playbook step that runs this playbook, and the runtime turns it into the name of the exit tool the model calls.
 	Name string `json:"name"`
 	// The exit condition: the model reads it to decide when to leave the playbook through this path.
-	Description *string   `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	Description *string `json:"description"`
+	// The variables or entities the model must fill before it can leave through this path, in the order the editor shows them.
+	RequiredVariables []StableRequiredVariable `json:"requiredVariables"`
+	// What the agent says as it leaves through this path, in the shape tool messages take: a message ID per slot, and generative examples. Null when it says nothing.
+	Messages  *StablePlaybookPathMessages `json:"messages"`
+	CreatedAt time.Time                   `json:"createdAt"`
+	UpdatedAt time.Time                   `json:"updatedAt"`
 }
 
 func (s StablePlaybookPath) MarshalJSON() ([]byte, error) {
@@ -57,6 +170,20 @@ func (s *StablePlaybookPath) GetDescription() *string {
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StablePlaybookPath) GetRequiredVariables() []StableRequiredVariable {
+	if s == nil {
+		return []StableRequiredVariable{}
+	}
+	return s.RequiredVariables
+}
+
+func (s *StablePlaybookPath) GetMessages() *StablePlaybookPathMessages {
+	if s == nil {
+		return nil
+	}
+	return s.Messages
 }
 
 func (s *StablePlaybookPath) GetCreatedAt() time.Time {

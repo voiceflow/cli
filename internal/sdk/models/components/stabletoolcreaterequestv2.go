@@ -43,6 +43,8 @@ type StableToolCreateRequestV2Workflow struct {
 	WorkflowID string `json:"workflowID"`
 	// When the agent should run the workflow. Omit it to use the workflow's own description.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+	// The variables or entities the model must fill when it calls the tool. Leave it out for none.
+	RequiredVariables []StableRequiredVariableInput `json:"requiredVariables,omitzero"`
 }
 
 func (s StableToolCreateRequestV2Workflow) MarshalJSON() ([]byte, error) {
@@ -82,6 +84,13 @@ func (s *StableToolCreateRequestV2Workflow) GetDescription() optionalnullable.Op
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StableToolCreateRequestV2Workflow) GetRequiredVariables() []StableRequiredVariableInput {
+	if s == nil {
+		return nil
+	}
+	return s.RequiredVariables
 }
 
 // #region class-body-stabletoolcreaterequestv2workflow
@@ -201,6 +210,40 @@ func (s *StableToolCreateRequestV2Messages4) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolcreaterequestv2messages4
 // #endregion class-body-stabletoolcreaterequestv2messages4
 
+// StableToolCreateRequestV2ToolSound4 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolCreateRequestV2ToolSound4 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolCreateRequestV2ToolSound4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestV2ToolSound4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestV2ToolSound4) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolCreateRequestV2ToolSound4) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolcreaterequestv2toolsound4
+// #endregion class-body-stabletoolcreaterequestv2toolsound4
+
 type StableToolCreateRequestV2InputVariables4 struct {
 	Description                 optionalnullable.OptionalNullable[string] `default:"null" json:"description"`
 	DefaultValue                optionalnullable.OptionalNullable[string] `default:"null" json:"defaultValue"`
@@ -290,9 +333,13 @@ type StableToolCreateRequestV2Integration struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages4] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	InputVariables        map[string]StableToolCreateRequestV2InputVariables4                         `json:"inputVariables,omitzero"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound      optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound4] `json:"toolSound,omitzero"`
+	InputVariables map[string]StableToolCreateRequestV2InputVariables4                    `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataIntegrationCaptureResponse `json:"captureResponse,omitzero"`
+	// The refined schema of nested inputs the editor stores for some integrations, keyed by input. Copy it as read; null when there is none.
+	ExtendedInputVariables optionalnullable.OptionalNullable[map[string]ToolExtendedInputVariable] `json:"extendedInputVariables,omitzero"`
 	// Discriminator indicating this tool calls a connected first-party integration.
 	Type StableToolCreateRequestV2TypeIntegration `json:"type"`
 	// The ID of the integration tool resource this tool calls.
@@ -338,6 +385,13 @@ func (s *StableToolCreateRequestV2Integration) GetCaptureInputVariables() option
 	return s.CaptureInputVariables
 }
 
+func (s *StableToolCreateRequestV2Integration) GetToolSound() optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound4] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
+}
+
 func (s *StableToolCreateRequestV2Integration) GetInputVariables() map[string]StableToolCreateRequestV2InputVariables4 {
 	if s == nil {
 		return nil
@@ -350,6 +404,13 @@ func (s *StableToolCreateRequestV2Integration) GetCaptureResponse() map[string]T
 		return nil
 	}
 	return s.CaptureResponse
+}
+
+func (s *StableToolCreateRequestV2Integration) GetExtendedInputVariables() optionalnullable.OptionalNullable[map[string]ToolExtendedInputVariable] {
+	if s == nil {
+		return nil
+	}
+	return s.ExtendedInputVariables
 }
 
 func (s *StableToolCreateRequestV2Integration) GetType() StableToolCreateRequestV2TypeIntegration {
@@ -483,6 +544,40 @@ func (s *StableToolCreateRequestV2Messages3) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolcreaterequestv2messages3
 // #endregion class-body-stabletoolcreaterequestv2messages3
 
+// StableToolCreateRequestV2ToolSound3 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolCreateRequestV2ToolSound3 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolCreateRequestV2ToolSound3) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestV2ToolSound3) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestV2ToolSound3) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolCreateRequestV2ToolSound3) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolcreaterequestv2toolsound3
+// #endregion class-body-stabletoolcreaterequestv2toolsound3
+
 type StableToolCreateRequestV2InputVariables3 struct {
 	Description                optionalnullable.OptionalNullable[string] `default:"null" json:"description"`
 	DefaultValue               optionalnullable.OptionalNullable[string] `default:"null" json:"defaultValue"`
@@ -572,7 +667,9 @@ type StableToolCreateRequestV2Mcp struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages3] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
-	InputVariables        map[string]StableToolCreateRequestV2InputVariables3                         `json:"inputVariables,omitzero"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound      optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound3] `json:"toolSound,omitzero"`
+	InputVariables map[string]StableToolCreateRequestV2InputVariables3                    `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataMcpIntegrationCaptureResponse `json:"captureResponse,omitzero"`
 	// Discriminator indicating this tool calls a tool from an MCP server.
@@ -618,6 +715,13 @@ func (s *StableToolCreateRequestV2Mcp) GetCaptureInputVariables() optionalnullab
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolCreateRequestV2Mcp) GetToolSound() optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound3] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolCreateRequestV2Mcp) GetInputVariables() map[string]StableToolCreateRequestV2InputVariables3 {
@@ -765,6 +869,40 @@ func (s *StableToolCreateRequestV2Messages2) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolcreaterequestv2messages2
 // #endregion class-body-stabletoolcreaterequestv2messages2
 
+// StableToolCreateRequestV2ToolSound2 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolCreateRequestV2ToolSound2 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolCreateRequestV2ToolSound2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestV2ToolSound2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestV2ToolSound2) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolCreateRequestV2ToolSound2) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolcreaterequestv2toolsound2
+// #endregion class-body-stabletoolcreaterequestv2toolsound2
+
 type StableToolCreateRequestV2InputVariables2 struct {
 	Description             optionalnullable.OptionalNullable[string] `default:"null" json:"description"`
 	DefaultValue            optionalnullable.OptionalNullable[string] `default:"null" json:"defaultValue"`
@@ -854,6 +992,8 @@ type StableToolCreateRequestV2Function struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages2] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound2] `json:"toolSound,omitzero"`
 	// When enabled, the tool runs in the background without blocking the conversation.
 	AsyncExecution *bool                                               `default:"false" json:"asyncExecution"`
 	InputVariables map[string]StableToolCreateRequestV2InputVariables2 `json:"inputVariables,omitzero"`
@@ -902,6 +1042,13 @@ func (s *StableToolCreateRequestV2Function) GetCaptureInputVariables() optionaln
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolCreateRequestV2Function) GetToolSound() optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound2] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolCreateRequestV2Function) GetAsyncExecution() *bool {
@@ -1056,6 +1203,40 @@ func (s *StableToolCreateRequestV2Messages1) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolcreaterequestv2messages1
 // #endregion class-body-stabletoolcreaterequestv2messages1
 
+// StableToolCreateRequestV2ToolSound1 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolCreateRequestV2ToolSound1 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolCreateRequestV2ToolSound1) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolCreateRequestV2ToolSound1) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolCreateRequestV2ToolSound1) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolCreateRequestV2ToolSound1) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolcreaterequestv2toolsound1
+// #endregion class-body-stabletoolcreaterequestv2toolsound1
+
 type StableToolCreateRequestV2InputVariables1 struct {
 	Description            optionalnullable.OptionalNullable[string] `default:"null" json:"description"`
 	DefaultValue           optionalnullable.OptionalNullable[string] `default:"null" json:"defaultValue"`
@@ -1145,6 +1326,8 @@ type StableToolCreateRequestV2API struct {
 	Messages    optionalnullable.OptionalNullable[StableToolCreateRequestV2Messages1] `json:"messages,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]AgentToolCaptureInputVariable] `json:"captureInputVariables,omitzero"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound1] `json:"toolSound,omitzero"`
 	// When enabled, the tool runs in the background without blocking the conversation.
 	AsyncExecution *bool                                               `default:"false" json:"asyncExecution"`
 	InputVariables map[string]StableToolCreateRequestV2InputVariables1 `json:"inputVariables,omitzero"`
@@ -1193,6 +1376,13 @@ func (s *StableToolCreateRequestV2API) GetCaptureInputVariables() optionalnullab
 		return nil
 	}
 	return s.CaptureInputVariables
+}
+
+func (s *StableToolCreateRequestV2API) GetToolSound() optionalnullable.OptionalNullable[StableToolCreateRequestV2ToolSound1] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolCreateRequestV2API) GetAsyncExecution() *bool {

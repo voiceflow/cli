@@ -316,6 +316,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`read-instructions`](docs/vf_playbook_read-instructions.md) - Read playbook instructions
 * [`patch-instructions`](docs/vf_playbook_patch-instructions.md) - Patch playbook instructions
 * [`search-instructions`](docs/vf_playbook_search-instructions.md) - Search playbook instructions
+* [`duplicate`](docs/vf_playbook_duplicate.md) - Duplicate playbook
 * [`add-tool-message`](docs/vf_playbook_add-tool-message.md) - Add playbook tool message
 * [`update-tool-message`](docs/vf_playbook_update-tool-message.md) - Update playbook tool message
 * [`delete-tool-message`](docs/vf_playbook_delete-tool-message.md) - Delete playbook tool message
@@ -334,6 +335,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_tool_get.md) - Get tool
 * [`update`](docs/vf_tool_update.md) - Update tool
 * [`delete`](docs/vf_tool_delete.md) - Delete tool
+* [`move`](docs/vf_tool_move.md) - Move tool
 
 ### [workspace](docs/vf_workspace.md)
 

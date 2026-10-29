@@ -995,7 +995,7 @@ paths:
               ## Inputs     — list of project variables the playbook references (e.g. `- {customer_name}: caller's name if collected`). Any variable listed here can be referenced inline elsewhere in the prompt via {variable_name} syntax — the runtime substitutes the actual value. Built-in variables like {user_id}, {last_utterance}, {vf_now} can be referenced without declaring them. Unset variables resolve to the literal 0 (number), not empty string — guard branches in ## Flow or ## Edge cases against that.
             USE WHEN — User wants to add a new multi-step task the agent can handle (booking, escalation, FAQ + tool use).
             AFTER — voiceflow_agent.update (make it reachable), voiceflow_tool.create (give it capabilities), then voiceflow_conversation.
-            DO NOT — Write the description as a one-liner that only says what the playbook does. The Main Agent uses this text to route — it must also describe WHEN to route here (the user signals, intents, or topics that should trigger this playbook). Also: don't put identity, tone, or guardrails in the playbook's instructions — those inherit from the Global Prompt. And: if a playbook's only tool is the Knowledge Base, it shouldn't be a playbook — the Main Agent handles Knowledge Base Q&A directly. Put a secret reference in generative message examples, in knowledgeBaseTool.query or in callForwardTool.address or .extension — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in instructions for a tool, playbook or workflow this playbook does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool to this playbook (voiceflow_tool.create with `target.playbookID`) or create the playbook with voiceflow_playbook.create first, then write the text that uses it. A workflow can be attached to a playbook only in the Voiceflow UI. A path tool resolves only in the text of the playbook that owns it.
+            DO NOT — Write the description as a one-liner that only says what the playbook does. The Main Agent uses this text to route — it must also describe WHEN to route here (the user signals, intents, or topics that should trigger this playbook). Also: don't put identity, tone, or guardrails in the playbook's instructions — those inherit from the Global Prompt. And: if a playbook's only tool is the Knowledge Base, it shouldn't be a playbook — the Main Agent handles Knowledge Base Q&A directly. Put a secret reference in generative message examples, in knowledgeBaseTool.query or in callForwardTool.address or .extension — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in instructions for a tool, playbook or workflow this playbook does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool to this playbook (voiceflow_tool.create with `target.playbookID`) or create the playbook with voiceflow_playbook.create first, then write the text that uses it. Never attach a workflow to a playbook. A workflow tool on the Main Agent does not resolve in playbook text, so write that workflow's name in plain words, without backticks: every playbook can still call it. If the Main Agent lacks that workflow tool, add it with voiceflow_tool.create (type workflow, target: { global: true }). A path tool resolves only in the text of the playbook that owns it.
         cli:
           command: playbook create
       x-speakeasy-group: playbook
@@ -1168,7 +1168,7 @@ paths:
             USE WHEN — Iterating on instructions based on transcript failures, fixing the LLM description because the Main Agent is mis-routing, adding/removing attached tools, swapping the model override.
             BEFORE — voiceflow_playbook.get to see current state and merge changes against it.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.
-            DO NOT — Use this for a targeted edit to instructions; it re-sends the whole document, so reach for voiceflow_playbook.patch_instructions for anything short of a rewrite. Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first. Put a secret reference in generative message examples, in knowledgeBaseTool.query or in callForwardTool.address or .extension — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in instructions for a tool, playbook or workflow this playbook does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool to this playbook (voiceflow_tool.create with `target.playbookID`) or create the playbook with voiceflow_playbook.create first, then write the text that uses it. A workflow can be attached to a playbook only in the Voiceflow UI. A path tool resolves only in the text of the playbook that owns it.
+            DO NOT — Use this for a targeted edit to instructions; it re-sends the whole document, so reach for voiceflow_playbook.patch_instructions for anything short of a rewrite. Rewrite a playbook's Instructions in response to a single failing transcript without checking whether the bug is actually a wiring failure (missing captureResponse, wrong shouldFulfill). Most "the prompt isn't working" issues are wiring problems disguised as prompt problems. Also: when fixing routing issues, edit the playbook's description (WHAT/WHEN format) rather than only piling more routing rules into voiceflow_agent — the description is where the Main Agent looks first. Put a secret reference in generative message examples, in knowledgeBaseTool.query or in callForwardTool.address or .extension — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in instructions for a tool, playbook or workflow this playbook does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool to this playbook (voiceflow_tool.create with `target.playbookID`) or create the playbook with voiceflow_playbook.create first, then write the text that uses it. Never attach a workflow to a playbook. A workflow tool on the Main Agent does not resolve in playbook text, so write that workflow's name in plain words, without backticks: every playbook can still call it. If the Main Agent lacks that workflow tool, add it with voiceflow_tool.create (type workflow, target: { global: true }). A path tool resolves only in the text of the playbook that owns it.
         cli:
           command: playbook update
       x-speakeasy-group: playbook
@@ -1458,6 +1458,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableInstructionsSearchResponse'
+      tags:
+        - Playbook
+      security:
+        - token: []
+  /v1/stable/playbook/{playbookID}/duplicate:
+    post:
+      operationId: StablePlaybookController_duplicate
+      x-vf:
+        mcp:
+          tool: voiceflow_playbook
+          toolDescription: |-
+            A specialized LLM-driven sub-agent that handles multi-step flows. Each playbook has an LLM description (drives routing), Instructions (drives behavior), an optional model override, attached tools, and optional exit conditions. Playbooks inherit the Global Prompt for identity/tone — their Instructions carry domain-specific behavior only.
+            The LLM-facing description is what the Agent reads when deciding whether to route to this playbook. Write it in WHAT/WHEN format — WHAT the playbook does AND WHEN the Agent (or a specific playbook) should route into it. Example: "Schedules a new appointment. Route here when the caller says 'book', 'schedule', 'come out', or describes an appliance problem they want service for."
+            Instructions use markdown sections: ## Context (what the playbook is for and what state it assumes), ## Flow (the step-by-step the LLM should follow), ## Rules (hard constraints specific to this playbook, in > callouts), ## Edge cases (handling for known off-happy-path situations), ## Exit (when to hand control back to the Main Agent or trigger an exit condition).
+            Exit conditions only fire when the playbook is reached via a Workflow's Playbook canvas step — the workflow checks the condition and routes accordingly. When the playbook is reached via Agent routing (agentic), the Agent handles routing back via its own instructions and exit conditions are NOT consulted. Only design exit conditions for playbooks that will be embedded in Workflows.
+            Invoked by the Main Agent (through its routing registry and instructions) or by a Playbook canvas step inside a Workflow.
+            Predecessor: select the project and environment first; set the agent's global prompt so identity inherits cleanly.
+            Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
+          operation: duplicate
+          operationDescription: |-
+            WHAT — Copies one playbook in one call: its settings, built-in tools, description, instructions, every API, function, MCP and integration attachment with all its fields, and every exit path with its required variables. Every message those tools and paths say is copied as a new message, so the copy shares no message with the original.
+            The copy is named after the original with " copy" added, unless you send name, and sits in the original's folder. Its instructions already point at its own exit paths and tools. ids maps each of the original's tool attachments and exit paths to the copy's. The copy of an operator is an operator. A workflow tool is not copied, because workflow tools go on the Main Agent only. The original keeps it, and skippedWorkflowTools lists it.
+            USE WHEN — splitting a playbook: copy it, then trim the copy to the part that moves and the original to the part that stays.
+            AFTER — trim the copy: rewrite its name, description and instructions in one voiceflow_playbook.update, and remove the tools and exit paths the moved part does not use with voiceflow_tool.delete and voiceflow_playbook.delete_path, taking their IDs from ids. The copy is in no routing list and no workflow step runs it: add it to the agent's playbooks with voiceflow_agent.update, sending every existing entry too, or point a Playbook step at it. When skippedWorkflowTools is not empty, make sure the Main Agent has each of those workflows, so the copy can still call them: list the original's workflow tools and the Main Agent's with voiceflow_tool.list (type workflow), and add each workflow the Main Agent lacks with voiceflow_tool.create (type workflow, target: { global: true }). Leave the original's workflow tools where they are.
+            DO NOT — assume the copy is reachable; nothing routes to it until you add it.
+            DO NOT — edit a message by an ID the original's tools or paths show; the copy has its own messages.
+            DO NOT — rebuild a playbook piece by piece with voiceflow_playbook.create and voiceflow_tool.create when the whole playbook is the starting point.
+            DO NOT — duplicate the Main Agent; this copies playbooks only.
+            DO NOT — give the copy a workflow tool; workflow tools go on the Main Agent only, and the copy can already call them.
+        cli:
+          command: playbook duplicate
+      x-speakeasy-group: playbook
+      x-speakeasy-name-override: duplicate
+      summary: Duplicate playbook
+      description: Copy a playbook with its exit paths, messages and every tool but a workflow tool.
+      parameters:
+        - name: playbookID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePlaybookDuplicateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePlaybookDuplicateResponse'
       tags:
         - Playbook
       security:
@@ -1803,6 +1869,7 @@ paths:
           operation: create
           operationDescription: |-
             WHAT — Attach one tool (function | api | mcp | integration) to a target and wire its inputs and outputs, or give the agent a workflow tool (type workflow) that it and every playbook can call.
+            A workflow tool can carry requiredVariables: the variables or entities the model must fill when it calls the tool. The tool and its requiredVariables save in one write.
             USE WHEN — Enabling a specific tool on the global agent or a single playbook for the first time, or when the user asks for a workflow tool on the agent.
             BEFORE — The underlying tool definition must already exist: voiceflow_function.create, voiceflow_api_tool.create, or voiceflow_mcp_server.create. Get functionID / apiToolID / mcpToolID from those tools first. For an integration tool, take integrationToolID from voiceflow_integration.get_schema; when it is null, voiceflow_integration.add_tool adds the tool to the environment and returns it. For type workflow, take workflowID from voiceflow_workflow.list and send target: { global: true }.
             AFTER — Set captureResponse so tool output lands in project variables; omitting it means the response is silently discarded. Then voiceflow_environment.compile + voiceflow_conversation. A workflow tool returns its id: read it with voiceflow_tool.get and remove it with voiceflow_tool.delete, both with type workflow.
@@ -1911,7 +1978,7 @@ paths:
             Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
           operation: get
           operationDescription: |-
-            WHAT — Fetch the full attachment for one tool. For type workflow it returns the workflow the tool runs and its description.
+            WHAT — Fetch the full attachment for one tool. For type workflow it returns the workflow the tool runs, its description and its required variables.
             USE WHEN — Inspecting a single wiring before patching it, or debugging why inputs aren't resolving or outputs aren't captured.
             BEFORE — voiceflow_tool.list to obtain the toolID and its type.
         cli:
@@ -2091,6 +2158,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Tool
+      security:
+        - token: []
+  /v1/stable/tool/{toolID}/move:
+    post:
+      operationId: StableToolController_move
+      x-vf:
+        mcp:
+          tool: voiceflow_tool
+          toolDescription: |-
+            The wiring layer that attaches Function, API, MCP, and Integration tools to a target — either the global agent or a specific playbook. Agent-level attachments are inherited by every playbook; playbook-level attachments are scoped to that playbook only.
+            Attachments carry two critical maps: an input map (how each tool input is filled — from the LLM, from a project variable, or a literal) and an output-capture map (which tool outputs land in which project variables). Omitting the output-capture map is the #1 source of "the tool ran but the data went nowhere" bugs — the tool returns the right data, but nothing ever lands in a variable and every downstream reference silently reads the default (usually 0).
+            Predecessor: create the Function, API tool, or MCP tool by adding a server — the underlying tool must exist before it can be attached. An integration tool comes from its catalog instead: connect the integration, then add the tool to the environment with voiceflow_integration.add_tool, which returns the integrationToolID to attach. Then check the tool works before attaching it: read its inputs with get_schema, and run it once with execute, on voiceflow_function, voiceflow_api_tool, voiceflow_mcp_tool or voiceflow_integration.
+            Successor: recompile the environment, then run a test conversation — inspect the trace's tool calls and variable state to confirm inputs resolved and outputs captured.
+          operation: move
+          operationDescription: |-
+            WHAT — Moves one tool attachment (function | api | mcp | integration) to another target: the agent (global: true) or one playbook (playbookID). The attachment keeps its ID, every field (description, inputs, captures, sound, background run) and its messages, so nothing is copied and text that names the tool still finds it on its new target.
+            USE WHEN — splitting the Main Agent's instructions: a tool that only the moved job uses goes to the new playbook with that job, so the calls that stay on the Main Agent stop carrying it. Also when a tool sits on the wrong playbook.
+            BEFORE — voiceflow_tool.list on the source for the toolID and its type. Check that the text staying behind does not use the tool: after the move only the new target can call it.
+            AFTER — voiceflow_environment.compile + voiceflow_conversation.
+            DO NOT — move a tool that the jobs staying on the Main Agent also use; leave it there, where every playbook can already call it.
+            DO NOT — move a workflow tool; workflow tools go on the Main Agent only, and the request is refused.
+            DO NOT — rebuild the tool on the target with voiceflow_tool.create and delete the original; a rebuild drops fields and copies messages.
+        cli:
+          command: tool move
+      x-speakeasy-group: tool
+      x-speakeasy-name-override: move
+      summary: Move tool
+      description: Move a tool attachment to the agent or to a playbook. It keeps its ID, its fields and its messages.
+      parameters:
+        - name: toolID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableToolMoveRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableToolMoveResponse'
       tags:
         - Tool
       security:
@@ -4134,7 +4262,7 @@ paths:
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: list_paths
           operationDescription: |-
-            WHAT — List a playbook's exit paths, in the order the editor and its Playbook steps show them. Each has a name and the exit condition the model reads.
+            WHAT — List a playbook's exit paths, in the order the editor and its Playbook steps show them. Each has a name, the exit condition the model reads, the variables or entities the model must fill before it leaves, and the messages the agent says on the way out.
             USE WHEN — Before you add, rename or delete a path, or link a Playbook or Operator step's path in a workflow.
         cli:
           command: playbook path list
@@ -4187,9 +4315,9 @@ paths:
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: create_path
           operationDescription: |-
-            WHAT — Add one exit path to a playbook. It goes last in the playbook's path order. The model leaves the playbook through it when the description, the exit condition, holds.
-            Exit paths fire only when the playbook runs from a Playbook or Operator step in a workflow. Every such step shows the new path as a port at once, with no link.
-            USE WHEN — The playbook needs a new way out, or a workflow needs a Playbook or Operator step to branch on a path that does not exist yet.
+            WHAT — Add one exit path to a playbook. It goes last in the playbook's path order. The model leaves the playbook through it when the description, the exit condition, holds, once it has filled the path's requiredVariables.
+            Exit paths fire only when the playbook runs from a Playbook or Operator step in a workflow. Every such step shows the new path as a port at once, with no link. The path, its requiredVariables and its messages save in one write.
+            USE WHEN — The playbook needs a new way out, a workflow needs a Playbook or Operator step to branch on a path that does not exist yet, or you are copying a path to another playbook: send the same name, description, requiredVariables and messages, with a new message for every message ID. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.
             BEFORE — voiceflow_playbook.list_paths, so you do not add a path the playbook already has.
             AFTER — voiceflow_workflow.link with the new path's ID as the port, to point it at a block.
             DO NOT — Leave out the description: without an exit condition the model has nothing to decide on.
@@ -4245,8 +4373,9 @@ paths:
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: update_path
           operationDescription: |-
-            WHAT — Rename an exit path, change its exit condition, or both. Workflow ports follow the path by ID, so every link on it stays.
+            WHAT — Rename an exit path, change its exit condition, replace its requiredVariables or its messages, or any of these. Workflow ports follow the path by ID, so every link on it stays.
             BEFORE — voiceflow_playbook.list_paths for the path's ID and current text.
+            requiredVariables replaces the stored list in the order sent: leave it out to keep it, send [] to remove every one. messages replaces the stored messages whole: leave it out to keep them, send null to remove them. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.
         cli:
           command: playbook path update
       x-speakeasy-group: playbook.path
@@ -14659,6 +14788,16 @@ components:
         metadata:
           type: object
           additionalProperties: {}
+        draft:
+          allOf:
+            - $ref: '#/components/schemas/ToolExtendedInputVariableSlot'
+    ToolExtendedInputVariableSlot:
+      type: object
+      properties:
+        schema: {}
+        metadata:
+          type: object
+          additionalProperties: {}
     IntegrationTool:
       type: object
       properties:
@@ -14983,6 +15122,7 @@ components:
         - bedrock-claude-5-sonnet
         - bedrock-claude-5.5-sonnet
         - bedrock-claude-4.5-haiku
+        - bedrock-claude-5.5-haiku
         - bedrock-claude-4.5-opus
         - bedrock-claude-4.7-opus
         - bedrock-claude-4.8-opus
@@ -15060,6 +15200,7 @@ components:
         - BEDROCK_CLAUDE_5_SONNET
         - BEDROCK_CLAUDE_5_5_SONNET
         - BEDROCK_CLAUDE_4_5_HAIKU
+        - BEDROCK_CLAUDE_5_5_HAIKU
         - BEDROCK_CLAUDE_4_5_OPUS
         - BEDROCK_CLAUDE_4_7_OPUS
         - BEDROCK_CLAUDE_4_8_OPUS
@@ -20633,6 +20774,8 @@ components:
         defaultValue:
           nullable: true
           type: string
+        draftDefaultValue:
+          type: string
       required:
         - defaultValue
     CompiledAgentFlowTool:
@@ -23275,6 +23418,21 @@ components:
             $ref: '#/components/schemas/StableUnresolvedMention'
       required:
         - message
+    StableRoutingRequiredVariableInput:
+      type: object
+      properties:
+        id:
+          description: 'Keep it as read for a variable already on the entry. Leave it out for a new one: the system gives it.'
+          type: string
+        description:
+          nullable: true
+          type: string
+        variableOrEntityID:
+          nullable: true
+          type: string
+      required:
+        - description
+        - variableOrEntityID
     StableAgentUpdateRequestV2:
       type: object
       properties:
@@ -23304,7 +23462,7 @@ components:
               requiredVariables:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CrewNodeDataRequiredVariable'
+                  $ref: '#/components/schemas/StableRoutingRequiredVariableInput'
               playbookID:
                 type: string
             required:
@@ -23326,7 +23484,7 @@ components:
               requiredVariables:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CrewNodeDataRequiredVariable'
+                  $ref: '#/components/schemas/StableRoutingRequiredVariableInput'
               workflowID:
                 type: string
             required:
@@ -31794,7 +31952,7 @@ components:
         inputVariables:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/StableExportToolNodeDataIntegrationInputVariable'
+            $ref: '#/components/schemas/StableExportToolNodeDataIntegrationStoredInputVariable'
         captureResponse:
           default: null
           nullable: true
@@ -31837,7 +31995,7 @@ components:
         - inputVariables
         - integrationToolID
         - agentID
-    StableExportToolNodeDataIntegrationInputVariable:
+    StableExportToolNodeDataIntegrationStoredInputVariable:
       type: object
       properties:
         description:
@@ -31857,6 +32015,10 @@ components:
         captureType:
           allOf:
             - $ref: '#/components/schemas/ToolNodeCaptureType'
+        draftDefaultValue:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/ExportTextString'
       required:
         - integrationToolVariableName
     StableExportAgentMcpIntegrationTool:
@@ -35690,6 +35852,7 @@ components:
                 - bedrock-claude-5-sonnet
                 - bedrock-claude-5.5-sonnet
                 - bedrock-claude-4.5-haiku
+                - bedrock-claude-5.5-haiku
                 - bedrock-claude-4.5-opus
                 - bedrock-claude-4.7-opus
                 - bedrock-claude-4.8-opus
@@ -35768,6 +35931,7 @@ components:
                 - BEDROCK_CLAUDE_5_SONNET
                 - BEDROCK_CLAUDE_5_5_SONNET
                 - BEDROCK_CLAUDE_4_5_HAIKU
+                - BEDROCK_CLAUDE_5_5_HAIKU
                 - BEDROCK_CLAUDE_4_5_OPUS
                 - BEDROCK_CLAUDE_4_7_OPUS
                 - BEDROCK_CLAUDE_4_8_OPUS
@@ -35974,6 +36138,7 @@ components:
             - bedrock-claude-5-sonnet
             - bedrock-claude-5.5-sonnet
             - bedrock-claude-4.5-haiku
+            - bedrock-claude-5.5-haiku
             - bedrock-claude-4.5-opus
             - bedrock-claude-4.7-opus
             - bedrock-claude-4.8-opus
@@ -36051,6 +36216,7 @@ components:
             - BEDROCK_CLAUDE_5_SONNET
             - BEDROCK_CLAUDE_5_5_SONNET
             - BEDROCK_CLAUDE_4_5_HAIKU
+            - BEDROCK_CLAUDE_5_5_HAIKU
             - BEDROCK_CLAUDE_4_5_OPUS
             - BEDROCK_CLAUDE_4_7_OPUS
             - BEDROCK_CLAUDE_4_8_OPUS
@@ -37041,6 +37207,46 @@ components:
           allOf:
             - $ref: '#/components/schemas/StableKnowledgeBaseTool'
       additionalProperties: false
+    StablePlaybookDuplicateResponse:
+      type: object
+      properties:
+        playbook:
+          $ref: '#/components/schemas/StablePlaybookReadV2'
+        ids:
+          type: object
+          properties:
+            tools:
+              type: object
+              additionalProperties:
+                type: string
+              description: Each of the original's API, function, MCP and integration attachments mapped to the copy's.
+            paths:
+              type: object
+              additionalProperties:
+                type: string
+              description: Each of the original's exit paths mapped to the copy's.
+          required:
+            - tools
+            - paths
+          description: Where each copied tool and exit path went.
+        skippedWorkflowTools:
+          type: array
+          items:
+            type: string
+          description: The original's workflow tools. The copy did not get them, because workflow tools go on the Main Agent only. The original keeps them.
+      required:
+        - playbook
+        - ids
+        - skippedWorkflowTools
+    StablePlaybookDuplicateRequest:
+      type: object
+      properties:
+        name:
+          description: The name of the copy. Leave it out to use the original's name with " copy" added.
+          type: string
+          minLength: 1
+          maxLength: 255
+      additionalProperties: false
     StablePlaybookPath:
       type: object
       properties:
@@ -37056,6 +37262,16 @@ components:
           nullable: true
           description: 'The exit condition: the model reads it to decide when to leave the playbook through this path.'
           type: string
+        requiredVariables:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableRequiredVariable'
+          description: The variables or entities the model must fill before it can leave through this path, in the order the editor shows them.
+        messages:
+          nullable: true
+          description: 'What the agent says as it leaves through this path, in the shape tool messages take: a message ID per slot, and generative examples. Null when it says nothing.'
+          allOf:
+            - $ref: '#/components/schemas/StableToolMessages'
         createdAt:
           type: string
           format: date-time
@@ -37069,8 +37285,24 @@ components:
         - playbookID
         - name
         - description
+        - requiredVariables
+        - messages
         - createdAt
         - updatedAt
+    StableRequiredVariable:
+      type: object
+      properties:
+        variableOrEntityID:
+          nullable: true
+          description: The ID of the variable or entity the model must fill, or null when the stored row names neither.
+          type: string
+        description:
+          nullable: true
+          description: What the model is told to collect, or null.
+          type: string
+      required:
+        - variableOrEntityID
+        - description
     StablePlaybookPathListResponse:
       type: object
       properties:
@@ -37085,8 +37317,28 @@ components:
       properties:
         path:
           $ref: '#/components/schemas/StablePlaybookPath'
+        unresolvedReferences:
+          description: References this write kept as literal text instead of binding, each with the reason. The write still succeeded.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableUnresolvedReference'
       required:
         - path
+    StableRequiredVariableInput:
+      type: object
+      properties:
+        variableOrEntityID:
+          type: string
+          minLength: 1
+          description: The ID of a variable or an entity in this environment. List each one once.
+        description:
+          default: null
+          description: What the model is told to collect. Leave it out for none.
+          nullable: true
+          type: string
+      required:
+        - variableOrEntityID
+      additionalProperties: false
     StablePlaybookPathCreateRequest:
       type: object
       properties:
@@ -37103,6 +37355,18 @@ components:
           nullable: true
           description: 'The exit condition: the model reads it to decide when to leave the playbook through this path.'
           type: string
+        requiredVariables:
+          default: []
+          description: The variables or entities the model must fill before it can leave through this path, in order.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableRequiredVariableInput'
+        messages:
+          default: null
+          description: 'What the agent says as it leaves through this path. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableToolMessages'
       required:
         - playbookID
         - name
@@ -37119,6 +37383,16 @@ components:
           nullable: true
           description: 'The exit condition: the model reads it to decide when to leave the playbook through this path.'
           type: string
+        requiredVariables:
+          description: Replaces the stored list, in order. Leave it out to keep it; send [] to remove every one.
+          type: array
+          items:
+            $ref: '#/components/schemas/StableRequiredVariableInput'
+        messages:
+          description: 'Replaces the stored messages whole. Send null to remove them; leave it out to keep them. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableToolMessages'
       additionalProperties: false
     StableProject:
       type: object
@@ -38563,7 +38837,7 @@ components:
           required:
             - type
           additionalProperties: false
-    StableToolAttachmentV2:
+    StableToolListItemV2:
       oneOf:
         - type: object
           properties:
@@ -38581,6 +38855,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -38640,6 +38919,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -38663,6 +38943,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -38722,6 +39007,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -38745,6 +39031,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -38801,6 +39092,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -38823,6 +39115,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -38879,6 +39176,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -38905,6 +39203,11 @@ components:
           nullable: true
           description: When the agent should run the workflow; null uses the workflow's own.
           type: string
+        requiredVariables:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableRequiredVariable'
+          description: The variables or entities the model must fill when it calls the tool, in the order they were added, oldest first. The editor lists them newest first.
         createdAt:
           type: string
           format: date-time
@@ -38918,6 +39221,7 @@ components:
         - type
         - workflowID
         - description
+        - requiredVariables
         - createdAt
         - updatedAt
     StableToolListResponseV2:
@@ -38926,7 +39230,7 @@ components:
         tools:
           type: array
           items:
-            $ref: '#/components/schemas/StableToolAttachmentV2'
+            $ref: '#/components/schemas/StableToolListItemV2'
       required:
         - tools
     StableToolTarget:
@@ -38939,6 +39243,360 @@ components:
           description: Target a specific playbook. Cannot be used with global.
           type: string
       additionalProperties: false
+    StableToolAttachmentV2:
+      oneOf:
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - api
+              description: Discriminator indicating this tool executes a saved API request.
+              x-enumNames:
+                - API
+            apiToolID:
+              type: string
+              description: The ID of the API resource this tool executes.
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  apiToolInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - apiToolInputVariableID
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataAPICaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - toolSound
+            - description
+            - captureInputVariables
+            - type
+            - apiToolID
+            - asyncExecution
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - function
+              description: Discriminator indicating this tool executes a custom function.
+              x-enumNames:
+                - FUNCTION
+            functionID:
+              type: string
+              description: The ID of the function resource this tool executes.
+            asyncExecution:
+              type: boolean
+              description: When enabled, the tool runs in the background without blocking the conversation.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  functionInputVariableID:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - functionInputVariableID
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataFunctionCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - toolSound
+            - description
+            - captureInputVariables
+            - type
+            - functionID
+            - asyncExecution
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - mcp
+              description: Discriminator indicating this tool calls a tool from an MCP server.
+              x-enumNames:
+                - MCP
+            mcpToolID:
+              type: string
+              description: The ID of the MCP tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  mcpIntegrationVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - mcpIntegrationVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataMcpIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - toolSound
+            - description
+            - captureInputVariables
+            - type
+            - mcpToolID
+            - inputVariables
+            - captureResponse
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            updatedAt:
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            messages:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
+            description:
+              nullable: true
+              description: A description of what the tool does, used by the agent to decide when to call it.
+              type: string
+            captureInputVariables:
+              nullable: true
+              description: A map of tool input names to the variables or entities whose values are captured into them.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            type:
+              type: string
+              enum:
+                - integration
+              description: Discriminator indicating this tool calls a connected first-party integration.
+              x-enumNames:
+                - INTEGRATION
+            integrationToolID:
+              type: string
+              description: The ID of the integration tool resource this tool calls.
+            inputVariables:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  description:
+                    default: null
+                    nullable: true
+                    type: string
+                  defaultValue:
+                    default: null
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/DefaultValueString'
+                  integrationToolVariableName:
+                    type: string
+                  captureType:
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeCaptureType'
+                  required:
+                    type: boolean
+                    description: 'Whether the agent must supply a value for this input. Omit it and the API infers: false when defaultValue holds a secret reference (the secret is injected and the model is never asked for it), true otherwise. Sending true together with a secret defaultValue is rejected.'
+                required:
+                  - integrationToolVariableName
+                  - required
+              description: A map of input names to the values the agent supplies when calling the tool.
+            captureResponse:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+              description: A map of variable names to the parts of the tool response captured into them.
+            extendedInputVariables:
+              nullable: true
+              description: The refined schema of nested inputs the editor stores for some integrations, keyed by input. Copy it as read; null when there is none.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolExtendedInputVariable'
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - messages
+            - toolSound
+            - description
+            - captureInputVariables
+            - type
+            - integrationToolID
+            - inputVariables
+            - captureResponse
+            - extendedInputVariables
+        - $ref: '#/components/schemas/StableWorkflowTool'
     StableToolResponseV2:
       type: object
       properties:
@@ -38973,6 +39631,12 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            toolSound:
+              default: null
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             asyncExecution:
               default: false
               description: When enabled, the tool runs in the background without blocking the conversation.
@@ -39043,6 +39707,12 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            toolSound:
+              default: null
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             asyncExecution:
               default: false
               description: When enabled, the tool runs in the background without blocking the conversation.
@@ -39113,6 +39783,12 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            toolSound:
+              default: null
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             inputVariables:
               default: {}
               type: object
@@ -39179,6 +39855,12 @@ components:
               type: object
               additionalProperties:
                 $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+            toolSound:
+              default: null
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             inputVariables:
               default: {}
               type: object
@@ -39210,6 +39892,13 @@ components:
               additionalProperties:
                 $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
               description: A map of variable names to the parts of the tool response captured into them.
+            extendedInputVariables:
+              default: null
+              nullable: true
+              description: The refined schema of nested inputs the editor stores for some integrations, keyed by input. Copy it as read; null when there is none.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolExtendedInputVariable'
             type:
               type: string
               enum:
@@ -39243,6 +39932,12 @@ components:
               description: When the agent should run the workflow. Omit it to use the workflow's own description.
               nullable: true
               type: string
+            requiredVariables:
+              default: []
+              description: The variables or entities the model must fill when it calls the tool. Leave it out for none.
+              type: array
+              items:
+                $ref: '#/components/schemas/StableRequiredVariableInput'
           required:
             - type
             - target
@@ -39266,6 +39961,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -39325,6 +40025,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -39348,6 +40049,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -39407,6 +40113,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -39430,6 +40137,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -39486,6 +40198,7 @@ components:
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
@@ -39508,6 +40221,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs, as the editor sets it, or null for none.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             description:
               nullable: true
               description: A description of what the tool does, used by the agent to decide when to call it.
@@ -39559,17 +40277,25 @@ components:
               additionalProperties:
                 $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
               description: A map of variable names to the parts of the tool response captured into them.
+            extendedInputVariables:
+              nullable: true
+              description: The refined schema of nested inputs the editor stores for some integrations, keyed by input. Copy it as read; null when there is none.
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolExtendedInputVariable'
           required:
             - id
             - createdAt
             - updatedAt
             - messages
+            - toolSound
             - description
             - captureInputVariables
             - type
             - integrationToolID
             - inputVariables
             - captureResponse
+            - extendedInputVariables
     StableToolCreateManyResponse:
       type: object
       properties:
@@ -39618,6 +40344,12 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  toolSound:
+                    default: null
+                    nullable: true
+                    description: The sound played while the tool runs, as the editor sets it, or null for none.
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeDataToolSound'
                   asyncExecution:
                     default: false
                     description: When enabled, the tool runs in the background without blocking the conversation.
@@ -39695,6 +40427,12 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  toolSound:
+                    default: null
+                    nullable: true
+                    description: The sound played while the tool runs, as the editor sets it, or null for none.
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeDataToolSound'
                   asyncExecution:
                     default: false
                     description: When enabled, the tool runs in the background without blocking the conversation.
@@ -39772,6 +40510,12 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  toolSound:
+                    default: null
+                    nullable: true
+                    description: The sound played while the tool runs, as the editor sets it, or null for none.
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeDataToolSound'
                   inputVariables:
                     default: {}
                     type: object
@@ -39845,6 +40589,12 @@ components:
                     type: object
                     additionalProperties:
                       $ref: '#/components/schemas/AgentToolCaptureInputVariable'
+                  toolSound:
+                    default: null
+                    nullable: true
+                    description: The sound played while the tool runs, as the editor sets it, or null for none.
+                    allOf:
+                      - $ref: '#/components/schemas/ToolNodeDataToolSound'
                   inputVariables:
                     default: {}
                     type: object
@@ -39876,6 +40626,13 @@ components:
                     additionalProperties:
                       $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
                     description: A map of variable names to the parts of the tool response captured into them.
+                  extendedInputVariables:
+                    default: null
+                    nullable: true
+                    description: The refined schema of nested inputs the editor stores for some integrations, keyed by input. Copy it as read; null when there is none.
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ToolExtendedInputVariable'
                   integrationToolID:
                     type: string
                     description: The ID of the integration tool resource this tool calls.
@@ -39905,6 +40662,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             captureInputVariables:
               nullable: true
               description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
@@ -39969,6 +40731,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             captureInputVariables:
               nullable: true
               description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
@@ -40033,6 +40800,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             captureInputVariables:
               nullable: true
               description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
@@ -40094,6 +40866,11 @@ components:
               nullable: true
               allOf:
                 - $ref: '#/components/schemas/StableToolMessages'
+            toolSound:
+              nullable: true
+              description: The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+              allOf:
+                - $ref: '#/components/schemas/ToolNodeDataToolSound'
             captureInputVariables:
               nullable: true
               description: 'A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.'
@@ -40142,9 +40919,46 @@ components:
                 nullable: true
                 allOf:
                   - $ref: '#/components/schemas/ToolNodeDataIntegrationCaptureResponse'
+            extendedInputVariables:
+              description: Replaces the stored map whole; null removes it; leave it out to keep it.
+              nullable: true
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ToolExtendedInputVariable'
           required:
             - type
           additionalProperties: false
+    StableToolMoveResponse:
+      type: object
+      properties:
+        tool:
+          $ref: '#/components/schemas/StableToolV2'
+      required:
+        - tool
+    StableToolMoveRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - api
+            - mcp
+            - function
+            - integration
+            - workflow
+          description: 'The type of the tool to move. `workflow` is refused: a workflow tool stays on the agent.'
+          x-enumNames:
+            - API
+            - MCP
+            - FUNCTION
+            - INTEGRATION
+            - WORKFLOW
+        target:
+          $ref: '#/components/schemas/StableToolTarget'
+      required:
+        - type
+        - target
+      additionalProperties: false
     StableTranscriptProperty:
       type: object
       properties:

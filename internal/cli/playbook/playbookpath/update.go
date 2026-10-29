@@ -22,6 +22,8 @@ var updateCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "playbook-id", FieldPath: "PlaybookID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Optional: true, Description: "The name of the exit path, trimmed. Use Latin letters, digits, spaces, hyphens and underscores, as the editor does: the runtime turns the name into the snake_case name of the exit tool the model calls."},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"description,omitempty"`, Description: "The exit condition: the model reads it to decide when to leave the playbook through this path."},
+	{FlagName: "required-variables", Shorthand: "r", FieldPath: "Body.RequiredVariables", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"requiredVariables,omitempty"`, Description: "Replaces the stored list, in order. Leave it out to keep it; send [] to remove every one."},
+	{FlagName: "messages", Shorthand: "m", FieldPath: "Body.Messages", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"messages,omitempty"`, Description: "Replaces the stored messages whole. Send null to remove them; leave it out to keep them. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text."},
 }
 
 // initUpdateCmd initializes the update command.

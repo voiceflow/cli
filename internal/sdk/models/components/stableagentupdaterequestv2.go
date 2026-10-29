@@ -417,7 +417,7 @@ func (s *StableAgentUpdateRequestV2PlaybookCondition) GetAssertions() []StableCo
 type StableAgentUpdateRequestV2Playbook struct {
 	Condition         optionalnullable.OptionalNullable[StableAgentUpdateRequestV2PlaybookCondition] `json:"condition,omitzero"`
 	Description       *string                                                                        `json:"description"`
-	RequiredVariables []CrewNodeDataRequiredVariable                                                 `json:"requiredVariables,omitzero"`
+	RequiredVariables []StableRoutingRequiredVariableInput                                           `json:"requiredVariables,omitzero"`
 	PlaybookID        string                                                                         `json:"playbookID"`
 }
 
@@ -446,7 +446,7 @@ func (s *StableAgentUpdateRequestV2Playbook) GetDescription() *string {
 	return s.Description
 }
 
-func (s *StableAgentUpdateRequestV2Playbook) GetRequiredVariables() []CrewNodeDataRequiredVariable {
+func (s *StableAgentUpdateRequestV2Playbook) GetRequiredVariables() []StableRoutingRequiredVariableInput {
 	if s == nil {
 		return nil
 	}
@@ -519,7 +519,7 @@ func (s *StableAgentUpdateRequestV2WorkflowCondition) GetAssertions() []StableCo
 type StableAgentUpdateRequestV2Workflow struct {
 	Condition         optionalnullable.OptionalNullable[StableAgentUpdateRequestV2WorkflowCondition] `json:"condition,omitzero"`
 	Description       *string                                                                        `json:"description"`
-	RequiredVariables []CrewNodeDataRequiredVariable                                                 `json:"requiredVariables,omitzero"`
+	RequiredVariables []StableRoutingRequiredVariableInput                                           `json:"requiredVariables,omitzero"`
 	WorkflowID        string                                                                         `json:"workflowID"`
 }
 
@@ -548,7 +548,7 @@ func (s *StableAgentUpdateRequestV2Workflow) GetDescription() *string {
 	return s.Description
 }
 
-func (s *StableAgentUpdateRequestV2Workflow) GetRequiredVariables() []CrewNodeDataRequiredVariable {
+func (s *StableAgentUpdateRequestV2Workflow) GetRequiredVariables() []StableRoutingRequiredVariableInput {
 	if s == nil {
 		return nil
 	}

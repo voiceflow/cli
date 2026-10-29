@@ -18,16 +18,12 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, target: object, messages: object, captureInputVariables: object, ... }, function: { description: string, target: object, messages: object, captureInputVariables: object, ... }, mcp: { description: string, target: object, messages: object, captureInputVariables: object, ... }, integration: { description: string, target: object, messages: object, captureInputVariables: object, ... }, workflow: { type: string, target: object, workflowID: string, description: string })", Variants: []flagutil.UnionVariantMeta{
+	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, target: object, messages: object, captureInputVariables: object, ... }, function: { description: string, target: object, messages: object, captureInputVariables: object, ... }, mcp: { description: string, target: object, messages: object, captureInputVariables: object, ... }, integration: { description: string, target: object, messages: object, captureInputVariables: object, ... }, workflow: { type: string, target: object, workflowID: string, description: string, ... })", Variants: []flagutil.UnionVariantMeta{
 		{DiscriminatorValue: "api", FlagName: "body-param.api", FieldName: "StableToolCreateRequestV2API", CanExpand: false, Description: "StableToolCreateRequestV2_API variant as JSON"},
 		{DiscriminatorValue: "function", FlagName: "body-param.function", FieldName: "StableToolCreateRequestV2Function", CanExpand: false, Description: "StableToolCreateRequestV2_Function variant as JSON"},
 		{DiscriminatorValue: "mcp", FlagName: "body-param.mcp", FieldName: "StableToolCreateRequestV2Mcp", CanExpand: false, Description: "StableToolCreateRequestV2_Mcp variant as JSON"},
 		{DiscriminatorValue: "integration", FlagName: "body-param.integration", FieldName: "StableToolCreateRequestV2Integration", CanExpand: false, Description: "StableToolCreateRequestV2_Integration variant as JSON"},
-		{DiscriminatorValue: "workflow", FlagName: "body-param.workflow", FieldName: "StableToolCreateRequestV2Workflow", CanExpand: true, Description: "StableToolCreateRequestV2_Workflow variant as JSON", Fields: []flagutil.FlagMeta{
-			{FlagName: "body-param.workflow.target", FieldPath: "Target", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-			{FlagName: "body-param.workflow.workflow-id", FieldPath: "WorkflowID", Kind: flagutil.FlagKindString, Required: true, Description: "The workflow to attach, from voiceflow_workflow.list. [required]"},
-			{FlagName: "body-param.workflow.description", FieldPath: "Description", Kind: flagutil.FlagKindString, Optional: true, Description: "When the agent should run the workflow. Omit it to use the workflow's own description."},
-		}},
+		{DiscriminatorValue: "workflow", FlagName: "body-param.workflow", FieldName: "StableToolCreateRequestV2Workflow", CanExpand: false, Description: "StableToolCreateRequestV2_Workflow variant as JSON"},
 	}}},
 }
 

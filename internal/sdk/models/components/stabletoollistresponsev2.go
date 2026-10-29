@@ -4,12 +4,12 @@
 package components
 
 type StableToolListResponseV2 struct {
-	Tools []StableToolAttachmentV2 `json:"tools"`
+	Tools []StableToolListItemV2 `json:"tools"`
 }
 
-func (s *StableToolListResponseV2) GetTools() []StableToolAttachmentV2 {
+func (s *StableToolListResponseV2) GetTools() []StableToolListItemV2 {
 	if s == nil {
-		return []StableToolAttachmentV2{}
+		return []StableToolListItemV2{}
 	}
 	return s.Tools
 }

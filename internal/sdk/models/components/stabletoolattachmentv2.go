@@ -126,6 +126,40 @@ func (s *StableToolAttachmentV2Messages4) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolattachmentv2messages4
 // #endregion class-body-stabletoolattachmentv2messages4
 
+// StableToolAttachmentV2ToolSound4 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolAttachmentV2ToolSound4 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolAttachmentV2ToolSound4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolAttachmentV2ToolSound4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolAttachmentV2ToolSound4) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolAttachmentV2ToolSound4) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolattachmentv2toolsound4
+// #endregion class-body-stabletoolattachmentv2toolsound4
+
 // StableToolAttachmentV2TypeIntegration - Discriminator indicating this tool calls a connected first-party integration.
 type StableToolAttachmentV2TypeIntegration string
 
@@ -213,6 +247,8 @@ type StableToolAttachmentV2Integration struct {
 	CreatedAt time.Time                        `json:"createdAt"`
 	UpdatedAt time.Time                        `json:"updatedAt"`
 	Messages  *StableToolAttachmentV2Messages4 `json:"messages"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound *StableToolAttachmentV2ToolSound4 `json:"toolSound"`
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
@@ -225,6 +261,8 @@ type StableToolAttachmentV2Integration struct {
 	InputVariables map[string]StableToolAttachmentV2InputVariables4 `json:"inputVariables"`
 	// A map of variable names to the parts of the tool response captured into them.
 	CaptureResponse map[string]ToolNodeDataIntegrationCaptureResponse `json:"captureResponse"`
+	// The refined schema of nested inputs the editor stores for some integrations, keyed by input. Copy it as read; null when there is none.
+	ExtendedInputVariables map[string]ToolExtendedInputVariable `json:"extendedInputVariables"`
 }
 
 func (s StableToolAttachmentV2Integration) MarshalJSON() ([]byte, error) {
@@ -264,6 +302,13 @@ func (s *StableToolAttachmentV2Integration) GetMessages() *StableToolAttachmentV
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolAttachmentV2Integration) GetToolSound() *StableToolAttachmentV2ToolSound4 {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolAttachmentV2Integration) GetDescription() *string {
@@ -306,6 +351,13 @@ func (s *StableToolAttachmentV2Integration) GetCaptureResponse() map[string]Tool
 		return map[string]ToolNodeDataIntegrationCaptureResponse{}
 	}
 	return s.CaptureResponse
+}
+
+func (s *StableToolAttachmentV2Integration) GetExtendedInputVariables() map[string]ToolExtendedInputVariable {
+	if s == nil {
+		return nil
+	}
+	return s.ExtendedInputVariables
 }
 
 // #region class-body-stabletoolattachmentv2integration
@@ -425,6 +477,40 @@ func (s *StableToolAttachmentV2Messages3) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolattachmentv2messages3
 // #endregion class-body-stabletoolattachmentv2messages3
 
+// StableToolAttachmentV2ToolSound3 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolAttachmentV2ToolSound3 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolAttachmentV2ToolSound3) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolAttachmentV2ToolSound3) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolAttachmentV2ToolSound3) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolAttachmentV2ToolSound3) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolattachmentv2toolsound3
+// #endregion class-body-stabletoolattachmentv2toolsound3
+
 // StableToolAttachmentV2TypeMcp - Discriminator indicating this tool calls a tool from an MCP server.
 type StableToolAttachmentV2TypeMcp string
 
@@ -512,6 +598,8 @@ type StableToolAttachmentV2Mcp struct {
 	CreatedAt time.Time                        `json:"createdAt"`
 	UpdatedAt time.Time                        `json:"updatedAt"`
 	Messages  *StableToolAttachmentV2Messages3 `json:"messages"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound *StableToolAttachmentV2ToolSound3 `json:"toolSound"`
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
@@ -563,6 +651,13 @@ func (s *StableToolAttachmentV2Mcp) GetMessages() *StableToolAttachmentV2Message
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolAttachmentV2Mcp) GetToolSound() *StableToolAttachmentV2ToolSound3 {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolAttachmentV2Mcp) GetDescription() *string {
@@ -724,6 +819,40 @@ func (s *StableToolAttachmentV2Messages2) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolattachmentv2messages2
 // #endregion class-body-stabletoolattachmentv2messages2
 
+// StableToolAttachmentV2ToolSound2 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolAttachmentV2ToolSound2 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolAttachmentV2ToolSound2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolAttachmentV2ToolSound2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolAttachmentV2ToolSound2) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolAttachmentV2ToolSound2) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolattachmentv2toolsound2
+// #endregion class-body-stabletoolattachmentv2toolsound2
+
 // StableToolAttachmentV2TypeFunction - Discriminator indicating this tool executes a custom function.
 type StableToolAttachmentV2TypeFunction string
 
@@ -811,6 +940,8 @@ type StableToolAttachmentV2Function struct {
 	CreatedAt time.Time                        `json:"createdAt"`
 	UpdatedAt time.Time                        `json:"updatedAt"`
 	Messages  *StableToolAttachmentV2Messages2 `json:"messages"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound *StableToolAttachmentV2ToolSound2 `json:"toolSound"`
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
@@ -864,6 +995,13 @@ func (s *StableToolAttachmentV2Function) GetMessages() *StableToolAttachmentV2Me
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolAttachmentV2Function) GetToolSound() *StableToolAttachmentV2ToolSound2 {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolAttachmentV2Function) GetDescription() *string {
@@ -1032,6 +1170,40 @@ func (s *StableToolAttachmentV2Messages1) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolattachmentv2messages1
 // #endregion class-body-stabletoolattachmentv2messages1
 
+// StableToolAttachmentV2ToolSound1 - The sound played while the tool runs, as the editor sets it, or null for none.
+type StableToolAttachmentV2ToolSound1 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolAttachmentV2ToolSound1) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolAttachmentV2ToolSound1) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolAttachmentV2ToolSound1) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolAttachmentV2ToolSound1) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolattachmentv2toolsound1
+// #endregion class-body-stabletoolattachmentv2toolsound1
+
 // StableToolAttachmentV2TypeAPI - Discriminator indicating this tool executes a saved API request.
 type StableToolAttachmentV2TypeAPI string
 
@@ -1119,6 +1291,8 @@ type StableToolAttachmentV2API struct {
 	CreatedAt time.Time                        `json:"createdAt"`
 	UpdatedAt time.Time                        `json:"updatedAt"`
 	Messages  *StableToolAttachmentV2Messages1 `json:"messages"`
+	// The sound played while the tool runs, as the editor sets it, or null for none.
+	ToolSound *StableToolAttachmentV2ToolSound1 `json:"toolSound"`
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description *string `json:"description"`
 	// A map of tool input names to the variables or entities whose values are captured into them.
@@ -1172,6 +1346,13 @@ func (s *StableToolAttachmentV2API) GetMessages() *StableToolAttachmentV2Message
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolAttachmentV2API) GetToolSound() *StableToolAttachmentV2ToolSound1 {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolAttachmentV2API) GetDescription() *string {
