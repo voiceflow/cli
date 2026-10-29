@@ -4,6 +4,7 @@
 package components
 
 import (
+	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
@@ -12,6 +13,8 @@ type StableIntegrationExecuteRequest struct {
 	ToolName IntegrationToolName `json:"toolName"`
 	// The tool's inputs, keyed by input name and typed as get_schema says. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.
 	Inputs map[string]any `json:"inputs,omitzero"`
+	// Provider metadata the tool editor stored for this tool, such as Zendesk custom field IDs. Omit it unless you are replaying an editor run.
+	ExtendedInputVariables optionalnullable.OptionalNullable[map[string]StableIntegrationExecuteExtendedInput] `json:"extendedInputVariables,omitzero"`
 }
 
 func (s StableIntegrationExecuteRequest) MarshalJSON() ([]byte, error) {
@@ -37,4 +40,11 @@ func (s *StableIntegrationExecuteRequest) GetInputs() map[string]any {
 		return nil
 	}
 	return s.Inputs
+}
+
+func (s *StableIntegrationExecuteRequest) GetExtendedInputVariables() optionalnullable.OptionalNullable[map[string]StableIntegrationExecuteExtendedInput] {
+	if s == nil {
+		return nil
+	}
+	return s.ExtendedInputVariables
 }

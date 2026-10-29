@@ -35691,6 +35691,24 @@ components:
         - error
         - truncated
         - output
+    StableIntegrationExecuteExtendedInput:
+      type: object
+      properties:
+        metadata:
+          description: The provider IDs behind each field name, such as a Zendesk custom field ID and its option IDs.
+          type: object
+          additionalProperties: {}
+        draft:
+          description: The same metadata, fetched from the Draft connection.
+          allOf:
+            - $ref: '#/components/schemas/StableIntegrationExecuteExtendedInputSlot'
+    StableIntegrationExecuteExtendedInputSlot:
+      type: object
+      properties:
+        metadata:
+          description: The provider IDs behind each field name, such as a Zendesk custom field ID and its option IDs.
+          type: object
+          additionalProperties: {}
     StableIntegrationExecuteRequest:
       type: object
       properties:
@@ -35801,6 +35819,12 @@ components:
           description: 'The tool''s inputs, keyed by input name and typed as get_schema says. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.'
           type: object
           additionalProperties: {}
+        extendedInputVariables:
+          description: Provider metadata the tool editor stored for this tool, such as Zendesk custom field IDs. Omit it unless you are replaying an editor run.
+          nullable: true
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/StableIntegrationExecuteExtendedInput'
       required:
         - toolName
       additionalProperties: false
