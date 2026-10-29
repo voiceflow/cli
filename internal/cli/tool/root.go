@@ -41,6 +41,10 @@ func InitToolRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initMoveCmd(ToolCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(ToolCmd)
 	return nil
 }

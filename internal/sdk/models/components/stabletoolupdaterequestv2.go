@@ -125,6 +125,40 @@ func (s *StableToolUpdateRequestV2Messages4) GetDelayMessageSeconds() *float64 {
 // #region class-body-stabletoolupdaterequestv2messages4
 // #endregion class-body-stabletoolupdaterequestv2messages4
 
+// StableToolUpdateRequestV2ToolSound4 - The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+type StableToolUpdateRequestV2ToolSound4 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolUpdateRequestV2ToolSound4) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2ToolSound4) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2ToolSound4) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolUpdateRequestV2ToolSound4) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolupdaterequestv2toolsound4
+// #endregion class-body-stabletoolupdaterequestv2toolsound4
+
 type CaptureInputVariables4 struct {
 	VariableOrEntityID *string              `json:"variableOrEntityID"`
 	CaptureType        *ToolNodeCaptureType `json:"captureType,omitzero"`
@@ -285,6 +319,8 @@ type StableToolUpdateRequestV2Integration struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
 	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages4] `json:"messages,omitzero"`
+	// The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+	ToolSound optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound4] `json:"toolSound,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables4] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool calls a connected first-party integration.
@@ -293,6 +329,8 @@ type StableToolUpdateRequestV2Integration struct {
 	InputVariables map[string]*StableToolUpdateRequestV2InputVariables4 `json:"inputVariables,omitzero"`
 	// A map of variable names to the parts of the tool response captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed.
 	CaptureResponse map[string]*StableToolUpdateRequestV2CaptureResponse4 `json:"captureResponse,omitzero"`
+	// Replaces the stored map whole; null removes it; leave it out to keep it.
+	ExtendedInputVariables optionalnullable.OptionalNullable[map[string]ToolExtendedInputVariable] `json:"extendedInputVariables,omitzero"`
 }
 
 func (s StableToolUpdateRequestV2Integration) MarshalJSON() ([]byte, error) {
@@ -318,6 +356,13 @@ func (s *StableToolUpdateRequestV2Integration) GetMessages() optionalnullable.Op
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2Integration) GetToolSound() optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound4] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolUpdateRequestV2Integration) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables4] {
@@ -346,6 +391,13 @@ func (s *StableToolUpdateRequestV2Integration) GetCaptureResponse() map[string]*
 		return nil
 	}
 	return s.CaptureResponse
+}
+
+func (s *StableToolUpdateRequestV2Integration) GetExtendedInputVariables() optionalnullable.OptionalNullable[map[string]ToolExtendedInputVariable] {
+	if s == nil {
+		return nil
+	}
+	return s.ExtendedInputVariables
 }
 
 // #region class-body-stabletoolupdaterequestv2integration
@@ -464,6 +516,40 @@ func (s *StableToolUpdateRequestV2Messages3) GetDelayMessageSeconds() *float64 {
 
 // #region class-body-stabletoolupdaterequestv2messages3
 // #endregion class-body-stabletoolupdaterequestv2messages3
+
+// StableToolUpdateRequestV2ToolSound3 - The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+type StableToolUpdateRequestV2ToolSound3 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolUpdateRequestV2ToolSound3) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2ToolSound3) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2ToolSound3) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolUpdateRequestV2ToolSound3) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolupdaterequestv2toolsound3
+// #endregion class-body-stabletoolupdaterequestv2toolsound3
 
 type CaptureInputVariables3 struct {
 	VariableOrEntityID *string              `json:"variableOrEntityID"`
@@ -625,6 +711,8 @@ type StableToolUpdateRequestV2Mcp struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
 	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages3] `json:"messages,omitzero"`
+	// The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+	ToolSound optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound3] `json:"toolSound,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables3] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool calls a tool from an MCP server.
@@ -658,6 +746,13 @@ func (s *StableToolUpdateRequestV2Mcp) GetMessages() optionalnullable.OptionalNu
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2Mcp) GetToolSound() optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound3] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolUpdateRequestV2Mcp) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables3] {
@@ -804,6 +899,40 @@ func (s *StableToolUpdateRequestV2Messages2) GetDelayMessageSeconds() *float64 {
 
 // #region class-body-stabletoolupdaterequestv2messages2
 // #endregion class-body-stabletoolupdaterequestv2messages2
+
+// StableToolUpdateRequestV2ToolSound2 - The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+type StableToolUpdateRequestV2ToolSound2 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolUpdateRequestV2ToolSound2) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2ToolSound2) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2ToolSound2) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolUpdateRequestV2ToolSound2) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolupdaterequestv2toolsound2
+// #endregion class-body-stabletoolupdaterequestv2toolsound2
 
 type CaptureInputVariables2 struct {
 	VariableOrEntityID *string              `json:"variableOrEntityID"`
@@ -965,6 +1094,8 @@ type StableToolUpdateRequestV2Function struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
 	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages2] `json:"messages,omitzero"`
+	// The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+	ToolSound optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound2] `json:"toolSound,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables2] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool executes a custom function.
@@ -1000,6 +1131,13 @@ func (s *StableToolUpdateRequestV2Function) GetMessages() optionalnullable.Optio
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2Function) GetToolSound() optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound2] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolUpdateRequestV2Function) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables2] {
@@ -1153,6 +1291,40 @@ func (s *StableToolUpdateRequestV2Messages1) GetDelayMessageSeconds() *float64 {
 
 // #region class-body-stabletoolupdaterequestv2messages1
 // #endregion class-body-stabletoolupdaterequestv2messages1
+
+// StableToolUpdateRequestV2ToolSound1 - The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+type StableToolUpdateRequestV2ToolSound1 struct {
+	Ref    *string  `json:"ref"`
+	Volume *float64 `default:"0.75" json:"volume"`
+}
+
+func (s StableToolUpdateRequestV2ToolSound1) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableToolUpdateRequestV2ToolSound1) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableToolUpdateRequestV2ToolSound1) GetRef() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Ref
+}
+
+func (s *StableToolUpdateRequestV2ToolSound1) GetVolume() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Volume
+}
+
+// #region class-body-stabletoolupdaterequestv2toolsound1
+// #endregion class-body-stabletoolupdaterequestv2toolsound1
 
 type CaptureInputVariables1 struct {
 	VariableOrEntityID *string              `json:"variableOrEntityID"`
@@ -1314,6 +1486,8 @@ type StableToolUpdateRequestV2API struct {
 	// A description of what the tool does, used by the agent to decide when to call it.
 	Description optionalnullable.OptionalNullable[string]                             `json:"description,omitzero"`
 	Messages    optionalnullable.OptionalNullable[StableToolUpdateRequestV2Messages1] `json:"messages,omitzero"`
+	// The sound played while the tool runs. Replaces the stored one; null removes it; leave it out to keep it.
+	ToolSound optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound1] `json:"toolSound,omitzero"`
 	// A map of tool input names to the variables or entities whose values are captured into them. Merged into the stored map by key: an entry you send replaces that entry, an entry you leave out stays, and an entry sent as null is removed. Null for the whole map removes every entry.
 	CaptureInputVariables optionalnullable.OptionalNullable[map[string]*CaptureInputVariables1] `json:"captureInputVariables,omitzero"`
 	// Discriminator indicating this tool executes a saved API request.
@@ -1349,6 +1523,13 @@ func (s *StableToolUpdateRequestV2API) GetMessages() optionalnullable.OptionalNu
 		return nil
 	}
 	return s.Messages
+}
+
+func (s *StableToolUpdateRequestV2API) GetToolSound() optionalnullable.OptionalNullable[StableToolUpdateRequestV2ToolSound1] {
+	if s == nil {
+		return nil
+	}
+	return s.ToolSound
 }
 
 func (s *StableToolUpdateRequestV2API) GetCaptureInputVariables() optionalnullable.OptionalNullable[map[string]*CaptureInputVariables1] {

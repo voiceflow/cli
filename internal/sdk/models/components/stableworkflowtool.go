@@ -41,9 +41,11 @@ type StableWorkflowTool struct {
 	// The workflow the tool runs.
 	WorkflowID string `json:"workflowID"`
 	// When the agent should run the workflow; null uses the workflow's own.
-	Description *string   `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	Description *string `json:"description"`
+	// The variables or entities the model must fill when it calls the tool, in the order they were added, oldest first. The editor lists them newest first.
+	RequiredVariables []StableRequiredVariable `json:"requiredVariables"`
+	CreatedAt         time.Time                `json:"createdAt"`
+	UpdatedAt         time.Time                `json:"updatedAt"`
 }
 
 func (s StableWorkflowTool) MarshalJSON() ([]byte, error) {
@@ -83,6 +85,13 @@ func (s *StableWorkflowTool) GetDescription() *string {
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StableWorkflowTool) GetRequiredVariables() []StableRequiredVariable {
+	if s == nil {
+		return []StableRequiredVariable{}
+	}
+	return s.RequiredVariables
 }
 
 func (s *StableWorkflowTool) GetCreatedAt() time.Time {

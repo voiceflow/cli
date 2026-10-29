@@ -58,6 +58,10 @@ func InitPlaybookRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initDuplicateCmd(PlaybookCmd); err != nil {
+		return err
+	}
+
 	if err := initAddToolMessageCmd(PlaybookCmd); err != nil {
 		return err
 	}

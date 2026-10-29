@@ -5,13 +5,138 @@ package components
 
 import (
 	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
+	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
+
+type StablePlaybookPathUpdateRequestGenerative struct {
+	Execution  *StableToolMessageGenerative `json:"execution,omitzero"`
+	Failure    *StableToolMessageGenerative `json:"failure,omitzero"`
+	Delay      *StableToolMessageGenerative `json:"delay,omitzero"`
+	Completion *StableToolMessageGenerative `json:"completion,omitzero"`
+}
+
+func (s StablePlaybookPathUpdateRequestGenerative) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookPathUpdateRequestGenerative) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookPathUpdateRequestGenerative) GetExecution() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Execution
+}
+
+func (s *StablePlaybookPathUpdateRequestGenerative) GetFailure() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Failure
+}
+
+func (s *StablePlaybookPathUpdateRequestGenerative) GetDelay() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Delay
+}
+
+func (s *StablePlaybookPathUpdateRequestGenerative) GetCompletion() *StableToolMessageGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Completion
+}
+
+// StablePlaybookPathUpdateRequestMessages - Replaces the stored messages whole. Send null to remove them; leave it out to keep them. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.
+type StablePlaybookPathUpdateRequestMessages struct {
+	Generative          *StablePlaybookPathUpdateRequestGenerative `json:"generative,omitzero"`
+	DelayMessageID      *string                                    `json:"delayMessageID"`
+	FailureMessageID    *string                                    `json:"failureMessageID"`
+	ExecutionMessageID  *string                                    `json:"executionMessageID"`
+	CompletionMessageID *string                                    `json:"completionMessageID"`
+	DelayMessageSeconds *float64                                   `json:"delayMessageSeconds"`
+}
+
+func (s StablePlaybookPathUpdateRequestMessages) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) GetGenerative() *StablePlaybookPathUpdateRequestGenerative {
+	if s == nil {
+		return nil
+	}
+	return s.Generative
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) GetDelayMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.DelayMessageID
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) GetFailureMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FailureMessageID
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) GetExecutionMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ExecutionMessageID
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) GetCompletionMessageID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CompletionMessageID
+}
+
+func (s *StablePlaybookPathUpdateRequestMessages) GetDelayMessageSeconds() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.DelayMessageSeconds
+}
 
 type StablePlaybookPathUpdateRequest struct {
 	// The name of the exit path, trimmed. Use Latin letters, digits, spaces, hyphens and underscores, as the editor does: the runtime turns the name into the snake_case name of the exit tool the model calls.
 	Name *string `json:"name,omitzero"`
 	// The exit condition: the model reads it to decide when to leave the playbook through this path.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
+	// Replaces the stored list, in order. Leave it out to keep it; send [] to remove every one.
+	RequiredVariables []StableRequiredVariableInput `json:"requiredVariables,omitzero"`
+	// Replaces the stored messages whole. Send null to remove them; leave it out to keep them. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.
+	Messages optionalnullable.OptionalNullable[StablePlaybookPathUpdateRequestMessages] `json:"messages,omitzero"`
+}
+
+func (s StablePlaybookPathUpdateRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StablePlaybookPathUpdateRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StablePlaybookPathUpdateRequest) GetName() *string {
@@ -26,4 +151,18 @@ func (s *StablePlaybookPathUpdateRequest) GetDescription() optionalnullable.Opti
 		return nil
 	}
 	return s.Description
+}
+
+func (s *StablePlaybookPathUpdateRequest) GetRequiredVariables() []StableRequiredVariableInput {
+	if s == nil {
+		return nil
+	}
+	return s.RequiredVariables
+}
+
+func (s *StablePlaybookPathUpdateRequest) GetMessages() optionalnullable.OptionalNullable[StablePlaybookPathUpdateRequestMessages] {
+	if s == nil {
+		return nil
+	}
+	return s.Messages
 }

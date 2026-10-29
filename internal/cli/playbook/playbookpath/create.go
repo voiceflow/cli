@@ -21,6 +21,8 @@ var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "playbook-id", FieldPath: "Body.PlaybookID", Kind: flagutil.FlagKindString, Required: true, Description: "The ID of the playbook to add the exit path to. [required]"},
 	{FlagName: "name", Shorthand: "n", FieldPath: "Body.Name", Kind: flagutil.FlagKindString, Required: true, Description: "The name of the exit path, trimmed. Use Latin letters, digits, spaces, hyphens and underscores, as the editor does: the runtime turns the name into the snake_case name of the exit tool the model calls. [required]"},
 	{FlagName: "description", FieldPath: "Body.Description", Kind: flagutil.FlagKindJSON, Optional: true, HasDefault: true, DefaultStr: "null", Annotations: `default:"null" json:"description"`, Description: "The exit condition: the model reads it to decide when to leave the playbook through this path."},
+	{FlagName: "required-variables", Shorthand: "r", FieldPath: "Body.RequiredVariables", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"requiredVariables,omitempty"`, Description: "The variables or entities the model must fill before it can leave through this path, in order."},
+	{FlagName: "messages", Shorthand: "m", FieldPath: "Body.Messages", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"messages,omitempty"`, Description: "What the agent says as it leaves through this path. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text."},
 }
 
 // initCreateCmd initializes the create command.

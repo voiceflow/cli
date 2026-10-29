@@ -23,8 +23,8 @@ func (s *StableWorkflowDuplicateResponseWorkflow) GetName() string {
 	return s.Name
 }
 
-// Ids - The original ID of each copied resource, mapped to the ID of its copy. Block and step IDs do not change.
-type Ids struct {
+// StableWorkflowDuplicateResponseIds - The original ID of each copied resource, mapped to the ID of its copy. Block and step IDs do not change.
+type StableWorkflowDuplicateResponseIds struct {
 	// Each message the original's steps say, mapped to its copy.
 	Messages map[string]string `json:"messages"`
 	// Each prompt the original's steps and their messages use, mapped to its copy.
@@ -35,32 +35,32 @@ type Ids struct {
 	OperatorAgents map[string]string `json:"operatorAgents"`
 }
 
-func (i *Ids) GetMessages() map[string]string {
-	if i == nil {
+func (s *StableWorkflowDuplicateResponseIds) GetMessages() map[string]string {
+	if s == nil {
 		return map[string]string{}
 	}
-	return i.Messages
+	return s.Messages
 }
 
-func (i *Ids) GetPrompts() map[string]string {
-	if i == nil {
+func (s *StableWorkflowDuplicateResponseIds) GetPrompts() map[string]string {
+	if s == nil {
 		return map[string]string{}
 	}
-	return i.Prompts
+	return s.Prompts
 }
 
-func (i *Ids) GetPlaybooks() map[string]string {
-	if i == nil {
+func (s *StableWorkflowDuplicateResponseIds) GetPlaybooks() map[string]string {
+	if s == nil {
 		return map[string]string{}
 	}
-	return i.Playbooks
+	return s.Playbooks
 }
 
-func (i *Ids) GetOperatorAgents() map[string]string {
-	if i == nil {
+func (s *StableWorkflowDuplicateResponseIds) GetOperatorAgents() map[string]string {
+	if s == nil {
 		return map[string]string{}
 	}
-	return i.OperatorAgents
+	return s.OperatorAgents
 }
 
 type StableWorkflowDuplicateResponse struct {
@@ -68,7 +68,7 @@ type StableWorkflowDuplicateResponse struct {
 	// The copy.
 	Workflow StableWorkflowDuplicateResponseWorkflow `json:"workflow"`
 	// The original ID of each copied resource, mapped to the ID of its copy. Block and step IDs do not change.
-	Ids Ids `json:"ids"`
+	Ids StableWorkflowDuplicateResponseIds `json:"ids"`
 }
 
 func (s *StableWorkflowDuplicateResponse) GetMessage() string {
@@ -85,9 +85,9 @@ func (s *StableWorkflowDuplicateResponse) GetWorkflow() StableWorkflowDuplicateR
 	return s.Workflow
 }
 
-func (s *StableWorkflowDuplicateResponse) GetIds() Ids {
+func (s *StableWorkflowDuplicateResponse) GetIds() StableWorkflowDuplicateResponseIds {
 	if s == nil {
-		return Ids{}
+		return StableWorkflowDuplicateResponseIds{}
 	}
 	return s.Ids
 }
