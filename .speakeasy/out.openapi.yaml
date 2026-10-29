@@ -14659,6 +14659,16 @@ components:
         metadata:
           type: object
           additionalProperties: {}
+        draft:
+          allOf:
+            - $ref: '#/components/schemas/ToolExtendedInputVariableSlot'
+    ToolExtendedInputVariableSlot:
+      type: object
+      properties:
+        schema: {}
+        metadata:
+          type: object
+          additionalProperties: {}
     IntegrationTool:
       type: object
       properties:
@@ -20634,6 +20644,8 @@ components:
           type: boolean
         defaultValue:
           nullable: true
+          type: string
+        draftDefaultValue:
           type: string
       required:
         - defaultValue
@@ -31796,7 +31808,7 @@ components:
         inputVariables:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/StableExportToolNodeDataIntegrationInputVariable'
+            $ref: '#/components/schemas/StableExportToolNodeDataIntegrationStoredInputVariable'
         captureResponse:
           default: null
           nullable: true
@@ -31839,7 +31851,7 @@ components:
         - inputVariables
         - integrationToolID
         - agentID
-    StableExportToolNodeDataIntegrationInputVariable:
+    StableExportToolNodeDataIntegrationStoredInputVariable:
       type: object
       properties:
         description:
@@ -31859,6 +31871,10 @@ components:
         captureType:
           allOf:
             - $ref: '#/components/schemas/ToolNodeCaptureType'
+        draftDefaultValue:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/ExportTextString'
       required:
         - integrationToolVariableName
     StableExportAgentMcpIntegrationTool:
