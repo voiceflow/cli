@@ -20036,6 +20036,1301 @@ components:
       required:
         - enabled
         - domains
+    InterfaceConfig:
+      type: object
+      properties:
+        layout:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayout'
+        theme:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigTheme'
+        launcher:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLauncher'
+        header:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHeader'
+        buttons:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigButtons'
+        menu:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMenu'
+        start:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigStart'
+        messages:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessages'
+        composer:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposer'
+        end:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigEnd'
+        footer:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigFooter'
+        history:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHistory'
+        sounds:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigSounds'
+        locale:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocale'
+        voice:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigVoice'
+        consent:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigConsent'
+        css:
+          type: string
+    InterfaceConfigLayout:
+      type: object
+      properties:
+        mode:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutMode'
+        side:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutSide'
+        offset:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutOffset'
+        width:
+          type: string
+        height:
+          type: string
+        expandable:
+          type: boolean
+        resizable:
+          type: boolean
+        floating:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutFloating'
+        sidebar:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutSidebar'
+        sidebarInset:
+          type: string
+        embedded:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutEmbedded'
+        zIndex:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+    InterfaceConfigLayoutMode:
+      type: string
+      enum:
+        - floating
+        - sidebar
+        - embedded
+      x-enumNames:
+        - FLOATING
+        - SIDEBAR
+        - EMBEDDED
+    InterfaceConfigLayoutSide:
+      type: string
+      enum:
+        - left
+        - right
+      x-enumNames:
+        - LEFT
+        - RIGHT
+    InterfaceConfigLayoutOffset:
+      type: object
+      properties:
+        x:
+          type: string
+        y:
+          type: string
+    InterfaceConfigLayoutFloating:
+      type: object
+      properties:
+        anchor:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutFloatingAnchor'
+        backdrop:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutFloatingBackdrop'
+        coversLauncher:
+          type: boolean
+    InterfaceConfigLayoutFloatingAnchor:
+      type: string
+      enum:
+        - corner
+        - center
+      x-enumNames:
+        - CORNER
+        - CENTER
+    InterfaceConfigLayoutFloatingBackdrop:
+      type: string
+      enum:
+        - none
+        - dim
+        - blur
+      x-enumNames:
+        - NONE
+        - DIM
+        - BLUR
+    InterfaceConfigLayoutSidebar:
+      type: object
+      properties:
+        behavior:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutSidebarBehavior'
+        style:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutSidebarStyle'
+        backdrop:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutSidebarBackdrop'
+    InterfaceConfigLayoutSidebarBehavior:
+      type: string
+      enum:
+        - overlay
+        - push
+      x-enumNames:
+        - OVERLAY
+        - PUSH
+    InterfaceConfigLayoutSidebarStyle:
+      type: string
+      enum:
+        - flush
+        - inset
+      x-enumNames:
+        - FLUSH
+        - INSET
+    InterfaceConfigLayoutSidebarBackdrop:
+      type: string
+      enum:
+        - none
+        - dim
+      x-enumNames:
+        - NONE
+        - DIM
+    InterfaceConfigLayoutEmbedded:
+      type: object
+      properties:
+        fill:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLayoutEmbeddedFill'
+    InterfaceConfigLayoutEmbeddedFill:
+      type: string
+      enum:
+        - container
+        - window
+      x-enumNames:
+        - CONTAINER
+        - WINDOW
+    InterfaceConfigTheme:
+      type: object
+      properties:
+        mode:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeMode'
+        glass:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeGlass'
+        tokens:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeTokens'
+        dark:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeDark'
+        fontUrl:
+          type: string
+        background:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeBackground'
+    InterfaceConfigThemeMode:
+      type: string
+      enum:
+        - light
+        - dark
+        - system
+      x-enumNames:
+        - LIGHT
+        - DARK
+        - SYSTEM
+    InterfaceConfigThemeGlass:
+      type: string
+      enum:
+        - none
+        - frosted
+        - clear
+        - sheer
+      x-enumNames:
+        - NONE
+        - FROSTED
+        - CLEAR
+        - SHEER
+    InterfaceConfigThemeTokens:
+      type: object
+      properties:
+        color:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeTokenColors'
+        font:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeFont'
+        radius:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeRadius'
+        space:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeSpace'
+        shadow:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeShadow'
+        motion:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeMotion'
+        size:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeSize'
+    InterfaceConfigThemeTokenColors:
+      type: object
+      properties:
+        brand:
+          type: string
+        surface:
+          type: string
+        text:
+          type: string
+        textMuted:
+          type: string
+        border:
+          type: string
+        link:
+          type: string
+        focus:
+          type: string
+        headerBg:
+          type: string
+        headerText:
+          type: string
+        launcherBg:
+          type: string
+        launcherIcon:
+          type: string
+        userBubble:
+          type: string
+        userText:
+          type: string
+        agentBubble:
+          type: string
+        agentText:
+          type: string
+        error:
+          type: string
+        success:
+          type: string
+        warning:
+          type: string
+        brandGradient:
+          type: string
+        sendButton:
+          type: string
+    InterfaceConfigThemeFont:
+      type: object
+      properties:
+        family:
+          type: string
+        sizeBase:
+          type: string
+        baselineOffset:
+          type: string
+    InterfaceConfigThemeRadius:
+      type: object
+      properties:
+        panel:
+          type: string
+    InterfaceConfigThemeSpace:
+      type: object
+      properties:
+        scale:
+          type: string
+    InterfaceConfigThemeShadow:
+      type: object
+      properties:
+        panel:
+          type: string
+    InterfaceConfigThemeMotion:
+      type: object
+      properties:
+        scale:
+          type: string
+    InterfaceConfigThemeSize:
+      type: object
+      properties:
+        messageMaxWidth:
+          type: string
+    InterfaceConfigThemeDark:
+      type: object
+      properties:
+        color:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeColors'
+    InterfaceConfigThemeColors:
+      type: object
+      properties:
+        brand:
+          type: string
+        surface:
+          type: string
+        text:
+          type: string
+        textMuted:
+          type: string
+        border:
+          type: string
+        link:
+          type: string
+        focus:
+          type: string
+        headerBg:
+          type: string
+        headerText:
+          type: string
+        launcherBg:
+          type: string
+        launcherIcon:
+          type: string
+        userBubble:
+          type: string
+        userText:
+          type: string
+        agentBubble:
+          type: string
+        agentText:
+          type: string
+        error:
+          type: string
+        success:
+          type: string
+        warning:
+          type: string
+    InterfaceConfigThemeBackground:
+      type: object
+      properties:
+        imageUrl:
+          type: string
+        fit:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeBackgroundFit'
+        opacity:
+          type: number
+          minimum: 0
+          maximum: 1
+        scope:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigThemeBackgroundScope'
+    InterfaceConfigThemeBackgroundFit:
+      type: string
+      enum:
+        - cover
+        - contain
+        - tile
+      x-enumNames:
+        - COVER
+        - CONTAIN
+        - TILE
+    InterfaceConfigThemeBackgroundScope:
+      type: string
+      enum:
+        - panel
+        - home
+      x-enumNames:
+        - PANEL
+        - HOME
+    InterfaceConfigLauncher:
+      type: object
+      properties:
+        content:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLauncherContent'
+        label:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        visual:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLauncherVisual'
+        entry:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLauncherEntry'
+        imageUrl:
+          type: string
+        hidden:
+          type: boolean
+        unreadBadge:
+          type: boolean
+        callEntry:
+          type: boolean
+        shape:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLauncherShape'
+        size:
+          type: string
+        openIcon:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLauncherOpenIcon'
+    InterfaceConfigLauncherContent:
+      type: string
+      enum:
+        - icon
+        - label
+        - icon-label
+      x-enumNames:
+        - ICON
+        - LABEL
+        - ICON_LABEL
+    InterfaceConfigLocalizedText:
+      type: object
+      properties:
+        text:
+          type: string
+        translations:
+          type: object
+          additionalProperties:
+            type: string
+    InterfaceConfigLauncherVisual:
+      type: string
+      enum:
+        - icon
+        - image
+        - orb
+      x-enumNames:
+        - ICON
+        - IMAGE
+        - ORB
+    InterfaceConfigLauncherEntry:
+      type: string
+      enum:
+        - button
+        - input
+        - input-centred
+      x-enumNames:
+        - BUTTON
+        - INPUT
+        - INPUT_CENTRED
+    InterfaceConfigLauncherShape:
+      type: string
+      enum:
+        - circle
+        - rounded
+        - pill
+      x-enumNames:
+        - CIRCLE
+        - ROUNDED
+        - PILL
+    InterfaceConfigLauncherOpenIcon:
+      type: string
+      enum:
+        - chevron
+        - close
+        - same
+      x-enumNames:
+        - CHEVRON
+        - CLOSE
+        - SAME
+    InterfaceConfigHeader:
+      type: object
+      properties:
+        layout:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHeaderLayout'
+        appearance:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHeaderAppearance'
+        buttonFill:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHeaderButtonFill'
+        imageUrl:
+          type: string
+        maxButtons:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+    InterfaceConfigHeaderLayout:
+      type: string
+      enum:
+        - avatar-title
+        - orb-title
+        - title
+        - logo
+        - none
+      x-enumNames:
+        - AVATAR_TITLE
+        - ORB_TITLE
+        - TITLE
+        - LOGO
+        - NONE
+    InterfaceConfigHeaderAppearance:
+      type: string
+      enum:
+        - solid
+        - fade
+      x-enumNames:
+        - SOLID
+        - FADE
+    InterfaceConfigHeaderButtonFill:
+      type: string
+      enum:
+        - plain
+        - filled
+      x-enumNames:
+        - PLAIN
+        - FILLED
+    InterfaceConfigButtons:
+      type: object
+      properties:
+        header:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+        menu:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+        composer:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+        footer:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+        handoff:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+        handoff-end:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+        conversation-end:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButton'
+    InterfaceConfigButton:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: ^[a-z][a-z0-9-]*$
+        action:
+          type: string
+          minLength: 1
+        args:
+          type: object
+          additionalProperties: {}
+        label:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        icon:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigButtonIcon'
+        when:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigButtonWhen'
+        emphasis:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigButtonEmphasis'
+        enabled:
+          type: boolean
+      required:
+        - id
+        - action
+    InterfaceConfigButtonIcon:
+      type: object
+      properties:
+        kind:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigButtonIconKind'
+        name:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigIcon'
+        url:
+          type: string
+        tint:
+          type: boolean
+        assetId:
+          type: string
+    InterfaceConfigButtonIconKind:
+      type: string
+      enum:
+        - builtin
+        - asset
+      x-enumNames:
+        - BUILTIN
+        - ASSET
+    InterfaceConfigIcon:
+      type: string
+      enum:
+        - send
+        - plus
+        - stop
+        - download
+        - history
+        - globe
+        - menu
+        - external-link
+        - expand
+        - minimize
+        - close
+        - phone
+        - phone-end
+        - chat
+        - microphone
+        - microphone-muted
+        - speaker
+        - speaker-muted
+        - handoff
+        - arrow-left
+        - arrow-right
+        - arrow-up
+        - arrow-down
+        - chevron-down
+        - chevron-up
+        - checkmark
+        - copy
+        - attachment
+        - image
+        - document
+        - upload
+        - warning
+        - info
+        - help
+        - waveform
+        - thumbs-up
+        - thumbs-down
+        - reset
+        - settings
+        - search
+        - star
+        - cart
+        - gift
+        - user
+        - calendar
+        - mail
+        - home
+        - link
+        - package
+        - briefcase
+      x-enumNames:
+        - SEND
+        - PLUS
+        - STOP
+        - DOWNLOAD
+        - HISTORY
+        - GLOBE
+        - MENU
+        - EXTERNAL_LINK
+        - EXPAND
+        - MINIMIZE
+        - CLOSE
+        - PHONE
+        - PHONE_END
+        - CHAT
+        - MICROPHONE
+        - MICROPHONE_MUTED
+        - SPEAKER
+        - SPEAKER_MUTED
+        - HANDOFF
+        - ARROW_LEFT
+        - ARROW_RIGHT
+        - ARROW_UP
+        - ARROW_DOWN
+        - CHEVRON_DOWN
+        - CHEVRON_UP
+        - CHECKMARK
+        - COPY
+        - ATTACHMENT
+        - IMAGE
+        - DOCUMENT
+        - UPLOAD
+        - WARNING
+        - INFO
+        - HELP
+        - WAVEFORM
+        - THUMBS_UP
+        - THUMBS_DOWN
+        - RESET
+        - SETTINGS
+        - SEARCH
+        - STAR
+        - CART
+        - GIFT
+        - USER
+        - CALENDAR
+        - MAIL
+        - HOME
+        - LINK
+        - PACKAGE
+        - BRIEFCASE
+    InterfaceConfigButtonWhen:
+      type: object
+      properties:
+        views:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButtonView'
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigButtonPhase'
+    InterfaceConfigButtonView:
+      type: string
+      enum:
+        - chat
+        - call
+      x-enumNames:
+        - CHAT
+        - CALL
+    InterfaceConfigButtonPhase:
+      type: string
+      enum:
+        - start
+        - ai
+        - handoff
+        - ended
+      x-enumNames:
+        - START
+        - AI
+        - HANDOFF
+        - ENDED
+    InterfaceConfigButtonEmphasis:
+      type: string
+      enum:
+        - primary
+        - secondary
+      x-enumNames:
+        - PRIMARY
+        - SECONDARY
+    InterfaceConfigMenu:
+      type: object
+      properties:
+        presentation:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMenuPresentation'
+        restartConfirmation:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMenuRestartConfirmation'
+    InterfaceConfigMenuPresentation:
+      type: string
+      enum:
+        - auto
+        - sheet
+        - popover
+        - title
+        - screen
+      x-enumNames:
+        - AUTO
+        - SHEET
+        - POPOVER
+        - TITLE
+        - SCREEN
+    InterfaceConfigMenuRestartConfirmation:
+      type: string
+      enum:
+        - none
+        - dialog
+        - screen
+      x-enumNames:
+        - NONE
+        - DIALOG
+        - SCREEN
+    InterfaceConfigStart:
+      type: object
+      properties:
+        firstTurn:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigStartFirstTurn'
+        welcomeBanner:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigStartWelcomeBanner'
+        homeScreen:
+          type: boolean
+        starters:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigStartStarter'
+        starterDisplay:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigStartStarterDisplay'
+        teaser:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigStartTeaser'
+        autoOpen:
+          type: boolean
+        headline:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+    InterfaceConfigStartFirstTurn:
+      type: string
+      enum:
+        - agent
+        - user
+      x-enumNames:
+        - AGENT
+        - USER
+    InterfaceConfigStartWelcomeBanner:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        imageUrl:
+          type: string
+        description:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+    InterfaceConfigStartStarter:
+      type: object
+      properties:
+        text:
+          type: string
+        translations:
+          type: object
+          additionalProperties:
+            type: string
+        id:
+          type: string
+          pattern: ^[a-z][a-z0-9-]*$
+        icon:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigIcon'
+        description:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+      required:
+        - id
+    InterfaceConfigStartStarterDisplay:
+      type: string
+      enum:
+        - chips
+        - cards
+        - links
+      x-enumNames:
+        - CHIPS
+        - CARDS
+        - LINKS
+    InterfaceConfigStartTeaser:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+    InterfaceConfigMessages:
+      type: object
+      properties:
+        agentStyle:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessagesAgentStyle'
+        avatar:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessagesAvatar'
+        timestamps:
+          type: boolean
+        aiDisclaimer:
+          type: boolean
+        feedback:
+          type: boolean
+        streaming:
+          type: boolean
+        choiceStyle:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessagesChoiceStyle'
+        loader:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessagesLoader'
+        html:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessagesHtml'
+        linkHosts:
+          type: array
+          items:
+            type: string
+        scrollToBottom:
+          type: boolean
+        avatarImageUrl:
+          type: string
+        citations:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigMessagesCitations'
+    InterfaceConfigMessagesAgentStyle:
+      type: string
+      enum:
+        - bubble
+        - plain
+        - card
+      x-enumNames:
+        - BUBBLE
+        - PLAIN
+        - CARD
+    InterfaceConfigMessagesAvatar:
+      type: string
+      enum:
+        - none
+        - every
+        - last
+      x-enumNames:
+        - NONE
+        - EVERY
+        - LAST
+    InterfaceConfigMessagesChoiceStyle:
+      type: string
+      enum:
+        - chips
+        - outlined
+        - links
+      x-enumNames:
+        - CHIPS
+        - OUTLINED
+        - LINKS
+    InterfaceConfigMessagesLoader:
+      type: string
+      enum:
+        - dots
+        - spinner-text
+        - matrix
+        - none
+      x-enumNames:
+        - DOTS
+        - SPINNER_TEXT
+        - MATRIX
+        - NONE
+    InterfaceConfigMessagesHtml:
+      type: string
+      enum:
+        - text
+        - safe
+      x-enumNames:
+        - TEXT
+        - SAFE
+    InterfaceConfigMessagesCitations:
+      type: string
+      enum:
+        - none
+        - list
+        - sheet
+      x-enumNames:
+        - NONE
+        - LIST
+        - SHEET
+    InterfaceConfigComposer:
+      type: object
+      properties:
+        layout:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposerLayout'
+        dictation:
+          type: boolean
+        attachments:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposerAttachments'
+        placeholder:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        shape:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposerShape'
+        sendButton:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposerSendButton'
+        maxLines:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+        emptySize:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposerEmptySize'
+    InterfaceConfigComposerLayout:
+      type: string
+      enum:
+        - inline
+        - two-tier
+      x-enumNames:
+        - INLINE
+        - TWO_TIER
+    InterfaceConfigComposerAttachments:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        maxFiles:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+    InterfaceConfigComposerShape:
+      type: string
+      enum:
+        - card
+        - boxed
+        - pill
+      x-enumNames:
+        - CARD
+        - BOXED
+        - PILL
+    InterfaceConfigComposerSendButton:
+      type: object
+      properties:
+        shape:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigComposerSendButtonShape'
+        icon:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigIcon'
+    InterfaceConfigComposerSendButtonShape:
+      type: string
+      enum:
+        - circle
+        - rounded
+        - square
+      x-enumNames:
+        - CIRCLE
+        - ROUNDED
+        - SQUARE
+    InterfaceConfigComposerEmptySize:
+      type: string
+      enum:
+        - compact
+        - large
+      x-enumNames:
+        - COMPACT
+        - LARGE
+    InterfaceConfigEnd:
+      type: object
+      properties:
+        survey:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigEndSurvey'
+    InterfaceConfigEndSurvey:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        comment:
+          type: boolean
+    InterfaceConfigFooter:
+      type: object
+      properties:
+        note:
+          type: boolean
+        noteText:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        poweredBy:
+          type: boolean
+    InterfaceConfigHistory:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        persistence:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHistoryPersistence'
+        allowDelete:
+          type: boolean
+        listStyle:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigHistoryListStyle'
+    InterfaceConfigHistoryPersistence:
+      type: string
+      enum:
+        - memory
+        - tab
+        - browser
+      x-enumNames:
+        - MEMORY
+        - TAB
+        - BROWSER
+    InterfaceConfigHistoryListStyle:
+      type: string
+      enum:
+        - detailed
+        - grouped
+      x-enumNames:
+        - DETAILED
+        - GROUPED
+    InterfaceConfigSounds:
+      type: object
+      properties:
+        chime:
+          type: boolean
+    InterfaceConfigLocale:
+      type: object
+      properties:
+        default:
+          type: string
+        enabled:
+          type: array
+          items:
+            type: string
+        strings:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterfaceConfigLocaleString'
+        timeFormat:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocaleTimeFormat'
+        dateFormat:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocaleDateFormat'
+    InterfaceConfigLocaleString:
+      type: object
+      properties:
+        text:
+          type: string
+        translations:
+          type: object
+          additionalProperties:
+            type: string
+        key:
+          type: string
+      required:
+        - key
+    InterfaceConfigLocaleTimeFormat:
+      type: string
+      enum:
+        - auto
+        - 12h
+        - 24h
+      x-enumNames:
+        - AUTO
+        - TWELVE_HOUR
+        - TWENTY_FOUR_HOUR
+    InterfaceConfigLocaleDateFormat:
+      type: string
+      enum:
+        - auto
+        - short
+        - long
+      x-enumNames:
+        - AUTO
+        - SHORT
+        - LONG
+    InterfaceConfigVoice:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        callToAction:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        orb:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigVoiceOrb'
+        status:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigVoiceStatus'
+        interrupt:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigVoiceInterrupt'
+        microphoneDenied:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigVoiceMicrophoneDenied'
+        connectionError:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigVoiceConnectionError'
+    InterfaceConfigVoiceOrb:
+      type: object
+      properties:
+        preset:
+          type: string
+        colors:
+          type: array
+          items:
+            type: string
+        imageUrl:
+          type: string
+    InterfaceConfigVoiceStatus:
+      type: object
+      properties:
+        connecting:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        listening:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        thinking:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        speaking:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        reconnecting:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+    InterfaceConfigVoiceInterrupt:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        label:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+    InterfaceConfigVoiceMicrophoneDenied:
+      type: object
+      properties:
+        title:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        text:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        retryLabel:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        continueInChatLabel:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+    InterfaceConfigVoiceConnectionError:
+      type: object
+      properties:
+        title:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        text:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        retryLabel:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+    InterfaceConfigConsent:
+      type: object
+      properties:
+        chat:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigConsentChat'
+    InterfaceConfigConsentChat:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        title:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        text:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        acceptLabel:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        declineLabel:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        linkUrl:
+          type: string
+        linkLabel:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
+        revision:
+          type: string
     VersionSettingsMemory:
       type: object
       properties:
@@ -30496,6 +31791,9 @@ components:
         widget:
           allOf:
             - $ref: '#/components/schemas/WidgetSettings'
+        interfaceConfig:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfig'
         memory:
           allOf:
             - $ref: '#/components/schemas/VersionSettingsMemory'
