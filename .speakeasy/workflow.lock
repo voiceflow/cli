@@ -9,8 +9,8 @@ sources:
             - 1.0.0
     Voiceflow:
         sourceNamespace: cli
-        sourceRevisionDigest: sha256:0bb7c1fb2e26fdacb42a0f5e9566431abdb393c9c238fc43b3f48d8650dacc3a
-        sourceBlobDigest: sha256:6b756e66b69c22e5a855660f0dc533deffa8316f6501022f52b36a5fde64eb08
+        sourceRevisionDigest: sha256:7fc12eee797481fb397e2f48bb3703acffc3b5992884296ade70c5115c8d0ac2
+        sourceBlobDigest: sha256:95ba7117c41c48a2dabac035413958974372d1ff41af46696cfc26f9cc9a1fad
         tags:
             - latest
             - 1.0.0
@@ -18,8 +18,8 @@ targets:
     voiceflow-sdk:
         source: Voiceflow
         sourceNamespace: cli
-        sourceRevisionDigest: sha256:0bb7c1fb2e26fdacb42a0f5e9566431abdb393c9c238fc43b3f48d8650dacc3a
-        sourceBlobDigest: sha256:6b756e66b69c22e5a855660f0dc533deffa8316f6501022f52b36a5fde64eb08
+        sourceRevisionDigest: sha256:7fc12eee797481fb397e2f48bb3703acffc3b5992884296ade70c5115c8d0ac2
+        sourceBlobDigest: sha256:95ba7117c41c48a2dabac035413958974372d1ff41af46696cfc26f9cc9a1fad
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: 1.796.2
