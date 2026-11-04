@@ -10,7 +10,7 @@ import (
 type StableVariableUpdateRequestV2 struct {
 	// The name of the variable. Letters, digits and underscores only, at most 64 characters — this is what a {token} in a text field binds to. Must not already be used by a variable or an entity in this environment. When updating, omit this field unless you are renaming: a variable stored before this rule can hold a name outside the grammar, and echoing that name back would be rejected.
 	Name *string `json:"name,omitzero"`
-	// The display color of the variable in the Voiceflow editor.
+	// The display color of the variable in the Voiceflow editor, as a hex code from the editor's color picker. Use #515A63 (the editor's default) unless the user asks for a color; otherwise pick the closest of #5B9FD7, #CB627B, #56B365, #DC8879, #9A63BC. Do not invent other hex codes.
 	Color *string `json:"color,omitzero"`
 	// A short description of what the variable stores.
 	Description optionalnullable.OptionalNullable[string] `json:"description,omitzero"`
