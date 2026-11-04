@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 90a80a1801e5a8e1fe1ea2423b62aba7
+  docChecksum: f0da08bcf94ebeef7269504329646a04
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.312
-  configChecksum: 22fc917b8fe58e245e2b5c0791870248
+  releaseVersion: 0.2.313
+  configChecksum: 45900abb09ad310c2a0a016e3bc17044
 persistentEdits:
-  generation_id: 4d4edc9e-e503-41a5-b062-dde051fc7ec1
-  pristine_commit_hash: ff9e0b80d44e07350c5782c76d9f4d37089387cf
-  pristine_tree_hash: 9c49806bc3c04527a07421b7f863462907477db3
+  generation_id: 4e9979dc-043e-4c72-8bda-2c387a63ae76
+  pristine_commit_hash: 0d13088dd9c076268f0dc403f3b69723f6a4d69e
+  pristine_tree_hash: 97a1428962e722c7a68801a465d7893edae22f87
 features:
   cli:
     additionalProperties: 0.0.1
@@ -1022,8 +1022,8 @@ trackedFiles:
     pristine_git_object: ecb821581cc1946b0bd6b6f8adb17b9fb5cafd6f
   internal/cli/variable/create.go:
     id: cedb4c51c456
-    last_write_checksum: sha1:3d7d80bc7b35b5b9518920169e04a7e64bac1988
-    pristine_git_object: 3fb8e719b9664a7f26259cd555257919026381a9
+    last_write_checksum: sha1:5c5c21f0d100403df32218cfc774c334a0cc35a3
+    pristine_git_object: 0124bf930fac42f61f4ed07d56b4ebcd97a7501d
   internal/cli/variable/delete.go:
     id: 1c469634070d
     last_write_checksum: sha1:64525f23e7ce61c6cd934c6e3c1ad73c51907fc7
@@ -1042,12 +1042,12 @@ trackedFiles:
     pristine_git_object: a0ddb6398edc37cdbc10265709b308149189c99f
   internal/cli/variable/update.go:
     id: c957cfda7247
-    last_write_checksum: sha1:6faf913c8e4a588b6c44eed4b66f838ee883ed6d
-    pristine_git_object: 7b8830b9d30e0ceaf175666f3237ad97ad7f7f15
+    last_write_checksum: sha1:45e97ffafa62492f77dac5275bf91ed6820dab44
+    pristine_git_object: aefea088fc77bc8bbc656dadbd6c3d01e56a6520
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:15f640b6a86f90737c0f5eb6d1d8a7f830f51497
-    pristine_git_object: 7db8844f5f2d6f0147cb33b6ff50fedbbf53d4f9
+    last_write_checksum: sha1:8518ca1f7be24752c3b64da814d82fd06e125775
+    pristine_git_object: d0d7ada3c725bed008fc5e600b361faaa769d3e6
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -3218,8 +3218,8 @@ trackedFiles:
     pristine_git_object: 51ed4aa146009b4b492f096be9e1390b96b8fd86
   internal/sdk/models/components/stablevariablecreaterequestv2.go:
     id: 8cc8de20814e
-    last_write_checksum: sha1:1903ddc1bc6993a3d0a837ba76d7546be6de2678
-    pristine_git_object: c0a6742f75e905a08d1cb0ea3eb7bf66f230ef80
+    last_write_checksum: sha1:331664b2ac172bffcd164552d8658b2a5f248634
+    pristine_git_object: 3a4ba136a64b8a8389402f4353a356d597256933
   internal/sdk/models/components/stablevariablelistresponsev2.go:
     id: d83f1d3b0679
     last_write_checksum: sha1:6debdd2397becc1bfaa2e7488e85a9091dd80449
@@ -3230,8 +3230,8 @@ trackedFiles:
     pristine_git_object: d99368ce97b61277c2df7ebb2250ea20f4e481ba
   internal/sdk/models/components/stablevariableupdaterequestv2.go:
     id: 5413a523ae1e
-    last_write_checksum: sha1:0ce9198f9920ad87707e53ab3c26f60d3cf1c7d8
-    pristine_git_object: ec8b0032c0d3d567033092441b8aad2a155890bc
+    last_write_checksum: sha1:84cf2b7c55804244dd18e56abbf9a42f7830134f
+    pristine_git_object: cffb41566815957e9e1f92860593b3cee9257d50
   internal/sdk/models/components/stablevariablev2.go:
     id: 075acafd26c8
     last_write_checksum: sha1:4581c029fe3d31d3485745e224afd8795eada001
@@ -5190,8 +5190,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:fd7ca0fa271cd8750fdbd03b609eadd43847a13b
-    pristine_git_object: ee89d2b162eabfe9bb485ceefb0e286bba52310e
+    last_write_checksum: sha1:92203e6d73c51f0dd39bb60682991c105b565958
+    pristine_git_object: 6c21ec2dadabab95e6c706b352953c5cf5fe1a9a
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
