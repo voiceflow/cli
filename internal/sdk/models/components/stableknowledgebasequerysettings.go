@@ -304,7 +304,7 @@ type StableKnowledgeBaseQuerySettings struct {
 	Model *StableKnowledgeBaseQuerySettingsModel `json:"model,omitzero"`
 	// The system prompt applied to the model when synthesizing the answer.
 	System *string `json:"system,omitzero"`
-	// The maximum number of tokens the model may generate when synthesizing the answer.
+	// Deprecated. The model's default output limit applies when this is lower or unset, and the model's maximum caps it.
 	MaxTokens *int64 `json:"maxTokens,omitzero"`
 	// The sampling temperature applied to the model when synthesizing the answer.
 	Temperature *float64 `json:"temperature,omitzero"`
