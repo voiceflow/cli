@@ -17118,6 +17118,14 @@ components:
               nullable: true
               enum:
                 - null
+        serviceTier:
+          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+          anyOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
+            - type: string
+              nullable: true
+              enum:
+                - null
       additionalProperties: false
     TranscriptEvaluationRunScope:
       type: string
