@@ -20091,6 +20091,9 @@ components:
         history:
           allOf:
             - $ref: '#/components/schemas/InterfaceConfigHistory'
+        transcript:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigTranscript'
         sounds:
           allOf:
             - $ref: '#/components/schemas/InterfaceConfigSounds'
@@ -21173,6 +21176,11 @@ components:
       x-enumNames:
         - DETAILED
         - GROUPED
+    InterfaceConfigTranscript:
+      type: object
+      properties:
+        download:
+          type: boolean
     InterfaceConfigSounds:
       type: object
       properties:
