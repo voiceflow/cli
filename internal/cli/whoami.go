@@ -53,6 +53,7 @@ func runWhoamiCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	oauth.WriteStatus(out) // browser login session; see internal/oauth
+	writeLinkStatus(out)   // project pinned to this directory; see link.go
 
 	return nil
 }

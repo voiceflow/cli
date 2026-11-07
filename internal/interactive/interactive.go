@@ -64,6 +64,10 @@ func isValueResolved(cmd *cobra.Command, m flagutil.FlagMeta) bool {
 	if f := cmd.Flags().Lookup(m.FlagName); f != nil && f.Changed {
 		return true
 	}
+	// A linked project's value answers the flag; see internal/link.
+	if flagutil.HasLinkDefault(cmd, m.FlagName) {
+		return true
+	}
 	if m.EnvVar != "" {
 		if _, ok := os.LookupEnv(m.EnvVar); ok {
 			return true
