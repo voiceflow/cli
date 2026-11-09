@@ -11,6 +11,7 @@ import (
 type VersionSettingsVoice struct {
 	Stt                     *STTSettings                               `json:"stt,omitzero"`
 	Tts                     *VoiceSettings                             `json:"tts,omitzero"`
+	LocaleOverrides         []VoiceLocaleOverride                      `json:"localeOverrides,omitzero"`
 	PronunciationDictionary []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
 	FailureMessage          optionalnullable.OptionalNullable[string]  `json:"failureMessage,omitzero"`
 	HasCallRecording        *bool                                      `default:"true" json:"hasCallRecording"`
@@ -145,6 +146,13 @@ func (v *VersionSettingsVoice) GetTtsElevenlabs() *ElevenLabsVoiceSettings {
 		return v.ElevenLabsVoiceSettings
 	}
 	return nil
+}
+
+func (v *VersionSettingsVoice) GetLocaleOverrides() []VoiceLocaleOverride {
+	if v == nil {
+		return nil
+	}
+	return v.LocaleOverrides
 }
 
 func (v *VersionSettingsVoice) GetPronunciationDictionary() []PronunciationDictionaryEntry {
