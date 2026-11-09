@@ -18060,6 +18060,10 @@ components:
         tts:
           allOf:
             - $ref: '#/components/schemas/VoiceSettings'
+        localeOverrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/VoiceLocaleOverride'
         pronunciationDictionary:
           maxItems: 500
           type: array
@@ -19584,6 +19588,17 @@ components:
         - model
         - voice
         - settings
+    VoiceLocaleOverride:
+      type: object
+      properties:
+        locale:
+          type: string
+          minLength: 1
+        tts:
+          $ref: '#/components/schemas/VoiceSettings'
+      required:
+        - locale
+        - tts
     PronunciationDictionaryEntry:
       type: object
       properties:
@@ -24888,6 +24903,10 @@ components:
             tts:
               allOf:
                 - $ref: '#/components/schemas/VoiceSettings'
+            localeOverrides:
+              type: array
+              items:
+                $ref: '#/components/schemas/VoiceLocaleOverride'
             pronunciationDictionary:
               maxItems: 500
               type: array

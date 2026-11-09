@@ -1726,6 +1726,7 @@ func (s *StableAgentUpdateRequestV2Llm) GetDefaults() *StableAgentUpdateRequestV
 type StableAgentUpdateRequestV2Voice struct {
 	Stt                     *STTSettings                               `json:"stt,omitzero"`
 	Tts                     *VoiceSettings                             `json:"tts,omitzero"`
+	LocaleOverrides         []VoiceLocaleOverride                      `json:"localeOverrides,omitzero"`
 	PronunciationDictionary []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
 	FailureMessage          optionalnullable.OptionalNullable[string]  `json:"failureMessage,omitzero"`
 	HasCallRecording        *bool                                      `default:"true" json:"hasCallRecording"`
@@ -1860,6 +1861,13 @@ func (s *StableAgentUpdateRequestV2Voice) GetTtsElevenlabs() *ElevenLabsVoiceSet
 		return v.ElevenLabsVoiceSettings
 	}
 	return nil
+}
+
+func (s *StableAgentUpdateRequestV2Voice) GetLocaleOverrides() []VoiceLocaleOverride {
+	if s == nil {
+		return nil
+	}
+	return s.LocaleOverrides
 }
 
 func (s *StableAgentUpdateRequestV2Voice) GetPronunciationDictionary() []PronunciationDictionaryEntry {
