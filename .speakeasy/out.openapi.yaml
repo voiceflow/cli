@@ -21388,6 +21388,14 @@ components:
       properties:
         url:
           type: string
+    VersionSettingsDefaultWidget:
+      type: string
+      enum:
+        - webchat
+        - interface
+      x-enumNames:
+        - WEBCHAT
+        - INTERFACE
     VersionSettingsMemory:
       type: object
       properties:
@@ -31855,6 +31863,9 @@ components:
         interfaceConfig:
           allOf:
             - $ref: '#/components/schemas/InterfaceConfig'
+        defaultWidget:
+          allOf:
+            - $ref: '#/components/schemas/VersionSettingsDefaultWidget'
         memory:
           allOf:
             - $ref: '#/components/schemas/VersionSettingsMemory'
