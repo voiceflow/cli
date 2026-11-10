@@ -20129,6 +20129,9 @@ components:
         consent:
           allOf:
             - $ref: '#/components/schemas/InterfaceConfigConsent'
+        site:
+          allOf:
+            - $ref: '#/components/schemas/InterfaceConfigSite'
         css:
           type: string
     InterfaceConfigLayout:
@@ -20253,9 +20256,11 @@ components:
       enum:
         - none
         - dim
+        - blur
       x-enumNames:
         - NONE
         - DIM
+        - BLUR
     InterfaceConfigLayoutEmbedded:
       type: object
       properties:
@@ -21377,6 +21382,11 @@ components:
           allOf:
             - $ref: '#/components/schemas/InterfaceConfigLocalizedText'
         revision:
+          type: string
+    InterfaceConfigSite:
+      type: object
+      properties:
+        url:
           type: string
     VersionSettingsMemory:
       type: object
