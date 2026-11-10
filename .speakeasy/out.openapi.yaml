@@ -34628,6 +34628,11 @@ components:
         value:
           type: string
           description: The value of the property recorded for this transcript.
+        metadata:
+          nullable: true
+          description: Additional structured data recorded alongside the value, such as the credits used per model for the built-in credits property. `null` when none was recorded.
+          type: object
+          additionalProperties: {}
       required:
         - id
         - name
@@ -34636,6 +34641,7 @@ components:
         - createdAt
         - updatedAt
         - value
+        - metadata
     StableEvaluationWithResult:
       allOf:
         - type: object

@@ -43,6 +43,8 @@ type StableTranscriptPropertyWithValue struct {
 	UpdatedAt time.Time                             `json:"updatedAt"`
 	// The value of the property recorded for this transcript.
 	Value string `json:"value"`
+	// Additional structured data recorded alongside the value, such as the credits used per model for the built-in credits property. `null` when none was recorded.
+	Metadata map[string]any `json:"metadata"`
 }
 
 func (s StableTranscriptPropertyWithValue) MarshalJSON() ([]byte, error) {
@@ -103,4 +105,11 @@ func (s *StableTranscriptPropertyWithValue) GetValue() string {
 		return ""
 	}
 	return s.Value
+}
+
+func (s *StableTranscriptPropertyWithValue) GetMetadata() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Metadata
 }
