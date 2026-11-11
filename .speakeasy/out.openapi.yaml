@@ -18075,6 +18075,8 @@ components:
         hasCallRecording:
           default: true
           type: boolean
+        hasTwilioCallRecording:
+          type: boolean
         audioCue:
           nullable: true
           type: number
@@ -24935,6 +24937,8 @@ components:
               type: string
             hasCallRecording:
               default: true
+              type: boolean
+            hasTwilioCallRecording:
               type: boolean
             audioCue:
               nullable: true
