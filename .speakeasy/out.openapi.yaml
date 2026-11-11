@@ -17126,6 +17126,9 @@ components:
               nullable: true
               enum:
                 - null
+        explainResults:
+          description: Whether each result includes a written explanation. Text evaluations always do.
+          type: boolean
       additionalProperties: false
     TranscriptEvaluationRunScope:
       type: string
