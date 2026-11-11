@@ -1724,21 +1724,21 @@ func (s *StableAgentUpdateRequestV2Llm) GetDefaults() *StableAgentUpdateRequestV
 // #endregion class-body-stableagentupdaterequestv2llm
 
 type StableAgentUpdateRequestV2Voice struct {
-	Stt                     *STTSettings                               `json:"stt,omitzero"`
-	Tts                     *VoiceSettings                             `json:"tts,omitzero"`
-	LocaleOverrides         []VoiceLocaleOverride                      `json:"localeOverrides,omitzero"`
-	PronunciationDictionary []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
-	FailureMessage          optionalnullable.OptionalNullable[string]  `json:"failureMessage,omitzero"`
-	HasCallRecording        *bool                                      `default:"true" json:"hasCallRecording"`
-	HasTwilioCallRecording  *bool                                      `json:"hasTwilioCallRecording,omitzero"`
-	AudioCue                optionalnullable.OptionalNullable[float64] `json:"audioCue,omitzero"`
-	BackgroundAudio         optionalnullable.OptionalNullable[string]  `json:"backgroundAudio,omitzero"`
-	BackgroundAudioSettings *BackgroundAudioSettings                   `json:"backgroundAudioSettings,omitzero"`
-	AudioSync               *bool                                      `json:"audioSync,omitzero"`
-	KeypadInput             *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
-	SilenceTimeoutMs        *float64                                   `json:"silenceTimeoutMs,omitzero"`
-	MaxDuration             *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
-	CallerIdentity          *VersionSettingsVoiceCallerIdentity        `json:"callerIdentity,omitzero"`
+	Stt                      *STTSettings                               `json:"stt,omitzero"`
+	Tts                      *VoiceSettings                             `json:"tts,omitzero"`
+	LocaleOverrides          []VoiceLocaleOverride                      `json:"localeOverrides,omitzero"`
+	PronunciationDictionary  []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
+	FailureMessage           optionalnullable.OptionalNullable[string]  `json:"failureMessage,omitzero"`
+	HasCallRecording         *bool                                      `default:"true" json:"hasCallRecording"`
+	HasProviderCallRecording *bool                                      `json:"hasProviderCallRecording,omitzero"`
+	AudioCue                 optionalnullable.OptionalNullable[float64] `json:"audioCue,omitzero"`
+	BackgroundAudio          optionalnullable.OptionalNullable[string]  `json:"backgroundAudio,omitzero"`
+	BackgroundAudioSettings  *BackgroundAudioSettings                   `json:"backgroundAudioSettings,omitzero"`
+	AudioSync                *bool                                      `json:"audioSync,omitzero"`
+	KeypadInput              *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
+	SilenceTimeoutMs         *float64                                   `json:"silenceTimeoutMs,omitzero"`
+	MaxDuration              *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
+	CallerIdentity           *VersionSettingsVoiceCallerIdentity        `json:"callerIdentity,omitzero"`
 }
 
 func (s StableAgentUpdateRequestV2Voice) MarshalJSON() ([]byte, error) {
@@ -1892,11 +1892,11 @@ func (s *StableAgentUpdateRequestV2Voice) GetHasCallRecording() *bool {
 	return s.HasCallRecording
 }
 
-func (s *StableAgentUpdateRequestV2Voice) GetHasTwilioCallRecording() *bool {
+func (s *StableAgentUpdateRequestV2Voice) GetHasProviderCallRecording() *bool {
 	if s == nil {
 		return nil
 	}
-	return s.HasTwilioCallRecording
+	return s.HasProviderCallRecording
 }
 
 func (s *StableAgentUpdateRequestV2Voice) GetAudioCue() optionalnullable.OptionalNullable[float64] {
