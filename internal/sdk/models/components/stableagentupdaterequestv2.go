@@ -1730,6 +1730,7 @@ type StableAgentUpdateRequestV2Voice struct {
 	PronunciationDictionary []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
 	FailureMessage          optionalnullable.OptionalNullable[string]  `json:"failureMessage,omitzero"`
 	HasCallRecording        *bool                                      `default:"true" json:"hasCallRecording"`
+	HasTwilioCallRecording  *bool                                      `json:"hasTwilioCallRecording,omitzero"`
 	AudioCue                optionalnullable.OptionalNullable[float64] `json:"audioCue,omitzero"`
 	BackgroundAudio         optionalnullable.OptionalNullable[string]  `json:"backgroundAudio,omitzero"`
 	BackgroundAudioSettings *BackgroundAudioSettings                   `json:"backgroundAudioSettings,omitzero"`
@@ -1889,6 +1890,13 @@ func (s *StableAgentUpdateRequestV2Voice) GetHasCallRecording() *bool {
 		return nil
 	}
 	return s.HasCallRecording
+}
+
+func (s *StableAgentUpdateRequestV2Voice) GetHasTwilioCallRecording() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.HasTwilioCallRecording
 }
 
 func (s *StableAgentUpdateRequestV2Voice) GetAudioCue() optionalnullable.OptionalNullable[float64] {

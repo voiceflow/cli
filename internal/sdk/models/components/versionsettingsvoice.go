@@ -15,6 +15,7 @@ type VersionSettingsVoice struct {
 	PronunciationDictionary []PronunciationDictionaryEntry             `json:"pronunciationDictionary,omitzero"`
 	FailureMessage          optionalnullable.OptionalNullable[string]  `json:"failureMessage,omitzero"`
 	HasCallRecording        *bool                                      `default:"true" json:"hasCallRecording"`
+	HasTwilioCallRecording  *bool                                      `json:"hasTwilioCallRecording,omitzero"`
 	AudioCue                optionalnullable.OptionalNullable[float64] `json:"audioCue,omitzero"`
 	BackgroundAudio         optionalnullable.OptionalNullable[string]  `json:"backgroundAudio,omitzero"`
 	BackgroundAudioSettings *BackgroundAudioSettings                   `json:"backgroundAudioSettings,omitzero"`
@@ -174,6 +175,13 @@ func (v *VersionSettingsVoice) GetHasCallRecording() *bool {
 		return nil
 	}
 	return v.HasCallRecording
+}
+
+func (v *VersionSettingsVoice) GetHasTwilioCallRecording() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.HasTwilioCallRecording
 }
 
 func (v *VersionSettingsVoice) GetAudioCue() optionalnullable.OptionalNullable[float64] {
