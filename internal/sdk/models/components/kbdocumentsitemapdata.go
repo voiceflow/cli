@@ -127,13 +127,16 @@ func (k *KBDocumentSitemapDataSync) GetFailure() optionalnullable.OptionalNullab
 }
 
 type KBDocumentSitemapData struct {
-	Type              KBDocumentSitemapDataType                                    `json:"type"`
-	Name              string                                                       `json:"name"`
-	URL               string                                                       `json:"url"`
-	RefreshRate       *KnowledgeBaseDocumentRefreshRate                            `json:"refreshRate,omitzero"`
-	LastSuccessUpdate *string                                                      `json:"lastSuccessUpdate,omitzero"`
-	Patterns          *KBDocumentSitemapPatterns                                   `json:"patterns,omitzero"`
-	Sync              optionalnullable.OptionalNullable[KBDocumentSitemapDataSync] `json:"sync,omitzero"`
+	Type                    KBDocumentSitemapDataType                                    `json:"type"`
+	Name                    string                                                       `json:"name"`
+	URL                     string                                                       `json:"url"`
+	RefreshRate             *KnowledgeBaseDocumentRefreshRate                            `json:"refreshRate,omitzero"`
+	RefreshTime             optionalnullable.OptionalNullable[string]                    `json:"refreshTime,omitzero"`
+	RefreshTimezone         optionalnullable.OptionalNullable[string]                    `json:"refreshTimezone,omitzero"`
+	LastSuccessUpdate       *string                                                      `json:"lastSuccessUpdate,omitzero"`
+	LastRefreshScheduledFor optionalnullable.OptionalNullable[time.Time]                 `json:"lastRefreshScheduledFor,omitzero"`
+	Patterns                *KBDocumentSitemapPatterns                                   `json:"patterns,omitzero"`
+	Sync                    optionalnullable.OptionalNullable[KBDocumentSitemapDataSync] `json:"sync,omitzero"`
 }
 
 func (k KBDocumentSitemapData) MarshalJSON() ([]byte, error) {
@@ -175,11 +178,32 @@ func (k *KBDocumentSitemapData) GetRefreshRate() *KnowledgeBaseDocumentRefreshRa
 	return k.RefreshRate
 }
 
+func (k *KBDocumentSitemapData) GetRefreshTime() optionalnullable.OptionalNullable[string] {
+	if k == nil {
+		return nil
+	}
+	return k.RefreshTime
+}
+
+func (k *KBDocumentSitemapData) GetRefreshTimezone() optionalnullable.OptionalNullable[string] {
+	if k == nil {
+		return nil
+	}
+	return k.RefreshTimezone
+}
+
 func (k *KBDocumentSitemapData) GetLastSuccessUpdate() *string {
 	if k == nil {
 		return nil
 	}
 	return k.LastSuccessUpdate
+}
+
+func (k *KBDocumentSitemapData) GetLastRefreshScheduledFor() optionalnullable.OptionalNullable[time.Time] {
+	if k == nil {
+		return nil
+	}
+	return k.LastRefreshScheduledFor
 }
 
 func (k *KBDocumentSitemapData) GetPatterns() *KBDocumentSitemapPatterns {

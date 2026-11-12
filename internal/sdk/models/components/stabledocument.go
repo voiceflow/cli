@@ -313,13 +313,16 @@ func (s *StableDocumentSyncSitemap) GetFailure() optionalnullable.OptionalNullab
 }
 
 type StableDocumentKBDocumentSitemapData struct {
-	Type              StableDocumentTypeSitemap                                    `json:"type"`
-	Name              string                                                       `json:"name"`
-	URL               string                                                       `json:"url"`
-	RefreshRate       *KnowledgeBaseDocumentRefreshRate                            `json:"refreshRate,omitzero"`
-	LastSuccessUpdate *string                                                      `json:"lastSuccessUpdate,omitzero"`
-	Patterns          *KBDocumentSitemapPatterns                                   `json:"patterns,omitzero"`
-	Sync              optionalnullable.OptionalNullable[StableDocumentSyncSitemap] `json:"sync,omitzero"`
+	Type                    StableDocumentTypeSitemap                                    `json:"type"`
+	Name                    string                                                       `json:"name"`
+	URL                     string                                                       `json:"url"`
+	RefreshRate             *KnowledgeBaseDocumentRefreshRate                            `json:"refreshRate,omitzero"`
+	RefreshTime             optionalnullable.OptionalNullable[string]                    `json:"refreshTime,omitzero"`
+	RefreshTimezone         optionalnullable.OptionalNullable[string]                    `json:"refreshTimezone,omitzero"`
+	LastSuccessUpdate       *string                                                      `json:"lastSuccessUpdate,omitzero"`
+	LastRefreshScheduledFor optionalnullable.OptionalNullable[time.Time]                 `json:"lastRefreshScheduledFor,omitzero"`
+	Patterns                *KBDocumentSitemapPatterns                                   `json:"patterns,omitzero"`
+	Sync                    optionalnullable.OptionalNullable[StableDocumentSyncSitemap] `json:"sync,omitzero"`
 }
 
 func (s StableDocumentKBDocumentSitemapData) MarshalJSON() ([]byte, error) {
@@ -361,11 +364,32 @@ func (s *StableDocumentKBDocumentSitemapData) GetRefreshRate() *KnowledgeBaseDoc
 	return s.RefreshRate
 }
 
+func (s *StableDocumentKBDocumentSitemapData) GetRefreshTime() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.RefreshTime
+}
+
+func (s *StableDocumentKBDocumentSitemapData) GetRefreshTimezone() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.RefreshTimezone
+}
+
 func (s *StableDocumentKBDocumentSitemapData) GetLastSuccessUpdate() *string {
 	if s == nil {
 		return nil
 	}
 	return s.LastSuccessUpdate
+}
+
+func (s *StableDocumentKBDocumentSitemapData) GetLastRefreshScheduledFor() optionalnullable.OptionalNullable[time.Time] {
+	if s == nil {
+		return nil
+	}
+	return s.LastRefreshScheduledFor
 }
 
 func (s *StableDocumentKBDocumentSitemapData) GetPatterns() *KBDocumentSitemapPatterns {
@@ -865,18 +889,21 @@ func (e *StableDocumentTypeURL) UnmarshalJSON(data []byte) error {
 }
 
 type StableDocumentKBDocumentURLData struct {
-	Type                  StableDocumentTypeURL                       `json:"type"`
-	Name                  string                                      `json:"name"`
-	URL                   string                                      `json:"url"`
-	Title                 *string                                     `json:"title,omitzero"`
-	RefreshRate           *KnowledgeBaseDocumentRefreshRate           `json:"refreshRate,omitzero"`
-	LastSuccessUpdate     *string                                     `json:"lastSuccessUpdate,omitzero"`
-	AccessTokenID         *float64                                    `json:"accessTokenID,omitzero"`
-	IntegrationExternalID *string                                     `json:"integrationExternalID,omitzero"`
-	Source                *KnowledgeBaseDocumentIntegrationType       `json:"source,omitzero"`
-	SitemapDocumentID     optionalnullable.OptionalNullable[string]   `json:"sitemapDocumentID,omitzero"`
-	IntegrationDocumentID optionalnullable.OptionalNullable[string]   `json:"integrationDocumentID,omitzero"`
-	IntegrationPath       optionalnullable.OptionalNullable[[]string] `json:"integrationPath,omitzero"`
+	Type                    StableDocumentTypeURL                        `json:"type"`
+	Name                    string                                       `json:"name"`
+	URL                     string                                       `json:"url"`
+	Title                   *string                                      `json:"title,omitzero"`
+	RefreshRate             *KnowledgeBaseDocumentRefreshRate            `json:"refreshRate,omitzero"`
+	RefreshTime             optionalnullable.OptionalNullable[string]    `json:"refreshTime,omitzero"`
+	RefreshTimezone         optionalnullable.OptionalNullable[string]    `json:"refreshTimezone,omitzero"`
+	LastSuccessUpdate       *string                                      `json:"lastSuccessUpdate,omitzero"`
+	LastRefreshScheduledFor optionalnullable.OptionalNullable[time.Time] `json:"lastRefreshScheduledFor,omitzero"`
+	AccessTokenID           *float64                                     `json:"accessTokenID,omitzero"`
+	IntegrationExternalID   *string                                      `json:"integrationExternalID,omitzero"`
+	Source                  *KnowledgeBaseDocumentIntegrationType        `json:"source,omitzero"`
+	SitemapDocumentID       optionalnullable.OptionalNullable[string]    `json:"sitemapDocumentID,omitzero"`
+	IntegrationDocumentID   optionalnullable.OptionalNullable[string]    `json:"integrationDocumentID,omitzero"`
+	IntegrationPath         optionalnullable.OptionalNullable[[]string]  `json:"integrationPath,omitzero"`
 }
 
 func (s StableDocumentKBDocumentURLData) MarshalJSON() ([]byte, error) {
@@ -925,11 +952,32 @@ func (s *StableDocumentKBDocumentURLData) GetRefreshRate() *KnowledgeBaseDocumen
 	return s.RefreshRate
 }
 
+func (s *StableDocumentKBDocumentURLData) GetRefreshTime() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.RefreshTime
+}
+
+func (s *StableDocumentKBDocumentURLData) GetRefreshTimezone() optionalnullable.OptionalNullable[string] {
+	if s == nil {
+		return nil
+	}
+	return s.RefreshTimezone
+}
+
 func (s *StableDocumentKBDocumentURLData) GetLastSuccessUpdate() *string {
 	if s == nil {
 		return nil
 	}
 	return s.LastSuccessUpdate
+}
+
+func (s *StableDocumentKBDocumentURLData) GetLastRefreshScheduledFor() optionalnullable.OptionalNullable[time.Time] {
+	if s == nil {
+		return nil
+	}
+	return s.LastRefreshScheduledFor
 }
 
 func (s *StableDocumentKBDocumentURLData) GetAccessTokenID() *float64 {
