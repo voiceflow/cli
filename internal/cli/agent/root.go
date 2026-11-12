@@ -69,6 +69,14 @@ func InitAgentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initSearchVoicesCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initPatchVoicesCmd(AgentCmd); err != nil {
+		return err
+	}
+
 	if err := initGetInitializationWorkflowCmd(AgentCmd); err != nil {
 		return err
 	}
