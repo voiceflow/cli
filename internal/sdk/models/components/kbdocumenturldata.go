@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
+	"time"
 )
 
 type KBDocumentURLDataType string
@@ -34,18 +35,21 @@ func (e *KBDocumentURLDataType) UnmarshalJSON(data []byte) error {
 }
 
 type KBDocumentURLData struct {
-	Type                  KBDocumentURLDataType                       `json:"type"`
-	Name                  string                                      `json:"name"`
-	URL                   string                                      `json:"url"`
-	Title                 *string                                     `json:"title,omitzero"`
-	RefreshRate           *KnowledgeBaseDocumentRefreshRate           `json:"refreshRate,omitzero"`
-	LastSuccessUpdate     *string                                     `json:"lastSuccessUpdate,omitzero"`
-	AccessTokenID         *float64                                    `json:"accessTokenID,omitzero"`
-	IntegrationExternalID *string                                     `json:"integrationExternalID,omitzero"`
-	Source                *KnowledgeBaseDocumentIntegrationType       `json:"source,omitzero"`
-	SitemapDocumentID     optionalnullable.OptionalNullable[string]   `json:"sitemapDocumentID,omitzero"`
-	IntegrationDocumentID optionalnullable.OptionalNullable[string]   `json:"integrationDocumentID,omitzero"`
-	IntegrationPath       optionalnullable.OptionalNullable[[]string] `json:"integrationPath,omitzero"`
+	Type                    KBDocumentURLDataType                        `json:"type"`
+	Name                    string                                       `json:"name"`
+	URL                     string                                       `json:"url"`
+	Title                   *string                                      `json:"title,omitzero"`
+	RefreshRate             *KnowledgeBaseDocumentRefreshRate            `json:"refreshRate,omitzero"`
+	RefreshTime             optionalnullable.OptionalNullable[string]    `json:"refreshTime,omitzero"`
+	RefreshTimezone         optionalnullable.OptionalNullable[string]    `json:"refreshTimezone,omitzero"`
+	LastSuccessUpdate       *string                                      `json:"lastSuccessUpdate,omitzero"`
+	LastRefreshScheduledFor optionalnullable.OptionalNullable[time.Time] `json:"lastRefreshScheduledFor,omitzero"`
+	AccessTokenID           *float64                                     `json:"accessTokenID,omitzero"`
+	IntegrationExternalID   *string                                      `json:"integrationExternalID,omitzero"`
+	Source                  *KnowledgeBaseDocumentIntegrationType        `json:"source,omitzero"`
+	SitemapDocumentID       optionalnullable.OptionalNullable[string]    `json:"sitemapDocumentID,omitzero"`
+	IntegrationDocumentID   optionalnullable.OptionalNullable[string]    `json:"integrationDocumentID,omitzero"`
+	IntegrationPath         optionalnullable.OptionalNullable[[]string]  `json:"integrationPath,omitzero"`
 }
 
 func (k KBDocumentURLData) MarshalJSON() ([]byte, error) {
@@ -94,11 +98,32 @@ func (k *KBDocumentURLData) GetRefreshRate() *KnowledgeBaseDocumentRefreshRate {
 	return k.RefreshRate
 }
 
+func (k *KBDocumentURLData) GetRefreshTime() optionalnullable.OptionalNullable[string] {
+	if k == nil {
+		return nil
+	}
+	return k.RefreshTime
+}
+
+func (k *KBDocumentURLData) GetRefreshTimezone() optionalnullable.OptionalNullable[string] {
+	if k == nil {
+		return nil
+	}
+	return k.RefreshTimezone
+}
+
 func (k *KBDocumentURLData) GetLastSuccessUpdate() *string {
 	if k == nil {
 		return nil
 	}
 	return k.LastSuccessUpdate
+}
+
+func (k *KBDocumentURLData) GetLastRefreshScheduledFor() optionalnullable.OptionalNullable[time.Time] {
+	if k == nil {
+		return nil
+	}
+	return k.LastRefreshScheduledFor
 }
 
 func (k *KBDocumentURLData) GetAccessTokenID() *float64 {
