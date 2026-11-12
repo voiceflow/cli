@@ -17,13 +17,13 @@ import (
 
 var searchCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "take", Shorthand: "t", FieldPath: "Body.Take", Kind: flagutil.FlagKindFloat64, Optional: true, HasDefault: true, DefaultFloat: 20, Description: "The maximum number of results to return, used for pagination."},
+	{FlagName: "take", Shorthand: "t", FieldPath: "Body.Take", Kind: flagutil.FlagKindInt64, Optional: true, HasDefault: true, DefaultInt: 20, Description: "Page size, 1 to 50. There is no `limit`. Page with `skip` while `hasMore` is true."},
 	{FlagName: "skip", FieldPath: "Body.Skip", Kind: flagutil.FlagKindInt64, Optional: true, HasDefault: true, Description: "The number of results to skip, used for pagination."},
-	{FlagName: "end-date", FieldPath: "Body.EndDate", Kind: flagutil.FlagKindDateTime, Optional: true, Description: "When provided, only transcripts created at or before this ISO 8601 timestamp are returned."},
+	{FlagName: "start-date", FieldPath: "Body.StartDate", Kind: flagutil.FlagKindDate, Optional: true, Description: "Only transcripts created at or after this day (`2026-06-01`, from 00:00 UTC) or ISO 8601 timestamp."},
+	{FlagName: "end-date", FieldPath: "Body.EndDate", Kind: flagutil.FlagKindDate, Optional: true, Description: "Only transcripts created at or before this day (`2026-06-30`, to 23:59:59.999 UTC) or ISO 8601 timestamp."},
 	{FlagName: "version-param", Shorthand: "v", FieldPath: "Body.Version", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"draft", "published"}, Description: "When provided, only transcripts from the draft or published version of the environment are returned. `published` covers the current release and every past release. Applies within a single environment; the main environment is used when `environmentAlias` is omitted. (options: draft, published)"},
 	{FlagName: "filters", Shorthand: "f", FieldPath: "Body.Filters", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"filters,omitempty"`, Description: "list of values"},
 	{FlagName: "session-id", FieldPath: "Body.SessionID", Kind: flagutil.FlagKindString, Optional: true, Description: "When provided, only transcripts from this conversation session are returned."},
-	{FlagName: "start-date", FieldPath: "Body.StartDate", Kind: flagutil.FlagKindDateTime, Optional: true, Description: "When provided, only transcripts created at or after this ISO 8601 timestamp are returned."},
 	{FlagName: "environment-alias", FieldPath: "Body.EnvironmentAlias", Kind: flagutil.FlagKindString, Optional: true, Description: "When provided, only transcripts from the environment with this alias are returned."},
 	{FlagName: "release-name", Shorthand: "r", FieldPath: "Body.ReleaseName", Kind: flagutil.FlagKindString, Optional: true, Description: "When provided, only transcripts from the release with this exact name (e.g. `V1.02`) are returned, as listed in the `releases` of the environment. When several releases share the name, transcripts from all of them are returned. Applies within a single environment; the main environment is used when `environmentAlias` is omitted. Cannot be combined with `version: \"draft\"`."},
 }
@@ -33,12 +33,12 @@ func initSearchCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "search",
 		Short:   "Search transcripts",
-		Long:    "Search transcripts by project ID.",
+		Long:    "Search transcripts by project ID, one compact row per transcript.",
 		Example: "  vf transcript search --project-id <id>",
 		RunE:    runSearchCmd,
 	}
 	flagutil.RegisterFlags(cmd, searchCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableTranscriptControllerSearchRequest](searchCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableTranscriptControllerSearchV2Request](searchCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for search: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
@@ -56,7 +56,7 @@ func runSearchCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableTranscriptControllerSearchRequest](cmd, searchCmdMeta, "Body", "body")
+	req, err := flagutil.BuildRequest[operations.StableTranscriptControllerSearchV2Request](cmd, searchCmdMeta, "Body", "body")
 	if err != nil {
 		return err
 	}

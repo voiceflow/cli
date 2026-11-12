@@ -24,12 +24,12 @@ func initListCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "list",
 		Short:   "List evaluations",
-		Long:    "List all evaluations by project ID.",
+		Long:    "List all evaluations by project ID, without their judge prompts.",
 		Example: "  vf evaluation list --project-id <id>",
 		RunE:    runListCmd,
 	}
 	flagutil.RegisterFlags(cmd, listCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableEvaluationControllerListRequest](listCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableEvaluationControllerListV2Request](listCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for list: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -46,7 +46,7 @@ func runListCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableEvaluationControllerListRequest](cmd, listCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableEvaluationControllerListV2Request](cmd, listCmdMeta, "", "")
 	if err != nil {
 		return err
 	}
