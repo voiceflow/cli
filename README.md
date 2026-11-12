@@ -303,6 +303,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`update-tool-message`](docs/vf_agent_update-tool-message.md) - Update agent tool message
 * [`delete-tool-message`](docs/vf_agent_delete-tool-message.md) - Delete agent tool message
 * [`patch-pronunciation`](docs/vf_agent_patch-pronunciation.md) - Patch pronunciation dictionary
+* [`search-voices`](docs/vf_agent_search-voices.md) - Search voices
+* [`patch-voices`](docs/vf_agent_patch-voices.md) - Patch voices
 * [`get-initialization-workflow`](docs/vf_agent_get-initialization-workflow.md) - Get initialization workflow
 * [`set-initialization-workflow`](docs/vf_agent_set-initialization-workflow.md) - Set initialization workflow
 

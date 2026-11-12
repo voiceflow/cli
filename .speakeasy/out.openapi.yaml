@@ -86,7 +86,7 @@ paths:
             USE WHEN — Changing the agent's identity, brand voice, tone, or cross-cutting guardrails; adding or removing routing targets; tuning model, voice, or timeout behavior; or enabling/configuring system tools.
             BEFORE — voiceflow_agent.get to see current state and merge changes against it — each playbookID/workflowID in playbooks/workflows must already exist.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send to verify the change — include at least one adversarial probe for tone or guardrail edits.
-            DO NOT — Use this for a targeted edit to prompt or instructions; it re-sends the whole document, so reach for voiceflow_agent.patch_prompt or voiceflow_agent.patch_instructions for anything short of a rewrite, and voiceflow_agent.patch_pronunciation to add, change or remove single pronunciation dictionary entries. Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples, in knowledgeBaseTool.query, in callForwardTool.address or .extension, or in a playbooks[] / workflows[] routing condition operand — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in prompt or instructions for a tool, playbook or workflow this agent does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool with voiceflow_tool.create or register the target in playbooks/workflows first, then write the text that uses it.
+            DO NOT — Use this for a targeted edit to prompt or instructions; it re-sends the whole document, so reach for voiceflow_agent.patch_prompt or voiceflow_agent.patch_instructions for anything short of a rewrite, voiceflow_agent.patch_pronunciation to add, change or remove single pronunciation dictionary entries, and voiceflow_agent.patch_voices to pick a catalog voice as the default voice or to add, change or remove one language voice (voice.localeOverrides). Put task-specific instructions ("when the user asks about billing, do X") in prompt — that belongs in a playbook; prompt is for cross-cutting identity and rules only, and its tone section must carry WRONG/RIGHT examples. Add a target to playbooks/workflows without also adding a routing_table entry in instructions — registering a target makes it reachable, but the LLM still needs an explicit rule to choose it. Set voice stability or similarity boost to 0 or 1 (extremes sound monotone or over-imitative) or talking speed outside 0.7-1.3 (the API rejects it). Change the default model without warning the user that prompts tuned for the old model may need re-evaluation. Leave default system tool descriptions in place when the project has specific use cases — vague defaults cause under- or over-use. Enable knowledgeBaseTool before documents exist, or callForwardTool on a non-phone-call project. Put a secret reference in generative message examples, in knowledgeBaseTool.query, in callForwardTool.address or .extension, or in a playbooks[] / workflows[] routing condition operand — those fields resolve against a map that holds no secret, so the name is kept as literal text and reported in unresolvedReferences. Secrets belong in a tool input's defaultValue or a knowledgeBaseTool filter defaultValue, which the runtime resolves without the model ever seeing the value. Write a backticked `name` in prompt or instructions for a tool, playbook or workflow this agent does not have — it is kept as inline code and reported in unresolvedMentions rather than linked, so attach the tool with voiceflow_tool.create or register the target in playbooks/workflows first, then write the text that uses it.
         cli:
           command: agent update
       x-speakeasy-group: agent
@@ -800,6 +800,166 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableAgentPronunciationPatchResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/voice-catalog:
+    get:
+      operationId: StableAgentController_searchVoices
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: search_voices
+          operationDescription: |-
+            WHAT — Search the ElevenLabs and Cartesia voice catalog: the voices the agent's voice settings page lists for those two providers. Each result has its voiceID, name, gender, accent, a short description, its languages and a link to an audio sample, best match first.
+            USE WHEN — The user names a voice ("use Vikram"), describes one ("a calm British woman"), or wants a voice for a language, before voiceflow_agent.patch_voices.
+            AFTER — When the user named a voice and more than one matches, show the user the matches with their sample links and ask which one they want; when the user only described a voice, choose the best native match and say which one you chose. Then voiceflow_agent.patch_voices with that voiceID.
+            HOW — Every word of search must appear in the name, description, accent or ID, ignoring case; a whole voice ID returns that voice alone. language keeps the voices that speak it and lists native speakers first. Page with offset and nextOffset; total counts every match.
+            DO NOT — Invent or guess a voiceID. Take it from this result.
+            DO NOT — Look here for a Rime, Soniox, Google, Amazon or Microsoft voice, an older built-in voice, or a user's own ElevenLabs voice ID; the catalog does not hold them. Those are set on the voice settings page, or through voiceflow_agent.update with the user's exact settings: voice.tts for the default voice; for a language voice, the whole voice.localeOverrides list read with voiceflow_agent.get, every other entry unchanged plus the one new or changed entry.
+            NOTE — An empty list means nothing matched. When the catalog cannot be loaded the call answers 503; try again a minute later.
+        cli:
+          command: agent search-voices
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: search-voices
+      summary: Search voices
+      description: Search the ElevenLabs and Cartesia voice catalog.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: search
+          required: false
+          in: query
+          schema:
+            description: 'Words to find in the name, description or accent, or one whole voice ID. Every word must match, ignoring case: "vikram" or "calm british".'
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: language
+          required: false
+          in: query
+          schema:
+            description: 'Only voices that speak this language: a language ("hi") or a language and region ("en-IN"). Native speakers come first, and with a region those native to it before the rest.'
+            type: string
+            minLength: 2
+            maxLength: 35
+        - name: provider
+          required: false
+          in: query
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/StableCatalogVoiceProvider'
+        - name: gender
+          required: false
+          in: query
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/StableCatalogVoiceGender'
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            description: The most voices to return in one page.
+            type: integer
+            minimum: 1
+            maximum: 25
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            description: 'How many matching voices to skip: nextOffset from the previous page.'
+            type: integer
+            minimum: 0
+            maximum: 9.007199254740991e+15
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableVoiceCatalogSearchResponse'
+      tags:
+        - Agent
+      security:
+        - token: []
+  /v1/stable/agent/voices:
+    patch:
+      operationId: StableAgentController_patchVoices
+      x-vf:
+        mcp:
+          tool: voiceflow_agent
+          toolDescription: |-
+            The Main Agent — the project-level configuration every conversation runs through. One Agent per Project, read and written as a single object spanning five layers:
+            Global Prompt — markdown prepended to every LLM call the agent makes: Agent routing, every Playbook, every Operator step inside Workflows. It's the top of the prompt stack: identity, tone, formatting rules, guardrails. Structure it with markdown headings, never XML tags — the editor renders markdown and stores tags as literal text. Persona sections: ## Identity, ## Goal, ## Tone, ## Formatting. Guardrail sections, in the same field after the persona: ## Terminology, ## Escalation, ## Silent execution, ## Data handling. The ## Tone section MUST carry WRONG/RIGHT examples; abstract tone descriptions don't constrain output. Total length 100-1000 words. An opt-in flag appends Voiceflow's default prompting guidelines.
+            Instructions — markdown-structured routing logic telling the LLM how to choose among the registered playbooks and workflows. Required sections: ## Routing (overall strategy), ## Routing table (per-target decision rules), ## Clarification (how to ask follow-ups when intent is ambiguous), ## Rules (hard constraints like "never re-greet", in > callouts). Strictly routing logic — persona lives in the global prompt, domain content lives in Playbook Instructions.
+            Routing registry — the structured list of targets the Main Agent can route to, each with its own routing description. The registry controls WHICH targets are reachable; the instructions control WHEN each is picked — a target registered without a matching ## Routing table entry is reachable but never chosen.
+            Behavior — project-wide defaults affecting every LLM call: default model + temperature, priority processing, outage protection (per-provider fallback models). For phone-call projects, this layer also covers TTS (provider/voice/synthesis/tuning/pronunciation dictionary) and STT (provider/model/language/keypad input).
+            System tools — Knowledge Base, web search, buttons, cards, carousels, skip turn, call forward, and end — first-party platform behaviors, distinct from Functions/APIs (user-defined code/HTTP) and Integrations (third-party services). Enabled here, they're inherited by every playbook, which may customize the description but cannot disable; per-playbook overrides live on the playbook itself. Each carries a configurable LLM-routing description — write it in WHAT/WHEN format (WHAT the tool does AND WHEN to pick it). Defaults are reasonable but often too generic (e.g. "Use this when you have something to say" vs. "Use to render a list of available time slots as tappable buttons"). A separate ordering controls the sequence of the agent's exit paths.
+            Modifications take effect only after the environment is recompiled.
+            Predecessor: select the project and environment first, and check the Project type — some voice fields are phone-call only; create a playbook before wiring it into the routing registry.
+            Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
+          operation: patch_voices
+          operationDescription: |-
+            WHAT — Set the agent's default voice, or add, change or remove a language voice (the voice a conversation speaks with when its locale variable matches), with a voice from the ElevenLabs and Cartesia catalog. Every other language voice, the tuning and the rest of the voice settings stay as they are.
+            USE WHEN — The user chose a voice for the agent, or wants another voice for callers in one language.
+            BEFORE — voiceflow_agent.search_voices for the voiceID. Call voiceflow_agent.get only when you need the current voices, for example to see which language voices the agent has; this call keeps everything it does not name.
+            AFTER — voiceflow_environment.compile; calls speak with the new voice only after that.
+            HOW — primary replaces the default voice. Each setOverrides entry adds a language voice, or replaces the one the agent has for that locale. removeOverrides deletes the language voice of each locale, whatever its provider. Locales match ignoring case and _, as the runtime does; a conversation in fr-CA speaks with the fr-CA voice, else the fr voice, else the default voice. A voice of the same provider keeps that slot's tuning and model; a provider change starts from that provider's defaults. A new language voice starts from the default voice when the provider is the same, else from that provider's defaults. Leave model out to keep the current one.
+            DO NOT — Invent a voiceID, or pick for the user when several voices match the name they gave: search, show the user the matches with their sample links, and send the voiceID they chose. An ID that is not in the catalog is refused.
+            DO NOT — Send voice.tts or voice.localeOverrides through voiceflow_agent.update to change one catalog voice. voice.tts replaces the whole default voice with its tuning, and voice.localeOverrides replaces every language voice; both lose any change made since your read.
+            DO NOT — Change several voices in parallel calls. Send them in one call, with one setOverrides entry per locale.
+            DO NOT — Name the same locale twice in one call, in setOverrides or removeOverrides or both; the request is refused.
+            NOTE — Only ElevenLabs and Cartesia catalog voices. A Rime, Soniox, Google, Amazon or Microsoft voice, an older built-in voice, or a user's own ElevenLabs voice ID is set on the voice settings page, or through voiceflow_agent.update with the user's exact settings: voice.tts for the default voice; for a language voice, the whole voice.localeOverrides list read with voiceflow_agent.get, every other entry unchanged plus the one new or changed entry. When any check fails nothing is written. A project without voice settings answers 404, and when the catalog cannot be loaded the call answers 503.
+        cli:
+          command: agent patch-voices
+      x-speakeasy-group: agent
+      x-speakeasy-name-override: patch-voices
+      summary: Patch voices
+      description: Set the agent's default voice, or add, change or remove one language voice, from the voice catalog.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableAgentVoicesPatchRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableAgentVoicesPatchResponse'
       tags:
         - Agent
       security:
@@ -25606,6 +25766,198 @@ components:
             type: string
             minLength: 1
             maxLength: 128
+      additionalProperties: false
+    StableCatalogVoice:
+      type: object
+      properties:
+        provider:
+          $ref: '#/components/schemas/StableCatalogVoiceProvider'
+        voiceID:
+          type: string
+          description: The ID to pick the voice with.
+        name:
+          type: string
+        gender:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/StableCatalogVoiceGender'
+        accent:
+          nullable: true
+          type: string
+        description:
+          nullable: true
+          description: The vendor's description, cut to 200 characters.
+          type: string
+        nativeLanguages:
+          type: array
+          items:
+            type: string
+          description: 'The languages the voice is native in: a language and region where the catalog gives one ("en-IN"), else a language ("hi").'
+        otherLanguages:
+          type: array
+          items:
+            type: string
+          description: Other languages the voice can speak, as language codes.
+        featured:
+          type: boolean
+          description: The vendor recommends the voice for one of its languages.
+        previewURL:
+          nullable: true
+          description: 'A link to an audio sample, for the user to hear the voice: in the language asked for when the catalog has one, else in the voice''s own language.'
+          type: string
+      required:
+        - provider
+        - voiceID
+        - name
+        - gender
+        - accent
+        - description
+        - nativeLanguages
+        - otherLanguages
+        - featured
+        - previewURL
+    StableCatalogVoiceProvider:
+      type: string
+      enum:
+        - elevenlabs
+        - cartesia
+      description: A TTS provider whose voices are in the voice catalog.
+      x-enumNames:
+        - ELEVENLABS
+        - CARTESIA
+    StableCatalogVoiceGender:
+      type: string
+      enum:
+        - male
+        - female
+        - neutral
+      description: How the vendor describes the voice.
+      x-enumNames:
+        - MALE
+        - FEMALE
+        - NEUTRAL
+    StableVoiceCatalogSearchResponse:
+      type: object
+      properties:
+        voices:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableCatalogVoice'
+          description: This page of the matching voices, best match first.
+        total:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many voices match, across every page.
+        nextOffset:
+          nullable: true
+          description: The offset of the next page, or null when this page reaches the last match.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+      required:
+        - voices
+        - total
+        - nextOffset
+    StableAgentVoicesPatchResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable message confirming the update.
+        added:
+          type: array
+          items:
+            type: string
+          description: Locales that got a language voice they did not have.
+        replaced:
+          type: array
+          items:
+            type: string
+          description: Locales whose language voice changed.
+        removed:
+          type: array
+          items:
+            type: string
+          description: Locales whose language voice was deleted.
+        notFound:
+          type: array
+          items:
+            type: string
+          description: Locales in removeOverrides the agent had no language voice for. Nothing was deleted for them.
+      required:
+        - message
+        - added
+        - replaced
+        - removed
+        - notFound
+    StableVoicePick:
+      type: object
+      properties:
+        provider:
+          $ref: '#/components/schemas/StableCatalogVoiceProvider'
+        voiceID:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: The voiceID a voice search returned. Never a guessed or made-up ID.
+        model:
+          description: The TTS model. Leave it out to keep the current model, or to use the provider's default model when the provider changes.
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+        - provider
+        - voiceID
+      additionalProperties: false
+    StableVoiceOverridePick:
+      type: object
+      properties:
+        locale:
+          type: string
+          minLength: 2
+          maxLength: 35
+          description: A language ("fr") or a language and region ("fr-CA"), as the conversation's `locale` variable holds it.
+        provider:
+          $ref: '#/components/schemas/StableCatalogVoiceProvider'
+        voiceID:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: The voiceID a voice search returned. Never a guessed or made-up ID.
+        model:
+          description: The TTS model. Leave it out to keep the current model, or to use the provider's default model when the provider changes.
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+        - locale
+        - provider
+        - voiceID
+      additionalProperties: false
+    StableAgentVoicesPatchRequest:
+      type: object
+      properties:
+        primary:
+          description: 'The default voice: the one a conversation speaks with unless a language voice matches its locale.'
+          allOf:
+            - $ref: '#/components/schemas/StableVoicePick'
+        setOverrides:
+          description: Language voices to add, or to change when the agent already has one for that locale.
+          minItems: 1
+          maxItems: 50
+          type: array
+          items:
+            $ref: '#/components/schemas/StableVoiceOverridePick'
+        removeOverrides:
+          description: Locales whose language voice to delete, as stored. They match ignoring case and _, as the runtime matches them.
+          minItems: 1
+          maxItems: 50
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
       additionalProperties: false
     StableAgentInitializationWorkflowResponse:
       type: object
