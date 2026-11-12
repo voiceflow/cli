@@ -30,6 +30,10 @@ func InitTranscriptRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initGrepCmd(TranscriptCmd); err != nil {
+		return err
+	}
+
 	if err := initGetCmd(TranscriptCmd); err != nil {
 		return err
 	}

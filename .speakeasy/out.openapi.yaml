@@ -2879,6 +2879,94 @@ paths:
         - Environment
       security:
         - token: []
+  /v1/stable/environment/{environmentAlias}/diff:
+    get:
+      operationId: StableEnvironmentController_diff
+      x-vf:
+        mcp:
+          tool: voiceflow_environment
+          toolDescription: |-
+            Manage the versioned copies of a Project — every Project starts with one Main environment and can have up to nine more, each with its own draft + live version. Environments are how Voiceflow ships changes: publish promotes a draft to live within one environment, merge promotes one environment into Main, and traffic-split routes live traffic across them.
+            Predecessor: select the project first.
+            Successor: run a test conversation after a clone, or publish to ship the draft.
+          operation: diff
+          operationDescription: |-
+            WHAT — Compare an environment's draft with the snapshot taken at its last publish: what a publish would promote. Returns exact created, updated and deleted counts and a capped list of changed resources by type.
+            Same environment only, since IDs are kept across a publish. It does not compare two projects by name, and an edit that only moves blocks on the canvas is not reported. An environment that was never published has no snapshot, and the call says so.
+            USE WHEN — Before publishing, or when the user asks what changed since the last release.
+            AFTER — voiceflow_environment.publish when the changes are the ones the user expects.
+        cli:
+          command: environment diff
+      x-speakeasy-group: environment
+      x-speakeasy-name-override: diff
+      summary: Diff environment
+      description: Compare an environment's draft with its last publish.
+      parameters:
+        - name: environmentAlias
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEnvironmentDiffResponse'
+      tags:
+        - Environment
+      security:
+        - token: []
+  /v1/stable/environment/{environmentAlias}/audit-wiring:
+    get:
+      operationId: StableEnvironmentController_auditWiring
+      x-vf:
+        mcp:
+          tool: voiceflow_environment
+          toolDescription: |-
+            Manage the versioned copies of a Project — every Project starts with one Main environment and can have up to nine more, each with its own draft + live version. Environments are how Voiceflow ships changes: publish promotes a draft to live within one environment, merge promotes one environment into Main, and traffic-split routes live traffic across them.
+            Predecessor: select the project first.
+            Successor: run a test conversation after a clone, or publish to ship the draft.
+          operation: audit_wiring
+          operationDescription: |-
+            WHAT — Audit how the environment's tools, functions and variables connect: orphan functions, outputs nothing captures, malformed bindings, args.secrets reads, empty tool descriptions and more. Returns one list per check.
+            USE WHEN — A behavioural bug report ("the agent keeps doing X"), or before changing a project you did not build.
+        cli:
+          command: environment audit-wiring
+      x-speakeasy-group: environment
+      x-speakeasy-name-override: audit-wiring
+      summary: Audit environment wiring
+      description: Check how tools, functions and variables connect.
+      parameters:
+        - name: environmentAlias
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEnvironmentAuditResponse'
+      tags:
+        - Environment
+      security:
+        - token: []
   /v2/stable/environment/{environmentAlias}/export:
     get:
       operationId: StableEnvironmentController_exportV2
@@ -5199,9 +5287,9 @@ paths:
         - API Tool Variable
       security:
         - token: []
-  /v1/stable/transcript/search:
+  /v2/stable/transcript/search:
     post:
-      operationId: StableTranscriptController_search
+      operationId: StableTranscriptController_searchV2
       x-vf:
         mcp:
           tool: voiceflow_transcript
@@ -5211,14 +5299,16 @@ paths:
             Successor: run evaluations on the selected transcripts; or head back to the build surfaces (playbooks, functions, and so on) once root cause is identified.
           operation: search
           operationDescription: |-
-            WHAT — Search transcripts by date range, tags, property values, or evaluation results.
+            WHAT — Search transcripts by date range, session, environment, release, property values or evaluation results. Returns one compact row each: IDs, times, duration, property and evaluation values with their definition IDs, and a link.
+            Page size is `take` (1 to 50, default 20). Page with `skip` while `hasMore` is true. Dates take a day (`2026-06-01`) or a full ISO 8601 timestamp.
             USE WHEN — Finding transcripts to investigate or evaluate — "all transcripts from yesterday where the Schedule playbook was active and CSAT was poor."
+            AFTER — voiceflow_transcript.get to read one, or voiceflow_transcript.query_logs to filter one transcript's log, or voiceflow_transcript.grep to find where something was said.
         cli:
           command: transcript search
       x-speakeasy-group: transcript
       x-speakeasy-name-override: search
       summary: Search transcripts
-      description: Search transcripts by project ID.
+      description: Search transcripts by project ID, one compact row per transcript.
       parameters:
         - name: projectID
           required: true
@@ -5231,21 +5321,67 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StableTranscriptSearchRequest'
+              $ref: '#/components/schemas/StableTranscriptSearchRequestV2'
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableTranscriptListResponse'
+                $ref: '#/components/schemas/StableTranscriptSearchResponseV2'
       tags:
         - Transcript
       security:
         - token: []
-  /v1/stable/transcript/{transcriptID}:
+  /v1/stable/transcript/grep:
+    post:
+      operationId: StableTranscriptController_grep
+      x-vf:
+        mcp:
+          tool: voiceflow_transcript
+          toolDescription: |-
+            Read and search post-hoc transcripts of live conversations. Searchable by date range, tags, custom transcript properties, and evaluation results. The transcript surface is the heart of the iterate loop — it's where you see what actually happened so you can fix the build.
+            Predecessor: read the project first.
+            Successor: run evaluations on the selected transcripts; or head back to the build surfaces (playbooks, functions, and so on) once root cause is identified.
+          operation: grep
+          operationDescription: |-
+            WHAT — Find a pattern in what was said across many transcripts. Scans the dialogue of up to 60 transcripts and returns only the matches: each transcript's ID, its match count and up to 5 matching lines.
+            Narrow the scan with a date range or an environment, or pass transcriptIDs you already have. `capped` means more transcripts were in range, or more unique transcriptIDs were given, than were scanned.
+            USE WHEN — Finding or counting where something was said ("transfer to a human", "I don't know", an error message) before reading only the transcripts that matched.
+            AFTER — voiceflow_transcript.get on the hits.
+        cli:
+          command: transcript grep
+      x-speakeasy-group: transcript
+      x-speakeasy-name-override: grep
+      summary: Grep transcripts
+      description: Find a pattern in the dialogue of many transcripts.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTranscriptGrepRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTranscriptGrepResponse'
+      tags:
+        - Transcript
+      security:
+        - token: []
+  /v2/stable/transcript/{transcriptID}:
     get:
-      operationId: StableTranscriptController_get
+      operationId: StableTranscriptController_getV2
       x-vf:
         mcp:
           tool: voiceflow_transcript
@@ -5255,14 +5391,16 @@ paths:
             Successor: run evaluations on the selected transcripts; or head back to the build surfaces (playbooks, functions, and so on) once root cause is identified.
           operation: get
           operationDescription: |-
-            WHAT — Fetch a single transcript.
-            USE WHEN — Diving into a specific failing conversation.
+            WHAT — Read one transcript. `format` picks the view: `summary` (default) gives the turns, the tool calls and a turn count; `formatted` adds the debug traces and the first system prompt of each agent, which explains why the agent said something; `logs` gives the raw log entries.
+            USE WHEN — Diving into a specific conversation.
+            BEFORE — voiceflow_transcript.search for the transcriptID.
+            DO NOT — Ask for `logs` to read a conversation. A three-minute call can be hundreds of thousands of tokens. Use `summary` or `formatted`, or filter the log with voiceflow_transcript.query_logs.
         cli:
           command: transcript get
       x-speakeasy-group: transcript
       x-speakeasy-name-override: get
       summary: Get transcript
-      description: Get a transcript by ID.
+      description: Get a transcript by ID, in the chosen view.
       parameters:
         - name: transcriptID
           required: true
@@ -5275,17 +5413,32 @@ paths:
           schema:
             type: string
             description: The ID of the project to operate on.
+        - name: format
+          required: false
+          in: query
+          schema:
+            default: summary
+            description: '`summary` (default): the turns, the tool calls and a turn count. `formatted`: every turn with the debug traces and the first system prompt of each agent. `logs`: the raw log entries, which can be very large.'
+            type: string
+            enum:
+              - summary
+              - formatted
+              - logs
+            x-enumNames:
+              - SUMMARY
+              - FORMATTED
+              - LOGS
         - name: filterConversation
           required: false
           in: query
           schema:
-            description: When enabled, only `text`, `speak` and `live-agent-handoff` traces will be returned.
+            description: 'Only with `format: "logs"`. When enabled, only `text`, `speak` and `live-agent-handoff` traces are returned.'
             type: boolean
         - name: customTraceTypes
           required: false
           in: query
           schema:
-            description: Additional trace types to return when `filterConversation` is enabled.
+            description: 'Only with `format: "logs"`. Additional trace types to return when `filterConversation` is enabled.'
             anyOf:
               - type: string
               - type: array
@@ -5297,7 +5450,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableTranscriptWithLogsResponse'
+                $ref: '#/components/schemas/StableTranscriptGetResponseV2'
       tags:
         - Transcript
       security:
@@ -6100,6 +6253,64 @@ paths:
         - Function
       security:
         - token: []
+  /v1/stable/function/{functionID}/check:
+    post:
+      operationId: StableFunctionController_check
+      x-vf:
+        mcp:
+          tool: voiceflow_function
+          toolDescription: |-
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
+            Predecessor: select the project and environment first; create any project variables the function reads or writes.
+            Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
+          operation: check
+          operationDescription: |-
+            WHAT — Run a function's saved code on up to 12 test cases in one call. Returns each case's exit path, output variables and error, and whether it matched expectPath and expectOutputs.
+            It changes nothing. Every case runs with the sandbox's network removed. It refuses code that mentions fetch, eval, Function, constructor, globalThis, import or require, and any input with a {name} token, so it never acts outside Voiceflow or reads a secret. Cases that would start after 120 seconds are not run; send them in another call.
+            USE WHEN — After you create or change a function, before you say it works: a normal case, each limit one below, at and one above, an empty value, a wrong type, and "0" (what an unset variable sends).
+            AFTER — voiceflow_function.execute only when the user asks for a real run of a function the check refused.
+        cli:
+          command: function check
+      x-speakeasy-group: function
+      x-speakeasy-name-override: check
+      summary: Check function
+      description: Run a function's saved code on test cases and compare the results.
+      parameters:
+        - name: functionID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableFunctionCheckRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableFunctionCheckResponse'
+      tags:
+        - Function
+      security:
+        - token: []
   /v1/stable/function-variable:
     get:
       operationId: StableFunctionVariableController_list
@@ -6715,26 +6926,27 @@ paths:
         - Function Path
       security:
         - token: []
-  /v1/stable/evaluation:
+  /v2/stable/evaluation:
     get:
-      operationId: StableEvaluationController_list
+      operationId: StableEvaluationController_listV2
       x-vf:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: list
           operationDescription: |-
-            WHAT — List all evaluations defined for the project.
-            USE WHEN — Auditing eval coverage or finding an evaluationID to run/edit.
+            WHAT — List the project's evaluations: ID, name, type, whether it is on, whether it is built in, and its description. Judge prompts are left out.
+            USE WHEN — Auditing eval coverage, or finding an evaluationID to run, queue or edit.
+            AFTER — voiceflow_evaluation.get for one evaluation's criteria.
         cli:
           command: evaluation list
       x-speakeasy-group: evaluation
       x-speakeasy-name-override: list
       summary: List evaluations
-      description: List all evaluations by project ID.
+      description: List all evaluations by project ID, without their judge prompts.
       parameters:
         - name: projectID
           required: true
@@ -6748,18 +6960,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableEvaluationListResponse'
+                $ref: '#/components/schemas/StableEvaluationListResponseV2'
       tags:
         - Evaluation
       security:
         - token: []
+  /v1/stable/evaluation:
     post:
       operationId: StableEvaluationController_create
       x-vf:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: create
@@ -6804,7 +7017,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: get
@@ -6846,7 +7059,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: update
@@ -6894,7 +7107,7 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: delete
@@ -6937,13 +7150,13 @@ paths:
         mcp:
           tool: voiceflow_evaluation
           toolDescription: |-
-            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run against one transcript per call, retrieve per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
             Predecessor: search transcripts to find the ones to evaluate.
             Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
           operation: run
           operationDescription: |-
-            WHAT — Run a single evaluation against a transcript. One transcript per call — there is no batch form.
-            USE WHEN — Smoke-testing a calibration tweak on one transcript before repeating the call across the rest.
+            WHAT — Run one evaluation against one transcript and wait for its score.
+            USE WHEN — Smoke-testing a calibration tweak on one transcript. For many transcripts, use voiceflow_evaluation.queue_runs.
         cli:
           command: evaluation run
       x-speakeasy-group: evaluation
@@ -6975,6 +7188,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableEvaluationRunResponse'
+      tags:
+        - Evaluation
+      security:
+        - token: []
+  /v1/stable/evaluation/queue-runs:
+    post:
+      operationId: StableEvaluationController_queueRuns
+      x-vf:
+        mcp:
+          tool: voiceflow_evaluation
+          toolDescription: |-
+            LLM-as-judge scoring of transcripts. Define criteria (Binary, Rating, Options, Text), run one against one transcript, or queue many against many, and read per-transcript results. Built-in default evaluations auto-run on every new transcript; the ones returned by list can be disabled via update but never deleted. Custom evaluations require calibration before use — an uncalibrated eval will drive every downstream optimization toward wrong fixes.
+            Predecessor: search transcripts to find the ones to evaluate.
+            Successor: fixes on the build surfaces (playbook instructions, the agent's global prompt, and so on) based on the failure patterns the eval surfaces.
+          operation: queue_runs
+          operationDescription: |-
+            WHAT — Queue evaluations against transcripts: every evaluation in evaluationIDs against every transcript in transcriptIDs, up to 10 by 100 in one call. Asynchronous: the result counts what was queued, and the scores reach the transcripts later. It spends the workspace's evaluation quota, so say what it will cost first.
+            A transcriptCount lower than the number of IDs sent means some were skipped because they belong to another project, have not ended, or have expired. Only a quota skip names them, under warning.skippedTranscriptIDs.
+            USE WHEN — Scoring many transcripts at once, such as a sweep of yesterday's conversations.
+            BEFORE — voiceflow_evaluation.list for evaluation IDs and voiceflow_transcript.search for transcript IDs. Say what the run will cost before you queue it.
+            AFTER — voiceflow_transcript.search or voiceflow_transcript.get later, to read the scores.
+            DO NOT — Report scores right after queueing. Judging takes a while.
+        cli:
+          command: evaluation queue-runs
+      x-speakeasy-group: evaluation
+      x-speakeasy-name-override: queue-runs
+      summary: Queue evaluation runs
+      description: Queue evaluations against transcripts.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableEvaluationQueueRunsRequest'
+      responses:
+        "202":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEvaluationQueueRunsResponse'
       tags:
         - Evaluation
       security:
@@ -12002,6 +12263,58 @@ paths:
         - Test Run
       security:
         - token: []
+  /v1/stable/test-run/wait:
+    post:
+      operationId: StableTestRunController_wait
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: wait_runs
+          operationDescription: |-
+            WHAT — Wait for test runs to finish. Checks the runs every 5 seconds and returns when every run has passed, failed or been canceled, or when the time is up (45 seconds by default, 120 at most). Returns each run with its status, its passed checks and its failed checks with their reasons.
+            USE WHEN — Right after voiceflow_test.create_run or voiceflow_test.create_many_runs, instead of reading the runs again and again with voiceflow_test.get_run.
+            AFTER — When `done` is false, follow the note.
+        cli:
+          command: test run wait
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: wait
+      summary: Wait for runs
+      description: Wait until runs finish or the time is up.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunWaitRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunWaitResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
   /v1/stable/test-run/{runID}:
     get:
       operationId: StableTestRunController_get
@@ -12374,7 +12687,7 @@ paths:
             Give every block a key, and give a key to any step or branch whose ID you want back. Links name blocks by key. The response maps each key to the ID the server created. An End that says nothing is { "kind": "end" }, with no content.
             USE WHEN — building a new workflow. To change an existing one, use the block and step operations. Send only a message or prompt ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message or prompt with that text.
             BEFORE — create the messages the steps say with voiceflow_message.create_many, one message per step, and any new variables with voiceflow_variable.create_many.
-            AFTER — add the workflow ID to the agent's workflows with voiceflow_agent.update, then add a routing rule with voiceflow_agent.patch_instructions. Until both are done, nothing can reach the workflow.
+            AFTER — when the Main Agent should route to it, add its ID to the agent's workflows with voiceflow_agent.update, then a routing rule with voiceflow_agent.patch_instructions. Skip both for an Initialization workflow, one another workflow runs, or a workflow tool.
             DO NOT — put a branching step anywhere but last in its block.
             DO NOT — send coordinates; the server places blocks.
         cli:
@@ -12840,7 +13153,7 @@ paths:
             WHAT — Copies a workflow under a new name in one call. The copy gets its own copies of the messages and prompts its steps use, of the playbooks its Playbook and Crew steps run, and of the agents its Operator steps run.
             Blocks and steps keep their IDs and their places on the canvas. A Go to block into the original points into the copy. A copied playbook has the original's instructions, paths and tool messages, and attaches the same tools and functions. Workflow steps and tools still name the same workflows and tools as the original, and a step that names the project's main agent keeps naming it. ids maps each copied message, prompt, playbook and Operator agent from the original's ID to the copy's.
             USE WHEN — the user wants a variant of an existing workflow, or a copy under another name. Copy it, then change the copy with the block and step operations.
-            AFTER — change the copy's text and playbooks through the IDs in ids. When the copy should run, register it as a new workflow: read the agent with voiceflow_agent.get, send every workflow already in its workflows plus the copy with voiceflow_agent.update, then add a routing rule with voiceflow_agent.patch_instructions.
+            AFTER — change the copy's text and playbooks through the IDs in ids. When the copy should be a Main Agent route, register it as a new workflow: read the agent with voiceflow_agent.get, send every workflow already in its workflows plus the copy with voiceflow_agent.update, then add a routing rule with voiceflow_agent.patch_instructions.
             DO NOT — rebuild a workflow block by block to copy it.
             DO NOT — edit a message, prompt or playbook by its ID in the original; the original still uses it.
         cli:
@@ -15052,6 +15365,20 @@ components:
         - flowID
         - agentID
         - description
+    ToolNodeDataMcpIntegrationCaptureResponse:
+      type: object
+      properties:
+        path:
+          type: string
+        variableOrEntityID:
+          nullable: true
+          type: string
+        captureType:
+          allOf:
+            - $ref: '#/components/schemas/ToolNodeCaptureType'
+      required:
+        - path
+        - variableOrEntityID
     AgentSettings:
       type: object
       properties:
@@ -15378,20 +15705,6 @@ components:
         - variableID
         - description
         - agentPathToolID
-    ToolNodeDataMcpIntegrationCaptureResponse:
-      type: object
-      properties:
-        path:
-          type: string
-        variableOrEntityID:
-          nullable: true
-          type: string
-        captureType:
-          allOf:
-            - $ref: '#/components/schemas/ToolNodeCaptureType'
-      required:
-        - path
-        - variableOrEntityID
     PromptSettings:
       type: object
       properties:
@@ -16095,49 +16408,198 @@ components:
     JsonSchema:
       type: object
       additionalProperties: {}
-    PhoneNumberProvider:
+    ProjectMember:
+      type: object
+      properties:
+        creatorID:
+          type: number
+        platformData:
+          type: object
+          additionalProperties: {}
+      required:
+        - creatorID
+        - platformData
+    ProjectPrivacy:
       type: string
       enum:
-        - twilio
-        - vonage
-        - telnyx
-        - voiceflow-telnyx
-        - voiceflow-sip
-        - byo-sip
+        - public
+        - private
       x-enumNames:
-        - TWILIO
-        - VONAGE
-        - TELNYX
-        - VOICEFLOW_TELNYX
-        - VOICEFLOW_SIP
-        - BYO_SIP
-    VersionVariant:
-      type: string
-      enum:
-        - draft
-        - published
-      x-enumNames:
-        - DRAFT
-        - PUBLISHED
-    ProgramLine:
+        - PUBLIC
+        - PRIVATE
+    ProjectSticker:
       type: object
       properties:
         id:
           type: string
-        type:
+        url:
           type: string
       required:
         - id
+        - url
+    ProjectPrototype:
+      type: object
+      properties:
+        nlp:
+          oneOf:
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - LUIS
+                  x-enumNames:
+                    - LUIS
+                appID:
+                  type: string
+                resourceID:
+                  type: string
+              required:
+                - type
+                - appID
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - VFNLU
+                  x-enumNames:
+                    - VFNLU
+              required:
+                - type
+        data: {}
+        trainedModel:
+          allOf:
+            - $ref: '#/components/schemas/PrototypeModel'
+        lastTrainedTime:
+          type: number
+      required:
+        - nlp
+        - data
+    PrototypeModel:
+      type: object
+      properties:
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeSlot'
+        intents:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeIntent'
+      required:
+        - slots
+        - intents
+    PrototypeSlot:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: object
+          properties:
+            value:
+              type: string
+        color:
+          type: string
+        inputs:
+          type: array
+          items:
+            type: string
+        description:
+          nullable: true
+          type: string
+      required:
+        - key
+        - name
         - type
+        - inputs
+    PrototypeIntent:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeIntentSlot'
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeIntentInput'
+        noteID:
+          nullable: true
+          type: string
+        description:
+          type: string
+      required:
+        - key
+        - name
+        - inputs
+    PrototypeIntentSlot:
+      type: object
+      properties:
+        id:
+          type: string
+        dialog:
+          $ref: '#/components/schemas/PrototypeIntentSlotDialog'
+        required:
+          type: boolean
+      required:
+        - id
+        - dialog
+        - required
+    PrototypeIntentSlotDialog:
+      type: object
+      properties:
+        prompt:
+          type: array
+          items: {}
+        confirm:
+          type: array
+          items: {}
+        utterances:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeIntentInput'
+        confirmEnabled:
+          type: boolean
+      required:
+        - prompt
+        - confirm
+        - utterances
+        - confirmEnabled
+    PrototypeIntentInput:
+      type: object
+      properties:
+        text:
+          type: string
+        slots:
+          type: array
+          items:
+            type: string
+      required:
+        - text
+    ProjectReportTag:
+      type: object
+      properties:
+        label:
+          type: string
+        tagID:
+          type: string
+      required:
+        - label
+        - tagID
+    ProjectNLUSettings:
+      type: object
+      properties:
+        classifyStrategy:
+          type: string
       additionalProperties: {}
-    SecretVisibility:
-      type: string
-      enum:
-        - restricted
-        - masked
-      x-enumNames:
-        - RESTRICTED
-        - MASKED
     ProjectEnvironment:
       type: object
       properties:
@@ -16357,331 +16819,6 @@ components:
         - collection
         - id
         - name
-    Secret:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        visibility:
-          $ref: '#/components/schemas/SecretVisibility'
-        hasValue:
-          type: boolean
-        assistantID:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          nullable: true
-          type: number
-      required:
-        - id
-        - name
-        - visibility
-        - assistantID
-        - createdAt
-        - updatedAt
-        - updatedByID
-    Project:
-      type: object
-      properties:
-        _id:
-          type: string
-        nlu:
-          type: string
-        type:
-          type: string
-        name:
-          type: string
-        image:
-          type: string
-        teamID:
-          type: string
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProjectMember'
-        privacy:
-          allOf:
-            - $ref: '#/components/schemas/ProjectPrivacy'
-        platform:
-          type: string
-        _version:
-          type: number
-        linkType:
-          type: string
-        stickers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProjectSticker'
-        creatorID:
-          type: number
-        updatedBy:
-          type: number
-        createdAt:
-          nullable: true
-          type: string
-        updatedAt:
-          type: string
-        prototype:
-          allOf:
-            - $ref: '#/components/schemas/ProjectPrototype'
-        apiPrivacy:
-          allOf:
-            - $ref: '#/components/schemas/ProjectPrivacy'
-        reportTags:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ProjectReportTag'
-        nluSettings:
-          allOf:
-            - $ref: '#/components/schemas/ProjectNLUSettings'
-        environments:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ProjectEnvironment'
-        platformData:
-          type: object
-          additionalProperties: {}
-        customThemes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProjectCustomTheme'
-        aiAssistSettings:
-          allOf:
-            - $ref: '#/components/schemas/ProjectAIAssistSettings'
-        transcriptSettings:
-          allOf:
-            - $ref: '#/components/schemas/ProjectTranscriptSettings'
-        analyticsSettings:
-          allOf:
-            - $ref: '#/components/schemas/ProjectAnalyticsSettings'
-        objective:
-          allOf:
-            - $ref: '#/components/schemas/ProjectObjective'
-        devVersion:
-          description: '@deprecated use environments instead with environments projects'
-          type: string
-        liveVersion:
-          description: '@deprecated use environments instead with environments projects'
-          type: string
-        stagingVersion:
-          description: '@deprecated use environments instead with environments projects'
-          type: string
-        previewVersion:
-          description: '@deprecated won''t be used anymore with environments projects'
-          type: string
-        knowledgeBase:
-          description: '@deprecated not used anymore'
-          allOf:
-            - $ref: '#/components/schemas/VersionKnowledgeBase'
-      required:
-        - _id
-        - name
-        - teamID
-        - members
-        - platform
-        - creatorID
-        - platformData
-    ProjectMember:
-      type: object
-      properties:
-        creatorID:
-          type: number
-        platformData:
-          type: object
-          additionalProperties: {}
-      required:
-        - creatorID
-        - platformData
-    ProjectPrivacy:
-      type: string
-      enum:
-        - public
-        - private
-      x-enumNames:
-        - PUBLIC
-        - PRIVATE
-    ProjectSticker:
-      type: object
-      properties:
-        id:
-          type: string
-        url:
-          type: string
-      required:
-        - id
-        - url
-    ProjectPrototype:
-      type: object
-      properties:
-        nlp:
-          oneOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - LUIS
-                  x-enumNames:
-                    - LUIS
-                appID:
-                  type: string
-                resourceID:
-                  type: string
-              required:
-                - type
-                - appID
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - VFNLU
-                  x-enumNames:
-                    - VFNLU
-              required:
-                - type
-        data: {}
-        trainedModel:
-          allOf:
-            - $ref: '#/components/schemas/PrototypeModel'
-        lastTrainedTime:
-          type: number
-      required:
-        - nlp
-        - data
-    PrototypeModel:
-      type: object
-      properties:
-        slots:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeSlot'
-        intents:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeIntent'
-      required:
-        - slots
-        - intents
-    PrototypeSlot:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        type:
-          type: object
-          properties:
-            value:
-              type: string
-        color:
-          type: string
-        inputs:
-          type: array
-          items:
-            type: string
-        description:
-          nullable: true
-          type: string
-      required:
-        - key
-        - name
-        - type
-        - inputs
-    PrototypeIntent:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        slots:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeIntentSlot'
-        inputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeIntentInput'
-        noteID:
-          nullable: true
-          type: string
-        description:
-          type: string
-      required:
-        - key
-        - name
-        - inputs
-    PrototypeIntentSlot:
-      type: object
-      properties:
-        id:
-          type: string
-        dialog:
-          $ref: '#/components/schemas/PrototypeIntentSlotDialog'
-        required:
-          type: boolean
-      required:
-        - id
-        - dialog
-        - required
-    PrototypeIntentSlotDialog:
-      type: object
-      properties:
-        prompt:
-          type: array
-          items: {}
-        confirm:
-          type: array
-          items: {}
-        utterances:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeIntentInput'
-        confirmEnabled:
-          type: boolean
-      required:
-        - prompt
-        - confirm
-        - utterances
-        - confirmEnabled
-    PrototypeIntentInput:
-      type: object
-      properties:
-        text:
-          type: string
-        slots:
-          type: array
-          items:
-            type: string
-      required:
-        - text
-    ProjectReportTag:
-      type: object
-      properties:
-        label:
-          type: string
-        tagID:
-          type: string
-      required:
-        - label
-        - tagID
-    ProjectNLUSettings:
-      type: object
-      properties:
-        classifyStrategy:
-          type: string
-      additionalProperties: {}
     ProjectCustomTheme:
       type: object
       properties:
@@ -16818,6 +16955,46 @@ components:
         type:
           type: string
       additionalProperties: {}
+    Secret:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        visibility:
+          $ref: '#/components/schemas/SecretVisibility'
+        hasValue:
+          type: boolean
+        assistantID:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedByID:
+          nullable: true
+          type: number
+      required:
+        - id
+        - name
+        - visibility
+        - assistantID
+        - createdAt
+        - updatedAt
+        - updatedByID
+    SecretVisibility:
+      type: string
+      enum:
+        - restricted
+        - masked
+      x-enumNames:
+        - RESTRICTED
+        - MASKED
     Program:
       type: object
       properties:
@@ -16854,6 +17031,17 @@ components:
         - diagramID
         - versionID
         - variables
+    ProgramLine:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+      required:
+        - id
+        - type
+      additionalProperties: {}
     AnyProgramCommand:
       anyOf:
         - $ref: '#/components/schemas/AnyJumpProgramCommand'
@@ -21764,285 +21952,6 @@ components:
       x-enumNames:
         - CLEF_FLASH
         - VOICEFLOW_CLASSIFY
-    VersionPlatformData:
-      type: object
-      properties:
-        slots:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionSlot'
-        intents:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionIntent'
-        settings:
-          $ref: '#/components/schemas/VersionPlatformSettings'
-        publishing:
-          type: object
-          additionalProperties: {}
-      required:
-        - slots
-        - intents
-        - settings
-        - publishing
-    VersionSlot:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/VersionSlotType'
-        color:
-          type: string
-        inputs:
-          type: array
-          items:
-            type: string
-      required:
-        - key
-        - name
-        - type
-        - inputs
-    VersionSlotType:
-      type: object
-      properties:
-        value:
-          type: string
-    VersionIntent:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        slots:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionIntentSlot'
-        inputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionIntentInput'
-        noteID:
-          type: string
-        description:
-          type: string
-      required:
-        - key
-        - name
-        - inputs
-    VersionIntentSlot:
-      type: object
-      properties:
-        id:
-          type: string
-        dialog:
-          $ref: '#/components/schemas/VersionIntentSlotDialog'
-        required:
-          type: boolean
-      required:
-        - id
-        - dialog
-        - required
-    VersionIntentSlotDialog:
-      type: object
-      properties:
-        prompt:
-          type: array
-          items: {}
-        confirm:
-          type: array
-          items: {}
-        utterances:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionIntentInput'
-        confirmEnabled:
-          type: boolean
-      required:
-        - prompt
-        - confirm
-        - utterances
-        - confirmEnabled
-    VersionIntentInput:
-      type: object
-      properties:
-        text:
-          type: string
-        slots:
-          type: array
-          items:
-            type: string
-        voice:
-          type: string
-      required:
-        - text
-    VersionPlatformSettings:
-      type: object
-      properties:
-        locales:
-          type: array
-          items:
-            type: string
-        deepgramASR:
-          allOf:
-            - $ref: '#/components/schemas/DeepgramASRSettings'
-        globalNoReply:
-          anyOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - static
-                  x-enumNames:
-                    - STATIC
-                delay:
-                  nullable: true
-                  type: number
-                prompt:
-                  nullable: true
-                enabled:
-                  type: boolean
-                maxRetries:
-                  nullable: true
-                  type: number
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - generative
-                  x-enumNames:
-                    - GENERATIVE
-                delay:
-                  nullable: true
-                  type: number
-                prompt:
-                  $ref: '#/components/schemas/AIParams'
-                enabled:
-                  type: boolean
-                maxRetries:
-                  nullable: true
-                  type: number
-              required:
-                - type
-                - prompt
-        defaultVoice:
-          nullable: true
-          type: string
-        globalNoMatch:
-          oneOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - static
-                  x-enumNames:
-                    - STATIC
-                prompt:
-                  nullable: true
-              required:
-                - type
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - generative
-                  x-enumNames:
-                    - GENERATIVE
-                prompt:
-                  $ref: '#/components/schemas/AIParams'
-              required:
-                - type
-                - prompt
-        messageDelay:
-          type: object
-          properties:
-            durationMilliseconds:
-              type: number
-          required:
-            - durationMilliseconds
-        defaultCanvasNodeVisibility:
-          allOf:
-            - $ref: '#/components/schemas/LegacyCanvasNodeVisibility'
-      additionalProperties: {}
-    DeepgramASRSettings:
-      type: object
-      properties:
-        punctuationWaitMS:
-          type: number
-        partialWaitMS:
-          type: number
-        silenceWaitMS:
-          type: number
-        interruptionWaitWords:
-          type: number
-        audioCue:
-          nullable: true
-          type: number
-        backgroundAudio:
-          nullable: true
-          type: string
-        locale:
-          allOf:
-            - $ref: '#/components/schemas/DeepgramSTTLanguage'
-        keywords:
-          type: string
-    AIParams:
-      type: object
-      properties:
-        stop:
-          type: array
-          items:
-            type: string
-        model:
-          allOf:
-            - $ref: '#/components/schemas/AIModel'
-        system:
-          type: string
-        maxTokens:
-          type: number
-        temperature:
-          type: number
-        responseFormat:
-          type: string
-        reasoningEffort:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AIReasoningEffort'
-        serviceTier:
-          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AIParamsServiceTier'
-        realtime:
-          type: object
-          properties:
-            voice:
-              type: string
-            eagerness:
-              type: string
-        webSearch:
-          type: object
-          properties:
-            allowedDomains:
-              nullable: true
-              type: array
-              items:
-                type: string
-    LegacyCanvasNodeVisibility:
-      type: string
-      enum:
-        - preview
-        - all-variants
-      x-enumNames:
-        - PREVIEW
-        - ALL_VARIANTS
     VersionCustomBlock:
       type: object
       properties:
@@ -22853,359 +22762,6 @@ components:
         - live
         - topicIDs
         - rootDiagramID
-    VersionPrototype:
-      type: object
-      properties:
-        type:
-          type: string
-        data:
-          $ref: '#/components/schemas/VersionPrototypeData'
-        model:
-          $ref: '#/components/schemas/PrototypeModel'
-        context:
-          $ref: '#/components/schemas/VersionPrototypeContext'
-        platform:
-          type: string
-        settings:
-          $ref: '#/components/schemas/VersionPrototypeSettings'
-        surveyorContext:
-          $ref: '#/components/schemas/VersionPrototypeSurveyorContext'
-      required:
-        - data
-        - model
-        - context
-        - platform
-        - settings
-        - surveyorContext
-      additionalProperties: {}
-    VersionPrototypeData:
-      type: object
-      properties:
-        name:
-          type: string
-        locales:
-          type: array
-          items:
-            type: string
-        messageDelay:
-          allOf:
-            - $ref: '#/components/schemas/VersionPrototypeMessageDelay'
-      required:
-        - name
-        - locales
-    VersionPrototypeMessageDelay:
-      type: object
-      properties:
-        durationMilliseconds:
-          type: number
-      required:
-        - durationMilliseconds
-    VersionPrototypeContext:
-      type: object
-      properties:
-        turn:
-          type: object
-          additionalProperties: {}
-        stack:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionPrototypeStackFrame'
-        storage:
-          type: object
-          additionalProperties: {}
-        variables:
-          type: object
-          additionalProperties: {}
-    VersionPrototypeStackFrame:
-      type: object
-      properties:
-        nodeID:
-          nullable: true
-          type: string
-        programID:
-          nullable: true
-          type: string
-        storage:
-          type: object
-          additionalProperties: {}
-        commands:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-            required:
-              - type
-            additionalProperties: {}
-        diagramID:
-          type: string
-        variables:
-          type: object
-          additionalProperties: {}
-      required:
-        - diagramID
-    VersionPrototypeSettings:
-      type: object
-      properties:
-        avatar:
-          type: string
-        layout:
-          type: string
-        buttons:
-          allOf:
-            - $ref: '#/components/schemas/VersionPrototypeButtonLayout'
-        password:
-          type: string
-        brandColor:
-          type: string
-        brandImage:
-          type: string
-        hasPassword:
-          type: boolean
-        hasBranding:
-          type: boolean
-        buttonsOnly:
-          type: boolean
-        variableStateID:
-          nullable: true
-          type: string
-    VersionPrototypeButtonLayout:
-      type: string
-      enum:
-        - stacked
-        - carousel
-      x-enumNames:
-        - STACKED
-        - CAROUSEL
-    VersionPrototypeSurveyorContext:
-      type: object
-      properties:
-        platform:
-          type: string
-        slotsMap:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/PrototypeSlot'
-        extraSlots:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeSlot'
-        cmsEntities:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/CompiledEntity'
-        extraIntents:
-          type: array
-          items:
-            $ref: '#/components/schemas/PrototypeIntent'
-        cmsVariables:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/CompiledVariable'
-        usedIntentsSet:
-          type: array
-          items:
-            type: string
-        functionDefinitions:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/CompiledFunctionDefinition'
-        referencedAgentsIDs:
-          type: array
-          items:
-            type: string
-        referencedPromptIDs:
-          type: array
-          items:
-            type: string
-        referencedAPIToolIDs:
-          type: array
-          items:
-            type: string
-        referencedResponseIDs:
-          type: array
-          items:
-            type: string
-        referencedIntegrationToolIDs:
-          type: array
-          items:
-            type: string
-        referencedMCPIntegrationToolIDs:
-          type: array
-          items:
-            type: string
-        usedFunctionsMap:
-          type: object
-          additionalProperties:
-            type: string
-      required:
-        - platform
-        - slotsMap
-        - extraSlots
-        - extraIntents
-      additionalProperties: {}
-    CompiledEntity:
-      type: object
-      properties:
-        variants:
-          nullable: true
-          type: array
-          items:
-            $ref: '#/components/schemas/CompiledEntityVariant'
-        classifier:
-          nullable: true
-          type: string
-        description:
-          nullable: true
-          type: string
-      required:
-        - variants
-        - classifier
-        - description
-    CompiledEntityVariant:
-      type: object
-      properties:
-        value:
-          type: string
-        synonyms:
-          type: array
-          items:
-            type: string
-      required:
-        - value
-        - synonyms
-    CompiledVariable:
-      oneOf:
-        - $ref: '#/components/schemas/CompiledSystemVariable'
-        - $ref: '#/components/schemas/CompiledUserVariable'
-    CompiledSystemVariable:
-      type: object
-      properties:
-        isSystem:
-          type: boolean
-          enum:
-            - true
-          x-enumNames:
-            - "TRUE"
-        description:
-          nullable: true
-          type: string
-        defaultValue:
-          nullable: true
-          type: string
-        resetAfter:
-          type: string
-          enum:
-            - never
-            - session
-          x-enumNames:
-            - NEVER
-            - EACH_SESSION
-      required:
-        - isSystem
-        - defaultValue
-        - resetAfter
-    CompiledUserVariable:
-      type: object
-      properties:
-        isSystem:
-          type: boolean
-          enum:
-            - false
-          x-enumNames:
-            - "FALSE"
-        description:
-          nullable: true
-          type: string
-        defaultValue:
-          nullable: true
-          type: string
-        resetAfter:
-          type: string
-          enum:
-            - never
-            - session
-          x-enumNames:
-            - NEVER
-            - EACH_SESSION
-        datatype:
-          $ref: '#/components/schemas/VariableDatatype'
-        isArray:
-          type: boolean
-      required:
-        - isSystem
-        - defaultValue
-        - resetAfter
-        - datatype
-        - isArray
-    CompiledFunctionDefinition:
-      type: object
-      properties:
-        name:
-          type: string
-        toolName:
-          type: string
-        hasToolNameWarning:
-          type: boolean
-        codeId:
-          type: string
-          description: Amazon S3 bucket key of the .js file containing this Function's code
-        description:
-          nullable: true
-          type: string
-        inputVars:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/CompiledFunctionVariableDeclaration'
-          description: Mapping of input variable name to its variable declaration.
-        outputVars:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/CompiledFunctionVariableDeclaration'
-          description: Mapping of output variable name to its variable declaration.
-        pathCodes:
-          type: array
-          items:
-            type: string
-          description: List of valid return codes for a function
-        timeoutMs:
-          type: integer
-          minimum: 0
-          exclusiveMinimum: true
-          maximum: 9.007199254740991e+15
-      required:
-        - codeId
-        - inputVars
-        - outputVars
-        - pathCodes
-    CompiledFunctionVariableDeclaration:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - any
-            - text
-            - date
-            - image
-            - number
-            - boolean
-            - string
-          description: The type of the Function variable. Used to render suitable UI and perform data validation.
-          x-enumNames:
-            - ANY
-            - TEXT
-            - DATE
-            - IMAGE
-            - NUMBER
-            - BOOLEAN
-            - STRING
-        description:
-          nullable: true
-          type: string
-      required:
-        - type
     DiagramType:
       type: string
       enum:
@@ -23250,58 +22806,6 @@ components:
       required:
         - type
         - sourceID
-    Intent:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedByID:
-          type: number
-        assistantID:
-          type: string
-        environmentID:
-          type: string
-        name:
-          type: string
-          maxLength: 255
-        folderID:
-          nullable: true
-          type: string
-        createdByID:
-          type: number
-        description:
-          nullable: true
-          type: string
-        entityOrder:
-          type: array
-          items:
-            type: string
-        automaticReprompt:
-          type: boolean
-        automaticRepromptSettings:
-          nullable: true
-          allOf:
-            - $ref: '#/components/schemas/AutomaticReprompt'
-      required:
-        - id
-        - createdAt
-        - updatedAt
-        - updatedByID
-        - name
-        - folderID
-        - createdByID
-        - description
-        - entityOrder
-        - automaticReprompt
-        - automaticRepromptSettings
     AutomaticReprompt:
       type: object
       properties:
@@ -24153,6 +23657,14 @@ components:
         - metadataFieldID
         - documentID
         - versionID
+    VersionVariant:
+      type: string
+      enum:
+        - draft
+        - published
+      x-enumNames:
+        - DRAFT
+        - PUBLISHED
     TranscriptFilterArray:
       type: array
       items:
@@ -24297,6 +23809,807 @@ components:
             - id
             - op
             - value
+    VersionPlatformData:
+      type: object
+      properties:
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionSlot'
+        intents:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionIntent'
+        settings:
+          $ref: '#/components/schemas/VersionPlatformSettings'
+        publishing:
+          type: object
+          additionalProperties: {}
+      required:
+        - slots
+        - intents
+        - settings
+        - publishing
+    VersionSlot:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/VersionSlotType'
+        color:
+          type: string
+        inputs:
+          type: array
+          items:
+            type: string
+      required:
+        - key
+        - name
+        - type
+        - inputs
+    VersionSlotType:
+      type: object
+      properties:
+        value:
+          type: string
+    VersionIntent:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionIntentSlot'
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionIntentInput'
+        noteID:
+          type: string
+        description:
+          type: string
+      required:
+        - key
+        - name
+        - inputs
+    VersionIntentSlot:
+      type: object
+      properties:
+        id:
+          type: string
+        dialog:
+          $ref: '#/components/schemas/VersionIntentSlotDialog'
+        required:
+          type: boolean
+      required:
+        - id
+        - dialog
+        - required
+    VersionIntentSlotDialog:
+      type: object
+      properties:
+        prompt:
+          type: array
+          items: {}
+        confirm:
+          type: array
+          items: {}
+        utterances:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionIntentInput'
+        confirmEnabled:
+          type: boolean
+      required:
+        - prompt
+        - confirm
+        - utterances
+        - confirmEnabled
+    VersionIntentInput:
+      type: object
+      properties:
+        text:
+          type: string
+        slots:
+          type: array
+          items:
+            type: string
+        voice:
+          type: string
+      required:
+        - text
+    VersionPlatformSettings:
+      type: object
+      properties:
+        locales:
+          type: array
+          items:
+            type: string
+        deepgramASR:
+          allOf:
+            - $ref: '#/components/schemas/DeepgramASRSettings'
+        globalNoReply:
+          anyOf:
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - static
+                  x-enumNames:
+                    - STATIC
+                delay:
+                  nullable: true
+                  type: number
+                prompt:
+                  nullable: true
+                enabled:
+                  type: boolean
+                maxRetries:
+                  nullable: true
+                  type: number
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - generative
+                  x-enumNames:
+                    - GENERATIVE
+                delay:
+                  nullable: true
+                  type: number
+                prompt:
+                  $ref: '#/components/schemas/AIParams'
+                enabled:
+                  type: boolean
+                maxRetries:
+                  nullable: true
+                  type: number
+              required:
+                - type
+                - prompt
+        defaultVoice:
+          nullable: true
+          type: string
+        globalNoMatch:
+          oneOf:
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - static
+                  x-enumNames:
+                    - STATIC
+                prompt:
+                  nullable: true
+              required:
+                - type
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - generative
+                  x-enumNames:
+                    - GENERATIVE
+                prompt:
+                  $ref: '#/components/schemas/AIParams'
+              required:
+                - type
+                - prompt
+        messageDelay:
+          type: object
+          properties:
+            durationMilliseconds:
+              type: number
+          required:
+            - durationMilliseconds
+        defaultCanvasNodeVisibility:
+          allOf:
+            - $ref: '#/components/schemas/LegacyCanvasNodeVisibility'
+      additionalProperties: {}
+    DeepgramASRSettings:
+      type: object
+      properties:
+        punctuationWaitMS:
+          type: number
+        partialWaitMS:
+          type: number
+        silenceWaitMS:
+          type: number
+        interruptionWaitWords:
+          type: number
+        audioCue:
+          nullable: true
+          type: number
+        backgroundAudio:
+          nullable: true
+          type: string
+        locale:
+          allOf:
+            - $ref: '#/components/schemas/DeepgramSTTLanguage'
+        keywords:
+          type: string
+    AIParams:
+      type: object
+      properties:
+        stop:
+          type: array
+          items:
+            type: string
+        model:
+          allOf:
+            - $ref: '#/components/schemas/AIModel'
+        system:
+          type: string
+        maxTokens:
+          type: number
+        temperature:
+          type: number
+        responseFormat:
+          type: string
+        reasoningEffort:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIReasoningEffort'
+        serviceTier:
+          description: 'The service tier to request from models that support it. `priority` is faster processing: faster responses at a higher credit cost. When unset, the deprecated project-level `priorityProcessing` setting applies.'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AIParamsServiceTier'
+        realtime:
+          type: object
+          properties:
+            voice:
+              type: string
+            eagerness:
+              type: string
+        webSearch:
+          type: object
+          properties:
+            allowedDomains:
+              nullable: true
+              type: array
+              items:
+                type: string
+    LegacyCanvasNodeVisibility:
+      type: string
+      enum:
+        - preview
+        - all-variants
+      x-enumNames:
+        - PREVIEW
+        - ALL_VARIANTS
+    VersionPrototype:
+      type: object
+      properties:
+        type:
+          type: string
+        data:
+          $ref: '#/components/schemas/VersionPrototypeData'
+        model:
+          $ref: '#/components/schemas/PrototypeModel'
+        context:
+          $ref: '#/components/schemas/VersionPrototypeContext'
+        platform:
+          type: string
+        settings:
+          $ref: '#/components/schemas/VersionPrototypeSettings'
+        surveyorContext:
+          $ref: '#/components/schemas/VersionPrototypeSurveyorContext'
+      required:
+        - data
+        - model
+        - context
+        - platform
+        - settings
+        - surveyorContext
+      additionalProperties: {}
+    VersionPrototypeData:
+      type: object
+      properties:
+        name:
+          type: string
+        locales:
+          type: array
+          items:
+            type: string
+        messageDelay:
+          allOf:
+            - $ref: '#/components/schemas/VersionPrototypeMessageDelay'
+      required:
+        - name
+        - locales
+    VersionPrototypeMessageDelay:
+      type: object
+      properties:
+        durationMilliseconds:
+          type: number
+      required:
+        - durationMilliseconds
+    VersionPrototypeContext:
+      type: object
+      properties:
+        turn:
+          type: object
+          additionalProperties: {}
+        stack:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionPrototypeStackFrame'
+        storage:
+          type: object
+          additionalProperties: {}
+        variables:
+          type: object
+          additionalProperties: {}
+    VersionPrototypeStackFrame:
+      type: object
+      properties:
+        nodeID:
+          nullable: true
+          type: string
+        programID:
+          nullable: true
+          type: string
+        storage:
+          type: object
+          additionalProperties: {}
+        commands:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+            required:
+              - type
+            additionalProperties: {}
+        diagramID:
+          type: string
+        variables:
+          type: object
+          additionalProperties: {}
+      required:
+        - diagramID
+    VersionPrototypeSettings:
+      type: object
+      properties:
+        avatar:
+          type: string
+        layout:
+          type: string
+        buttons:
+          allOf:
+            - $ref: '#/components/schemas/VersionPrototypeButtonLayout'
+        password:
+          type: string
+        brandColor:
+          type: string
+        brandImage:
+          type: string
+        hasPassword:
+          type: boolean
+        hasBranding:
+          type: boolean
+        buttonsOnly:
+          type: boolean
+        variableStateID:
+          nullable: true
+          type: string
+    VersionPrototypeButtonLayout:
+      type: string
+      enum:
+        - stacked
+        - carousel
+      x-enumNames:
+        - STACKED
+        - CAROUSEL
+    VersionPrototypeSurveyorContext:
+      type: object
+      properties:
+        platform:
+          type: string
+        slotsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PrototypeSlot'
+        extraSlots:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeSlot'
+        cmsEntities:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CompiledEntity'
+        extraIntents:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrototypeIntent'
+        cmsVariables:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CompiledVariable'
+        usedIntentsSet:
+          type: array
+          items:
+            type: string
+        functionDefinitions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CompiledFunctionDefinition'
+        referencedAgentsIDs:
+          type: array
+          items:
+            type: string
+        referencedPromptIDs:
+          type: array
+          items:
+            type: string
+        referencedAPIToolIDs:
+          type: array
+          items:
+            type: string
+        referencedResponseIDs:
+          type: array
+          items:
+            type: string
+        referencedIntegrationToolIDs:
+          type: array
+          items:
+            type: string
+        referencedMCPIntegrationToolIDs:
+          type: array
+          items:
+            type: string
+        usedFunctionsMap:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - platform
+        - slotsMap
+        - extraSlots
+        - extraIntents
+      additionalProperties: {}
+    CompiledEntity:
+      type: object
+      properties:
+        variants:
+          nullable: true
+          type: array
+          items:
+            $ref: '#/components/schemas/CompiledEntityVariant'
+        classifier:
+          nullable: true
+          type: string
+        description:
+          nullable: true
+          type: string
+      required:
+        - variants
+        - classifier
+        - description
+    CompiledEntityVariant:
+      type: object
+      properties:
+        value:
+          type: string
+        synonyms:
+          type: array
+          items:
+            type: string
+      required:
+        - value
+        - synonyms
+    CompiledVariable:
+      oneOf:
+        - $ref: '#/components/schemas/CompiledSystemVariable'
+        - $ref: '#/components/schemas/CompiledUserVariable'
+    CompiledSystemVariable:
+      type: object
+      properties:
+        isSystem:
+          type: boolean
+          enum:
+            - true
+          x-enumNames:
+            - "TRUE"
+        description:
+          nullable: true
+          type: string
+        defaultValue:
+          nullable: true
+          type: string
+        resetAfter:
+          type: string
+          enum:
+            - never
+            - session
+          x-enumNames:
+            - NEVER
+            - EACH_SESSION
+      required:
+        - isSystem
+        - defaultValue
+        - resetAfter
+    CompiledUserVariable:
+      type: object
+      properties:
+        isSystem:
+          type: boolean
+          enum:
+            - false
+          x-enumNames:
+            - "FALSE"
+        description:
+          nullable: true
+          type: string
+        defaultValue:
+          nullable: true
+          type: string
+        resetAfter:
+          type: string
+          enum:
+            - never
+            - session
+          x-enumNames:
+            - NEVER
+            - EACH_SESSION
+        datatype:
+          $ref: '#/components/schemas/VariableDatatype'
+        isArray:
+          type: boolean
+      required:
+        - isSystem
+        - defaultValue
+        - resetAfter
+        - datatype
+        - isArray
+    CompiledFunctionDefinition:
+      type: object
+      properties:
+        name:
+          type: string
+        toolName:
+          type: string
+        hasToolNameWarning:
+          type: boolean
+        codeId:
+          type: string
+          description: Amazon S3 bucket key of the .js file containing this Function's code
+        description:
+          nullable: true
+          type: string
+        inputVars:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CompiledFunctionVariableDeclaration'
+          description: Mapping of input variable name to its variable declaration.
+        outputVars:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CompiledFunctionVariableDeclaration'
+          description: Mapping of output variable name to its variable declaration.
+        pathCodes:
+          type: array
+          items:
+            type: string
+          description: List of valid return codes for a function
+        timeoutMs:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 9.007199254740991e+15
+      required:
+        - codeId
+        - inputVars
+        - outputVars
+        - pathCodes
+    CompiledFunctionVariableDeclaration:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - any
+            - text
+            - date
+            - image
+            - number
+            - boolean
+            - string
+          description: The type of the Function variable. Used to render suitable UI and perform data validation.
+          x-enumNames:
+            - ANY
+            - TEXT
+            - DATE
+            - IMAGE
+            - NUMBER
+            - BOOLEAN
+            - STRING
+        description:
+          nullable: true
+          type: string
+      required:
+        - type
+    Project:
+      type: object
+      properties:
+        _id:
+          type: string
+        nlu:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        teamID:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectMember'
+        privacy:
+          allOf:
+            - $ref: '#/components/schemas/ProjectPrivacy'
+        platform:
+          type: string
+        _version:
+          type: number
+        linkType:
+          type: string
+        stickers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectSticker'
+        creatorID:
+          type: number
+        updatedBy:
+          type: number
+        createdAt:
+          nullable: true
+          type: string
+        updatedAt:
+          type: string
+        prototype:
+          allOf:
+            - $ref: '#/components/schemas/ProjectPrototype'
+        apiPrivacy:
+          allOf:
+            - $ref: '#/components/schemas/ProjectPrivacy'
+        reportTags:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProjectReportTag'
+        nluSettings:
+          allOf:
+            - $ref: '#/components/schemas/ProjectNLUSettings'
+        environments:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProjectEnvironment'
+        platformData:
+          type: object
+          additionalProperties: {}
+        customThemes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectCustomTheme'
+        aiAssistSettings:
+          allOf:
+            - $ref: '#/components/schemas/ProjectAIAssistSettings'
+        transcriptSettings:
+          allOf:
+            - $ref: '#/components/schemas/ProjectTranscriptSettings'
+        analyticsSettings:
+          allOf:
+            - $ref: '#/components/schemas/ProjectAnalyticsSettings'
+        objective:
+          allOf:
+            - $ref: '#/components/schemas/ProjectObjective'
+        devVersion:
+          description: '@deprecated use environments instead with environments projects'
+          type: string
+        liveVersion:
+          description: '@deprecated use environments instead with environments projects'
+          type: string
+        stagingVersion:
+          description: '@deprecated use environments instead with environments projects'
+          type: string
+        previewVersion:
+          description: '@deprecated won''t be used anymore with environments projects'
+          type: string
+        knowledgeBase:
+          description: '@deprecated not used anymore'
+          allOf:
+            - $ref: '#/components/schemas/VersionKnowledgeBase'
+      required:
+        - _id
+        - name
+        - teamID
+        - members
+        - platform
+        - creatorID
+        - platformData
+    Intent:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedByID:
+          type: number
+        assistantID:
+          type: string
+        environmentID:
+          type: string
+        name:
+          type: string
+          maxLength: 255
+        folderID:
+          nullable: true
+          type: string
+        createdByID:
+          type: number
+        description:
+          nullable: true
+          type: string
+        entityOrder:
+          type: array
+          items:
+            type: string
+        automaticReprompt:
+          type: boolean
+        automaticRepromptSettings:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/AutomaticReprompt'
+      required:
+        - id
+        - createdAt
+        - updatedAt
+        - updatedByID
+        - name
+        - folderID
+        - createdByID
+        - description
+        - entityOrder
+        - automaticReprompt
+        - automaticRepromptSettings
+    PhoneNumberProvider:
+      type: string
+      enum:
+        - twilio
+        - vonage
+        - telnyx
+        - voiceflow-telnyx
+        - voiceflow-sip
+        - byo-sip
+      x-enumNames:
+        - TWILIO
+        - VONAGE
+        - TELNYX
+        - VOICEFLOW_TELNYX
+        - VOICEFLOW_SIP
+        - BYO_SIP
     StableAgentReadV2:
       type: object
       properties:
@@ -31744,6 +32057,301 @@ components:
         name:
           type: string
       additionalProperties: false
+    StableEnvironmentDiffReport:
+      type: object
+      properties:
+        created:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+        updated:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+        deleted:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableEnvironmentDiffResource'
+          description: The changed resources. Capped; `truncated` says when the list was cut. The three counts are always exact.
+        truncated:
+          type: boolean
+      required:
+        - created
+        - updated
+        - deleted
+        - resources
+        - truncated
+    StableEnvironmentDiffResource:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        change:
+          $ref: '#/components/schemas/StableEnvironmentDiffChange'
+      required:
+        - type
+        - id
+        - name
+        - change
+    StableEnvironmentDiffChange:
+      type: string
+      enum:
+        - created
+        - updated
+        - deleted
+      x-enumNames:
+        - CREATED
+        - UPDATED
+        - DELETED
+    StableEnvironmentDiffResponse:
+      type: object
+      properties:
+        diff:
+          $ref: '#/components/schemas/StableEnvironmentDiffReport'
+      required:
+        - diff
+    StableEnvironmentAuditReport:
+      type: object
+      properties:
+        phase1VarSetters:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                function:
+                  type: string
+                agent:
+                  type: string
+                output:
+                  type: string
+              required:
+                - function
+                - agent
+                - output
+        phase2OrphanDefaults:
+          type: array
+          items:
+            type: object
+            properties:
+              toolID:
+                type: string
+              function:
+                type: string
+              agent:
+                type: string
+              input:
+                type: string
+              defaultVar:
+                type: string
+              note:
+                type: string
+            required:
+              - toolID
+              - function
+              - agent
+              - input
+              - defaultVar
+              - note
+        phase3ShouldFulfillWithCanonicalSource:
+          type: array
+          items:
+            type: object
+            properties:
+              toolID:
+                type: string
+              function:
+                type: string
+              agent:
+                type: string
+              input:
+                type: string
+              suggestedDefaultVar:
+                type: string
+              note:
+                type: string
+            required:
+              - toolID
+              - function
+              - agent
+              - input
+              - suggestedDefaultVar
+              - note
+        phase4UncapturedOutputs:
+          type: array
+          items:
+            type: object
+            properties:
+              function:
+                type: string
+              output:
+                type: string
+              toolCount:
+                type: number
+              note:
+                type: string
+            required:
+              - function
+              - output
+              - toolCount
+              - note
+        phase5MalformedWiring:
+          type: array
+          items:
+            type: object
+            properties:
+              toolID:
+                type: string
+              function:
+                type: string
+              agent:
+                type: string
+              input:
+                type: string
+              issue:
+                type: string
+              current:
+                type: string
+              shouldBe:
+                type: string
+            required:
+              - toolID
+              - function
+              - agent
+              - input
+              - issue
+              - current
+              - shouldBe
+        phase6SuggestedCaptures:
+          type: array
+          items:
+            type: object
+            properties:
+              function:
+                type: string
+              output:
+                type: string
+              suggestedVar:
+                type: string
+              currentCapturesTo:
+                nullable: true
+                type: array
+                items:
+                  type: string
+              note:
+                type: string
+            required:
+              - function
+              - output
+              - suggestedVar
+              - currentCapturesTo
+              - note
+        phase7SideEffectOnly:
+          type: array
+          items:
+            type: object
+            properties:
+              function:
+                type: string
+              agents:
+                type: array
+                items:
+                  type: string
+              note:
+                type: string
+            required:
+              - function
+              - agents
+              - note
+        phase8OrphanFunctions:
+          type: array
+          items:
+            type: object
+            properties:
+              function:
+                type: string
+              inputCount:
+                type: number
+              outputCount:
+                type: number
+              note:
+                type: string
+            required:
+              - function
+              - inputCount
+              - outputCount
+              - note
+        phase9ArgsSecretsReads:
+          type: array
+          items:
+            type: object
+            properties:
+              function:
+                type: string
+              attachments:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    agent:
+                      type: string
+                    toolID:
+                      type: string
+                  required:
+                    - agent
+                    - toolID
+              note:
+                type: string
+            required:
+              - function
+              - attachments
+              - note
+        phase10EmptyToolDescriptions:
+          type: array
+          items:
+            type: object
+            properties:
+              toolID:
+                type: string
+              function:
+                type: string
+              agent:
+                type: string
+              note:
+                type: string
+            required:
+              - toolID
+              - function
+              - agent
+              - note
+      required:
+        - phase1VarSetters
+        - phase2OrphanDefaults
+        - phase3ShouldFulfillWithCanonicalSource
+        - phase4UncapturedOutputs
+        - phase5MalformedWiring
+        - phase6SuggestedCaptures
+        - phase7SideEffectOnly
+        - phase8OrphanFunctions
+        - phase9ArgsSecretsReads
+        - phase10EmptyToolDescriptions
+      description: One list per check. Each entry names the function, agent or tool it is about and says why.
+    StableEnvironmentAuditResponse:
+      type: object
+      properties:
+        audit:
+          $ref: '#/components/schemas/StableEnvironmentAuditReport'
+      required:
+        - audit
     StableExportVersion:
       type: object
       properties:
@@ -34542,22 +35150,11 @@ components:
       required:
         - name
       additionalProperties: false
-    StableTranscript:
+    StableTranscriptSummary:
       type: object
       properties:
         id:
           type: string
-        userID:
-          type: string
-          description: The ID of the end user who had the conversation.
-        endedAt:
-          nullable: true
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        projectID:
-          type: string
-          description: The ID of the project the conversation happened in.
         sessionID:
           type: string
           description: The ID of the conversation session this transcript was recorded from.
@@ -34565,26 +35162,21 @@ components:
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
+        endedAt:
+          nullable: true
+          description: '`null` while the conversation is still open.'
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        expiresAt:
+        durationSeconds:
           nullable: true
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        properties:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableTranscriptPropertyWithValue'
-        evaluations:
-          type: array
-          items:
-            $ref: '#/components/schemas/StableEvaluationWithResult'
-        recordingURL:
+          description: Seconds from the first message to the end. `null` while the conversation is still open.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        environmentAlias:
           nullable: true
-          description: The URL of the call recording for voice conversations.
+          description: The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
           type: string
         version:
           nullable: true
@@ -34596,220 +35188,125 @@ components:
           x-enumNames:
             - DRAFT
             - PUBLISHED
-        environmentAlias:
-          nullable: true
-          description: The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTranscriptValue'
+        evaluations:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTranscriptEvaluationValue'
+        creatorURL:
           type: string
+          description: A link that opens the transcript in Voiceflow.
       required:
         - id
-        - userID
-        - endedAt
-        - projectID
         - sessionID
         - createdAt
-        - updatedAt
-        - expiresAt
+        - endedAt
+        - durationSeconds
+        - environmentAlias
+        - version
         - properties
         - evaluations
-        - recordingURL
-        - version
-        - environmentAlias
-    StableTranscriptPropertyWithValue:
+        - creatorURL
+    StableTranscriptValue:
       type: object
       properties:
         id:
           type: string
+          description: The ID of the property definition. Pass it as `filters[].id` to narrow a search.
         name:
           type: string
-        default:
-          type: boolean
-          description: Whether this is a built-in property, which cannot be updated, deleted or have its value set.
+        value:
+          type: string
+          description: The value recorded for this transcript.
+      required:
+        - id
+        - name
+        - value
+    StableTranscriptEvaluationValue:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the evaluation definition. Pass it in `evaluationIDs` to queue runs, or as `filters[].id`.
+        name:
+          type: string
         type:
           type: string
           enum:
             - boolean
             - number
             - string
-          description: The type of value the property holds.
+            - option
           x-enumNames:
             - BOOLEAN
             - NUMBER
             - STRING
-        createdAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            - OPTION
         value:
-          type: string
-          description: The value of the property recorded for this transcript.
-        metadata:
-          nullable: true
-          description: Additional structured data recorded alongside the value, such as the credits used per model for the built-in credits property. `null` when none was recorded.
-          type: object
-          additionalProperties: {}
+          anyOf:
+            - type: boolean
+            - type: number
+            - type: string
+          description: The result, typed by `type`.
       required:
         - id
         - name
-        - default
         - type
-        - createdAt
-        - updatedAt
         - value
-        - metadata
-    StableEvaluationWithResult:
-      allOf:
-        - type: object
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-            default:
-              type: boolean
-              description: Whether this is a built-in default evaluation.
-            description:
-              nullable: true
-              description: A human-readable description of what this evaluation measures.
-              type: string
-            cost:
-              type: number
-              description: The cost incurred to run this evaluation against the transcript.
-            value:
-              anyOf:
-                - type: boolean
-                - type: number
-                - type: string
-              description: The result produced by the evaluation, typed according to the evaluation `type`.
-            reason:
-              type: string
-              description: The explanation of why the evaluation produced this result.
-            createdAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            updatedAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-          required:
-            - id
-            - name
-            - default
-            - description
-            - cost
-            - value
-            - reason
-            - createdAt
-            - updatedAt
-        - oneOf:
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - boolean
-                  description: Discriminator indicating the evaluation produces a boolean result.
-                  x-enumNames:
-                    - BOOLEAN
-              required:
-                - type
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - number
-                  description: Discriminator indicating the evaluation produces a numeric result.
-                  x-enumNames:
-                    - NUMBER
-                minimumValue:
-                  type: number
-                  description: The lowest value the evaluation result can take.
-                maximumValue:
-                  type: number
-                  description: The highest value the evaluation result can take.
-              required:
-                - type
-                - minimumValue
-                - maximumValue
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - string
-                  description: Discriminator indicating the evaluation produces a free-form text result.
-                  x-enumNames:
-                    - STRING
-              required:
-                - type
-            - type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - option
-                  description: Discriminator indicating the evaluation picks a result from a predefined set of options.
-                  x-enumNames:
-                    - OPTION
-                options:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      value:
-                        type: string
-                        description: The value assigned to the evaluation result when this option is selected.
-                      prompt:
-                        type: string
-                        description: The criteria describing when the evaluator should select this option.
-                      included:
-                        type: boolean
-                        description: Whether this option is available for the evaluator to select.
-                      color:
-                        type: string
-                        description: The color used to display this option in the Voiceflow UI.
-                    required:
-                      - value
-                      - prompt
-                      - included
-                      - color
-              required:
-                - type
-                - options
-    StableTranscriptListResponse:
+    StableTranscriptSearchResponseV2:
       type: object
       properties:
         transcripts:
           type: array
           items:
-            $ref: '#/components/schemas/StableTranscript'
+            $ref: '#/components/schemas/StableTranscriptSummary'
+        returned:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        hasMore:
+          type: boolean
+          description: True when the page is full, so more transcripts may match. Page with `skip`.
       required:
         - transcripts
-    StableTranscriptSearchRequest:
+        - returned
+        - hasMore
+    StableTranscriptSearchRequestV2:
       type: object
       properties:
         take:
           default: 20
-          description: The maximum number of results to return, used for pagination.
-          type: number
+          description: Page size, 1 to 50. There is no `limit`. Page with `skip` while `hasMore` is true.
+          type: integer
           minimum: 1
-          maximum: 100
+          maximum: 50
         skip:
           default: 0
           description: The number of results to skip, used for pagination.
           type: integer
           minimum: 0
           maximum: 9.007199254740991e+15
+        startDate:
+          description: Only transcripts created at or after this day (`2026-06-01`, from 00:00 UTC) or ISO 8601 timestamp.
+          anyOf:
+            - type: string
+              format: date
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+            - type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         endDate:
-          description: When provided, only transcripts created at or before this ISO 8601 timestamp are returned.
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          description: Only transcripts created at or before this day (`2026-06-30`, to 23:59:59.999 UTC) or ISO 8601 timestamp.
+          anyOf:
+            - type: string
+              format: date
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+            - type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         version:
           description: When provided, only transcripts from the draft or published version of the environment are returned. `published` covers the current release and every past release. Applies within a single environment; the main environment is used when `environmentAlias` is omitted.
           type: string
@@ -34825,11 +35322,6 @@ components:
         sessionID:
           description: When provided, only transcripts from this conversation session are returned.
           type: string
-        startDate:
-          description: When provided, only transcripts created at or after this ISO 8601 timestamp are returned.
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         environmentAlias:
           description: When provided, only transcripts from the environment with this alias are returned.
           type: string
@@ -34838,67 +35330,181 @@ components:
           type: string
           minLength: 1
       additionalProperties: false
-    StableTranscriptWithLogsResponse:
+    StableTranscriptGrepHit:
       type: object
       properties:
-        transcript:
-          type: object
+        transcriptID:
+          type: string
+        matches:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: How many dialogue lines matched.
+        snippets:
+          type: array
+          items:
+            type: string
+          description: Up to 5 matching lines, each cut to 240 characters.
+      required:
+        - transcriptID
+        - matches
+        - snippets
+    StableTranscriptGrepResponse:
+      type: object
+      properties:
+        pattern:
+          type: string
+        scanned:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Transcripts scanned.
+        matched:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Transcripts with at least one match.
+        capped:
+          description: More transcripts were in the range, or more unique transcriptIDs were given, than were scanned; `note` says what to do.
+          type: boolean
+        errored:
+          description: Transcripts whose log could not be read.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        skipped:
+          description: Given transcriptIDs that do not belong to this project.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        note:
+          type: string
+        literalText:
+          description: The pattern ran as plain text; `note` says why.
+          type: boolean
+          enum:
+            - true
+          x-enumNames:
+            - "TRUE"
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTranscriptGrepHit'
+      required:
+        - pattern
+        - scanned
+        - matched
+        - hits
+    StableTranscriptGrepRequest:
+      type: object
+      properties:
+        pattern:
+          type: string
+          minLength: 1
+          description: 'Regex (case-insensitive) or plain text to find in the dialogue. A pattern may hold one open quantifier (*, +, ?, {n,} or {n,m}), no backreference and no alternation inside a group. Use exact counts such as \d{3}, or put the alternation at the top level: refund|return. Any other pattern runs as plain text, and the result says so.'
+        transcriptIDs:
+          description: Transcripts to scan. Leave it out to scan the newest transcripts in the date range.
+          minItems: 1
+          maxItems: 60
+          type: array
+          items:
+            type: string
+            minLength: 1
+        startDate:
+          description: 'Lower bound when no transcriptIDs are given: a day or a timestamp.'
+          anyOf:
+            - type: string
+              format: date
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+            - type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        endDate:
+          description: 'Upper bound when no transcriptIDs are given: a day or a timestamp.'
+          anyOf:
+            - type: string
+              format: date
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+            - type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        environmentAlias:
+          description: Only transcripts from this environment, when no transcriptIDs are given.
+          type: string
+        limit:
+          default: 25
+          description: How many transcripts to scan at most, 1 to 60.
+          type: integer
+          minimum: 1
+          maximum: 60
+      required:
+        - pattern
+      additionalProperties: false
+    StableTranscriptGetResponseV2:
+      oneOf:
+        - type: object
           properties:
-            id:
-              type: string
-            userID:
-              type: string
-              description: The ID of the end user who had the conversation.
-            endedAt:
-              nullable: true
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            projectID:
-              type: string
-              description: The ID of the project the conversation happened in.
-            sessionID:
-              type: string
-              description: The ID of the conversation session this transcript was recorded from.
-            createdAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            updatedAt:
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            expiresAt:
-              nullable: true
-              type: string
-              format: date-time
-              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-            properties:
-              type: array
-              items:
-                $ref: '#/components/schemas/StableTranscriptPropertyWithValue'
-            evaluations:
-              type: array
-              items:
-                $ref: '#/components/schemas/StableEvaluationWithResult'
-            recordingURL:
-              nullable: true
-              description: The URL of the call recording for voice conversations.
-              type: string
-            version:
-              nullable: true
-              description: Whether the conversation happened on the draft or published version of the environment. `null` for legacy conversations recorded before environments existed, or when the version is no longer tracked by the environment.
+            format:
               type: string
               enum:
-                - draft
-                - published
+                - summary
               x-enumNames:
-                - DRAFT
-                - PUBLISHED
-            environmentAlias:
-              nullable: true
-              description: The alias of the environment the conversation happened in. `null` for legacy conversations recorded before environments existed, as well as deleted environments.
+                - SUMMARY
+            transcript:
+              $ref: '#/components/schemas/StableTranscriptSummary'
+            turns:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+              description: One entry per event, in order, each with a `role` and a `time`.
+            toolCalls:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+              description: The tool calls, with inputs and outputs cut.
+            turnCount:
+              type: integer
+              minimum: -9.007199254740991e+15
+              maximum: 9.007199254740991e+15
+              description: User and agent turns.
+          required:
+            - format
+            - transcript
+            - turns
+            - toolCalls
+            - turnCount
+        - type: object
+          properties:
+            format:
               type: string
+              enum:
+                - formatted
+              x-enumNames:
+                - FORMATTED
+            transcript:
+              $ref: '#/components/schemas/StableTranscriptSummary'
+            turns:
+              type: array
+              items:
+                type: object
+                additionalProperties: {}
+              description: One entry per event, in order, each with a `role` and a `time`.
+          required:
+            - format
+            - transcript
+            - turns
+        - type: object
+          properties:
+            format:
+              type: string
+              enum:
+                - logs
+              x-enumNames:
+                - LOGS
+            transcript:
+              $ref: '#/components/schemas/StableTranscriptSummary'
             logs:
               type: array
               items:
@@ -34938,22 +35544,9 @@ components:
                   - createdAt
                   - updatedAt
           required:
-            - id
-            - userID
-            - endedAt
-            - projectID
-            - sessionID
-            - createdAt
-            - updatedAt
-            - expiresAt
-            - properties
-            - evaluations
-            - recordingURL
-            - version
-            - environmentAlias
+            - format
+            - transcript
             - logs
-      required:
-        - transcript
     StableTranscriptFile:
       type: object
       properties:
@@ -35516,13 +36109,49 @@ components:
               required:
                 - type
                 - options
-    StableEvaluationListResponse:
+    StableEvaluationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - boolean
+            - number
+            - string
+            - option
+          x-enumNames:
+            - BOOLEAN
+            - NUMBER
+            - STRING
+            - OPTION
+        enabled:
+          type: boolean
+          description: Whether this evaluation runs automatically against new transcripts.
+        default:
+          type: boolean
+          description: Whether this is a built-in default evaluation.
+        description:
+          nullable: true
+          description: A human-readable description of what this evaluation measures.
+          type: string
+      required:
+        - id
+        - name
+        - type
+        - enabled
+        - default
+        - description
+    StableEvaluationListResponseV2:
       type: object
       properties:
         evaluations:
           type: array
           items:
-            $ref: '#/components/schemas/StableEvaluation'
+            $ref: '#/components/schemas/StableEvaluationSummary'
       required:
         - evaluations
     StableEvaluationResponse:
@@ -35886,6 +36515,63 @@ components:
       required:
         - transcriptID
       additionalProperties: false
+    StableEvaluationQueueRunsResponse:
+      type: object
+      properties:
+        evaluationCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Evaluation runs queued across all transcripts.
+        transcriptCount:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: 'Transcripts queued for at least one evaluation. Lower than the number sent when some were skipped: another project, not ended yet, or expired.'
+        warning:
+          description: Set when the evaluation quota made the queue skip transcripts; it names them.
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - quota_exceeded
+              x-enumNames:
+                - QUOTA_EXCEEDED
+            message:
+              type: string
+            skippedTranscriptIDs:
+              type: array
+              items:
+                type: string
+          required:
+            - type
+            - message
+            - skippedTranscriptIDs
+      required:
+        - evaluationCount
+        - transcriptCount
+    StableEvaluationQueueRunsRequest:
+      type: object
+      properties:
+        evaluationIDs:
+          minItems: 1
+          maxItems: 10
+          type: array
+          items:
+            type: string
+          description: The evaluations to run, 1 to 10. Every evaluation runs against every transcript.
+        transcriptIDs:
+          minItems: 1
+          maxItems: 100
+          type: array
+          items:
+            type: string
+          description: The transcripts to score, 1 to 100.
+      required:
+        - evaluationIDs
+        - transcriptIDs
+      additionalProperties: false
     StableFunctionPath:
       type: object
       properties:
@@ -36203,6 +36889,113 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/ExecuteInputString'
+      additionalProperties: false
+    StableFunctionCheckCaseResult:
+      type: object
+      properties:
+        name:
+          type: string
+        ran:
+          type: boolean
+        success:
+          type: boolean
+        path:
+          nullable: true
+          type: string
+        outputs:
+          type: object
+          additionalProperties: {}
+        error:
+          nullable: true
+          type: string
+        matched:
+          type: boolean
+        mismatches:
+          type: array
+          items:
+            type: string
+        uncompared:
+          description: Expected outputs left uncompared because the run cut a long value.
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - ran
+        - success
+        - path
+        - outputs
+        - error
+    StableFunctionCheckResponse:
+      oneOf:
+        - type: object
+          properties:
+            checked:
+              type: boolean
+              enum:
+                - false
+              x-enumNames:
+                - "FALSE"
+            reason:
+              type: string
+          required:
+            - checked
+            - reason
+        - type: object
+          properties:
+            checked:
+              type: boolean
+              enum:
+                - true
+              x-enumNames:
+                - "TRUE"
+            functionID:
+              type: string
+            summary:
+              type: string
+            cases:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableFunctionCheckCaseResult'
+          required:
+            - checked
+            - functionID
+            - summary
+            - cases
+    StableFunctionCheckRequest:
+      type: object
+      properties:
+        cases:
+          minItems: 1
+          maxItems: 12
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                maxLength: 80
+                description: What this case checks, e.g. "3 items, at the limit".
+              inputs:
+                type: object
+                additionalProperties:
+                  type: string
+                description: A text value for every input of the function, by input name, as a variable sends it. Send "0" for what an unset variable sends.
+              expectPath:
+                description: The exit path this case should take. The result says whether it did.
+                type: string
+              expectOutputs:
+                description: Output values this case should return, compared as text.
+                type: object
+                additionalProperties:
+                  type: string
+            required:
+              - name
+              - inputs
+            additionalProperties: false
+      required:
+        - cases
       additionalProperties: false
     StableFunctionVariable:
       type: object
@@ -39720,6 +40513,117 @@ components:
           items:
             type: string
           description: The IDs of the runs to cancel.
+      required:
+        - runIDs
+      additionalProperties: false
+    StableTestRunWaitResponse:
+      type: object
+      properties:
+        done:
+          type: boolean
+          description: Every run found has passed, failed or been canceled.
+        stoppedBy:
+          type: string
+          enum:
+            - finished
+            - timeout
+            - abort
+          x-enumNames:
+            - FINISHED
+            - TIMEOUT
+            - ABORT
+        waitedSeconds:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        runs:
+          type: array
+          items:
+            type: object
+            properties:
+              runID:
+                type: string
+              testID:
+                type: string
+              status:
+                type: string
+                enum:
+                  - idle
+                  - pending
+                  - running
+                  - failed
+                  - passed
+                  - canceled
+                x-enumNames:
+                  - IDLE
+                  - PENDING
+                  - RUNNING
+                  - FAILED
+                  - PASSED
+                  - CANCELED
+              passedChecks:
+                nullable: true
+                type: number
+              totalChecks:
+                type: number
+              failReason:
+                nullable: true
+                type: string
+              failedChecks:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    checkID:
+                      nullable: true
+                      type: string
+                    type:
+                      nullable: true
+                      type: string
+                    reason:
+                      type: string
+                  required:
+                    - checkID
+                    - type
+                    - reason
+              logsIncomplete:
+                description: The run finished before all its logs were stored.
+                type: boolean
+            required:
+              - runID
+              - testID
+              - status
+              - passedChecks
+              - totalChecks
+              - failReason
+        notFoundRunIDs:
+          type: array
+          items:
+            type: string
+        note:
+          type: string
+      required:
+        - done
+        - stoppedBy
+        - waitedSeconds
+        - runs
+    StableTestRunWaitRequest:
+      type: object
+      properties:
+        runIDs:
+          minItems: 1
+          maxItems: 50
+          type: array
+          items:
+            type: string
+            minLength: 1
+          description: 'The runs to wait for: the IDs create_run or create_many_runs returned (each run''s `id`, not its `testID`).'
+        timeoutSeconds:
+          default: 45
+          description: 'How long to wait at most, in seconds: 45 by default, 120 at most.'
+          type: integer
+          minimum: 5
+          maximum: 120
       required:
         - runIDs
       additionalProperties: false

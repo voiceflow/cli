@@ -18,7 +18,8 @@ import (
 var getCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "transcript-id", Shorthand: "t", FieldPath: "TranscriptID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "filter-conversation", Shorthand: "f", FieldPath: "FilterConversation", Kind: flagutil.FlagKindBool, Optional: true, Description: "boolean flag"},
+	{FlagName: "format-param", FieldPath: "Format", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "summary", EnumValues: []string{"summary", "formatted", "logs"}, Description: "`summary` (default): the turns, the tool calls and a turn count. `formatted`: every turn with the debug traces and the first system prompt of each agent. `logs`: the raw log entries, which can be very large. (options: summary, formatted, logs)"},
+	{FlagName: "filter-conversation", FieldPath: "FilterConversation", Kind: flagutil.FlagKindBool, Optional: true, Description: "boolean flag"},
 	{FlagName: "custom-trace-types", Shorthand: "c", FieldPath: "CustomTraceTypes", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: false, Optional: true, TypeDescription: "JSON value (one of: string | array of string)"}},
 }
 
@@ -27,12 +28,12 @@ func initGetCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "get",
 		Short:   "Get transcript",
-		Long:    "Get a transcript by ID.",
+		Long:    "Get a transcript by ID, in the chosen view.",
 		Example: "  vf transcript get --transcript-id <id> --project-id <id>",
 		RunE:    runGetCmd,
 	}
 	flagutil.RegisterFlags(cmd, getCmdMeta)
-	if err := flagutil.ValidateMeta[operations.StableTranscriptControllerGetRequest](getCmdMeta); err != nil {
+	if err := flagutil.ValidateMeta[operations.StableTranscriptControllerGetV2Request](getCmdMeta); err != nil {
 		return fmt.Errorf("invalid metadata for get: %w", err)
 	}
 	parent.AddCommand(cmd)
@@ -49,7 +50,7 @@ func runGetCmd(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	req, err := flagutil.BuildRequest[operations.StableTranscriptControllerGetRequest](cmd, getCmdMeta, "", "")
+	req, err := flagutil.BuildRequest[operations.StableTranscriptControllerGetV2Request](cmd, getCmdMeta, "", "")
 	if err != nil {
 		return err
 	}

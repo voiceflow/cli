@@ -45,6 +45,10 @@ func InitEvaluationRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initQueueRunsCmd(EvaluationCmd); err != nil {
+		return err
+	}
+
 	parent.AddCommand(EvaluationCmd)
 	return nil
 }

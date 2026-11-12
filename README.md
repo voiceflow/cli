@@ -361,6 +361,8 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_environment_get.md) - Get environment
 * [`update`](docs/vf_environment_update.md) - Update environment
 * [`delete`](docs/vf_environment_delete.md) - Delete environment
+* [`diff`](docs/vf_environment_diff.md) - Diff environment
+* [`audit-wiring`](docs/vf_environment_audit-wiring.md) - Audit environment wiring
 * [`search-text`](docs/vf_environment_search-text.md) - Search project text
 * [`compile`](docs/vf_environment_compile.md) - Compile environment
 * [`clone`](docs/vf_environment_clone.md) - Clone environment
@@ -415,6 +417,7 @@ server's dynamic client registration endpoint and caches the resulting
 ### [transcript](docs/vf_transcript.md)
 
 * [`search`](docs/vf_transcript_search.md) - Search transcripts
+* [`grep`](docs/vf_transcript_grep.md) - Grep transcripts
 * [`get`](docs/vf_transcript_get.md) - Get transcript
 * [`files`](docs/vf_transcript_files.md) - List transcript files
 * [`query-logs`](docs/vf_transcript_query-logs.md) - Query transcript logs
@@ -437,6 +440,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`delete`](docs/vf_function_delete.md) - Delete function
 * [`get-schema`](docs/vf_function_get-schema.md) - Get function schema
 * [`execute`](docs/vf_function_execute.md) - Execute function
+* [`check`](docs/vf_function_check.md) - Check function
 
 #### [function-variable](docs/vf_function_function-variable.md)
 
@@ -462,6 +466,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`update`](docs/vf_evaluation_update.md) - Update evaluation
 * [`delete`](docs/vf_evaluation_delete.md) - Delete evaluation
 * [`run`](docs/vf_evaluation_run.md) - Run evaluation
+* [`queue-runs`](docs/vf_evaluation_queue-runs.md) - Queue evaluation runs
 
 ### [document](docs/vf_document.md)
 
@@ -593,6 +598,7 @@ server's dynamic client registration endpoint and caches the resulting
 * [`search`](docs/vf_test_run_search.md) - Search runs
 * [`create`](docs/vf_test_run_create.md) - Create run
 * [`cancel`](docs/vf_test_run_cancel.md) - Cancel runs
+* [`wait`](docs/vf_test_run_wait.md) - Wait for runs
 * [`get`](docs/vf_test_run_get.md) - Get run
 * [`query-logs`](docs/vf_test_run_query-logs.md) - Query run logs
 
