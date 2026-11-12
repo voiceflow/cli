@@ -43713,6 +43713,11 @@ components:
         transcriptID:
           type: string
           description: The ID of the transcript to set the property value on.
+        metadata:
+          description: Additional structured data to record alongside the value. Omit or pass `null` to record none.
+          nullable: true
+          type: object
+          additionalProperties: {}
       required:
         - value
         - transcriptID

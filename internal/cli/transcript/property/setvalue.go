@@ -20,6 +20,7 @@ var setValueCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "value", Shorthand: "v", FieldPath: "Body.Value", Kind: flagutil.FlagKindString, Required: true, Description: "The value to set for the property on the transcript. [required]"},
 	{FlagName: "transcript-id", Shorthand: "t", FieldPath: "Body.TranscriptID", Kind: flagutil.FlagKindString, Required: true, Description: "The ID of the transcript to set the property value on. [required]"},
+	{FlagName: "metadata", Shorthand: "m", FieldPath: "Body.Metadata", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"metadata,omitempty"`, Description: "Additional structured data to record alongside the value. Omit or pass `null` to record none."},
 }
 
 // initSetValueCmd initializes the set-value command.

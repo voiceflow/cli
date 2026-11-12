@@ -3,11 +3,29 @@
 
 package components
 
+import (
+	"github.com/voiceflow/cli/internal/sdk/optionalnullable"
+	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
+)
+
 type StableTranscriptPropertySetValueRequest struct {
 	// The value to set for the property on the transcript.
 	Value string `json:"value"`
 	// The ID of the transcript to set the property value on.
 	TranscriptID string `json:"transcriptID"`
+	// Additional structured data to record alongside the value. Omit or pass `null` to record none.
+	Metadata optionalnullable.OptionalNullable[map[string]any] `json:"metadata,omitzero"`
+}
+
+func (s StableTranscriptPropertySetValueRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableTranscriptPropertySetValueRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *StableTranscriptPropertySetValueRequest) GetValue() string {
@@ -22,4 +40,11 @@ func (s *StableTranscriptPropertySetValueRequest) GetTranscriptID() string {
 		return ""
 	}
 	return s.TranscriptID
+}
+
+func (s *StableTranscriptPropertySetValueRequest) GetMetadata() optionalnullable.OptionalNullable[map[string]any] {
+	if s == nil {
+		return nil
+	}
+	return s.Metadata
 }
