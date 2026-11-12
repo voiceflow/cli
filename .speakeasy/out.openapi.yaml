@@ -12584,6 +12584,259 @@ paths:
         - Test Run
       security:
         - token: []
+  /v1/stable/persona:
+    get:
+      operationId: StablePersonaController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_persona
+          toolDescription: |-
+            A named set of variable values a test starts from — "returning customer", "VIP in Germany", "anonymous visitor". Each item presets one project variable, addressed by its name, to a value for the duration of a test run.
+            A test or a test turn picks a persona by ID through its variableStates setting, instead of listing the same values inline in every test.
+            Predecessor: select the project and environment first, and create the variables the persona will preset with voiceflow_variable.create.
+            Successor: point a test at the persona by setting its settings.variableStates to the persona ID with voiceflow_test.update.
+          operation: list
+          operationDescription: |-
+            WHAT — List all personas in the project, each with the variable values it presets.
+            USE WHEN — Finding a personaID to run a test with, or checking whether a persona for a scenario already exists before creating one.
+        cli:
+          command: persona list
+      x-speakeasy-group: persona
+      x-speakeasy-name-override: list
+      summary: List personas
+      description: List all personas by project ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePersonaListResponse'
+      tags:
+        - Persona
+      security:
+        - token: []
+    post:
+      operationId: StablePersonaController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_persona
+          toolDescription: |-
+            A named set of variable values a test starts from — "returning customer", "VIP in Germany", "anonymous visitor". Each item presets one project variable, addressed by its name, to a value for the duration of a test run.
+            A test or a test turn picks a persona by ID through its variableStates setting, instead of listing the same values inline in every test.
+            Predecessor: select the project and environment first, and create the variables the persona will preset with voiceflow_variable.create.
+            Successor: point a test at the persona by setting its settings.variableStates to the persona ID with voiceflow_test.update.
+          operation: create
+          operationDescription: |-
+            WHAT — Create a persona: a name plus the variable values it presets, each item naming its variable by name.
+            USE WHEN — Several tests need the agent to start from the same known state (a signed-in customer, a locale, a plan tier).
+            BEFORE — voiceflow_variable.list to copy the exact variable names; an item naming a variable that does not exist is refused.
+            AFTER — voiceflow_test.update to set a test's settings.variableStates to the new persona ID.
+        cli:
+          command: persona create
+      x-speakeasy-group: persona
+      x-speakeasy-name-override: create
+      summary: Create persona
+      description: Create a new persona.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StablePersonaCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePersonaResponse'
+      tags:
+        - Persona
+      security:
+        - token: []
+  /v1/stable/persona/{personaID}:
+    get:
+      operationId: StablePersonaController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_persona
+          toolDescription: |-
+            A named set of variable values a test starts from — "returning customer", "VIP in Germany", "anonymous visitor". Each item presets one project variable, addressed by its name, to a value for the duration of a test run.
+            A test or a test turn picks a persona by ID through its variableStates setting, instead of listing the same values inline in every test.
+            Predecessor: select the project and environment first, and create the variables the persona will preset with voiceflow_variable.create.
+            Successor: point a test at the persona by setting its settings.variableStates to the persona ID with voiceflow_test.update.
+          operation: get
+          operationDescription: |-
+            WHAT — Fetch one persona with the variable values it presets.
+            USE WHEN — Before update, since an update replaces the whole items list.
+        cli:
+          command: persona get
+      x-speakeasy-group: persona
+      x-speakeasy-name-override: get
+      summary: Get persona
+      description: Get a persona by ID.
+      parameters:
+        - name: personaID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StablePersonaResponse'
+      tags:
+        - Persona
+      security:
+        - token: []
+    patch:
+      operationId: StablePersonaController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_persona
+          toolDescription: |-
+            A named set of variable values a test starts from — "returning customer", "VIP in Germany", "anonymous visitor". Each item presets one project variable, addressed by its name, to a value for the duration of a test run.
+            A test or a test turn picks a persona by ID through its variableStates setting, instead of listing the same values inline in every test.
+            Predecessor: select the project and environment first, and create the variables the persona will preset with voiceflow_variable.create.
+            Successor: point a test at the persona by setting its settings.variableStates to the persona ID with voiceflow_test.update.
+          operation: update
+          operationDescription: |-
+            WHAT — Rename a persona or replace the variable values it presets.
+            BEFORE — voiceflow_persona.get to read the current items.
+            DO NOT — Send only the items you are changing — items replaces the whole list, so any item left out is removed from the persona.
+        cli:
+          command: persona update
+      x-speakeasy-group: persona
+      x-speakeasy-name-override: update
+      summary: Update persona
+      description: Update a persona by ID.
+      parameters:
+        - name: personaID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StablePersonaUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Persona
+      security:
+        - token: []
+    delete:
+      operationId: StablePersonaController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_persona
+          toolDescription: |-
+            A named set of variable values a test starts from — "returning customer", "VIP in Germany", "anonymous visitor". Each item presets one project variable, addressed by its name, to a value for the duration of a test run.
+            A test or a test turn picks a persona by ID through its variableStates setting, instead of listing the same values inline in every test.
+            Predecessor: select the project and environment first, and create the variables the persona will preset with voiceflow_variable.create.
+            Successor: point a test at the persona by setting its settings.variableStates to the persona ID with voiceflow_test.update.
+          operation: delete
+          operationDescription: |-
+            WHAT — Remove a persona.
+            DO NOT — Delete a persona a test still points at through its variableStates — nothing clears that reference, so the test is left pointing at a persona that no longer exists.
+        cli:
+          command: persona delete
+      x-speakeasy-group: persona
+      x-speakeasy-name-override: delete
+      summary: Delete persona
+      description: Delete a persona by ID.
+      parameters:
+        - name: personaID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Persona
+      security:
+        - token: []
   /v1/stable/widget:
     get:
       operationId: StableWidgetController_get
@@ -39122,6 +39375,108 @@ components:
           description: 'The tool''s arguments, keyed by argument name and typed as its JSON Schema says; see get_schema. A top-level string value follows the ExecuteInputString rules, so {secret_name} inserts a project secret. Secrets work only at the top level: inside a nested object or array, {secret_name} is sent as written and no secret is filled in.'
           type: object
           additionalProperties: {}
+      additionalProperties: false
+    StablePersona:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          description: The name of the persona, unique within the environment.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePersonaItem'
+          description: The variable values this persona presets, one per variable.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - name
+        - items
+        - createdAt
+        - updatedAt
+    StablePersonaItem:
+      type: object
+      properties:
+        variable:
+          nullable: true
+          description: The name of the variable this item presets. Null when the item names no variable, or the variable it named has since been deleted.
+          type: string
+        value:
+          nullable: true
+          description: The value the variable is set to when a test runs with this persona. Null leaves it unset.
+          type: string
+      required:
+        - variable
+        - value
+    StablePersonaListResponse:
+      type: object
+      properties:
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePersona'
+      required:
+        - personas
+    StablePersonaResponse:
+      type: object
+      properties:
+        persona:
+          $ref: '#/components/schemas/StablePersona'
+      required:
+        - persona
+    StablePersonaItemInput:
+      type: object
+      properties:
+        variable:
+          type: string
+          description: The exact name of an existing variable in this environment. Each variable may appear at most once in a persona.
+        value:
+          nullable: true
+          description: The value the variable is set to when a test runs with this persona. Null leaves it unset.
+          type: string
+      required:
+        - variable
+        - value
+      additionalProperties: false
+    StablePersonaCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the persona. Must not already be used by another persona in this environment.
+        items:
+          default: []
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePersonaItemInput'
+          description: 'The variable values this persona presets. On update this replaces the whole list: send every item the persona should keep. An item read back with a null variable cannot be kept: leave it out, or name an existing variable in its place.'
+      required:
+        - name
+      additionalProperties: false
+    StablePersonaUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the persona. Must not already be used by another persona in this environment.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StablePersonaItemInput'
+          description: 'The variable values this persona presets. On update this replaces the whole list: send every item the persona should keep. An item read back with a null variable cannot be kept: leave it out, or name an existing variable in its place.'
       additionalProperties: false
     StablePhoneNumber:
       type: object

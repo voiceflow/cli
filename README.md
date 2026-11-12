@@ -604,6 +604,14 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_test_run_get.md) - Get run
 * [`query-logs`](docs/vf_test_run_query-logs.md) - Query run logs
 
+### [persona](docs/vf_persona.md)
+
+* [`list`](docs/vf_persona_list.md) - List personas
+* [`create`](docs/vf_persona_create.md) - Create persona
+* [`get`](docs/vf_persona_get.md) - Get persona
+* [`update`](docs/vf_persona_update.md) - Update persona
+* [`delete`](docs/vf_persona_delete.md) - Delete persona
+
 ### [widget](docs/vf_widget.md)
 
 * [`get`](docs/vf_widget_get.md) - Get widget

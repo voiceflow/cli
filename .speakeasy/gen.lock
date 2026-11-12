@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: fc3a8d94dae6997ba6ba85d03ccf9537
+  docChecksum: fe883ed6d975748f576ca2f620fdf21d
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.326
-  configChecksum: b21e6ce7834c7fe30e0cbf6c7e551bc3
+  releaseVersion: 0.2.327
+  configChecksum: f7b8c88a0982eb82976d9e5917f9b875
 persistentEdits:
-  generation_id: 2502657b-f611-4ba3-a800-e17b234b6b5c
-  pristine_commit_hash: 9e46bb701a21f4a52ec1999466f3a8a5248d197c
-  pristine_tree_hash: fccb735b10993ba2c928c9424e76365c52a48615
+  generation_id: cc50a2d1-e71f-44d8-be09-1c78e120dff3
+  pristine_commit_hash: 3dce7a1f3cbede46785d9b295dd3ced61855af95
+  pristine_tree_hash: 46dc0b8e8a708ef6a0fa9898df5ea32745c761dc
 features:
   cli:
     additionalProperties: 0.0.1
@@ -688,6 +688,30 @@ trackedFiles:
     id: b6fccead8dfd
     last_write_checksum: sha1:c0222284d5cf005eddb9e5fac430b314d4630b5d
     pristine_git_object: f769bbd00a72e2e30faa561b2bdfd6a7797e1804
+  internal/cli/persona/create.go:
+    id: 01257995c541
+    last_write_checksum: sha1:0a2668da5fccc5246380481831c976426617f770
+    pristine_git_object: 093fba41b6076a1c94db093018982794bb86df4c
+  internal/cli/persona/delete.go:
+    id: c5177f6aef72
+    last_write_checksum: sha1:9b642747a20cde2d34fc4571b2f80f77066d2245
+    pristine_git_object: 4fbc46422599145e2926cad05b61c229a6aeb269
+  internal/cli/persona/get.go:
+    id: f1bfa2ce83b3
+    last_write_checksum: sha1:fbd351c62ceb07640df2e7ee644962f285d2a97e
+    pristine_git_object: daf9507b4bf5358fbeea1c44cddae32c08abbe75
+  internal/cli/persona/list.go:
+    id: 8dcb96b221ba
+    last_write_checksum: sha1:7e80d5ed9b9382dc4ae778d141919a4df4794485
+    pristine_git_object: 057e0f458d678b0be54112f256663c157e9343c6
+  internal/cli/persona/root.go:
+    id: 6a69949b1ba0
+    last_write_checksum: sha1:018631201bba46166647bc54f34b5f1c538d6d72
+    pristine_git_object: cd06515f2ce3eb162cf0e42e70a1ebeecae85b03
+  internal/cli/persona/update.go:
+    id: ff87a8d17412
+    last_write_checksum: sha1:33af96310da6138636af6534e40df7ae4f55f324
+    pristine_git_object: d27c01efcc6a587c60aa876e987136f9c26e16ca
   internal/cli/phonenumber/assign.go:
     id: 3720c9ed7c39
     last_write_checksum: sha1:4ddae9dd8dc72a85007f915814b18b822c0ecba1
@@ -846,8 +870,8 @@ trackedFiles:
     pristine_git_object: 9b632ab70b94b9d1b03c6d57bf8c1ed0f801adf6
   internal/cli/root.go:
     id: 239d55a0d6be
-    last_write_checksum: sha1:445574a8d1c765bcc8d0a7a3ac7ed30eaecae0c8
-    pristine_git_object: 0592a94e5ecc6f8500e2defd01ac0d9132602c17
+    last_write_checksum: sha1:7240bb3ed26c33f11431812a07ccb5b6a03f07ad
+    pristine_git_object: adf421ada96ea78feff7f65b55c227c4d4ce9058
   internal/cli/secret/create.go:
     id: 24d44099e06b
     last_write_checksum: sha1:f69350df7da1382b73e53496a1a989a527705faa
@@ -1078,8 +1102,8 @@ trackedFiles:
     pristine_git_object: aefea088fc77bc8bbc656dadbd6c3d01e56a6520
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:f70e870b56cf3aacea0278aa23a8c74c859f13af
-    pristine_git_object: 53e2d41a796f570bd8a0683c93b9309a67bb9e86
+    last_write_checksum: sha1:37fa1f3a9257bfbbb5c7c6f50a77f07b97215a51
+    pristine_git_object: 9c6336e08605e6e1ec094ac4170e346a11b03fad
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -2900,6 +2924,34 @@ trackedFiles:
     id: 8a68f00f85fb
     last_write_checksum: sha1:d891e96763202b70183ffb568c317ba0b645a810
     pristine_git_object: 76e69ada02c74964a93f47917060cff7197b97a3
+  internal/sdk/models/components/stablepersona.go:
+    id: 1ad67c8e4be1
+    last_write_checksum: sha1:31a33954083532d6feae16f7073630552076b948
+    pristine_git_object: 9f43e454e54b4196775712ae7e08628c84521fe1
+  internal/sdk/models/components/stablepersonacreaterequest.go:
+    id: 0154fdcb4316
+    last_write_checksum: sha1:73eb4374898278d4673e11cbed88ed24d930f6ed
+    pristine_git_object: c9d174d82f0568da0768cb3584e8d8df499721b1
+  internal/sdk/models/components/stablepersonaitem.go:
+    id: 42102b8ad1e1
+    last_write_checksum: sha1:afae77f04784380ee908611dc3dc1688dcb34972
+    pristine_git_object: 0487933da9f8308ccfb9dcb6b27961e65110f7b5
+  internal/sdk/models/components/stablepersonaiteminput.go:
+    id: 110d5d8637d1
+    last_write_checksum: sha1:400c173b1618aff9a1fe7c2de6e6906e0723ff77
+    pristine_git_object: 7b9f958431cd3afc1990a922616851dd2a53575f
+  internal/sdk/models/components/stablepersonalistresponse.go:
+    id: 7ab0e0a3afb5
+    last_write_checksum: sha1:ed4cb7ec42af4930f47217bc9c51df88d0d6941b
+    pristine_git_object: 7b870e522014c2bfe390d0f6300821b294306311
+  internal/sdk/models/components/stablepersonaresponse.go:
+    id: f92064ef4150
+    last_write_checksum: sha1:a10bb13b4096dcbbb8f20ee66fae8fe28d354716
+    pristine_git_object: ab1fb2c0edb54462a300eeb3b1fe3ad4561415a0
+  internal/sdk/models/components/stablepersonaupdaterequest.go:
+    id: 67433176109d
+    last_write_checksum: sha1:d8d07cf388ee7160f008b356bb70f9deea0539cc
+    pristine_git_object: c4ca1649c2b3bb613e7c250ba2259a1fc9664cae
   internal/sdk/models/components/stablephonenumber.go:
     id: 2301af7fa441
     last_write_checksum: sha1:a59d94780f5dab33adbb219941a5b20257c4b403
@@ -4720,6 +4772,26 @@ trackedFiles:
     id: e920fb238f4f
     last_write_checksum: sha1:156febbaff797ef9469cfbeeb320f2bf722db79d
     pristine_git_object: 57796a0e51a7474cb7cf59fb0b04cd06891a8948
+  internal/sdk/models/operations/stablepersonacontrollercreate.go:
+    id: f47b715e50d6
+    last_write_checksum: sha1:3235ed9b7a7302c21ac26f61767a9996f2d3af65
+    pristine_git_object: b9637b36456356ac9a75393477100b0f33c35fc0
+  internal/sdk/models/operations/stablepersonacontrollerdelete.go:
+    id: 5e64686dfccc
+    last_write_checksum: sha1:0c223d459196457decb464ad13be90084de15660
+    pristine_git_object: 8864b46c9ce6d653af7238c21ea3ef7841e5014b
+  internal/sdk/models/operations/stablepersonacontrollerget.go:
+    id: 6780a9aa40d5
+    last_write_checksum: sha1:dbb3861af0c9afc6688db08b0b41484725cff310
+    pristine_git_object: b0128c7f3cd741a8350d6cfff92014e57a54b56f
+  internal/sdk/models/operations/stablepersonacontrollerlist.go:
+    id: d5da408cf723
+    last_write_checksum: sha1:e87577d02475fb617e039a25c20103fbb21c9e3e
+    pristine_git_object: 8367a127ad3fcfd5042b0de9e94a35720265ab9e
+  internal/sdk/models/operations/stablepersonacontrollerupdate.go:
+    id: 3f883cbe3c2c
+    last_write_checksum: sha1:8f8daf0e60d62156ab1b316786ade29b626347e5
+    pristine_git_object: 4430690496455abb29b2a69fd9575eb94e49db3b
   internal/sdk/models/operations/stablephonenumbercontrollerassign.go:
     id: 2003b8d4ba60
     last_write_checksum: sha1:3eb62e8a32b42757ae4100d5bd8dbf9be81ce303
@@ -5196,6 +5268,10 @@ trackedFiles:
     id: 3920a41dfc4c
     last_write_checksum: sha1:4495e62cc50bf51d4db762ca6b9902c1e1e0464d
     pristine_git_object: 1a9bcd0cc4a56f4034599c5a32058b0490dd17f8
+  internal/sdk/persona.go:
+    id: b7b9282d72ef
+    last_write_checksum: sha1:755cd894323daeedc0c3aa214b5861380c588d58
+    pristine_git_object: 7c14b50a93dc3ef6f76a5e38a709e66c495ad20f
   internal/sdk/phonenumber.go:
     id: 730099762c53
     last_write_checksum: sha1:379c2d20f840d5249ee2f7a158e0eca791db630f
@@ -5338,8 +5414,8 @@ trackedFiles:
     pristine_git_object: 319f6d61ee986dfe1e8fe9e9b460b226fa669586
   internal/sdk/voiceflowsdk.go:
     id: f474e5d69d13
-    last_write_checksum: sha1:2d12dbb54132aa7fe852d7cc5f03bc8380f6ef03
-    pristine_git_object: 3a203f627b7f3b8485f89fab132fbe51ce716929
+    last_write_checksum: sha1:1ca6603336406449a3da57912d0b7f21d886babb
+    pristine_git_object: 03a31d6c92ce276ac45f252784fca688635deaa5
   internal/sdk/widget.go:
     id: c64684ab09d5
     last_write_checksum: sha1:fa09e1c267f3cffcd9e4c2553229ca88a3daad6f
@@ -5358,8 +5434,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:6970c6dc07cf0481ebdd73f1ac1f8e35f871926d
-    pristine_git_object: abf567a46d02d3b41a9f8b1a0833cdf41db976b3
+    last_write_checksum: sha1:714a8496af46db6f7e14dc52a319243d489ac845
+    pristine_git_object: 70a5788f5fd2b43668f15a8d67486db5d246c87d
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -8753,4 +8829,59 @@ examples:
       responses:
         "200":
           application/json: {"message": "<value>", "added": ["<value 1>"], "replaced": ["<value 1>", "<value 2>"], "removed": [], "notFound": ["<value 1>", "<value 2>", "<value 3>"]}
+  StablePersonaController_list:
+    speakeasy-default-stable-persona-controller-list:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      responses:
+        "200":
+          application/json: {"personas": [{"id": "<id>", "name": "<value>", "items": [{"variable": null, "value": "<value>"}], "createdAt": "2026-09-16T03:43:23.590Z", "updatedAt": "2025-01-06T03:55:53.771Z"}]}
+  StablePersonaController_create:
+    speakeasy-default-stable-persona-controller-create:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {"name": "<value>"}
+      responses:
+        "201":
+          application/json: {"persona": {"id": "<id>", "name": "<value>", "items": [], "createdAt": "2026-09-06T18:39:06.206Z", "updatedAt": "2026-02-15T13:10:32.257Z"}}
+  StablePersonaController_get:
+    speakeasy-default-stable-persona-controller-get:
+      parameters:
+        path:
+          personaID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      responses:
+        "200":
+          application/json: {"persona": {"id": "<id>", "name": "<value>", "items": [], "createdAt": "2025-04-19T13:52:36.893Z", "updatedAt": "2024-10-05T22:38:37.224Z"}}
+  StablePersonaController_update:
+    speakeasy-default-stable-persona-controller-update:
+      parameters:
+        path:
+          personaID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      requestBody:
+        application/json: {}
+      responses:
+        "200":
+          application/json: {"message": "<value>"}
+  StablePersonaController_delete:
+    speakeasy-default-stable-persona-controller-delete:
+      parameters:
+        path:
+          personaID: "<id>"
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+      responses:
+        "200":
+          application/json: {"message": "<value>"}
 examplesVersion: 1.0.2
