@@ -5983,7 +5983,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6027,7 +6027,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6101,7 +6101,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6153,7 +6153,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6202,7 +6202,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6261,7 +6261,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6312,7 +6312,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6362,7 +6362,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6420,7 +6420,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6478,7 +6478,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6528,7 +6528,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6580,7 +6580,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6632,7 +6632,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6681,7 +6681,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6737,7 +6737,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6787,7 +6787,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6837,7 +6837,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6888,7 +6888,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6940,7 +6940,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -6989,7 +6989,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
@@ -7043,7 +7043,7 @@ paths:
         mcp:
           tool: voiceflow_function
           toolDescription: |-
-            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
+            Custom JavaScript code that runs as an agent tool. Sandboxed ES6 V8 runtime: no require/import, no timers, modified fetch API, built-in btoa/atob for base64. Functions can also emit traces (text for chat, speak/audio for voice, cardV2/carousel/choice for visual). When the user gives you a plain REST endpoint, prefer an API tool; reach for a Function when you need transforms, parsing, multi-call chains, or conditional logic on responses.
             The function's description is LLM-facing — the LLM reads it when deciding whether to call the function. Write it in WHAT/WHEN format: WHAT the function does AND WHEN the LLM should call it. A pure WHAT ("Looks up postal code") routes badly; the WHEN ("Use when the user provides a postal code or asks to verify service availability for their address") is what gives the LLM the signal to pick correctly.
             Predecessor: select the project and environment first; create any project variables the function reads or writes.
             Successor: run the function once with the execute operation (get_schema lists its inputs) to check its outputs and path, then attach it at agent level, recompile the environment, and run a test conversation to verify the declared outputs populate.
