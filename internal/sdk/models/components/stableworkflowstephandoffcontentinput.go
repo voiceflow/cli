@@ -880,7 +880,7 @@ type StableWorkflowStepHandoffContentInput struct {
 	HandoffContext *StableWorkflowStepHandoffContentInputHandoffContext                                `json:"handoffContext,omitzero"`
 	// Adds the next port, taken when the conversation returns from the agent.
 	ReturnPath *bool `json:"returnPath,omitzero"`
-	// Adds a fail port, taken when the handoff cannot start. Set it only when the user says what happens then, and link the port in the same call, because an unlinked port leads nowhere.
+	// Adds a fail port, taken when the handoff cannot start. Set it only when the user says what happens then. Link the port in the same call to the block that runs then, or leave it unlinked to hand the conversation back to the agent.
 	FailPath *bool `json:"failPath,omitzero"`
 }
 

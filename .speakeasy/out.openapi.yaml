@@ -1034,6 +1034,7 @@ paths:
           operation: set_initialization_workflow
           operationDescription: |-
             WHAT — Choose the workflow the agent runs before the user's first turn (the Initialization workflow in the agent's Behaviour settings), or clear it with null. At most one is set: setting one replaces the one before.
+            An End step in it ends the whole conversation before the agent says a word, so use End only on a path that should close the conversation, such as out of hours. On every path after which the agent should take over, leave the last port unlinked (a button with no to, a last step with no next).
             USE WHEN — The user wants something to happen at launch, before they say anything: load customer data, greet with fixed text, or copy launch values into variables.
             BEFORE — voiceflow_agent.get_initialization_workflow to see what runs now, and voiceflow_workflow.create or voiceflow_workflow.list for the workflowID.
             AFTER — voiceflow_environment.compile before a test conversation uses it.
@@ -13097,12 +13098,13 @@ paths:
           operation: create
           operationDescription: |-
             WHAT — Creates a workflow with its whole first version in one call: blocks, steps, branches, the links between blocks, and the entry block.
-            Give every block a key, and give a key to any step or branch whose ID you want back. Links name blocks by key. The response maps each key to the ID the server created. An End that says nothing is { "kind": "end" }, with no content.
+            Give every block a key, and give a key to any step or branch whose ID you want back. Links name blocks by key. The response maps each key to the ID the server created. An End that says nothing is { "kind": "end" }, with no content. An End step ends the whole conversation. A port left unlinked on the last step of a block, or an else left unlinked, finishes the workflow there and hands the conversation back to the agent, or to the Workflow step that called it.
             USE WHEN — building a new workflow. To change an existing one, use the block and step operations. Send only a message or prompt ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message or prompt with that text.
             BEFORE — create the messages the steps say with voiceflow_message.create_many, one message per step, and any new variables with voiceflow_variable.create_many.
             AFTER — when the Main Agent should route to it, add its ID to the agent's workflows with voiceflow_agent.update, then a routing rule with voiceflow_agent.patch_instructions. Skip both for an Initialization workflow, one another workflow runs, or a workflow tool.
             DO NOT — put a branching step anywhere but last in its block.
             DO NOT — send coordinates; the server places blocks.
+            DO NOT — end a path with End when the agent should take over; leave its last port unlinked.
         cli:
           command: workflow create
       x-speakeasy-group: workflow
@@ -13696,7 +13698,7 @@ paths:
           operationDescription: |-
             WHAT — Clears one port of one step, so it leads nowhere. Nothing else changes, and nothing is deleted.
             On an exit with actions, it clears where the path goes after the last action, and the actions stay.
-            USE WHEN — a branch should stop leading anywhere, or a read shows a link with overridden: true that does not run. Unlinking does not end a loop, because the path then stops with no ending: insert an End step instead.
+            USE WHEN — a branch should stop leading anywhere, or a read shows a link with overridden: true that does not run. On the last step of a block, or on an else, an unlinked port finishes the workflow there and hands the conversation back to the agent, or to the Workflow step that called it. On a step that is not last, any other port continues to the next step once it is unlinked. An End step would end the whole conversation instead.
             BEFORE — voiceflow_workflow.get, for the port key.
             DO NOT — use this to remove a step; voiceflow_workflow.delete_step does that.
         cli:
@@ -14258,7 +14260,7 @@ paths:
             A Condition branch is a path with its assertions. A Buttons, Card or Carousel branch is a button, and a Carousel button needs the cardID it goes on. A Code branch is a path the code returns. A Crew branch is an exit path.
             USE WHEN — a step needs one more way out. Send only a message ID that nothing else uses: no other step in any workflow, no reprompt, no agent and no playbook. For the same words in a second place, create a new message with that text.
             BEFORE — voiceflow_workflow.get_step, to see the branches the step has.
-            AFTER — without to, link the new branch with voiceflow_workflow.link, with the returned branchID as the port. A branch that links nowhere leads nowhere.
+            AFTER — without to, link the new branch with voiceflow_workflow.link, with the returned branchID as the port. Left unlinked, a branch on the last step of a block finishes the workflow there and hands the conversation back to the agent; on a Card or Carousel that is not last, it continues to the next step.
             DO NOT — add a branch to a Playbook, Operator or Tool step. Their branches are the paths of the agent or function.
         cli:
           command: workflow add-branch
@@ -47595,7 +47597,7 @@ components:
           description: Adds the next port, taken when the conversation returns from the agent.
           type: boolean
         failPath:
-          description: Adds a fail port, taken when the handoff cannot start. Set it only when the user says what happens then, and link the port in the same call, because an unlinked port leads nowhere.
+          description: Adds a fail port, taken when the handoff cannot start. Set it only when the user says what happens then. Link the port in the same call to the block that runs then, or leave it unlinked to hand the conversation back to the agent.
           type: boolean
       additionalProperties: false
     StableWorkflowHandoffConfigInput:
