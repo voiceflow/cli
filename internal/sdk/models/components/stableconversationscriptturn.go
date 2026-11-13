@@ -4,18 +4,24 @@
 package components
 
 type StableConversationScriptTurn struct {
-	// The message sent in this turn. Null for the launch turn that starts the conversation.
+	// The step run in this turn: the message sent, or "[button: <label>]" for a button press. Null for the launch turn that starts the conversation.
 	User *string `json:"user"`
 	// The agent's replies in this turn, in order, at most 10, each cut to 1,000 characters. Buttons, cards and carousels come summarised, such as "[buttons: Yes | No]" or "[card: <title>]".
 	Agent []string `json:"agent"`
+	// Who gave this turn's replies, in order, at most 10: an agent by name, such as "Main Agent", a playbook as "<name> (playbook)", or "workflow <name>" for a workflow step. Empty when the traces name no one. A reply from someone you did not expect means the routing did not work.
+	RepliedBy []string `json:"repliedBy"`
 	// The tools the agent called and the tools its workflow steps ran in this turn, at most 20.
 	ToolCalls []StableConversationScriptToolCall `json:"toolCalls"`
-	// The variables this turn set, changed or cleared, at most 30. Leaves out the variables that change every turn (vf_now, vf_time, timestamp, vf_memory, last_utterance, last_response, last_event, intent_confidence). The launch turn lists the preset variables and the variables the launch set, not the system variables or the starting values.
+	// The variables this turn set, changed or cleared, at most 30. Leaves out the variables that change every turn (vf_now, vf_time, timestamp, vf_memory, last_utterance, last_response, last_event, intent_confidence, _memory_). The launch turn lists the preset variables and the variables the launch set, not the system variables or the starting values.
 	VariableChanges []StableConversationScriptVariableChange `json:"variableChanges"`
-	// Errors, failed tool calls, HTTP failures and credit limits the runtime reported in this turn, at most 10, each cut to 300 characters.
+	// Errors, failed tool calls, HTTP failures and credit limits the runtime reported in this turn, at most 10, each cut to 300 characters. A failed tool carries the cause the runtime recorded, such as a missing input.
 	Errors []string `json:"errors"`
-	// True when the agent ended the conversation in this turn.
+	// Every warning the runtime logged in this turn that is not an error, such as a transfer it ignored because the playbook's condition was not met, each cut to 300 characters. Past 10, the last entry says how many more there were; read them in the transcript's logs at level warn. A turn also says here when the variables before it could not be read, so it lists no variable changes: at the launch, the variables a supplied userID had; later, the variables after the turn before.
+	Warnings []string `json:"warnings"`
+	// True when the conversation ended in this turn. An End step ends the whole conversation, not only its workflow: nothing the user says after it is answered.
 	Ended bool `json:"ended"`
+	// When ended is true, what ended the conversation: the End step with its step ID and workflow, and the reason the runtime gave. Null when the turn did not end.
+	EndedBy *string `json:"endedBy"`
 }
 
 func (s *StableConversationScriptTurn) GetUser() *string {
@@ -30,6 +36,13 @@ func (s *StableConversationScriptTurn) GetAgent() []string {
 		return []string{}
 	}
 	return s.Agent
+}
+
+func (s *StableConversationScriptTurn) GetRepliedBy() []string {
+	if s == nil {
+		return []string{}
+	}
+	return s.RepliedBy
 }
 
 func (s *StableConversationScriptTurn) GetToolCalls() []StableConversationScriptToolCall {
@@ -53,9 +66,23 @@ func (s *StableConversationScriptTurn) GetErrors() []string {
 	return s.Errors
 }
 
+func (s *StableConversationScriptTurn) GetWarnings() []string {
+	if s == nil {
+		return []string{}
+	}
+	return s.Warnings
+}
+
 func (s *StableConversationScriptTurn) GetEnded() bool {
 	if s == nil {
 		return false
 	}
 	return s.Ended
+}
+
+func (s *StableConversationScriptTurn) GetEndedBy() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EndedBy
 }

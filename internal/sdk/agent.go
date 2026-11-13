@@ -447,12 +447,12 @@ func (s *Agent) ReadInstructions(ctx context.Context, request operations.StableA
 					return nil, err
 				}
 
-				var out components.StableInstructionsReadResponse
+				var out components.StableInstructionsReadResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableInstructionsReadResponse = &out
+				res.StableInstructionsReadResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -908,12 +908,12 @@ func (s *Agent) ReadPrompt(ctx context.Context, request operations.StableAgentCo
 					return nil, err
 				}
 
-				var out components.StableInstructionsReadResponse
+				var out components.StableInstructionsReadResponseV2
 				if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 					return nil, err
 				}
 
-				res.StableInstructionsReadResponse = &out
+				res.StableInstructionsReadResponseV2 = &out
 			}
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)

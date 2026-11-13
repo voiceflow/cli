@@ -5,9 +5,125 @@ package components
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
+
+type MessageType string
+
+const (
+	MessageTypeStr                                MessageType = "str"
+	MessageTypeStableConversationScriptTextStep   MessageType = "StableConversationScriptTextStep"
+	MessageTypeStableConversationScriptButtonStep MessageType = "StableConversationScriptButtonStep"
+)
+
+type Message struct {
+	Str                                *string                             `queryParam:"inline" union:"member"`
+	StableConversationScriptTextStep   *StableConversationScriptTextStep   `queryParam:"inline" union:"member"`
+	StableConversationScriptButtonStep *StableConversationScriptButtonStep `queryParam:"inline" union:"member"`
+
+	Type MessageType
+}
+
+func CreateMessageStr(str string) Message {
+	typ := MessageTypeStr
+
+	return Message{
+		Str:  &str,
+		Type: typ,
+	}
+}
+
+func CreateMessageStableConversationScriptTextStep(stableConversationScriptTextStep StableConversationScriptTextStep) Message {
+	typ := MessageTypeStableConversationScriptTextStep
+
+	return Message{
+		StableConversationScriptTextStep: &stableConversationScriptTextStep,
+		Type:                             typ,
+	}
+}
+
+func CreateMessageStableConversationScriptButtonStep(stableConversationScriptButtonStep StableConversationScriptButtonStep) Message {
+	typ := MessageTypeStableConversationScriptButtonStep
+
+	return Message{
+		StableConversationScriptButtonStep: &stableConversationScriptButtonStep,
+		Type:                               typ,
+	}
+}
+
+func (u *Message) UnmarshalJSON(data []byte) error {
+
+	var candidates []utils.UnionCandidate
+
+	// Collect all valid candidates
+	var str string = ""
+	if err := utils.UnmarshalJSON(data, &str, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  MessageTypeStr,
+			Value: &str,
+		})
+	}
+
+	var stableConversationScriptTextStep StableConversationScriptTextStep = StableConversationScriptTextStep{}
+	if err := utils.UnmarshalJSON(data, &stableConversationScriptTextStep, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  MessageTypeStableConversationScriptTextStep,
+			Value: &stableConversationScriptTextStep,
+		})
+	}
+
+	var stableConversationScriptButtonStep StableConversationScriptButtonStep = StableConversationScriptButtonStep{}
+	if err := utils.UnmarshalJSON(data, &stableConversationScriptButtonStep, "", true, nil); err == nil {
+		candidates = append(candidates, utils.UnionCandidate{
+			Type:  MessageTypeStableConversationScriptButtonStep,
+			Value: &stableConversationScriptButtonStep,
+		})
+	}
+
+	if len(candidates) == 0 {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for Message", string(data))
+	}
+
+	// Pick the best candidate using multi-stage filtering
+	best := utils.PickBestUnionCandidate(candidates, data)
+	if best == nil {
+		return fmt.Errorf("could not unmarshal `%s` into any supported union types for Message", string(data))
+	}
+
+	// Set the union type and value based on the best candidate
+	u.Type = best.Type.(MessageType)
+	switch best.Type {
+	case MessageTypeStr:
+		u.Str = best.Value.(*string)
+		return nil
+	case MessageTypeStableConversationScriptTextStep:
+		u.StableConversationScriptTextStep = best.Value.(*StableConversationScriptTextStep)
+		return nil
+	case MessageTypeStableConversationScriptButtonStep:
+		u.StableConversationScriptButtonStep = best.Value.(*StableConversationScriptButtonStep)
+		return nil
+	}
+
+	return fmt.Errorf("could not unmarshal `%s` into any supported union types for Message", string(data))
+}
+
+func (u Message) MarshalJSON() ([]byte, error) {
+	if u.Str != nil {
+		return utils.MarshalJSON(u.Str, "", true)
+	}
+
+	if u.StableConversationScriptTextStep != nil {
+		return utils.MarshalJSON(u.StableConversationScriptTextStep, "", true)
+	}
+
+	if u.StableConversationScriptButtonStep != nil {
+		return utils.MarshalJSON(u.StableConversationScriptButtonStep, "", true)
+	}
+
+	return nil, errors.New("could not marshal union type Message: all fields are null")
+}
 
 // StableConversationScriptRequestVersion - Whether to talk to the draft or the published version of the environment. Draft unless you pass it.
 type StableConversationScriptRequestVersion string
@@ -36,13 +152,61 @@ func (e *StableConversationScriptRequestVersion) UnmarshalJSON(data []byte) erro
 	}
 }
 
+// StableConversationScriptRequestPayload - The launch payload, as a website passes it to the chat widget, for example { "lang": "de" }. The agent reads it from the last_event variable.
+type StableConversationScriptRequestPayload struct {
+	Persona              *string        `json:"persona,omitzero"`
+	AdditionalProperties map[string]any `additionalProperties:"true" json:"-"`
+}
+
+func (s StableConversationScriptRequestPayload) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StableConversationScriptRequestPayload) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *StableConversationScriptRequestPayload) GetPersona() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Persona
+}
+
+func (s *StableConversationScriptRequestPayload) GetAdditionalProperties() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.AdditionalProperties
+}
+
+// Launch - How the conversation starts; payload is its only field. Leave it out for a plain launch.
+type Launch struct {
+	// The launch payload, as a website passes it to the chat widget, for example { "lang": "de" }. The agent reads it from the last_event variable.
+	Payload StableConversationScriptRequestPayload `json:"payload"`
+}
+
+func (l *Launch) GetPayload() StableConversationScriptRequestPayload {
+	if l == nil {
+		return StableConversationScriptRequestPayload{}
+	}
+	return l.Payload
+}
+
 type StableConversationScriptRequest struct {
-	// The user messages to send, in order, after the launch that starts the conversation.
-	Messages []string `json:"messages"`
-	// Variable values to set before the launch, keyed by variable name, to start as a known caller.
+	// The user messages to send, in order, after the launch. A message is typed text, as a string or { "text": "…" }, or a button press, as { "button": "<label>" }, for a button the reply before offered. The digest shows offered buttons as "[buttons: Yes | No]".
+	Messages []Message `json:"messages"`
+	// Variable values to set before the launch, keyed by variable name, to start as a known caller. Next to messages, not inside launch.
 	Variables map[string]any `json:"variables,omitzero"`
 	// Whether to talk to the draft or the published version of the environment. Draft unless you pass it.
 	Version *StableConversationScriptRequestVersion `default:"draft" json:"version"`
+	// How the conversation starts; payload is its only field. Leave it out for a plain launch.
+	Launch *Launch `json:"launch,omitzero"`
+	// The conversation user ID to run as; the agent reads it as the user_id variable. Use it when the agent expects a caller ID of a known shape, such as a phone number, and make one up: never a real customer's ID. Draft version only. Leave it out to run as a new user each time. A reused ID keeps the variables an earlier conversation with it left.
+	UserID *string `json:"userID,omitzero"`
 }
 
 func (s StableConversationScriptRequest) MarshalJSON() ([]byte, error) {
@@ -56,9 +220,9 @@ func (s *StableConversationScriptRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *StableConversationScriptRequest) GetMessages() []string {
+func (s *StableConversationScriptRequest) GetMessages() []Message {
 	if s == nil {
-		return []string{}
+		return []Message{}
 	}
 	return s.Messages
 }
@@ -75,4 +239,18 @@ func (s *StableConversationScriptRequest) GetVersion() *StableConversationScript
 		return nil
 	}
 	return s.Version
+}
+
+func (s *StableConversationScriptRequest) GetLaunch() *Launch {
+	if s == nil {
+		return nil
+	}
+	return s.Launch
+}
+
+func (s *StableConversationScriptRequest) GetUserID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.UserID
 }
