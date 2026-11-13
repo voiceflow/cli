@@ -6,11 +6,13 @@ package components
 type StableConversationScriptResponse struct {
 	// The conversation user ID the script ran as, for reading its state afterwards.
 	UserID string `json:"userID"`
+	// The transcript this conversation is saved to, for reading its logs. Null when the runtime reported none, for example when the project does not save test conversations; then search transcripts with sessionID set to userID.
+	TranscriptID *string `json:"transcriptID"`
 	// When true, the script ran against a stale prototype. Compile the environment and run it again; do not treat these turns as proof the latest edits work.
 	NeedsRecompile bool `json:"needsRecompile"`
 	// The launch turn first, then one turn per message sent.
 	Turns []StableConversationScriptTurn `json:"turns"`
-	// Messages that were not sent because the agent ended the conversation, a turn failed or reported errors, or the caller stopped the script first.
+	// Steps that were not run, in the same form as user, because the conversation ended, a send failed, a button was not on offer, the runtime logged an error outside a tool or a fatal error, the credit limit was reached, or the caller stopped the script first. A failed tool or HTTP call does not stop the script: it is listed in its turn.
 	NotSent []string `json:"notSent"`
 }
 
@@ -19,6 +21,13 @@ func (s *StableConversationScriptResponse) GetUserID() string {
 		return ""
 	}
 	return s.UserID
+}
+
+func (s *StableConversationScriptResponse) GetTranscriptID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.TranscriptID
 }
 
 func (s *StableConversationScriptResponse) GetNeedsRecompile() bool {

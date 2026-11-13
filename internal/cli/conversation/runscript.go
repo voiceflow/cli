@@ -18,9 +18,11 @@ import (
 var runScriptCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "messages", Shorthand: "m", FieldPath: "Body.Messages", Kind: flagutil.FlagKindStringArray, Required: true, Description: "The user messages to send, in order, after the launch that starts the conversation. [required]"},
-	{FlagName: "variables", FieldPath: "Body.Variables", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"variables,omitempty"`, Description: "Variable values to set before the launch, keyed by variable name, to start as a known caller."},
+	{FlagName: "messages", Shorthand: "m", FieldPath: "Body.Messages", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"messages"`, Description: "The user messages to send, in order, after the launch. A message is typed text, as a string or { \"text\": \"…\" }, or a button press, as { \"button\": \"<label>\" }, for a button the reply before offered. The digest shows offered buttons as \"[buttons: Yes | No]\". [required]"},
+	{FlagName: "variables", FieldPath: "Body.Variables", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"variables,omitempty"`, Description: "Variable values to set before the launch, keyed by variable name, to start as a known caller. Next to messages, not inside launch."},
 	{FlagName: "version-param", FieldPath: "Body.Version", Kind: flagutil.FlagKindEnum, Optional: true, HasDefault: true, DefaultStr: "draft", EnumValues: []string{"draft", "published"}, Description: "Whether to talk to the draft or the published version of the environment. Draft unless you pass it. (options: draft, published)"},
+	{FlagName: "launch", Shorthand: "l", FieldPath: "Body.Launch", Kind: flagutil.FlagKindJSON, Optional: true, Annotations: `json:"launch,omitempty"`, Description: "How the conversation starts; payload is its only field. Leave it out for a plain launch."},
+	{FlagName: "user-id", Shorthand: "u", FieldPath: "Body.UserID", Kind: flagutil.FlagKindString, Optional: true, Description: "The conversation user ID to run as; the agent reads it as the user_id variable. Use it when the agent expects a caller ID of a known shape, such as a phone number, and make one up: never a real customer's ID. Draft version only. Leave it out to run as a new user each time. A reused ID keeps the variables an earlier conversation with it left."},
 }
 
 // initRunScriptCmd initializes the run-script command.

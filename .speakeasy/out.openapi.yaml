@@ -145,7 +145,7 @@ paths:
             WHAT — Read a page of the Main Agent's Instructions (its routing logic) as numbered lines: the 1-based line number, a tab, then the text.
             USE WHEN — You need the current routing rules before editing them, or they are too large to pull whole.
             AFTER — voiceflow_agent.patch_instructions, with oldString copied verbatim from a line you just read.
-            The line numbers this read adds are for navigation only — never include them in the oldString or newString of a patch.
+            The line numbers this read adds are for navigation only — never include them in the oldString or newString of a patch. A backticked tool, playbook or workflow is a link: it reads as the resource's current name, whatever spelling the write used, and follows a rename. note names the links on the page.
             DO NOT — Confuse this with the Global Prompt, which is identity and tone and is read with voiceflow_agent.read_prompt.
         cli:
           command: agent read-instructions
@@ -190,7 +190,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableInstructionsReadResponse'
+                $ref: '#/components/schemas/StableInstructionsReadResponseV2'
       tags:
         - Agent
       security:
@@ -212,12 +212,12 @@ paths:
             Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
           operation: patch_instructions
           operationDescription: |-
-            WHAT — Replace one exact string in the Main Agent's Instructions and write the result back. Matching is literal: whitespace, punctuation and case must match exactly.
+            WHAT — Replace one string in the Main Agent's Instructions and write the result back. Matching is exact first; when nothing matches exactly and replaceAll is off, the patch applies to the one place that matches with list numbers, bullet characters, indentation and blank lines ignored, and with * and _ (or ** and __) read as the same emphasis, keeps that place's own indentation and list numbers, and the message says so.
             USE WHEN — Adjusting one routing rule. Prefer this over voiceflow_agent.update for anything short of a rewrite — update re-sends the whole document.
             BEFORE — voiceflow_agent.read_instructions or voiceflow_agent.search_instructions, and copy oldString verbatim from what came back.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send.
-            The WHOLE document is re-resolved on every patch, so unresolvedReferences and unresolvedMentions report the misses already in the text as well as any the patch introduced.
-            DO NOT — Retry the same call after a 409; the text has changed under you, so read it again first. Do not add a routing rule for a target that is not registered in playbooks or workflows — register it with voiceflow_agent.update first, or the backticked name stays plain text and comes back in unresolvedMentions.
+            The WHOLE document is re-resolved on every patch, so unresolvedReferences and unresolvedMentions report the misses already in the text as well as any the patch introduced. The diff shows the text as saved.
+            DO NOT — Include line numbers in oldString or newString; the read adds them, the document does not carry them, and a newString with them is refused. Do not resend the same call after a 409; read that region again and copy oldString from the read. Do not add a routing rule for a target that is not registered in playbooks or workflows — register it with voiceflow_agent.update first, or the backticked name stays plain text and comes back in unresolvedMentions.
         cli:
           command: agent patch-instructions
       x-speakeasy-group: agent
@@ -333,6 +333,7 @@ paths:
             WHAT — Read a page of the Global Prompt (identity, tone, formatting, guardrails) as numbered lines: the 1-based line number, a tab, then the text.
             USE WHEN — You need the current wording before editing it, or it is too large to pull whole.
             AFTER — voiceflow_agent.patch_prompt, with oldString copied verbatim from a line you just read.
+            A backticked tool, playbook or workflow is a link: it reads as the resource's current name, whatever spelling the write used, and follows a rename. note names the links on the page.
             DO NOT — Confuse this with the Main Agent's Instructions, which carry routing logic and are read with voiceflow_agent.read_instructions.
         cli:
           command: agent read-prompt
@@ -377,7 +378,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableInstructionsReadResponse'
+                $ref: '#/components/schemas/StableInstructionsReadResponseV2'
       tags:
         - Agent
       security:
@@ -399,12 +400,12 @@ paths:
             Successor: create playbooks for task-specific instructions (those don't belong in prompt), recompile the environment, then run a test conversation to verify identity/tone come through and routing picks the right target on representative utterances. For voice projects, listen to the actual audio output, not just the text trace.
           operation: patch_prompt
           operationDescription: |-
-            WHAT — Replace one exact string in the Global Prompt and write the result back. Matching is literal: whitespace, punctuation and case must match exactly.
+            WHAT — Replace one string in the Global Prompt and write the result back. Matching is exact first; when nothing matches exactly and replaceAll is off, the patch applies to the one place that matches with list numbers, bullet characters, indentation and blank lines ignored, and with * and _ (or ** and __) read as the same emphasis, keeps that place's own indentation and list numbers, and the message says so.
             USE WHEN — Adjusting one identity, tone or guardrail rule. Prefer this over voiceflow_agent.update for anything short of a rewrite — update re-sends the whole document.
             BEFORE — voiceflow_agent.read_prompt or voiceflow_agent.search_prompt, and copy oldString verbatim from what came back.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send with at least one adversarial probe.
-            The WHOLE document is re-resolved on every patch, so unresolvedReferences and unresolvedMentions report the misses already in the text as well as any the patch introduced.
-            DO NOT — Retry the same call after a 409; the text has changed under you, so read it again first. Do not put task-specific instructions here; those belong in a playbook.
+            The WHOLE document is re-resolved on every patch, so unresolvedReferences and unresolvedMentions report the misses already in the text as well as any the patch introduced. The diff shows the text as saved.
+            DO NOT — Include line numbers in oldString or newString; the read adds them, the document does not carry them, and a newString with them is refused. Do not resend the same call after a 409; read that region again and copy oldString from the read. Do not put task-specific instructions here; those belong in a playbook.
         cli:
           command: agent patch-prompt
       x-speakeasy-group: agent
@@ -1445,7 +1446,7 @@ paths:
             WHAT — Read a page of a playbook's Instructions as numbered lines: the 1-based line number, a tab, then the text.
             USE WHEN — You need the current wording before editing it, or the instructions are too large to pull whole.
             AFTER — voiceflow_playbook.patch_instructions, with oldString copied verbatim from a line you just read.
-            Reading past the end is not an error: offset clamps to the last line and hasMore comes back false. Follow nextOffset only while hasMore is true.
+            Reading past the end is not an error: offset clamps to the last line and hasMore comes back false. Follow nextOffset only while hasMore is true. A backticked tool, playbook or workflow is a link: it reads as the resource's current name, whatever spelling the write used, and follows a rename. note names the links on the page.
             DO NOT — Send the line numbers back in a patch; they are a reading aid the response adds, not part of the stored document.
         cli:
           command: playbook read-instructions
@@ -1495,7 +1496,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StableInstructionsReadResponse'
+                $ref: '#/components/schemas/StableInstructionsReadResponseV2'
       tags:
         - Playbook
       security:
@@ -1515,12 +1516,12 @@ paths:
             Successor: update the agent's routing so the playbook is reachable, attach any tools it needs, then run a test conversation.
           operation: patch_instructions
           operationDescription: |-
-            WHAT — Replace one exact string in a playbook's Instructions and write the result back. Matching is literal: whitespace, punctuation and case must match exactly.
+            WHAT — Replace one string in a playbook's Instructions and write the result back. Matching is exact first; when nothing matches exactly and replaceAll is off, the patch applies to the one place that matches with list numbers, bullet characters, indentation and blank lines ignored, and with * and _ (or ** and __) read as the same emphasis, keeps that place's own indentation and list numbers, and the message says so.
             USE WHEN — Editing part of a large set of instructions. Prefer this over voiceflow_playbook.update for anything short of a rewrite — update re-sends the whole document.
             BEFORE — voiceflow_playbook.read_instructions or voiceflow_playbook.search_instructions, and copy oldString verbatim from what came back.
             AFTER — voiceflow_environment.compile, then voiceflow_conversation.send.
-            The WHOLE document is re-resolved on every patch, so unresolvedReferences and unresolvedMentions report the misses already in the text as well as any the patch introduced.
-            DO NOT — Include line numbers in oldString; the read adds them, the document does not carry them. Do not retry the same call after a 409; the text has changed under you, so read it again first. Do not pass a whole rewritten document as newString; a full rewrite is what voiceflow_playbook.update is for.
+            The WHOLE document is re-resolved on every patch, so unresolvedReferences and unresolvedMentions report the misses already in the text as well as any the patch introduced. The diff shows the text as saved.
+            DO NOT — Include line numbers in oldString or newString; the read adds them, the document does not carry them, and a newString with them is refused. Do not resend the same call after a 409; read that region again and copy oldString from the read. Do not pass a whole rewritten document as newString; a full rewrite is what voiceflow_playbook.update is for.
         cli:
           command: playbook patch-instructions
       x-speakeasy-group: playbook
@@ -8815,9 +8816,9 @@ paths:
             Successor: read the tools with get_schema, add the one you need with add_tool, run one with execute to check the connection works, then attach it to a playbook or to the agent with its integrationToolID.
           operation: disconnect
           operationDescription: |-
-            WHAT — Clear every stored credential slot an integration owns on this project.
-            USE WHEN — Retiring an integration, or forcing a reconnect.
-            DO NOT — Expect this to work for integrations whose credentials the integration service owns (Zendesk, Salesforce); those return a 400 and must be disconnected from the Voiceflow UI.
+            WHAT — Clear every stored credential slot an integration owns on this project. Every tool that uses the integration stops working until someone connects it again.
+            USE WHEN — Only when the user asks to disconnect this integration.
+            DO NOT — Disconnect to force a fresh sign-in or to fix an error (tell the user what failed and let them decide), or expect this to work for integrations whose credentials the integration service owns (Zendesk, Salesforce); those return a 400 and must be disconnected from the Voiceflow UI.
         cli:
           command: integration disconnect
       x-speakeasy-group: integration
@@ -9876,11 +9877,12 @@ paths:
             Successor: search transcripts to find the resulting one for deeper inspection, or head back to the build surfaces to apply a fix.
           operation: run_script
           operationDescription: |-
-            WHAT — Run a scripted conversation in one call: start a fresh conversation, send each message in order, and return a short digest of every turn — the agent's replies, the tools it called, the variables that changed and any errors.
-            It never compiles. When needsRecompile is true the turns ran against the last compiled version: call voiceflow_environment.compile, then run the script again, and do not treat those turns as proof the latest edits work. The script stops early when the agent ends the conversation, a turn fails or reports errors, or the caller stops it; the unsent messages come back in notSent.
-            USE WHEN — Checking how the agent handles a known sequence of user messages, such as a happy path or an edge case, instead of sending each message separately. Pass variables to start as a known caller. Compile the environment first after any edit.
+            WHAT — Run a scripted conversation in one call: start a fresh conversation, send each user message in order — typed text or a button press — and return a short digest of every turn: who replied and what they said, the tools that ran, the variables that changed, warnings, errors, and the step that ended the conversation.
+            It never compiles. When needsRecompile is true the turns ran against the last compiled version: call voiceflow_environment.compile, then run the script again, and do not treat those turns as proof the latest edits work. The script stops early when the conversation ends, a send fails, a button is not on offer, the runtime logs an error outside a tool, or the credit limit is reached; the unsent messages come back in notSent. A failed tool or HTTP call is listed in its turn's errors and the script goes on. Read the conversation's logs with the transcriptID it returns.
+            USE WHEN — Checking how the agent handles a known sequence of user messages, such as a happy path, a button menu or an edge case, instead of sending each message separately. The body takes messages, the list to send: a string is typed, { "button": "<label>" } presses a button the reply before offered. Next to messages it takes variables, to preset values; launch, whose only field is payload, to start the way a website's widget does; and userID, to run as a caller with a known ID (draft only). Example body: { "messages": ["Hi", { "button": "Track order" }], "variables": { "plan": "pro" }, "launch": { "payload": { "lang": "de" } } }. To test a step deep in a workflow, send the messages that reach it. Compile the environment first after any edit.
             DO NOT — Use it when the next message depends on the reply; use voiceflow_conversation.send turn by turn for that.
-            DO NOT — Treat a reply as proof a tool worked; read the turn's tool calls and errors.
+            DO NOT — Treat a reply as proof a tool worked; read the turn's tool calls, warnings and errors.
+            DO NOT — Treat ended: true as a normal finish; endedBy names the step that ended the whole conversation.
             NOTE — Every tool the agent calls runs for real, including tools that write to outside systems.
         cli:
           command: conversation run-script
@@ -9990,7 +9992,8 @@ paths:
           operation: update_state
           operationDescription: |-
             WHAT — Patch session state directly (stack / variables / storage).
-            USE WHEN — Simulating a state that would take many turns to reach organically — jumping mid-flow for testing.
+            USE WHEN — Repairing a test session's stored state, such as clearing a storage key or a stuck stack.
+            DO NOT — Use it to start a test in the middle of a workflow. The runtime does not reliably resume a stack written here: the next send can return no traces, or start over from the beginning. To reach a later step, run the turns before it with voiceflow_conversation.run_script, which presses buttons by label, or preset variables with voiceflow_conversation.update_variables.
         cli:
           command: conversation state update
       x-speakeasy-group: conversation.state
@@ -25199,7 +25202,7 @@ components:
         - instructionsLineCount
     MarkdownText:
       type: string
-      description: Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference, and a system tool is written as its field name, such as `webSearchTool`; braced {name} resolves to a variable or entity reference. A name that resolves to nothing is stored as literal text and reported back in the response.
+      description: 'Markdown text. Backticked `Name` resolves to a tool, playbook, or workflow reference, and a system tool is written as its field name, such as `webSearchTool`; braced {name} resolves to a variable or entity reference. A name that resolves to nothing is stored as literal text and reported back in the response. Text is saved in one form: a numbered list keeps its first number and counts up from it, bullets are -, italics are _x_, a nested list is indented to its parent''s text, and every callout line starts with >. Outside inline code a backslash before punctuation is a markdown escape and is not kept; put regular expressions and code in backticks.'
     StableExpressionCondition:
       type: object
       properties:
@@ -25718,7 +25721,7 @@ components:
               allOf:
                 - $ref: '#/components/schemas/VersionSettingsVoiceCallerIdentity'
       additionalProperties: false
-    StableInstructionsReadResponse:
+    StableInstructionsReadResponseV2:
       type: object
       properties:
         content:
@@ -25753,6 +25756,9 @@ components:
           type: integer
           minimum: -9.007199254740991e+15
           maximum: 9.007199254740991e+15
+        note:
+          description: Names the backticked names on this page that are links to a tool, playbook or workflow. A link reads as the resource's current name, whatever spelling the write used. Absent when the page shows no link.
+          type: string
       required:
         - content
         - offset
@@ -31220,13 +31226,18 @@ components:
       properties:
         user:
           nullable: true
-          description: The message sent in this turn. Null for the launch turn that starts the conversation.
+          description: 'The step run in this turn: the message sent, or "[button: <label>]" for a button press. Null for the launch turn that starts the conversation.'
           type: string
         agent:
           type: array
           items:
             type: string
           description: 'The agent''s replies in this turn, in order, at most 10, each cut to 1,000 characters. Buttons, cards and carousels come summarised, such as "[buttons: Yes | No]" or "[card: <title>]".'
+        repliedBy:
+          type: array
+          items:
+            type: string
+          description: 'Who gave this turn''s replies, in order, at most 10: an agent by name, such as "Main Agent", a playbook as "<name> (playbook)", or "workflow <name>" for a workflow step. Empty when the traces name no one. A reply from someone you did not expect means the routing did not work.'
         toolCalls:
           type: array
           items:
@@ -31236,22 +31247,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StableConversationScriptVariableChange'
-          description: The variables this turn set, changed or cleared, at most 30. Leaves out the variables that change every turn (vf_now, vf_time, timestamp, vf_memory, last_utterance, last_response, last_event, intent_confidence). The launch turn lists the preset variables and the variables the launch set, not the system variables or the starting values.
+          description: The variables this turn set, changed or cleared, at most 30. Leaves out the variables that change every turn (vf_now, vf_time, timestamp, vf_memory, last_utterance, last_response, last_event, intent_confidence, _memory_). The launch turn lists the preset variables and the variables the launch set, not the system variables or the starting values.
         errors:
           type: array
           items:
             type: string
-          description: Errors, failed tool calls, HTTP failures and credit limits the runtime reported in this turn, at most 10, each cut to 300 characters.
+          description: Errors, failed tool calls, HTTP failures and credit limits the runtime reported in this turn, at most 10, each cut to 300 characters. A failed tool carries the cause the runtime recorded, such as a missing input.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: 'Every warning the runtime logged in this turn that is not an error, such as a transfer it ignored because the playbook''s condition was not met, each cut to 300 characters. Past 10, the last entry says how many more there were; read them in the transcript''s logs at level warn. A turn also says here when the variables before it could not be read, so it lists no variable changes: at the launch, the variables a supplied userID had; later, the variables after the turn before.'
         ended:
           type: boolean
-          description: True when the agent ended the conversation in this turn.
+          description: 'True when the conversation ended in this turn. An End step ends the whole conversation, not only its workflow: nothing the user says after it is answered.'
+        endedBy:
+          nullable: true
+          description: 'When ended is true, what ended the conversation: the End step with its step ID and workflow, and the reason the runtime gave. Null when the turn did not end.'
+          type: string
       required:
         - user
         - agent
+        - repliedBy
         - toolCalls
         - variableChanges
         - errors
+        - warnings
         - ended
+        - endedBy
     StableConversationScriptToolCall:
       type: object
       properties:
@@ -31287,6 +31310,10 @@ components:
         userID:
           type: string
           description: The conversation user ID the script ran as, for reading its state afterwards.
+        transcriptID:
+          nullable: true
+          description: The transcript this conversation is saved to, for reading its logs. Null when the runtime reported none, for example when the project does not save test conversations; then search transcripts with sessionID set to userID.
+          type: string
         needsRecompile:
           type: boolean
           description: When true, the script ran against a stale prototype. Compile the environment and run it again; do not treat these turns as proof the latest edits work.
@@ -31299,12 +31326,47 @@ components:
           type: array
           items:
             type: string
-          description: Messages that were not sent because the agent ended the conversation, a turn failed or reported errors, or the caller stopped the script first.
+          description: 'Steps that were not run, in the same form as user, because the conversation ended, a send failed, a button was not on offer, the runtime logged an error outside a tool or a fatal error, the credit limit was reached, or the caller stopped the script first. A failed tool or HTTP call does not stop the script: it is listed in its turn.'
       required:
         - userID
+        - transcriptID
         - needsRecompile
         - turns
         - notSent
+    StableConversationScriptTextStep:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - text
+          x-enumNames:
+            - TEXT
+        text:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: The message the user types.
+      required:
+        - text
+      additionalProperties: false
+    StableConversationScriptButtonStep:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - button
+          x-enumNames:
+            - BUTTON
+        button:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: The label of a button the turn before offered, pressed the way the user would press it.
+      required:
+        - button
+      additionalProperties: false
     StableConversationScriptRequest:
       type: object
       properties:
@@ -31313,12 +31375,15 @@ components:
           maxItems: 10
           type: array
           items:
-            type: string
-            minLength: 1
-            maxLength: 2000
-          description: The user messages to send, in order, after the launch that starts the conversation.
+            anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 2000
+              - $ref: '#/components/schemas/StableConversationScriptTextStep'
+              - $ref: '#/components/schemas/StableConversationScriptButtonStep'
+          description: 'The user messages to send, in order, after the launch. A message is typed text, as a string or { "text": "…" }, or a button press, as { "button": "<label>" }, for a button the reply before offered. The digest shows offered buttons as "[buttons: Yes | No]".'
         variables:
-          description: Variable values to set before the launch, keyed by variable name, to start as a known caller.
+          description: Variable values to set before the launch, keyed by variable name, to start as a known caller. Next to messages, not inside launch.
           type: object
           additionalProperties: {}
         version:
@@ -31331,6 +31396,26 @@ components:
           x-enumNames:
             - DRAFT
             - PUBLISHED
+        launch:
+          description: How the conversation starts; payload is its only field. Leave it out for a plain launch.
+          type: object
+          properties:
+            payload:
+              type: object
+              properties:
+                persona:
+                  type: string
+              additionalProperties: {}
+              description: 'The launch payload, as a website passes it to the chat widget, for example { "lang": "de" }. The agent reads it from the last_event variable.'
+          required:
+            - payload
+          additionalProperties: false
+        userID:
+          description: 'The conversation user ID to run as; the agent reads it as the user_id variable. Use it when the agent expects a caller ID of a known shape, such as a phone number, and make one up: never a real customer''s ID. Draft version only. Leave it out to run as a new user each time. A reused ID keeps the variables an earlier conversation with it left.'
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: ^[\w+.@:-]+$
       required:
         - messages
       additionalProperties: false

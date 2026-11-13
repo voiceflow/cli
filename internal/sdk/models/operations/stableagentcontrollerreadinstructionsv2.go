@@ -58,8 +58,8 @@ func (s *StableAgentControllerReadInstructionsV2Request) GetLimit() *int64 {
 // #endregion class-body-stableagentcontrollerreadinstructionsv2request
 
 type StableAgentControllerReadInstructionsV2Response struct {
-	HTTPMeta                       components.HTTPMetadata `json:"-"`
-	StableInstructionsReadResponse *components.StableInstructionsReadResponse
+	HTTPMeta                         components.HTTPMetadata `json:"-"`
+	StableInstructionsReadResponseV2 *components.StableInstructionsReadResponseV2
 }
 
 func (s StableAgentControllerReadInstructionsV2Response) MarshalJSON() ([]byte, error) {
@@ -80,11 +80,11 @@ func (s *StableAgentControllerReadInstructionsV2Response) GetHTTPMeta() componen
 	return s.HTTPMeta
 }
 
-func (s *StableAgentControllerReadInstructionsV2Response) GetStableInstructionsReadResponse() *components.StableInstructionsReadResponse {
+func (s *StableAgentControllerReadInstructionsV2Response) GetStableInstructionsReadResponseV2() *components.StableInstructionsReadResponseV2 {
 	if s == nil {
 		return nil
 	}
-	return s.StableInstructionsReadResponse
+	return s.StableInstructionsReadResponseV2
 }
 
 // #region class-body-stableagentcontrollerreadinstructionsv2response
