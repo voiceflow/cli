@@ -898,6 +898,7 @@ type StableDocumentDetailsKBDocumentURLData struct {
 	RefreshTimezone         optionalnullable.OptionalNullable[string]    `json:"refreshTimezone,omitzero"`
 	LastSuccessUpdate       *string                                      `json:"lastSuccessUpdate,omitzero"`
 	LastRefreshScheduledFor optionalnullable.OptionalNullable[time.Time] `json:"lastRefreshScheduledFor,omitzero"`
+	ContentChangedAt        *string                                      `json:"contentChangedAt,omitzero"`
 	AccessTokenID           *float64                                     `json:"accessTokenID,omitzero"`
 	IntegrationExternalID   *string                                      `json:"integrationExternalID,omitzero"`
 	Source                  *KnowledgeBaseDocumentIntegrationType        `json:"source,omitzero"`
@@ -978,6 +979,13 @@ func (s *StableDocumentDetailsKBDocumentURLData) GetLastRefreshScheduledFor() op
 		return nil
 	}
 	return s.LastRefreshScheduledFor
+}
+
+func (s *StableDocumentDetailsKBDocumentURLData) GetContentChangedAt() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ContentChangedAt
 }
 
 func (s *StableDocumentDetailsKBDocumentURLData) GetAccessTokenID() *float64 {
