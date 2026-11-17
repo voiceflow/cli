@@ -7456,6 +7456,97 @@ paths:
         - Document
       security:
         - token: []
+  /v1/stable/document/changes:
+    get:
+      operationId: StableDocumentController_listChanges
+      x-vf:
+        mcp:
+          tool: voiceflow_document
+          toolDescription: |-
+            Individual Knowledge Base documents. Source types: text (plain prose), table (structured rows — each row becomes its own chunk), URL (one web page the system crawls), file (PDF/DOCX/TXT upload), and sitemap (a managed sitemap that owns the URL documents for a site's pages).
+            A site is imported one of two ways. A managed sitemap is one sitemap document that imports the pages its sitemap lists and keeps them in sync on its refresh rate. A one-off import previews the sitemap's pages, then adds each one as its own independent URL document that never re-reads the sitemap. Either way, a sitemap.xml stored as a single URL document indexes the XML index, not the site.
+            The metadata model is documented on the table-creation operation — see it for how document-level metadata, searchable fields, non-searchable metadata fields, and chunk-level metadata interact, and which level the agent's Knowledge Base system tool filters on at runtime.
+            Predecessor: select the project and environment first.
+            Successor: query the knowledge base to verify retrieval surfaces the new/updated content with reasonable scores.
+          operation: list_changes
+          operationDescription: |-
+            WHAT — List which Knowledge Base pages were added, updated or removed between two dates.
+            USE WHEN — Reporting what a sitemap sync or a scheduled refresh changed, or auditing Knowledge Base changes over a period.
+            HOW — Pass `from` and `to` as ISO 8601 timestamps, and a sitemap document's id as `sitemapDocumentID` to see only its pages. Changes are recorded only for workspaces where the change log is on, and only from when it was turned on. Send `nextCursor` back as `cursor` for the next page.
+        cli:
+          command: document list-changes
+      x-speakeasy-group: document
+      x-speakeasy-name-override: list-changes
+      summary: List document changes
+      description: List the pages that sitemap syncs added or removed, and that refreshes found changed, in a date range.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+            format: date-time
+            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            description: Only changes recorded at or after this ISO 8601 timestamp are returned.
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+            format: date-time
+            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            description: Only changes recorded before this ISO 8601 timestamp are returned.
+        - name: sitemapDocumentID
+          required: false
+          in: query
+          schema:
+            description: When provided, only changes to the pages of the sitemap document with this ID are returned.
+            type: string
+            minLength: 1
+        - name: type
+          required: false
+          in: query
+          schema:
+            description: When provided, only changes of this type are returned.
+            allOf:
+              - $ref: '#/components/schemas/KnowledgeBaseDocumentChangeType'
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            description: The nextCursor of the previous page. Leave it out for the first page.
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            description: The most changes to return. Defaults to 500.
+            type: integer
+            minimum: 1
+            maximum: 500
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDocumentChangeListResponse'
+      tags:
+        - Document
+      security:
+        - token: []
   /v1/stable/document/url:
     post:
       operationId: StableDocumentController_createURL
@@ -16687,6 +16778,16 @@ components:
         - documentID
         - status
         - data
+    KnowledgeBaseDocumentChangeType:
+      type: string
+      enum:
+        - added
+        - updated
+        - removed
+      x-enumNames:
+        - ADDED
+        - UPDATED
+        - REMOVED
     KnowledgeBaseSummarization:
       type: object
       properties:
@@ -31750,6 +31851,57 @@ components:
             $ref: '#/components/schemas/StableDocument'
       required:
         - documents
+    StableDocumentChange:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          description: When the change was recorded.
+        type:
+          description: '`added` and `removed`: a sitemap sync added the page or dropped it. `updated`: a refresh found the page text changed.'
+          allOf:
+            - $ref: '#/components/schemas/KnowledgeBaseDocumentChangeType'
+          enum:
+            - added
+            - updated
+            - removed
+          x-enumNames:
+            - ADDED
+            - UPDATED
+            - REMOVED
+        documentID:
+          nullable: true
+          description: The changed document. A removed document no longer exists.
+          type: string
+        url:
+          nullable: true
+          description: The page URL at the time of the change.
+          type: string
+        sitemapDocumentID:
+          nullable: true
+          description: The sitemap document the page belongs to, or null for a URL document added on its own.
+          type: string
+      required:
+        - date
+        - type
+        - documentID
+        - url
+        - sitemapDocumentID
+    StableDocumentChangeListResponse:
+      type: object
+      properties:
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableDocumentChange'
+          description: Newest first.
+        nextCursor:
+          description: Present when more changes follow. Send it as cursor.
+          type: string
+      required:
+        - changes
     StableDocumentResponse:
       type: object
       properties:

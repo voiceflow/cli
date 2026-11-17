@@ -473,6 +473,7 @@ server's dynamic client registration endpoint and caches the resulting
 ### [document](docs/vf_document.md)
 
 * [`list`](docs/vf_document_list.md) - List documents
+* [`list-changes`](docs/vf_document_list-changes.md) - List document changes
 * [`create-url`](docs/vf_document_create-url.md) - Create URL document
 * [`create-text`](docs/vf_document_create-text.md) - Create text document
 * [`create-table`](docs/vf_document_create-table.md) - Create table document

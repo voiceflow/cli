@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 00ebf0baee322e62e255165457b6e21c
+  docChecksum: 1a5028538154105af8d8a94edda3d4ff
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.331
-  configChecksum: c363f7503cf488079b5fa854587777a2
+  releaseVersion: 0.2.332
+  configChecksum: 1f7531d68faa6f3f7f5f3516c2b1f48f
 persistentEdits:
-  generation_id: 5e5f54b1-2a1d-4dbe-9d76-5c7446f6bd81
-  pristine_commit_hash: c7ad519737739b59bf2e1cd2bac7b4f463490fbf
-  pristine_tree_hash: 27fec63ecf491657510dbb1307f39cfc86835c10
+  generation_id: e8160899-746a-4af3-bb98-adf0ccee4e3f
+  pristine_commit_hash: f115105ad43629b7b76155fef159793c1bb541d0
+  pristine_tree_hash: 012b1966926618ffd738acf49967df46aae7d8db
 features:
   cli:
     additionalProperties: 0.0.1
@@ -380,14 +380,18 @@ trackedFiles:
     id: 21ac7d1cbb48
     last_write_checksum: sha1:622039829e3b8d28745a4a4d6c8e177032ea09a5
     pristine_git_object: 374f693504d358eafd8ab97fbbc5d1d71edb62a6
+  internal/cli/document/listchanges.go:
+    id: 7aeb5fa5fef9
+    last_write_checksum: sha1:0e00bd66ef18423d04344b08f8caac22856763ae
+    pristine_git_object: 1c188122739c679fa1bb11bfbc6809e8886188c9
   internal/cli/document/previewsitemap.go:
     id: 495663a8e502
     last_write_checksum: sha1:2e65eaf4c7b688c2870cb5a5efc9141d3f947e28
     pristine_git_object: ce82d5825fafc885b78656ce9fb3a680fd543d27
   internal/cli/document/root.go:
     id: 335a66ec0d8a
-    last_write_checksum: sha1:e98cd5ab39b6856878750143bafa6dd3109797a7
-    pristine_git_object: b6afef56295ac9de51807951a87a43529daa827a
+    last_write_checksum: sha1:384c285cefda2b7b6e6334f15b6b2ac39f194576
+    pristine_git_object: b37064dd7de071d2abbc46fe25b69c3edc324424
   internal/cli/document/update.go:
     id: 12b090698227
     last_write_checksum: sha1:e1f769735c7c8b5a1e1e7cca9c78ac6d629b08a2
@@ -1102,8 +1106,8 @@ trackedFiles:
     pristine_git_object: aefea088fc77bc8bbc656dadbd6c3d01e56a6520
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:7d67f90b35c5f7099599d08cb81b7a0db37d61a3
-    pristine_git_object: 4c320d74b8a0a58bcb0254baa79da057eec29426
+    last_write_checksum: sha1:dc857c05d243bbebf5aab2294700521d4313972d
+    pristine_git_object: aebff378c0d88f39b8ef35cd1ee1acf250ab381b
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1350,8 +1354,8 @@ trackedFiles:
     pristine_git_object: 0f4b80c24f8ae06d9684570433471b168cb62268
   internal/sdk/document.go:
     id: 1412eab331e6
-    last_write_checksum: sha1:603bf1b1cbabaa1bc3e0adfa389d304579021fe4
-    pristine_git_object: aa3b6c6a985dab9444e73815e78edc96986b8508
+    last_write_checksum: sha1:10791eb3ea1fc4a5b0995d32419ad4713d251cad
+    pristine_git_object: c95b466fad8dde9498829d53d543747970c7a636
   internal/sdk/environment.go:
     id: 6e0f9ddd9747
     last_write_checksum: sha1:c54e2cc246c6543b16061d22f5451483e87161f5
@@ -1828,6 +1832,10 @@ trackedFiles:
     id: bae91d506dbb
     last_write_checksum: sha1:593b944940699d645e4fd5b7a16569a808d23873
     pristine_git_object: fb7cc9d7aeb19cd12a6ff48e434047e6aafea6bc
+  internal/sdk/models/components/knowledgebasedocumentchangetype.go:
+    id: 0a8e06d5edb3
+    last_write_checksum: sha1:85cb92a6a837ebe5b70ff3fa30d5276d76417127
+    pristine_git_object: f2a9b2a8aa260142f79efc25d5d6702216a3d31c
   internal/sdk/models/components/knowledgebasedocumentintegrationtype.go:
     id: 6884ff44b522
     last_write_checksum: sha1:135c0e22b8d75d7b56b1a7eb6d6188a8b3e5170a
@@ -2420,6 +2428,14 @@ trackedFiles:
     id: ac41e7570aae
     last_write_checksum: sha1:3a5b729e678849dfa706b2b0636a86ab907a0bb3
     pristine_git_object: 7c3bd6f3e1eecbef77bfcd2a45a2684cac522ee4
+  internal/sdk/models/components/stabledocumentchange.go:
+    id: 79b497be3434
+    last_write_checksum: sha1:d26a28f0c3d070009f2c8e73b6ff33e86174323b
+    pristine_git_object: 86dc2d5e3da2d9178f6f80a81eacc8f04b282518
+  internal/sdk/models/components/stabledocumentchangelistresponse.go:
+    id: 8116064a2b45
+    last_write_checksum: sha1:fac280ed7618d293ca51a43f0dd180735b1449ad
+    pristine_git_object: e95cc163277a5a6d2b86833c22f8268ff9cd0811
   internal/sdk/models/components/stabledocumentcreatemanagedsitemaprequest.go:
     id: 88a9482f2a4f
     last_write_checksum: sha1:cc572a24c2aeb95f588680b2ddef9d95fb4920e9
@@ -4504,6 +4520,10 @@ trackedFiles:
     id: d70907af4296
     last_write_checksum: sha1:636f6a28a08cdd24c0a7b6dd2f8a7e4cdd83b1d8
     pristine_git_object: 3888a274cf88d45d46b47dc0a552facf9f6127c1
+  internal/sdk/models/operations/stabledocumentcontrollerlistchanges.go:
+    id: 09dbbf8307d5
+    last_write_checksum: sha1:32c093556807d6e1aa16eedcad49b639f9c0d9b1
+    pristine_git_object: c11d8227521add2d01af52db87d8bfd841052143
   internal/sdk/models/operations/stabledocumentcontrollerpreviewsitemap.go:
     id: e3a89fe07eb7
     last_write_checksum: sha1:873685aacdb8dbb39cfa62b2636f5d817dac2b82
@@ -5442,8 +5462,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:96a7e47ebe0a8bbb9334a39d752912efcc8c7854
-    pristine_git_object: 1cb218519cb934953182b3fee70fbaa67dc3f859
+    last_write_checksum: sha1:3c41382a3e6b5ead1e70305ff86d92685b5b8c95
+    pristine_git_object: 9d4d74a374df3c8bd72c92167e27beaedd8f5dbb
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -8892,4 +8912,15 @@ examples:
       responses:
         "200":
           application/json: {"message": "<value>"}
+  StableDocumentController_listChanges:
+    speakeasy-default-stable-document-controller-list-changes:
+      parameters:
+        query:
+          projectID: "<id>"
+          environmentAlias: "<value>"
+          from: "2026-05-23T04:15:16.866Z"
+          to: "2024-08-11T16:08:06.572Z"
+      responses:
+        "200":
+          application/json: {"changes": [{"date": "2025-03-27T17:36:44.650Z", "type": "updated", "documentID": "<id>", "url": "https://whopping-spear.net", "sitemapDocumentID": "<id>"}]}
 examplesVersion: 1.0.2
