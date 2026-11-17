@@ -30,6 +30,10 @@ func InitDocumentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initListChangesCmd(DocumentCmd); err != nil {
+		return err
+	}
+
 	if err := initCreateUrlCmd(DocumentCmd); err != nil {
 		return err
 	}
