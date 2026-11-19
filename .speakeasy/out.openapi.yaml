@@ -21798,9 +21798,11 @@ components:
       enum:
         - text
         - safe
+        - raw
       x-enumNames:
         - TEXT
         - SAFE
+        - RAW
     InterfaceConfigMessagesCitations:
       type: string
       enum:
