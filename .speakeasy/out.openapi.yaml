@@ -38119,10 +38119,24 @@ components:
         accountSid:
           type: string
           description: Sid associated with the Twilio account.
+        region:
+          description: Twilio region the API key belongs to, detected on connect; missing means US1.
+          allOf:
+            - $ref: '#/components/schemas/TwilioRegion'
       required:
         - apiKeySid
         - apiKeySecret
         - accountSid
+    TwilioRegion:
+      type: string
+      enum:
+        - us1
+        - ie1
+        - au1
+      x-enumNames:
+        - US_1
+        - IE_1
+        - AU_1
     UjetIntegrationCredentialsValue:
       type: object
       properties:

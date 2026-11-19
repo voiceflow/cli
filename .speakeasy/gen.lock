@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 92359f45d119a542d515515867981d65
+  docChecksum: 2d83a2ed7f168752b15afee00bcc0432
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.333
-  configChecksum: e9fdf4d71e570f61cc650a6bf899d4a0
+  releaseVersion: 0.2.334
+  configChecksum: af5defe49172cf875d0bd822cae6d6ac
 persistentEdits:
-  generation_id: cc7b71bf-7ac5-489c-854f-701ac93a2d8d
-  pristine_commit_hash: b0f32b975a93b697eeaaa1057d4ade9049e8a27d
-  pristine_tree_hash: 9e2988e5185d500211c9cc149aa807cc194df758
+  generation_id: 92297083-156c-43a9-89c2-a36ee3f9d14f
+  pristine_commit_hash: f37b3d3e34b41cc21bb0374bfe6953f681eb5636
+  pristine_tree_hash: f188a97bb4d352f633420b11f905c94e79facc2a
 features:
   cli:
     additionalProperties: 0.0.1
@@ -1106,8 +1106,8 @@ trackedFiles:
     pristine_git_object: aefea088fc77bc8bbc656dadbd6c3d01e56a6520
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:0eb260dfe979bc06da637ddf7f1e417bab1caf2a
-    pristine_git_object: 8f9c907fac86310c5497651b7e6e8ed197af4c70
+    last_write_checksum: sha1:e8b87bccfedeeedf7d1c3dcba6e2ecfa41142036
+    pristine_git_object: 6d36a9cdf7bad4169749036267972a0fc0345433
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -4094,8 +4094,12 @@ trackedFiles:
     pristine_git_object: cd951d136699de1b7961fb01d7d0af67bcfe589c
   internal/sdk/models/components/twiliointegrationapikeyvalue.go:
     id: bfe1426ecbf5
-    last_write_checksum: sha1:212012172e9b321d742e61fb86701ec8501a84b7
-    pristine_git_object: 37896ecac636470a29e17a291ba7e55a149b899e
+    last_write_checksum: sha1:1bf817c70ada2d8ea12ab2376a8f65d4d4c08d1b
+    pristine_git_object: 94959fcd8c6d2a65bd56452d23308e823fb77b3d
+  internal/sdk/models/components/twilioregion.go:
+    id: 11717327054e
+    last_write_checksum: sha1:59ab91b22911d1b9e0161e5d5b5ed7c95a2e9b25
+    pristine_git_object: 04db11c98bf5b8966efe11f66e6c4c5fa95de8a2
   internal/sdk/models/components/ujetintegrationcredentialsvalue.go:
     id: fa4b65eb4b9d
     last_write_checksum: sha1:6127348f64e852df7680cd8bc7156ea1c66385aa
@@ -5462,8 +5466,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:61dccb11cbc1bd504e8bdb44c92a875628e442af
-    pristine_git_object: a364acccbd7b7e3f376e466c4f43469e1cc5b75d
+    last_write_checksum: sha1:df66afab98807aba80b5a71542f618c162bd8591
+    pristine_git_object: f20bcab4ccf987772b45e55f2c039584707653f9
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc

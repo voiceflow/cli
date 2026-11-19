@@ -14,6 +14,8 @@ type TwilioIntegrationAPIKeyValue struct {
 	APIKeySecret string `json:"apiKeySecret"`
 	// Sid associated with the Twilio account.
 	AccountSid string `json:"accountSid"`
+	// Twilio region the API key belongs to, detected on connect; missing means US1.
+	Region *TwilioRegion `json:"region,omitzero"`
 }
 
 func (t TwilioIntegrationAPIKeyValue) MarshalJSON() ([]byte, error) {
@@ -46,4 +48,11 @@ func (t *TwilioIntegrationAPIKeyValue) GetAccountSid() string {
 		return ""
 	}
 	return t.AccountSid
+}
+
+func (t *TwilioIntegrationAPIKeyValue) GetRegion() *TwilioRegion {
+	if t == nil {
+		return nil
+	}
+	return t.Region
 }
