@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -345,7 +346,10 @@ func TestRunSignupInAgentModeAwaitsSignup(t *testing.T) {
 	t.Setenv(envIssuer, server.URL)
 	t.Setenv(envResource, "https://realtime-api.test")
 
-	lister := func(context.Context, *cobra.Command, string) ([]Workspace, error) {
+	lister := func(_ context.Context, cmd *cobra.Command, _ string) ([]Workspace, error) {
+		// Stands in for the API client's --debug output, which goes to the
+		// command's stderr: the event stream.
+		fmt.Fprintln(cmd.ErrOrStderr(), "[DEBUG] GET /v1/stable/workspace 200")
 		return []Workspace{{ID: "ws-1", Name: "My Workspace"}}, nil
 	}
 	root := newSignupTestCmd(lister)
@@ -409,6 +413,9 @@ func TestRunSignupInAgentModeAwaitsSignup(t *testing.T) {
 	}
 	if workspaces, _ := signedIn["workspaces"].([]any); len(workspaces) != 1 {
 		t.Errorf("workspaces = %v, want the new account's workspace", signedIn["workspaces"])
+	}
+	if diagnostics, _ := signedIn["diagnostics"].([]any); len(diagnostics) != 1 {
+		t.Errorf("diagnostics = %v, want the lookup's debug output as a field", signedIn["diagnostics"])
 	}
 	if steps, _ := signedIn["next_steps"].([]any); len(steps) == 0 {
 		t.Errorf("signed_in event has no next_steps: %v", signedIn)

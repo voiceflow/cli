@@ -125,7 +125,17 @@ func addSignupResult(cmd *cobra.Command, event map[string]any, session *Session)
 	if account := accountFromToken(session.AccessToken); account != "" {
 		event["account"] = account
 	}
+	// The lookup's API client writes --debug diagnostics to the command's
+	// stderr, which is this JSON event stream. Collect them and report them
+	// as a field instead, so the stream stays decodable.
+	stderr := cmd.ErrOrStderr()
+	var diagnostics strings.Builder
+	cmd.SetErr(&diagnostics)
 	workspaces, err := waitForWorkspaces(cmd.Context(), cmd, session.AccessToken)
+	cmd.SetErr(stderr)
+	if lines := proseLines(diagnostics.String()); len(lines) > 0 {
+		event["diagnostics"] = lines
+	}
 	switch {
 	case len(workspaces) > 0:
 		event["workspaces"] = workspaces
