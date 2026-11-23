@@ -24,49 +24,46 @@ import (
 	"github.com/voiceflow/cli/internal/output"
 )
 
-// runAgentLogin runs the browser login flow for an agent, reporting progress
-// as JSON events on stderr rather than as prose.
-func runAgentLogin(cmd *cobra.Command) error {
+// runAgentLogin runs the browser login flow — or signup, when signup is set —
+// for an agent, reporting progress as JSON events on stderr rather than as
+// prose.
+func runAgentLogin(cmd *cobra.Command, signup bool) error {
 	out := cmd.ErrOrStderr()
 
-	scopes, _ := cmd.Flags().GetStringArray(flagScope)
-	timeout, _ := cmd.Flags().GetDuration(flagLoginTimeout)
-	if timeout <= 0 {
-		timeout = DefaultLoginTimeout
+	command := "vf auth login"
+	if signup {
+		command = "vf auth signup"
 	}
 
 	// Login's progress prose would break the JSON stream, so it is collected
 	// here and reported as warnings on the first event instead.
 	var prose strings.Builder
 
-	session, err := Login(cmd.Context(), os.Getenv, LoginOptions{
-		Scopes: scopes,
-		// The agent is not the one signing in; opening a browser here would
-		// put a consent screen in front of whoever happens to be at the
-		// machine, which is not necessarily the person driving the agent.
-		NoBrowser: true,
-		Timeout:   timeout,
-		Out:       &prose,
-		OnAuthURL: func(authURL string) {
-			event := map[string]any{
-				"status":            "awaiting_authorization",
-				"authorization_url": authURL,
-				"expires_in":        timeout.String(),
-				"hints": []string{
-					"Give the authorization_url to the user and ask them to open it in their browser",
-					"This command blocks until they finish signing in, so run it in the background and read its output",
-					"The URL redirects to a loopback listener on this machine, so the browser that opens it has to reach this host; if you are running remotely (SSH, container), the callback port has to be forwarded or sign-in will time out",
-					"No credentials are stored until sign-in completes; 'vf auth whoami' reports the stored session",
-				},
-			}
-			if warnings := proseLines(prose.String()); len(warnings) > 0 {
-				event["warnings"] = warnings
-			}
-			writeLoginEvent(out, event)
-		},
-	})
+	opts := loginOptionsFromFlags(cmd, signup)
+	// The agent is not the one signing in; opening a browser here would put a
+	// consent screen in front of whoever happens to be at the machine, which
+	// is not necessarily the person driving the agent.
+	opts.NoBrowser = true
+	opts.Out = &prose
+	signupRequested := false
+	opts.OnAuthURL = func(authURL string) {
+		// Login drops prompt=create when the server does not support it, and
+		// says so in the prose; the event then describes an ordinary login.
+		signupRequested = isSignupURL(authURL)
+		event := awaitingEvent(authURL, opts.Timeout, signupRequested)
+		if warnings := proseLines(prose.String()); len(warnings) > 0 {
+			event["warnings"] = warnings
+		}
+		writeLoginEvent(out, event)
+	}
+
+	session, err := Login(cmd.Context(), os.Getenv, opts)
 	if err != nil {
-		return output.AgentModeError(cmd, "auth_login_failed", err.Error(), loginFailureHints(err))
+		errorType := "auth_login_failed"
+		if signup {
+			errorType = "auth_signup_failed"
+		}
+		return output.AgentModeError(cmd, errorType, err.Error(), loginFailureHints(err, command))
 	}
 
 	event := map[string]any{
@@ -86,20 +83,71 @@ func runAgentLogin(cmd *cobra.Command) error {
 	if config.GetEnvValue("token") != "" {
 		event["note"] = "VF_TOKEN is set and takes precedence over this session; unset it to use the OAuth session."
 	}
+	if signupRequested {
+		addSignupResult(cmd, event, session)
+	}
 	writeLoginEvent(out, event)
 	return nil
+}
+
+// awaitingEvent is the first agent event: the URL the user has to open.
+func awaitingEvent(authURL string, timeout time.Duration, signup bool) map[string]any {
+	if signup {
+		return map[string]any{
+			"status":            "awaiting_signup",
+			"authorization_url": authURL,
+			"expires_in":        timeout.String(),
+			"hints": []string{
+				"Give the authorization_url to the user and ask them to open it in their browser to create their Voiceflow account",
+				"The user creates the account in their own browser, including accepting the terms and verifying their email; never ask for, or enter, their password or verification code yourself",
+				"This command blocks until they finish, which can take several minutes, so run it in the background and read its output",
+				"The URL redirects to a loopback listener on this machine, so the browser that opens it has to reach this host; if you are running remotely (SSH, container), the callback port has to be forwarded or signup will time out",
+				"No credentials are stored until signup completes; 'vf auth whoami' reports the stored session",
+			},
+		}
+	}
+	return map[string]any{
+		"status":            "awaiting_authorization",
+		"authorization_url": authURL,
+		"expires_in":        timeout.String(),
+		"hints": []string{
+			"Give the authorization_url to the user and ask them to open it in their browser",
+			"This command blocks until they finish signing in, so run it in the background and read its output",
+			"The URL redirects to a loopback listener on this machine, so the browser that opens it has to reach this host; if you are running remotely (SSH, container), the callback port has to be forwarded or sign-in will time out",
+			"No credentials are stored until sign-in completes; 'vf auth whoami' reports the stored session",
+		},
+	}
+}
+
+// addSignupResult adds the account, its workspaces, and next steps to the
+// signed_in event after a signup.
+func addSignupResult(cmd *cobra.Command, event map[string]any, session *Session) {
+	if account := accountFromToken(session.AccessToken); account != "" {
+		event["account"] = account
+	}
+	workspaces, err := waitForWorkspaces(cmd.Context(), cmd)
+	switch {
+	case len(workspaces) > 0:
+		event["workspaces"] = workspaces
+	case err != nil:
+		event["workspaces_note"] = fmt.Sprintf("Could not list workspaces yet (%v); run 'vf workspace list' in a minute.", err)
+	case workspaceLister != nil:
+		event["workspaces_note"] = "The first workspace is still being set up; run 'vf workspace list' in a minute."
+	}
+	event["next_steps"] = signupNextSteps
 }
 
 // loginFailureHints describes what the agent should do next. Authorization and
 // storage fail in opposite ways: a failed authorization stored nothing and is
 // worth retrying, while a failed store means the user already signed in and the
 // tokens may be half-written, so retrying the whole flow is the wrong advice.
+// command is the command to retry with, 'vf auth login' or 'vf auth signup'.
 //
 // A store failure is always a filesystem failure. SaveSession takes the keychain
 // write as best-effort — writeSecrets swallows its errors and reports false, and
 // the tokens ride along in oauth.json instead — so the only thing that can
 // surface as ErrStoreSession is writeJSONFile failing on ~/.config/vf.
-func loginFailureHints(err error) []string {
+func loginFailureHints(err error, command string) []string {
 	if errors.Is(err, ErrStoreSession) {
 		return []string{
 			"The user finished signing in, but the session could not be stored, so some credentials may still be on this machine",
@@ -109,7 +157,7 @@ func loginFailureHints(err error) []string {
 	}
 	return []string{
 		"Sign-in did not complete, so no credentials were stored",
-		"Run 'vf auth login' again to get a fresh authorization_url for the user",
+		fmt.Sprintf("Run '%s' again to get a fresh authorization_url for the user", command),
 		"To authenticate without a browser, set VF_TOKEN or pass --token <token>",
 	}
 }

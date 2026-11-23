@@ -10,6 +10,9 @@ By default this opens your browser to complete an OAuth2 authorization code
 flow, then stores the resulting access and refresh tokens in the OS keychain
 when available, with an owner-only file fallback.
 
+Use --signup (or 'vf auth signup') to create a new account in the browser
+instead of signing in to an existing one.
+
 Use --token to store a bearer token non-interactively, or --manual to be
 prompted for one. Use the configure command for both authentication and global
 parameters.
@@ -28,11 +31,13 @@ vf auth login [flags]
 ### Options
 
 ```
+      --email string             Email address to prefill on the signup form (with --signup)
   -h, --help                     help for login
-      --login-timeout duration   How long to wait for the browser to complete sign-in (default 5m0s)
+      --login-timeout duration   How long to wait for the browser to complete sign-in (15m with --signup) (default 5m0s)
       --manual                   Prompt for a bearer token instead of signing in through the browser
       --no-browser               Print the sign-in URL instead of opening a browser (always on in agent mode)
       --scope stringArray        OAuth scope to request (repeatable). Defaults to the scopes the authorization server advertises.
+      --signup                   Create a new account in the browser instead of signing in (same as 'vf auth signup')
 ```
 
 ### Options inherited from parent commands

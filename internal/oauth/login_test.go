@@ -33,6 +33,7 @@ type fakeAuthServer struct {
 	authorizeRequests []url.Values
 	accessTokenTTL    int64
 	rotateRefresh     bool
+	promptValues      []string // advertised as prompt_values_supported
 }
 
 type pendingCode struct {
@@ -64,6 +65,10 @@ func newFakeAuthServer(t *testing.T) *fakeAuthServer {
 }
 
 func (f *fakeAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request) {
+	f.mu.Lock()
+	promptValues := f.promptValues
+	f.mu.Unlock()
+
 	writeJSON(w, http.StatusOK, Metadata{
 		Issuer:                        f.URL,
 		AuthorizationEndpoint:         f.URL + "/authorize",
@@ -73,6 +78,7 @@ func (f *fakeAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request)
 		GrantTypesSupported:           []string{"authorization_code", "refresh_token"},
 		ResponseTypesSupported:        []string{"code"},
 		CodeChallengeMethodsSupported: []string{"S256"},
+		PromptValuesSupported:         promptValues,
 	})
 }
 
