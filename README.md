@@ -658,6 +658,14 @@ server's dynamic client registration endpoint and caches the resulting
 * [`assign`](docs/vf_phone-number_assign.md) - Assign phone number
 * [`unassign`](docs/vf_phone-number_unassign.md) - Unassign phone number
 
+### [event](docs/vf_event.md)
+
+* [`list`](docs/vf_event_list.md) - List events
+* [`create`](docs/vf_event_create.md) - Create event
+* [`get`](docs/vf_event_get.md) - Get event
+* [`update`](docs/vf_event_update.md) - Update event
+* [`delete`](docs/vf_event_delete.md) - Delete event
+
 </details>
 <!-- End Available Commands [operations] -->
 

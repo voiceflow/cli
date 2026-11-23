@@ -15088,6 +15088,257 @@ paths:
         - Phone Number
       security:
         - token: []
+  /v1/stable/event:
+    get:
+      operationId: StableEventController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_event
+          toolDescription: |-
+            A named signal a client sends into a conversation — "order_shipped", "cart_abandoned", "user_logged_in" — and what the agent does when it arrives: run a workflow, hand the conversation back to the agent, or carry on where it was.
+            A client triggers an event by sending an `event` request whose payload.event.name is the event's requestName. Events are the way a project built without the editor starts a workflow from outside the conversation.
+            Predecessor: select the project and environment first, and create the workflow the event should run with voiceflow_workflow.create.
+            Successor: recompile the environment, then send the event with voiceflow_conversation.send to check it runs what you expect.
+          operation: list
+          operationDescription: |-
+            WHAT — List all events in the environment, each with the requestName a client sends and what the event does.
+            USE WHEN — Finding the requestName to send in an `event` request, or checking whether an event for a signal already exists before creating one.
+        cli:
+          command: event list
+      x-speakeasy-group: event
+      x-speakeasy-name-override: list
+      summary: List events
+      description: List all events by project ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEventListResponse'
+      tags:
+        - Event
+      security:
+        - token: []
+    post:
+      operationId: StableEventController_create
+      x-vf:
+        mcp:
+          tool: voiceflow_event
+          toolDescription: |-
+            A named signal a client sends into a conversation — "order_shipped", "cart_abandoned", "user_logged_in" — and what the agent does when it arrives: run a workflow, hand the conversation back to the agent, or carry on where it was.
+            A client triggers an event by sending an `event` request whose payload.event.name is the event's requestName. Events are the way a project built without the editor starts a workflow from outside the conversation.
+            Predecessor: select the project and environment first, and create the workflow the event should run with voiceflow_workflow.create.
+            Successor: recompile the environment, then send the event with voiceflow_conversation.send to check it runs what you expect.
+          operation: create
+          operationDescription: |-
+            WHAT — Create an event: the name a client sends to trigger it and what the agent does when it arrives.
+            USE WHEN — Something outside the conversation (an app, a webhook, a backend job) needs to start a workflow or nudge the agent mid-conversation.
+            BEFORE — voiceflow_workflow.list to copy the ID of the workflow the event should run when goesTo is `flow`.
+            AFTER — recompile the environment, then voiceflow_conversation.send with an `event` action naming the requestName to check it runs.
+        cli:
+          command: event create
+      x-speakeasy-group: event
+      x-speakeasy-name-override: create
+      summary: Create event
+      description: Create a new event.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableEventCreateRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEventResponse'
+      tags:
+        - Event
+      security:
+        - token: []
+  /v1/stable/event/{eventID}:
+    get:
+      operationId: StableEventController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_event
+          toolDescription: |-
+            A named signal a client sends into a conversation — "order_shipped", "cart_abandoned", "user_logged_in" — and what the agent does when it arrives: run a workflow, hand the conversation back to the agent, or carry on where it was.
+            A client triggers an event by sending an `event` request whose payload.event.name is the event's requestName. Events are the way a project built without the editor starts a workflow from outside the conversation.
+            Predecessor: select the project and environment first, and create the workflow the event should run with voiceflow_workflow.create.
+            Successor: recompile the environment, then send the event with voiceflow_conversation.send to check it runs what you expect.
+          operation: get
+          operationDescription: WHAT — Fetch one event with its requestName and what it does.
+        cli:
+          command: event get
+      x-speakeasy-group: event
+      x-speakeasy-name-override: get
+      summary: Get event
+      description: Get an event by ID.
+      parameters:
+        - name: eventID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableEventReadResponse'
+      tags:
+        - Event
+      security:
+        - token: []
+    patch:
+      operationId: StableEventController_update
+      x-vf:
+        mcp:
+          tool: voiceflow_event
+          toolDescription: |-
+            A named signal a client sends into a conversation — "order_shipped", "cart_abandoned", "user_logged_in" — and what the agent does when it arrives: run a workflow, hand the conversation back to the agent, or carry on where it was.
+            A client triggers an event by sending an `event` request whose payload.event.name is the event's requestName. Events are the way a project built without the editor starts a workflow from outside the conversation.
+            Predecessor: select the project and environment first, and create the workflow the event should run with voiceflow_workflow.create.
+            Successor: recompile the environment, then send the event with voiceflow_conversation.send to check it runs what you expect.
+          operation: update
+          operationDescription: |-
+            WHAT — Rename an event, change its requestName or description, or change what it does when it arrives.
+            USE WHEN — Pointing an event at a different workflow, or switching it between running a workflow, handing back to the agent and continuing.
+            DO NOT — Change requestName while a client is live — that client keeps sending the old name, which then triggers nothing.
+        cli:
+          command: event update
+      x-speakeasy-group: event
+      x-speakeasy-name-override: update
+      summary: Update event
+      description: Update an event by ID.
+      parameters:
+        - name: eventID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/StableEventUpdateRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableUpdateResponse'
+      tags:
+        - Event
+      security:
+        - token: []
+    delete:
+      operationId: StableEventController_delete
+      x-vf:
+        mcp:
+          tool: voiceflow_event
+          toolDescription: |-
+            A named signal a client sends into a conversation — "order_shipped", "cart_abandoned", "user_logged_in" — and what the agent does when it arrives: run a workflow, hand the conversation back to the agent, or carry on where it was.
+            A client triggers an event by sending an `event` request whose payload.event.name is the event's requestName. Events are the way a project built without the editor starts a workflow from outside the conversation.
+            Predecessor: select the project and environment first, and create the workflow the event should run with voiceflow_workflow.create.
+            Successor: recompile the environment, then send the event with voiceflow_conversation.send to check it runs what you expect.
+          operation: delete
+          operationDescription: |-
+            WHAT — Remove an event. System events cannot be deleted.
+            DO NOT — Delete an event a client still sends — the client's `event` requests then trigger nothing, with no error.
+        cli:
+          command: event delete
+      x-speakeasy-group: event
+      x-speakeasy-name-override: delete
+      summary: Delete event
+      description: Delete an event by ID.
+      parameters:
+        - name: eventID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableDeleteResponse'
+      tags:
+        - Event
+      security:
+        - token: []
 info:
   title: Realtime
   description: Realtime gateway API service
@@ -37447,6 +37698,135 @@ components:
       required:
         - evaluationIDs
         - transcriptIDs
+      additionalProperties: false
+    StableEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          description: The display name of the event, unique within the environment ignoring case.
+        requestName:
+          type: string
+          description: The name a client sends to trigger the event, as payload.event.name of an `event` request. Unique within the environment.
+        description:
+          nullable: true
+          description: What the event is for. Null when none was written.
+          type: string
+        goesTo:
+          nullable: true
+          description: What the agent does when the event arrives. Null on an event created before this setting existed.
+          allOf:
+            - $ref: '#/components/schemas/StableEventGoesTo'
+        workflowID:
+          nullable: true
+          description: The workflow the event runs when goesTo is `flow`, as a workflow ID from voiceflow_workflow.list.
+          type: string
+        isSystem:
+          type: boolean
+          description: True for an event Voiceflow manages. A system event cannot be deleted.
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - name
+        - requestName
+        - description
+        - goesTo
+        - workflowID
+        - isSystem
+        - createdAt
+        - updatedAt
+    StableEventGoesTo:
+      type: string
+      enum:
+        - flow
+        - global_agent
+        - continue
+      description: What the agent does when the event arrives. `flow` runs the workflow named by workflowID. `global_agent` hands the conversation back to the agent to decide what to do next, and is only valid in an agent project. `continue` carries on the conversation where it was, for an event that only updates user info.
+      x-enumNames:
+        - FLOW
+        - GLOBAL_AGENT
+        - CONTINUE
+    StableEventListResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableEvent'
+      required:
+        - events
+    StableEventResponse:
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/StableEvent'
+      required:
+        - event
+    StableEventCreateRequest:
+      type: object
+      properties:
+        description:
+          nullable: true
+          description: What the event is for. Null when none was written.
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The display name of the event. Must not match another event in this environment, ignoring case.
+        requestName:
+          description: The name a client sends to trigger the event, as payload.event.name of an `event` request. Letters, digits, underscores and $ only, at most 64 characters. Must not be used by another event in this environment. Defaults to the name with spaces turned into underscores and other characters dropped.
+          type: string
+          pattern: ^[\w$]{1,64}$
+        goesTo:
+          $ref: '#/components/schemas/StableEventGoesTo'
+        workflowID:
+          nullable: true
+          description: The workflow to run, as a workflow ID from voiceflow_workflow.list. Required when goesTo is `flow`; leave it out for any other goesTo.
+          type: string
+      required:
+        - name
+        - goesTo
+      additionalProperties: false
+    StableEventReadResponse:
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/StableEvent'
+      required:
+        - event
+    StableEventUpdateRequest:
+      type: object
+      properties:
+        description:
+          nullable: true
+          description: What the event is for. Null when none was written.
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The display name of the event. Must not match another event in this environment, ignoring case. Renaming does not change requestName.
+        requestName:
+          type: string
+          pattern: ^[\w$]{1,64}$
+          description: The name a client sends to trigger the event. Letters, digits, underscores and $ only, at most 64 characters. Must not be used by another event in this environment. Changing it breaks any client still sending the old name.
+        goesTo:
+          allOf:
+            - $ref: '#/components/schemas/StableEventGoesTo'
+        workflowID:
+          nullable: true
+          description: The workflow to run, as a workflow ID from voiceflow_workflow.list. Only valid while goesTo is `flow`. Changing goesTo away from `flow` clears it.
+          type: string
       additionalProperties: false
     StableFunctionPath:
       type: object

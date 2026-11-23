@@ -17,6 +17,7 @@ import (
 	"github.com/voiceflow/cli/internal/cli/document"
 	"github.com/voiceflow/cli/internal/cli/environment"
 	"github.com/voiceflow/cli/internal/cli/evaluation"
+	"github.com/voiceflow/cli/internal/cli/event"
 	"github.com/voiceflow/cli/internal/cli/function"
 	"github.com/voiceflow/cli/internal/cli/integration"
 	"github.com/voiceflow/cli/internal/cli/knowledgebase"
@@ -150,6 +151,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := phonenumber.InitPhoneNumberRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init phone-number: %w", err)
+	}
+	if err := event.InitEventRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init event: %w", err)
 	}
 	if err := initConfigureCmd(rootCmd); err != nil {
 		return nil, fmt.Errorf("init configure: %w", err)
