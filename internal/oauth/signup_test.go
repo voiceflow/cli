@@ -196,6 +196,24 @@ func TestSignupRejectsNonBrowserFlags(t *testing.T) {
 	}
 }
 
+func TestEmailWithoutSignupStillReachesRunLogin(t *testing.T) {
+	// Otherwise --token or --no-interactive would take the token-entry path
+	// and quietly ignore --email.
+	for _, args := range [][]string{
+		{"login", "--email", "a@b.co", "--token", "abc"},
+		{"login", "--email", "a@b.co", "--no-interactive"},
+		{"login", "--email", "a@b.co", "--manual"},
+	} {
+		cmd := executeCmd(t, newSignupTestCmd(nil), args...)
+		if !ShouldUseBrowserLogin(cmd) {
+			t.Errorf("ShouldUseBrowserLogin(%v) = false, want --email routed to RunLogin", args)
+		}
+		if err := RunLogin(cmd); err == nil || !strings.Contains(err.Error(), "--email is only used with --signup") {
+			t.Errorf("RunLogin(%v) = %v, want --email rejected without --signup", args, err)
+		}
+	}
+}
+
 func TestRunLoginRejectsEmailWithoutSignup(t *testing.T) {
 	cmd := executeCmd(t, newSignupTestCmd(nil), "login", "--email", "a@b.co")
 	if err := RunLogin(cmd); err == nil || !strings.Contains(err.Error(), "--email is only used with --signup") {
@@ -224,7 +242,7 @@ func TestAccountFromToken(t *testing.T) {
 func TestWaitForWorkspacesRetriesUntilTheFirstWorkspaceExists(t *testing.T) {
 	var mu sync.Mutex
 	calls := 0
-	useWorkspaceLister(t, func(context.Context, *cobra.Command) ([]Workspace, error) {
+	useWorkspaceLister(t, func(context.Context, *cobra.Command, string) ([]Workspace, error) {
 		mu.Lock()
 		defer mu.Unlock()
 		calls++
@@ -238,7 +256,7 @@ func TestWaitForWorkspacesRetriesUntilTheFirstWorkspaceExists(t *testing.T) {
 		}
 	})
 
-	workspaces, err := waitForWorkspaces(context.Background(), &cobra.Command{})
+	workspaces, err := waitForWorkspaces(context.Background(), &cobra.Command{}, "token")
 	if err != nil {
 		t.Fatalf("waitForWorkspaces: %v", err)
 	}
@@ -251,12 +269,12 @@ func TestWaitForWorkspacesRetriesUntilTheFirstWorkspaceExists(t *testing.T) {
 }
 
 func TestWaitForWorkspacesGivesUp(t *testing.T) {
-	useWorkspaceLister(t, func(context.Context, *cobra.Command) ([]Workspace, error) {
+	useWorkspaceLister(t, func(context.Context, *cobra.Command, string) ([]Workspace, error) {
 		return nil, errors.New("boom")
 	})
 	workspaceWait = 50 * time.Millisecond
 
-	if _, err := waitForWorkspaces(context.Background(), &cobra.Command{}); err == nil || err.Error() != "boom" {
+	if _, err := waitForWorkspaces(context.Background(), &cobra.Command{}, "token"); err == nil || err.Error() != "boom" {
 		t.Errorf("waitForWorkspaces = %v, want the last error once it gives up", err)
 	}
 }
@@ -271,11 +289,16 @@ func TestRunSignupPrintsTheAccountWorkspacesAndNextSteps(t *testing.T) {
 	t.Setenv(envIssuer, server.URL)
 	t.Setenv(envResource, "https://realtime-api.test")
 
-	lister := func(context.Context, *cobra.Command) ([]Workspace, error) {
+	var listedWith string
+	lister := func(_ context.Context, _ *cobra.Command, accessToken string) ([]Workspace, error) {
+		listedWith = accessToken
 		return []Workspace{{ID: "ws-1", Name: "My Workspace"}}, nil
 	}
 	root := newSignupTestCmd(lister)
 	useWorkspaceLister(t, lister)
+	// An environment token belongs to whichever account set it, not
+	// necessarily the one just created.
+	t.Setenv("VF_TOKEN", "someone-elses-token")
 
 	out := &strings.Builder{}
 	root.SetOut(out)
@@ -290,6 +313,13 @@ func TestRunSignupPrintsTheAccountWorkspacesAndNextSteps(t *testing.T) {
 
 	if got := server.lastAuthorizeRequest(t); got.Get("prompt") != "create" || got.Get("login_hint") != "you@example.com" {
 		t.Errorf("authorization request = %v, want prompt=create and the login_hint", got)
+	}
+	session, err := LoadSession()
+	if err != nil {
+		t.Fatalf("LoadSession: %v", err)
+	}
+	if listedWith != session.AccessToken {
+		t.Errorf("workspaces listed with %q, want the new session's token %q", listedWith, session.AccessToken)
 	}
 	for _, want := range []string{"Signed in to " + server.URL, "My Workspace (ws-1)", "Next steps:", "vf workspace list"} {
 		if !strings.Contains(out.String(), want) {
@@ -315,7 +345,7 @@ func TestRunSignupInAgentModeAwaitsSignup(t *testing.T) {
 	t.Setenv(envIssuer, server.URL)
 	t.Setenv(envResource, "https://realtime-api.test")
 
-	lister := func(context.Context, *cobra.Command) ([]Workspace, error) {
+	lister := func(context.Context, *cobra.Command, string) ([]Workspace, error) {
 		return []Workspace{{ID: "ws-1", Name: "My Workspace"}}, nil
 	}
 	root := newSignupTestCmd(lister)

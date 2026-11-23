@@ -10,15 +10,21 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/voiceflow/cli/internal/client"
 	"github.com/voiceflow/cli/internal/oauth"
+	"github.com/voiceflow/cli/internal/sdk/models/operations"
 )
 
-// listSignupWorkspaces lists the workspaces of the account signed in on cmd.
-func listSignupWorkspaces(ctx context.Context, cmd *cobra.Command) ([]oauth.Workspace, error) {
+// listSignupWorkspaces lists the workspaces of the account accessToken belongs
+// to. The client otherwise resolves credentials as usual (VF_TOKEN and --token
+// outrank the stored session), so the token is set on the request itself;
+// request headers are applied after security, so it wins.
+func listSignupWorkspaces(ctx context.Context, cmd *cobra.Command, accessToken string) ([]oauth.Workspace, error) {
 	s, err := client.NewClient(cmd)
 	if err != nil {
 		return nil, err
 	}
-	res, err := s.Workspace.List(ctx)
+	res, err := s.Workspace.List(ctx, operations.WithSetHeaders(map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}))
 	if err != nil {
 		return nil, err
 	}

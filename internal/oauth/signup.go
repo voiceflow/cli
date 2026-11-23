@@ -28,10 +28,13 @@ type Workspace struct {
 	Name string `json:"name"`
 }
 
-// WorkspaceLister lists the signed-in account's workspaces. It is supplied by
-// the generated command package, because building an API client from here
-// would import internal/client, which already imports this package.
-type WorkspaceLister func(ctx context.Context, cmd *cobra.Command) ([]Workspace, error)
+// WorkspaceLister lists the workspaces of the account that accessToken belongs
+// to. It must use accessToken rather than the usual credential precedence, in
+// which VF_TOKEN or --token would outrank the session signup just stored. It
+// is supplied by the generated command package, because building an API
+// client from here would import internal/client, which already imports this
+// package.
+type WorkspaceLister func(ctx context.Context, cmd *cobra.Command, accessToken string) ([]Workspace, error)
 
 // workspaceLister is set by AddSignupCommand. Nil skips the workspace check.
 var workspaceLister WorkspaceLister
@@ -142,7 +145,7 @@ func accountFromToken(token string) string {
 // while the list is empty or the request fails, since the first workspace of
 // a new account is created asynchronously. It returns the last error only when
 // no attempt succeeded.
-func waitForWorkspaces(ctx context.Context, cmd *cobra.Command) ([]Workspace, error) {
+func waitForWorkspaces(ctx context.Context, cmd *cobra.Command, accessToken string) ([]Workspace, error) {
 	if workspaceLister == nil {
 		return nil, nil
 	}
@@ -151,7 +154,7 @@ func waitForWorkspaces(ctx context.Context, cmd *cobra.Command) ([]Workspace, er
 
 	var lastErr error
 	for {
-		workspaces, err := workspaceLister(ctx, cmd)
+		workspaces, err := workspaceLister(ctx, cmd, accessToken)
 		if err == nil {
 			lastErr = nil
 			if len(workspaces) > 0 {

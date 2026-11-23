@@ -40,9 +40,15 @@ func AddLoginFlags(cmd *cobra.Command) {
 // browser flow. Passing --token or --manual selects the token-entry path
 // instead, and --no-interactive rules out both browser and prompt. --signup
 // always takes the browser flow, which rejects those flags rather than
-// silently storing a token instead of creating an account.
+// silently storing a token instead of creating an account. So does --email,
+// for the same reason.
 func ShouldUseBrowserLogin(cmd *cobra.Command) bool {
 	if signup, err := cmd.Flags().GetBool(flagSignup); err == nil && signup {
+		return true
+	}
+	// --email only means something for signup; RunLogin rejects it without
+	// --signup, so it must not slip through the token-entry path unnoticed.
+	if email, err := cmd.Flags().GetString(flagEmail); err == nil && email != "" {
 		return true
 	}
 	if manual, err := cmd.Flags().GetBool(flagManual); err == nil && manual {
@@ -116,7 +122,7 @@ func runBrowserLogin(cmd *cobra.Command, signup bool) error {
 	}
 
 	if signupRequested {
-		workspaces, err := waitForWorkspaces(cmd.Context(), cmd)
+		workspaces, err := waitForWorkspaces(cmd.Context(), cmd, session.AccessToken)
 		writeSignupResult(out, workspaces, err)
 	}
 	return nil

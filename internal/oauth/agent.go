@@ -125,7 +125,7 @@ func addSignupResult(cmd *cobra.Command, event map[string]any, session *Session)
 	if account := accountFromToken(session.AccessToken); account != "" {
 		event["account"] = account
 	}
-	workspaces, err := waitForWorkspaces(cmd.Context(), cmd)
+	workspaces, err := waitForWorkspaces(cmd.Context(), cmd, session.AccessToken)
 	switch {
 	case len(workspaces) > 0:
 		event["workspaces"] = workspaces
