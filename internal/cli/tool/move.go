@@ -19,7 +19,7 @@ var moveCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "tool-id", FieldPath: "ToolID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "type", FieldPath: "Body.Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration", "workflow"}, Description: "The type of the tool to move. `workflow` is refused: a workflow tool stays on the agent. (options: api, mcp, function, integration, workflow) [required]"},
+	{FlagName: "type", FieldPath: "Body.Type", Kind: flagutil.FlagKindEnum, Required: true, EnumValues: []string{"api", "mcp", "function", "integration", "workflow"}, Description: "The type of the tool to move. `workflow` is refused: a workflow tool is never moved. (options: api, mcp, function, integration, workflow) [required]"},
 	{FlagName: "target", FieldPath: "Body.Target", Kind: flagutil.FlagKindJSON, Required: true, Annotations: `json:"target"`, Description: "[required]"},
 }
 

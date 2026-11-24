@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// StableToolMoveRequestType - The type of the tool to move. `workflow` is refused: a workflow tool stays on the agent.
+// StableToolMoveRequestType - The type of the tool to move. `workflow` is refused: a workflow tool is never moved.
 type StableToolMoveRequestType string
 
 const (
@@ -45,7 +45,7 @@ func (e *StableToolMoveRequestType) UnmarshalJSON(data []byte) error {
 }
 
 type StableToolMoveRequest struct {
-	// The type of the tool to move. `workflow` is refused: a workflow tool stays on the agent.
+	// The type of the tool to move. `workflow` is refused: a workflow tool is never moved.
 	Type   StableToolMoveRequestType `json:"type"`
 	Target StableToolTarget          `json:"target"`
 }

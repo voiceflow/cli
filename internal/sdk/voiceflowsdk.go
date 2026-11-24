@@ -52,6 +52,7 @@ func Pointer[T any](v T) *T { return &v }
 type VoiceflowSDK struct {
 	SDKVersion    string
 	Agent         *Agent
+	Workflow      *Workflow
 	Playbook      *Playbook
 	Tool          *Tool
 	Workspace     *Workspace
@@ -75,7 +76,6 @@ type VoiceflowSDK struct {
 	Test          *Test
 	Persona       *Persona
 	Widget        *Widget
-	Workflow      *Workflow
 	PhoneNumber   *PhoneNumber
 	Event         *Event
 
@@ -172,6 +172,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.sdkConfiguration = sdk.hooks.SDKInit(sdk.sdkConfiguration)
 
 	sdk.Agent = newAgent(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Workflow = newWorkflow(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Playbook = newPlaybook(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Tool = newTool(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Workspace = newWorkspace(sdk, sdk.sdkConfiguration, sdk.hooks)
@@ -195,7 +196,6 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Test = newTest(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Persona = newPersona(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Widget = newWidget(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.Workflow = newWorkflow(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.PhoneNumber = newPhoneNumber(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Event = newEvent(sdk, sdk.sdkConfiguration, sdk.hooks)
 

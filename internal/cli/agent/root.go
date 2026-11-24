@@ -29,6 +29,18 @@ func InitAgentRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initAddWorkflowCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initUpdateWorkflowCmd(AgentCmd); err != nil {
+		return err
+	}
+
+	if err := initRemoveWorkflowCmd(AgentCmd); err != nil {
+		return err
+	}
+
 	if err := initReadInstructionsCmd(AgentCmd); err != nil {
 		return err
 	}

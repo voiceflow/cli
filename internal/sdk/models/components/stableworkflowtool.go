@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// StableWorkflowToolType - Discriminator indicating a workflow the agent can run as a tool.
+// StableWorkflowToolType - Discriminator indicating a legacy workflow tool. No new one can be created, but it can still be read and deleted.
 type StableWorkflowToolType string
 
 const (
@@ -36,7 +36,7 @@ func (e *StableWorkflowToolType) UnmarshalJSON(data []byte) error {
 
 type StableWorkflowTool struct {
 	ID string `json:"id"`
-	// Discriminator indicating a workflow the agent can run as a tool.
+	// Discriminator indicating a legacy workflow tool. No new one can be created, but it can still be read and deleted.
 	Type StableWorkflowToolType `json:"type"`
 	// The workflow the tool runs.
 	WorkflowID string `json:"workflowID"`

@@ -181,7 +181,7 @@ func (s *Tool) List(ctx context.Context, request operations.StableToolController
 }
 
 // Create tool
-// Create a new tool, or give the agent a workflow tool.
+// Create a new tool.
 func (s *Tool) Create(ctx context.Context, request operations.StableToolControllerCreateV2Request, opts ...operations.Option) (*operations.StableToolControllerCreateV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
@@ -642,7 +642,7 @@ func (s *Tool) Update(ctx context.Context, request operations.StableToolControll
 }
 
 // Delete tool
-// Delete a tool by ID, including a workflow tool.
+// Delete a tool by ID, including a legacy workflow tool.
 func (s *Tool) Delete(ctx context.Context, request operations.StableToolControllerDeleteV2Request, opts ...operations.Option) (*operations.StableToolControllerDeleteV2Response, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
