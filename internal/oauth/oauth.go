@@ -259,7 +259,7 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 		scopes = defaultScopes
 	}
 
-	authURL := authorizationURL(md, client.ClientID, callback.RedirectURI(), state, verifier.challenge, scopes, cfg.Resource, prompt, loginHint)
+	authURL := authorizationURL(md, client.ClientID, callback.RedirectURI(), state, verifier.challenge, scopes, cfg.Resource, prompt, loginHint, detectCLIAgent(getenv))
 
 	if opts.observeAuthURL != nil {
 		opts.observeAuthURL(authURL)
@@ -439,7 +439,7 @@ func listen(ctx context.Context, md Metadata, cfg settings, client *clientRecord
 	return callback, registered, nil
 }
 
-func authorizationURL(md Metadata, clientID, redirectURI, state, challenge string, scopes []string, resource, prompt, loginHint string) string {
+func authorizationURL(md Metadata, clientID, redirectURI, state, challenge string, scopes []string, resource, prompt, loginHint, agent string) string {
 	params := url.Values{
 		"response_type":         {"code"},
 		"client_id":             {clientID},
@@ -461,6 +461,9 @@ func authorizationURL(md Metadata, clientID, redirectURI, state, challenge strin
 		if loginHint != "" {
 			params.Set("login_hint", loginHint)
 		}
+	}
+	for key, values := range trackingParams(prompt, agent) {
+		params[key] = values
 	}
 
 	separator := "?"

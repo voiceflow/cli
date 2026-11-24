@@ -318,6 +318,12 @@ In agent mode the first JSON event has `status: "awaiting_signup"`, and its
 hints tell the agent that the user creates the account in their own browser.
 The final `signed_in` event adds `account`, `workspaces`, and `next_steps`.
 
+The URL the CLI opens, for signup and for browser sign-in alike, carries
+attribution parameters: `utm_source=voiceflow_cli`, `utm_medium=product`,
+`utm_campaign=cli_signup`, `utm_content=signup` or `login`, and `cli_agent`,
+which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
+`none`.
+
 <!-- Start Available Commands [operations] -->
 ## Available Commands
 

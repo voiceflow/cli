@@ -54,7 +54,7 @@ func executeCmd(t *testing.T, root *cobra.Command, args ...string) *cobra.Comman
 
 func TestAuthorizationURLCarriesPromptAndLoginHint(t *testing.T) {
 	md := Metadata{AuthorizationEndpoint: "https://auth.test/authorize"}
-	query := mustParseQuery(t, authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "s", "c", nil, DefaultResource, PromptCreate, "you@example.com"))
+	query := mustParseQuery(t, authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "s", "c", nil, DefaultResource, PromptCreate, "you@example.com", CLIAgentNone))
 
 	if got := query.Get("prompt"); got != "create" {
 		t.Errorf("prompt = %q, want create", got)
@@ -68,7 +68,7 @@ func TestAuthorizationURLOmitsPromptForLogin(t *testing.T) {
 	md := Metadata{AuthorizationEndpoint: "https://auth.test/authorize"}
 	// A login_hint without prompt=create is never sent: the strict authorize
 	// DTO accepts the two together.
-	query := mustParseQuery(t, authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "s", "c", nil, DefaultResource, "", "you@example.com"))
+	query := mustParseQuery(t, authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "s", "c", nil, DefaultResource, "", "you@example.com", CLIAgentNone))
 
 	for _, key := range []string{"prompt", "login_hint"} {
 		if query.Has(key) {
