@@ -29,7 +29,7 @@ type StablePlaybookDuplicateResponse struct {
 	Playbook StablePlaybookReadV2 `json:"playbook"`
 	// Where each copied tool and exit path went.
 	Ids StablePlaybookDuplicateResponseIds `json:"ids"`
-	// The original's workflow tools. The copy did not get them, because workflow tools go on the Main Agent only. The original keeps them.
+	// The original's workflow tools. The copy did not get them, because a workflow cannot be a tool. The original keeps them.
 	SkippedWorkflowTools []string `json:"skippedWorkflowTools"`
 }
 

@@ -293,6 +293,9 @@ server's dynamic client registration endpoint and caches the resulting
 
 * [`get`](docs/vf_agent_get.md) - Get agent
 * [`update`](docs/vf_agent_update.md) - Update agent
+* [`add-workflow`](docs/vf_agent_add-workflow.md) - Add agent workflow
+* [`update-workflow`](docs/vf_agent_update-workflow.md) - Update agent workflow
+* [`remove-workflow`](docs/vf_agent_remove-workflow.md) - Remove agent workflow
 * [`read-instructions`](docs/vf_agent_read-instructions.md) - Read agent instructions
 * [`patch-instructions`](docs/vf_agent_patch-instructions.md) - Patch agent instructions
 * [`search-instructions`](docs/vf_agent_search-instructions.md) - Search agent instructions
@@ -307,6 +310,35 @@ server's dynamic client registration endpoint and caches the resulting
 * [`patch-voices`](docs/vf_agent_patch-voices.md) - Patch voices
 * [`get-initialization-workflow`](docs/vf_agent_get-initialization-workflow.md) - Get initialization workflow
 * [`set-initialization-workflow`](docs/vf_agent_set-initialization-workflow.md) - Set initialization workflow
+
+### [workflow](docs/vf_workflow.md)
+
+* [`list`](docs/vf_workflow_list.md) - List workflows
+* [`create`](docs/vf_workflow_create.md) - Create workflow
+* [`get`](docs/vf_workflow_get.md) - Get workflow
+* [`update`](docs/vf_workflow_update.md) - Update workflow
+* [`delete`](docs/vf_workflow_delete.md) - Delete workflow
+* [`get-step`](docs/vf_workflow_get-step.md) - Get workflow step
+* [`update-step`](docs/vf_workflow_update-step.md) - Update workflow step
+* [`delete-step`](docs/vf_workflow_delete-step.md) - Delete workflow step
+* [`get-raw`](docs/vf_workflow_get-raw.md) - Get raw workflow
+* [`duplicate`](docs/vf_workflow_duplicate.md) - Duplicate workflow
+* [`link`](docs/vf_workflow_link.md) - Link a port
+* [`unlink`](docs/vf_workflow_unlink.md) - Unlink a port
+* [`link-many`](docs/vf_workflow_link-many.md) - Link many ports
+* [`create-block`](docs/vf_workflow_create-block.md) - Create block
+* [`add-blocks`](docs/vf_workflow_add-blocks.md) - Add workflow blocks
+* [`update-block`](docs/vf_workflow_update-block.md) - Update block
+* [`delete-block`](docs/vf_workflow_delete-block.md) - Delete workflow block
+* [`arrange-blocks`](docs/vf_workflow_arrange-blocks.md) - Arrange workflow blocks
+* [`split-block`](docs/vf_workflow_split-block.md) - Split workflow block
+* [`insert-step`](docs/vf_workflow_insert-step.md) - Insert workflow step
+* [`add-branch`](docs/vf_workflow_add-branch.md) - Add workflow branch
+* [`update-branch`](docs/vf_workflow_update-branch.md) - Update workflow branch
+* [`delete-branch`](docs/vf_workflow_delete-branch.md) - Delete workflow branch
+* [`add-actions`](docs/vf_workflow_add-actions.md) - Add port actions
+* [`reorder-actions`](docs/vf_workflow_reorder-actions.md) - Reorder port actions
+* [`replace-action`](docs/vf_workflow_replace-action.md) - Replace port action
 
 ### [playbook](docs/vf_playbook.md)
 
@@ -618,35 +650,6 @@ server's dynamic client registration endpoint and caches the resulting
 * [`get`](docs/vf_widget_get.md) - Get widget
 * [`update`](docs/vf_widget_update.md) - Update widget
 * [`get-snippet`](docs/vf_widget_get-snippet.md) - Get widget snippet
-
-### [workflow](docs/vf_workflow.md)
-
-* [`list`](docs/vf_workflow_list.md) - List workflows
-* [`create`](docs/vf_workflow_create.md) - Create workflow
-* [`get`](docs/vf_workflow_get.md) - Get workflow
-* [`update`](docs/vf_workflow_update.md) - Update workflow
-* [`delete`](docs/vf_workflow_delete.md) - Delete workflow
-* [`get-step`](docs/vf_workflow_get-step.md) - Get workflow step
-* [`update-step`](docs/vf_workflow_update-step.md) - Update workflow step
-* [`delete-step`](docs/vf_workflow_delete-step.md) - Delete workflow step
-* [`get-raw`](docs/vf_workflow_get-raw.md) - Get raw workflow
-* [`duplicate`](docs/vf_workflow_duplicate.md) - Duplicate workflow
-* [`link`](docs/vf_workflow_link.md) - Link a port
-* [`unlink`](docs/vf_workflow_unlink.md) - Unlink a port
-* [`link-many`](docs/vf_workflow_link-many.md) - Link many ports
-* [`create-block`](docs/vf_workflow_create-block.md) - Create block
-* [`add-blocks`](docs/vf_workflow_add-blocks.md) - Add workflow blocks
-* [`update-block`](docs/vf_workflow_update-block.md) - Update block
-* [`delete-block`](docs/vf_workflow_delete-block.md) - Delete workflow block
-* [`arrange-blocks`](docs/vf_workflow_arrange-blocks.md) - Arrange workflow blocks
-* [`split-block`](docs/vf_workflow_split-block.md) - Split workflow block
-* [`insert-step`](docs/vf_workflow_insert-step.md) - Insert workflow step
-* [`add-branch`](docs/vf_workflow_add-branch.md) - Add workflow branch
-* [`update-branch`](docs/vf_workflow_update-branch.md) - Update workflow branch
-* [`delete-branch`](docs/vf_workflow_delete-branch.md) - Delete workflow branch
-* [`add-actions`](docs/vf_workflow_add-actions.md) - Add port actions
-* [`reorder-actions`](docs/vf_workflow_reorder-actions.md) - Reorder port actions
-* [`replace-action`](docs/vf_workflow_replace-action.md) - Replace port action
 
 ### [phone-number](docs/vf_phone-number.md)
 

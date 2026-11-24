@@ -51,10 +51,6 @@ func (s *StableToolControllerCreateV2Request) GetBodyIntegration() *components.S
 	return s.GetBody().StableToolCreateRequestV2Integration
 }
 
-func (s *StableToolControllerCreateV2Request) GetBodyWorkflow() *components.StableToolCreateRequestV2Workflow {
-	return s.GetBody().StableToolCreateRequestV2Workflow
-}
-
 // #region class-body-stabletoolcontrollercreatev2request
 // #endregion class-body-stabletoolcontrollercreatev2request
 

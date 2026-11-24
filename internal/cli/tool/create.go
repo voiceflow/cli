@@ -18,12 +18,11 @@ import (
 var createCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "project-id", Shorthand: "p", FieldPath: "ProjectID", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "environment-alias", Shorthand: "e", FieldPath: "EnvironmentAlias", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
-	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, target: object, messages: object, captureInputVariables: object, ... }, function: { description: string, target: object, messages: object, captureInputVariables: object, ... }, mcp: { description: string, target: object, messages: object, captureInputVariables: object, ... }, integration: { description: string, target: object, messages: object, captureInputVariables: object, ... }, workflow: { type: string, target: object, workflowID: string, description: string, ... })", Variants: []flagutil.UnionVariantMeta{
+	{FlagName: "body-param", Shorthand: "b", FieldPath: "Body", Kind: flagutil.FlagKindUnion, Union: &flagutil.UnionMeta{Discriminated: true, DiscriminatorKey: "Type", TypeDescription: "JSON value (variants: api: { description: string, target: object, messages: object, captureInputVariables: object, ... }, function: { description: string, target: object, messages: object, captureInputVariables: object, ... }, mcp: { description: string, target: object, messages: object, captureInputVariables: object, ... }, integration: { description: string, target: object, messages: object, captureInputVariables: object, ... })", Variants: []flagutil.UnionVariantMeta{
 		{DiscriminatorValue: "api", FlagName: "body-param.api", FieldName: "StableToolCreateRequestV2API", CanExpand: false, Description: "StableToolCreateRequestV2_API variant as JSON"},
 		{DiscriminatorValue: "function", FlagName: "body-param.function", FieldName: "StableToolCreateRequestV2Function", CanExpand: false, Description: "StableToolCreateRequestV2_Function variant as JSON"},
 		{DiscriminatorValue: "mcp", FlagName: "body-param.mcp", FieldName: "StableToolCreateRequestV2Mcp", CanExpand: false, Description: "StableToolCreateRequestV2_Mcp variant as JSON"},
 		{DiscriminatorValue: "integration", FlagName: "body-param.integration", FieldName: "StableToolCreateRequestV2Integration", CanExpand: false, Description: "StableToolCreateRequestV2_Integration variant as JSON"},
-		{DiscriminatorValue: "workflow", FlagName: "body-param.workflow", FieldName: "StableToolCreateRequestV2Workflow", CanExpand: false, Description: "StableToolCreateRequestV2_Workflow variant as JSON"},
 	}}},
 }
 
@@ -32,7 +31,7 @@ func initCreateCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "create",
 		Short:   "Create tool",
-		Long:    "Create a new tool, or give the agent a workflow tool.",
+		Long:    "Create a new tool.",
 		Example: "  vf tool create --project-id <id> --environment-alias <value>",
 		RunE:    runCreateCmd,
 	}

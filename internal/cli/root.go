@@ -77,6 +77,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	if err := agent.InitAgentRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init agent: %w", err)
 	}
+	if err := workflow.InitWorkflowRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init workflow: %w", err)
+	}
 	if err := playbook.InitPlaybookRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init playbook: %w", err)
 	}
@@ -145,9 +148,6 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := widget.InitWidgetRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init widget: %w", err)
-	}
-	if err := workflow.InitWorkflowRoot(rootCmd); err != nil {
-		return nil, fmt.Errorf("init workflow: %w", err)
 	}
 	if err := phonenumber.InitPhoneNumberRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init phone-number: %w", err)

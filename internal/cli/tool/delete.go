@@ -27,7 +27,7 @@ func initDeleteCmd(parent *cobra.Command) error {
 	var cmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete tool",
-		Long:    "Delete a tool by ID, including a workflow tool.",
+		Long:    "Delete a tool by ID, including a legacy workflow tool.",
 		Example: "  vf tool delete --tool-id <id> --project-id <id> --environment-alias <value> --type mcp",
 		RunE:    runDeleteCmd,
 	}
