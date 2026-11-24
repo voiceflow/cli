@@ -24,6 +24,7 @@ func initAuthCmd(parent *cobra.Command) error {
 
 Subcommands:
   login   - Interactively configure credentials
+  signup  - Create a Voiceflow account in the browser and sign in
   whoami  - Display current authentication status
   logout  - Clear all stored credentials`,
 	}
@@ -37,6 +38,9 @@ Subcommands:
 By default this opens your browser to complete an OAuth2 authorization code
 flow, then stores the resulting access and refresh tokens in the OS keychain
 when available, with an owner-only file fallback.
+
+Use --signup (or 'vf auth signup') to create a new account in the browser
+instead of signing in to an existing one.
 
 Use --token to store a bearer token non-interactively, or --manual to be
 prompted for one. Use the configure command for both authentication and global
@@ -52,6 +56,7 @@ forward the callback port first — see "Signing in over SSH" in the README.`,
 	}
 	oauth.AddLoginFlags(loginCmd) // browser login flags; see internal/oauth
 	authCmd.AddCommand(loginCmd)
+	oauth.AddSignupCommand(authCmd, listSignupWorkspaces) // vf auth signup; see internal/oauth
 
 	authCmd.AddCommand(&cobra.Command{
 		Use:   "whoami",

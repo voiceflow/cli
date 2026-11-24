@@ -8,6 +8,7 @@ Manage authentication credentials for vf.
 
 Subcommands:
   login   - Interactively configure credentials
+  signup  - Create a Voiceflow account in the browser and sign in
   whoami  - Display current authentication status
   logout  - Clear all stored credentials
 
@@ -40,4 +41,5 @@ Subcommands:
 * [vf](vf.md)	 - Realtime: Realtime gateway API service
 * [vf auth login](vf_auth_login.md)	 - Sign in through the browser or configure credentials
 * [vf auth logout](vf_auth_logout.md)	 - Clear all stored authentication credentials
+* [vf auth signup](vf_auth_signup.md)	 - Create a Voiceflow account in the browser and sign in
 * [vf auth whoami](vf_auth_whoami.md)	 - Display current authentication configuration

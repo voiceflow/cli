@@ -176,12 +176,12 @@ func TestRunLoginInAgentModeReportsFailureAsAStructuredError(t *testing.T) {
 // stored nothing and should be retried, the second means the user already
 // signed in and credentials may be sitting on the machine half-written.
 func TestLoginFailureHintsSeparateAuthorizationFromStorage(t *testing.T) {
-	authFailure := loginFailureHints(errors.New("timed out after 5m0s waiting for the browser to complete sign-in"))
+	authFailure := loginFailureHints(errors.New("timed out after 5m0s waiting for the browser to complete sign-in"), "vf auth login")
 	if !strings.Contains(strings.Join(authFailure, "\n"), "no credentials were stored") {
 		t.Errorf("hints for a failed authorization = %q, want them to say nothing was stored", authFailure)
 	}
 
-	storeFailure := loginFailureHints(fmt.Errorf("%w: %w", ErrStoreSession, errors.New("keychain is locked")))
+	storeFailure := loginFailureHints(fmt.Errorf("%w: %w", ErrStoreSession, errors.New("keychain is locked")), "vf auth login")
 	joined := strings.Join(storeFailure, "\n")
 	if strings.Contains(joined, "no credentials were stored") {
 		t.Errorf("hints for a failed store = %q, want them not to claim nothing was stored", storeFailure)

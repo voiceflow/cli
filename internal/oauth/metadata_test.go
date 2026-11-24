@@ -147,7 +147,7 @@ func TestSupportsS256(t *testing.T) {
 func TestAuthorizationURLCarriesEveryRequiredParameter(t *testing.T) {
 	md := Metadata{AuthorizationEndpoint: "https://auth.test/authorize"}
 	raw := authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "the-state", "the-challenge",
-		[]string{"universal.workspace.read", "universal.workspace.write"}, DefaultResource)
+		[]string{"universal.workspace.read", "universal.workspace.write"}, DefaultResource, "", "", CLIAgentNone)
 
 	if !strings.HasPrefix(raw, "https://auth.test/authorize?") {
 		t.Fatalf("URL = %q, want it built on the authorization endpoint", raw)
@@ -173,7 +173,7 @@ func TestAuthorizationURLCarriesEveryRequiredParameter(t *testing.T) {
 
 func TestAuthorizationURLKeepsAnExistingQueryString(t *testing.T) {
 	md := Metadata{AuthorizationEndpoint: "https://auth.test/authorize?tenant=acme"}
-	raw := authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "s", "c", nil, "")
+	raw := authorizationURL(md, "client-1", "http://127.0.0.1:51330/oauth/callback", "s", "c", nil, "", "", "", CLIAgentNone)
 
 	query := mustParseQuery(t, raw)
 	if query.Get("tenant") != "acme" {

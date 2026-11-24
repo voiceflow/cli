@@ -21,12 +21,18 @@ type Metadata struct {
 	GrantTypesSupported           []string `json:"grant_types_supported"`
 	ResponseTypesSupported        []string `json:"response_types_supported"`
 	CodeChallengeMethodsSupported []string `json:"code_challenge_methods_supported"`
+	// PromptValuesSupported lists the "prompt" values the authorization
+	// endpoint accepts (OpenID Connect Prompt Create 1.0). Signup needs
+	// "create" here.
+	PromptValuesSupported []string `json:"prompt_values_supported"`
 }
 
 // fallbackMetadata mirrors the published document at
 // https://auth-api.voiceflow.com/.well-known/oauth-authorization-server and is
 // used only when discovery fails, so a transient blip on the well-known route
-// does not break login.
+// does not break login. It deliberately claims no prompt values: if discovery
+// fails, signup falls back to an ordinary login rather than sending a
+// parameter the server may reject.
 var fallbackMetadata = Metadata{
 	Issuer:                        DefaultIssuer,
 	AuthorizationEndpoint:         DefaultIssuer + "/v1alpha1/oauth2/authorize",
@@ -122,6 +128,18 @@ func (m Metadata) supportsS256() bool {
 	}
 	for _, method := range m.CodeChallengeMethodsSupported {
 		if strings.EqualFold(method, "S256") {
+			return true
+		}
+	}
+	return false
+}
+
+// supportsPrompt reports whether the server advertises the given "prompt"
+// value. Unlike supportsS256, an empty list means unsupported: the
+// authorization endpoint rejects parameters it does not know.
+func (m Metadata) supportsPrompt(value string) bool {
+	for _, v := range m.PromptValuesSupported {
+		if v == value {
 			return true
 		}
 	}

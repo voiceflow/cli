@@ -57,7 +57,7 @@ func agentResponse() operations.StableAgentControllerGetV2Response {
 
 func toolListResponse(t *testing.T) operations.StableToolControllerListV2Response {
 	t.Helper()
-	var tool components.StableToolV2
+	var tool components.StableToolListItemV2
 	raw := `{"type":"function","id":"tool-1","functionID":"fn-1","description":"Look up an order",` +
 		`"createdAt":"2026-09-01T00:00:00Z","updatedAt":"2026-09-02T00:00:00Z","asyncExecution":false,` +
 		`"inputVariables":{},"captureResponse":{},"captureInputVariables":{},"messages":null}`
@@ -65,7 +65,7 @@ func toolListResponse(t *testing.T) operations.StableToolControllerListV2Respons
 		t.Fatal(err)
 	}
 	return operations.StableToolControllerListV2Response{
-		StableToolListResponseV2: &components.StableToolListResponseV2{Tools: []components.StableToolV2{tool}},
+		StableToolListResponseV2: &components.StableToolListResponseV2{Tools: []components.StableToolListItemV2{tool}},
 	}
 }
 

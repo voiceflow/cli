@@ -141,6 +141,7 @@ func enrichAgentError(m map[string]interface{}, err error, statusCode int) {
 		case statusCode == 401 || statusCode == 403:
 			hints = append(hints,
 				"Set credentials via environment variables or CLI flags",
+				fmt.Sprintf("Run '%s auth login' to sign in through the browser, or '%s auth signup' if the user has no Voiceflow account yet", cliName, cliName),
 				fmt.Sprintf("Run '%s whoami' to check current authentication status", cliName),
 			)
 		case statusCode == 404:

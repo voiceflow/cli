@@ -23,6 +23,7 @@ Realtime: Realtime gateway API service
   * [CLI Example Usage](#cli-example-usage)
   * [Authentication](#authentication)
   * [Browser sign-in (OAuth2)](#browser-sign-in-oauth2)
+  * [Creating an account (signup)](#creating-an-account-signup)
   * [Available Commands](#available-commands)
   * [Request Body Input](#request-body-input)
   * [Server Selection](#server-selection)
@@ -230,6 +231,7 @@ without another sign-in.
 | Command | What it does |
 |---------|--------------|
 | `vf auth login` | Sign in through the browser |
+| `vf auth signup` | Create an account in the browser, then sign in (see [below](#creating-an-account-signup)) |
 | `vf auth login --no-browser` | Print the sign-in URL instead of opening a browser (headless machines) |
 | `vf auth login --token <value>` | Store a bearer token non-interactively, no browser |
 | `vf auth login --manual` | Prompt for a bearer token instead of signing in |
@@ -282,6 +284,45 @@ outranks a session an agent-mode login just stored.
 set, the CLI registers itself as a public client through the authorization
 server's dynamic client registration endpoint and caches the resulting
 `client_id` for later logins.
+
+<!-- The section below is hand-written; it sits outside the generated markers so `speakeasy run` does not overwrite it. -->
+## Creating an account (signup)
+
+No Voiceflow account yet? Create one from the terminal:
+
+```bash
+vf auth signup
+vf auth signup --email you@example.com   # prefill the signup form
+vf auth login --signup                   # the same thing
+```
+
+This is the [browser sign-in](#browser-sign-in-oauth2) flow, except that the
+CLI asks the authorization server for its signup screen (`prompt=create`, with
+`--email` sent as `login_hint`). You create the account in your browser —
+including the terms and the emailed verification code — and the CLI stores the
+session exactly as `vf auth login` does. The CLI never asks for or handles a
+password.
+
+Signup waits up to 15 minutes for the browser by default, since it includes
+email verification; `--login-timeout` changes that. `--no-browser` and
+`--scope` work as they do for `vf auth login`, and the SSH advice above applies
+too. When signup completes, the CLI shows who is signed in, lists your
+workspaces (the first one is created in the background, so it retries briefly),
+and prints some next steps.
+
+If the authorization server does not advertise `create` in
+`prompt_values_supported`, the CLI prints a warning and continues as an
+ordinary sign-in.
+
+In agent mode the first JSON event has `status: "awaiting_signup"`, and its
+hints tell the agent that the user creates the account in their own browser.
+The final `signed_in` event adds `account`, `workspaces`, and `next_steps`.
+
+The URL the CLI opens, for signup and for browser sign-in alike, carries
+attribution parameters: `utm_source=voiceflow_cli`, `utm_medium=product`,
+`utm_campaign=cli_signup`, `utm_content=signup` or `login`, and `cli_agent`,
+which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
+`none`.
 
 <!-- Start Available Commands [operations] -->
 ## Available Commands

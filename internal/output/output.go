@@ -412,7 +412,7 @@ func Error(cmd *cobra.Command, err error) error {
 
 		// Auth hint for 401/403
 		if statusCode == 401 || statusCode == 403 {
-			fmt.Fprintf(cmd.ErrOrStderr(), "\nHint: run '%s configure' to set up or update your credentials.\n", cliName)
+			fmt.Fprintf(cmd.ErrOrStderr(), "\nHint: run '%s auth login' to sign in, '%s auth signup' to create an account, or '%s configure' to set a token.\n", cliName, cliName, cliName)
 		}
 
 		return err
@@ -440,7 +440,7 @@ func Error(cmd *cobra.Command, err error) error {
 				if IsAgentMode() {
 					enrichAgentError(m, err, statusCode)
 				} else if statusCode == 401 || statusCode == 403 {
-					m["_hint"] = fmt.Sprintf("run '%s configure' to set up or update your credentials", cliName)
+					m["_hint"] = fmt.Sprintf("run '%s auth login' to sign in, '%s auth signup' to create an account, or '%s configure' to set a token", cliName, cliName, cliName)
 				}
 				if enriched, mergeErr := json.MarshalIndent(m, "", "  "); mergeErr == nil {
 					jsonData = enriched
@@ -457,7 +457,7 @@ func Error(cmd *cobra.Command, err error) error {
 				if IsAgentMode() {
 					enrichAgentError(envelope, err, statusCode)
 				} else if statusCode == 401 || statusCode == 403 {
-					envelope["_hint"] = fmt.Sprintf("run '%s configure' to set up or update your credentials", cliName)
+					envelope["_hint"] = fmt.Sprintf("run '%s auth login' to sign in, '%s auth signup' to create an account, or '%s configure' to set a token", cliName, cliName, cliName)
 				}
 				if enriched, mergeErr := json.MarshalIndent(envelope, "", "  "); mergeErr == nil {
 					jsonData = enriched
@@ -478,7 +478,7 @@ func Error(cmd *cobra.Command, err error) error {
 		if IsAgentMode() {
 			enrichAgentError(envelope, err, statusCode)
 		} else if statusCode == 401 || statusCode == 403 {
-			envelope["_hint"] = fmt.Sprintf("run '%s configure' to set up or update your credentials", cliName)
+			envelope["_hint"] = fmt.Sprintf("run '%s auth login' to sign in, '%s auth signup' to create an account, or '%s configure' to set a token", cliName, cliName, cliName)
 		}
 		var marshalErr error
 		jsonData, marshalErr = json.MarshalIndent(envelope, "", "  ")
