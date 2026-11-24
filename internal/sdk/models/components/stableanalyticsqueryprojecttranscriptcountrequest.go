@@ -8,6 +8,30 @@ import (
 	"fmt"
 )
 
+// StableAnalyticsQueryProjectTranscriptCountRequestVersionScope - Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+type StableAnalyticsQueryProjectTranscriptCountRequestVersionScope string
+
+const (
+	StableAnalyticsQueryProjectTranscriptCountRequestVersionScopePublished StableAnalyticsQueryProjectTranscriptCountRequestVersionScope = "published"
+)
+
+func (e StableAnalyticsQueryProjectTranscriptCountRequestVersionScope) ToPointer() *StableAnalyticsQueryProjectTranscriptCountRequestVersionScope {
+	return &e
+}
+func (e *StableAnalyticsQueryProjectTranscriptCountRequestVersionScope) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "published":
+		*e = StableAnalyticsQueryProjectTranscriptCountRequestVersionScope(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableAnalyticsQueryProjectTranscriptCountRequestVersionScope: %v", v)
+	}
+}
+
 type StableAnalyticsQueryProjectTranscriptCountRequestInterval string
 
 const (
@@ -68,10 +92,12 @@ func (e *StableAnalyticsQueryProjectTranscriptCountRequestVersion) UnmarshalJSON
 }
 
 type StableAnalyticsQueryProjectTranscriptCountRequest struct {
-	EndDate   string                                                    `json:"endDate"`
-	StartDate string                                                    `json:"startDate"`
-	Timezone  *string                                                   `json:"timezone,omitzero"`
-	Interval  StableAnalyticsQueryProjectTranscriptCountRequestInterval `json:"interval"`
+	EndDate   string  `json:"endDate"`
+	StartDate string  `json:"startDate"`
+	Timezone  *string `json:"timezone,omitzero"`
+	// Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+	VersionScope *StableAnalyticsQueryProjectTranscriptCountRequestVersionScope `json:"versionScope,omitzero"`
+	Interval     StableAnalyticsQueryProjectTranscriptCountRequestInterval      `json:"interval"`
 	// Filters results to the draft or published version of the environment. Defaults to both.
 	Version *StableAnalyticsQueryProjectTranscriptCountRequestVersion `json:"version,omitzero"`
 	// The ID or alias of the environment to filter results by. Defaults to all environments.
@@ -97,6 +123,13 @@ func (s *StableAnalyticsQueryProjectTranscriptCountRequest) GetTimezone() *strin
 		return nil
 	}
 	return s.Timezone
+}
+
+func (s *StableAnalyticsQueryProjectTranscriptCountRequest) GetVersionScope() *StableAnalyticsQueryProjectTranscriptCountRequestVersionScope {
+	if s == nil {
+		return nil
+	}
+	return s.VersionScope
 }
 
 func (s *StableAnalyticsQueryProjectTranscriptCountRequest) GetInterval() StableAnalyticsQueryProjectTranscriptCountRequestInterval {

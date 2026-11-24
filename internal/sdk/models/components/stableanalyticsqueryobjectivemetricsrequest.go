@@ -9,6 +9,30 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+// StableAnalyticsQueryObjectiveMetricsRequestVersionScope - Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+type StableAnalyticsQueryObjectiveMetricsRequestVersionScope string
+
+const (
+	StableAnalyticsQueryObjectiveMetricsRequestVersionScopePublished StableAnalyticsQueryObjectiveMetricsRequestVersionScope = "published"
+)
+
+func (e StableAnalyticsQueryObjectiveMetricsRequestVersionScope) ToPointer() *StableAnalyticsQueryObjectiveMetricsRequestVersionScope {
+	return &e
+}
+func (e *StableAnalyticsQueryObjectiveMetricsRequestVersionScope) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "published":
+		*e = StableAnalyticsQueryObjectiveMetricsRequestVersionScope(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableAnalyticsQueryObjectiveMetricsRequestVersionScope: %v", v)
+	}
+}
+
 type Interface string
 
 const (
@@ -45,6 +69,8 @@ type StableAnalyticsQueryObjectiveMetricsRequest struct {
 	EndDate   string  `json:"endDate"`
 	StartDate string  `json:"startDate"`
 	Timezone  *string `json:"timezone,omitzero"`
+	// Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+	VersionScope *StableAnalyticsQueryObjectiveMetricsRequestVersionScope `json:"versionScope,omitzero"`
 	// The channels to filter results by. Defaults to all channels.
 	Interfaces []Interface `json:"interfaces,omitzero"`
 	// The ID or alias of the environment to filter results by. Defaults to all environments.
@@ -81,6 +107,13 @@ func (s *StableAnalyticsQueryObjectiveMetricsRequest) GetTimezone() *string {
 		return nil
 	}
 	return s.Timezone
+}
+
+func (s *StableAnalyticsQueryObjectiveMetricsRequest) GetVersionScope() *StableAnalyticsQueryObjectiveMetricsRequestVersionScope {
+	if s == nil {
+		return nil
+	}
+	return s.VersionScope
 }
 
 func (s *StableAnalyticsQueryObjectiveMetricsRequest) GetInterfaces() []Interface {

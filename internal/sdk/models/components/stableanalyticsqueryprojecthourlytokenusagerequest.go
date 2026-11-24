@@ -8,6 +8,30 @@ import (
 	"fmt"
 )
 
+// StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope - Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+type StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope string
+
+const (
+	StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScopePublished StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope = "published"
+)
+
+func (e StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope) ToPointer() *StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope {
+	return &e
+}
+func (e *StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "published":
+		*e = StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope: %v", v)
+	}
+}
+
 type StableAnalyticsQueryProjectHourlyTokenUsageRequestInterval string
 
 const (
@@ -100,11 +124,13 @@ func (e *StableAnalyticsQueryProjectHourlyTokenUsageRequestVersion) UnmarshalJSO
 }
 
 type StableAnalyticsQueryProjectHourlyTokenUsageRequest struct {
-	EndDate    string                                                        `json:"endDate"`
-	StartDate  string                                                        `json:"startDate"`
-	Timezone   *string                                                       `json:"timezone,omitzero"`
-	Interval   StableAnalyticsQueryProjectHourlyTokenUsageRequestInterval    `json:"interval"`
-	UsageClass *StableAnalyticsQueryProjectHourlyTokenUsageRequestUsageClass `json:"usageClass,omitzero"`
+	EndDate   string  `json:"endDate"`
+	StartDate string  `json:"startDate"`
+	Timezone  *string `json:"timezone,omitzero"`
+	// Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+	VersionScope *StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope `json:"versionScope,omitzero"`
+	Interval     StableAnalyticsQueryProjectHourlyTokenUsageRequestInterval      `json:"interval"`
+	UsageClass   *StableAnalyticsQueryProjectHourlyTokenUsageRequestUsageClass   `json:"usageClass,omitzero"`
 	// Filters results to the draft or published version of the environment. Defaults to both.
 	Version *StableAnalyticsQueryProjectHourlyTokenUsageRequestVersion `json:"version,omitzero"`
 	// The ID or alias of the environment to filter results by. Defaults to all environments.
@@ -130,6 +156,13 @@ func (s *StableAnalyticsQueryProjectHourlyTokenUsageRequest) GetTimezone() *stri
 		return nil
 	}
 	return s.Timezone
+}
+
+func (s *StableAnalyticsQueryProjectHourlyTokenUsageRequest) GetVersionScope() *StableAnalyticsQueryProjectHourlyTokenUsageRequestVersionScope {
+	if s == nil {
+		return nil
+	}
+	return s.VersionScope
 }
 
 func (s *StableAnalyticsQueryProjectHourlyTokenUsageRequest) GetInterval() StableAnalyticsQueryProjectHourlyTokenUsageRequestInterval {

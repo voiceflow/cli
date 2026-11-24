@@ -20,6 +20,7 @@ var objectiveMetricsCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "end-date", FieldPath: "Body.EndDate", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "start-date", Shorthand: "s", FieldPath: "Body.StartDate", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "timezone", Shorthand: "t", FieldPath: "Body.Timezone", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
+	{FlagName: "version-scope", Shorthand: "v", FieldPath: "Body.VersionScope", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"published"}, Description: "Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions. (options: published)"},
 	{FlagName: "interfaces", Shorthand: "i", FieldPath: "Body.Interfaces", Kind: flagutil.FlagKindStringArray, Optional: true, Description: "The channels to filter results by. Defaults to all channels."},
 	{FlagName: "environment-alias", FieldPath: "Body.EnvironmentAlias", Kind: flagutil.FlagKindString, Optional: true, Description: "The ID or alias of the environment to filter results by. Defaults to all environments."},
 }
