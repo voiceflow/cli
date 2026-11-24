@@ -9,6 +9,30 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+// StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope - Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+type StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope string
+
+const (
+	StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScopePublished StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope = "published"
+)
+
+func (e StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope) ToPointer() *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope {
+	return &e
+}
+func (e *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "published":
+		*e = StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope: %v", v)
+	}
+}
+
 type StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestOrderDirection string
 
 const (
@@ -63,9 +87,11 @@ func (e *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersion) Unmarshal
 }
 
 type StableAnalyticsQueryKnowledgeBaseDocumentUsageRequest struct {
-	EndDate        string                                                               `json:"endDate"`
-	StartDate      string                                                               `json:"startDate"`
-	Timezone       *string                                                              `json:"timezone,omitzero"`
+	EndDate   string  `json:"endDate"`
+	StartDate string  `json:"startDate"`
+	Timezone  *string `json:"timezone,omitzero"`
+	// Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+	VersionScope   *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope   `json:"versionScope,omitzero"`
 	ExcludeID      []string                                                             `json:"excludeID,omitzero"`
 	Limit          *float64                                                             `default:"10" json:"limit"`
 	OrderDirection *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestOrderDirection `json:"orderDirection,omitzero"`
@@ -105,6 +131,13 @@ func (s *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequest) GetTimezone() *s
 		return nil
 	}
 	return s.Timezone
+}
+
+func (s *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequest) GetVersionScope() *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequestVersionScope {
+	if s == nil {
+		return nil
+	}
+	return s.VersionScope
 }
 
 func (s *StableAnalyticsQueryKnowledgeBaseDocumentUsageRequest) GetExcludeID() []string {

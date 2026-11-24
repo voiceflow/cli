@@ -20,11 +20,12 @@ var integrationUsageCmdMeta = []flagutil.FlagMeta{
 	{FlagName: "end-date", FieldPath: "Body.EndDate", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "start-date", Shorthand: "s", FieldPath: "Body.StartDate", Kind: flagutil.FlagKindString, Required: true, Description: "[required]"},
 	{FlagName: "timezone", Shorthand: "t", FieldPath: "Body.Timezone", Kind: flagutil.FlagKindString, Optional: true, Description: "string value"},
+	{FlagName: "version-scope", FieldPath: "Body.VersionScope", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"published"}, Description: "Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions. (options: published)"},
 	{FlagName: "exclude-id", FieldPath: "Body.ExcludeID", Kind: flagutil.FlagKindStringArray, Optional: true, Description: "list of values"},
 	{FlagName: "limit", Shorthand: "l", FieldPath: "Body.Limit", Kind: flagutil.FlagKindFloat64, Optional: true, HasDefault: true, DefaultFloat: 10, Description: "number value"},
 	{FlagName: "order-direction", FieldPath: "Body.OrderDirection", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"ASC", "DESC"}, Description: "options: ASC, DESC"},
 	{FlagName: "order-by", FieldPath: "Body.OrderBy", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"count", "averageLatencyMS"}, Description: "options: count, averageLatencyMS"},
-	{FlagName: "version-param", Shorthand: "v", FieldPath: "Body.Version", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"draft", "published"}, Description: "Filters results to the draft or published version of the environment. Defaults to both. (options: draft, published)"},
+	{FlagName: "version-param", FieldPath: "Body.Version", Kind: flagutil.FlagKindEnum, Optional: true, EnumValues: []string{"draft", "published"}, Description: "Filters results to the draft or published version of the environment. Defaults to both. (options: draft, published)"},
 	{FlagName: "environment-alias", FieldPath: "Body.EnvironmentAlias", Kind: flagutil.FlagKindString, Optional: true, Description: "The ID or alias of the environment to filter results by. Defaults to all environments."},
 }
 

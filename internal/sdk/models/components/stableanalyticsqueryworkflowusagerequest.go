@@ -9,6 +9,30 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
+// StableAnalyticsQueryWorkflowUsageRequestVersionScope - Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+type StableAnalyticsQueryWorkflowUsageRequestVersionScope string
+
+const (
+	StableAnalyticsQueryWorkflowUsageRequestVersionScopePublished StableAnalyticsQueryWorkflowUsageRequestVersionScope = "published"
+)
+
+func (e StableAnalyticsQueryWorkflowUsageRequestVersionScope) ToPointer() *StableAnalyticsQueryWorkflowUsageRequestVersionScope {
+	return &e
+}
+func (e *StableAnalyticsQueryWorkflowUsageRequestVersionScope) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "published":
+		*e = StableAnalyticsQueryWorkflowUsageRequestVersionScope(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for StableAnalyticsQueryWorkflowUsageRequestVersionScope: %v", v)
+	}
+}
+
 type StableAnalyticsQueryWorkflowUsageRequestOrderDirection string
 
 const (
@@ -63,9 +87,11 @@ func (e *StableAnalyticsQueryWorkflowUsageRequestVersion) UnmarshalJSON(data []b
 }
 
 type StableAnalyticsQueryWorkflowUsageRequest struct {
-	EndDate        string                                                  `json:"endDate"`
-	StartDate      string                                                  `json:"startDate"`
-	Timezone       *string                                                 `json:"timezone,omitzero"`
+	EndDate   string  `json:"endDate"`
+	StartDate string  `json:"startDate"`
+	Timezone  *string `json:"timezone,omitzero"`
+	// Restrict the results to published versions: the live version and release history of `projectEnvironmentID`, or of every environment when it is omitted. The server resolves the versions, so the request size does not grow with each publish. Takes precedence over `versionIDs` and `environmentID` when the agent has published versions.
+	VersionScope   *StableAnalyticsQueryWorkflowUsageRequestVersionScope   `json:"versionScope,omitzero"`
 	ExcludeID      []string                                                `json:"excludeID,omitzero"`
 	Limit          *float64                                                `default:"10" json:"limit"`
 	OrderDirection *StableAnalyticsQueryWorkflowUsageRequestOrderDirection `json:"orderDirection,omitzero"`
@@ -105,6 +131,13 @@ func (s *StableAnalyticsQueryWorkflowUsageRequest) GetTimezone() *string {
 		return nil
 	}
 	return s.Timezone
+}
+
+func (s *StableAnalyticsQueryWorkflowUsageRequest) GetVersionScope() *StableAnalyticsQueryWorkflowUsageRequestVersionScope {
+	if s == nil {
+		return nil
+	}
+	return s.VersionScope
 }
 
 func (s *StableAnalyticsQueryWorkflowUsageRequest) GetExcludeID() []string {
