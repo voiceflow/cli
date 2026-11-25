@@ -33,7 +33,8 @@ func (e *TextRequestType) UnmarshalJSON(data []byte) error {
 }
 
 type Metadata struct {
-	Source *string `json:"source,omitzero"`
+	Source     *string  `json:"source,omitzero"`
+	MessageIDs []string `json:"messageIDs,omitzero"`
 }
 
 func (m Metadata) MarshalJSON() ([]byte, error) {
@@ -52,6 +53,13 @@ func (m *Metadata) GetSource() *string {
 		return nil
 	}
 	return m.Source
+}
+
+func (m *Metadata) GetMessageIDs() []string {
+	if m == nil {
+		return nil
+	}
+	return m.MessageIDs
 }
 
 // TextRequest - Send the user response as a raw text payload.

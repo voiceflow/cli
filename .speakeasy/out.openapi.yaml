@@ -35953,6 +35953,10 @@ components:
           properties:
             source:
               type: string
+            messageIDs:
+              type: array
+              items:
+                type: string
       required:
         - type
         - payload
