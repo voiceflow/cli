@@ -1736,6 +1736,7 @@ type StableAgentUpdateRequestV2Voice struct {
 	BackgroundAudioSettings  *BackgroundAudioSettings                   `json:"backgroundAudioSettings,omitzero"`
 	AudioSync                *bool                                      `json:"audioSync,omitzero"`
 	KeypadInput              *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
+	TextsDuringCalls         *VoiceTextsDuringCallsSettings             `json:"textsDuringCalls,omitzero"`
 	SilenceTimeoutMs         *float64                                   `json:"silenceTimeoutMs,omitzero"`
 	MaxDuration              *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
 	CallerIdentity           *VersionSettingsVoiceCallerIdentity        `json:"callerIdentity,omitzero"`
@@ -1932,6 +1933,13 @@ func (s *StableAgentUpdateRequestV2Voice) GetKeypadInput() *VoiceKeypadSettings 
 		return nil
 	}
 	return s.KeypadInput
+}
+
+func (s *StableAgentUpdateRequestV2Voice) GetTextsDuringCalls() *VoiceTextsDuringCallsSettings {
+	if s == nil {
+		return nil
+	}
+	return s.TextsDuringCalls
 }
 
 func (s *StableAgentUpdateRequestV2Voice) GetSilenceTimeoutMs() *float64 {

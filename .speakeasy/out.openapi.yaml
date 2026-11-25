@@ -19426,6 +19426,9 @@ components:
         keypadInput:
           allOf:
             - $ref: '#/components/schemas/VoiceKeypadSettings'
+        textsDuringCalls:
+          allOf:
+            - $ref: '#/components/schemas/VoiceTextsDuringCallsSettings'
         silenceTimeoutMs:
           type: number
         maxDuration:
@@ -20981,6 +20984,12 @@ components:
       x-enumNames:
         - '#'
         - '*'
+    VoiceTextsDuringCallsSettings:
+      type: object
+      properties:
+        enabled:
+          default: false
+          type: boolean
     VoiceMaxDurationSettings:
       type: object
       properties:
@@ -30887,6 +30896,9 @@ components:
             keypadInput:
               allOf:
                 - $ref: '#/components/schemas/VoiceKeypadSettings'
+            textsDuringCalls:
+              allOf:
+                - $ref: '#/components/schemas/VoiceTextsDuringCallsSettings'
             silenceTimeoutMs:
               type: number
             maxDuration:
