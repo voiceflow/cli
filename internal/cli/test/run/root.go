@@ -29,11 +29,19 @@ func InitRunRoot(parent *cobra.Command) error {
 		return err
 	}
 
+	if err := initCreateSuiteCmd(RunCmd); err != nil {
+		return err
+	}
+
 	if err := initCancelCmd(RunCmd); err != nil {
 		return err
 	}
 
 	if err := initWaitCmd(RunCmd); err != nil {
+		return err
+	}
+
+	if err := initWaitSuiteCmd(RunCmd); err != nil {
 		return err
 	}
 

@@ -14119,6 +14119,51 @@ paths:
         - Test Check
       security:
         - token: []
+  /v1/stable/test-folder:
+    get:
+      operationId: StableTestFolderController_list
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: list_folders
+          operationDescription: |-
+            WHAT — List the folders that organize the project's tests. Folders nest: `parentID` is the folder a folder sits in, null at the top level.
+            USE WHEN — Finding a folder's `id` to run every test in it, and in its subfolders, with voiceflow_test.run_suite.
+        cli:
+          command: test folder list
+      x-speakeasy-group: test.folder
+      x-speakeasy-name-override: list
+      summary: List test folders
+      description: List all test folders by project ID.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestFolderListResponse'
+      tags:
+        - Test Folder
+      security:
+        - token: []
   /v1/stable/test-run/search:
     post:
       operationId: StableTestRunController_search
@@ -14275,6 +14320,60 @@ paths:
         - Test Run
       security:
         - token: []
+  /v1/stable/test-run/suite:
+    post:
+      operationId: StableTestRunController_createSuite
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: run_suite
+          operationDescription: |-
+            WHAT — Run a suite of tests in one call: every test in the environment, a set of tests, or every test in some folders and the folders nested under them. One run is created per test, with no limit on how many; they start queued and run in the background, like Run all in the UI.
+            USE WHEN — Running a whole regression suite, a folder of tests, or more tests than voiceflow_test.create_many_runs takes, for example before publishing.
+            BEFORE — voiceflow_test.list_folders for the IDs of the folders to run.
+            AFTER — voiceflow_test.wait_suite with the returned `bulkID` until `done` is true. voiceflow_test.cancel_runs stops runs.
+            DO NOT — Run every test to check one change when a few tests cover it: each run spends LLM credits.
+        cli:
+          command: test run create-suite
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: create-suite
+      summary: Run test suite
+      description: Run every test, a set of tests, or the tests in folders.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunSuiteRequest'
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunSuiteResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
   /v1/stable/test-run/cancel:
     post:
       operationId: StableTestRunController_cancel
@@ -14375,6 +14474,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableTestRunWaitResponse'
+      tags:
+        - Test Run
+      security:
+        - token: []
+  /v1/stable/test-run/suite/wait:
+    post:
+      operationId: StableTestRunController_waitSuite
+      x-vf:
+        mcp:
+          tool: voiceflow_test
+          toolDescription: |-
+            A saved, replayable conversation script for regression-testing an agent — build it once, rerun it after every change instead of manually re-checking the same scenario. A test is an ordered sequence of turns: user (a scripted message sent as-is), agent (asserts on how the agent responded, via one or more attached checks), or simulation (hands off to an LLM-driven persona conversation).
+            Checks live on agent turns only and come in three flavors: response (judge the agent's reply text), routing (assert the agent did or didn't route to a specific playbook or workflow), tool (assert the agent did or didn't call a specific tool).
+            Predecessor: select the project and environment first; build the playbooks, functions, and tools the test will exercise so there's real behavior to assert on.
+            Successor: add turns, then checks on any agent turn, then trigger a run to see the checks pass or fail.
+          operation: wait_suite
+          operationDescription: |-
+            WHAT — Wait for the runs of a suite to finish. Checks them every 5 seconds and returns when every run has passed, failed or been canceled, or when the time is up (45 seconds by default, 120 at most). Returns how many runs passed, failed, were canceled and are unfinished, and lists the runs that did not pass with their failed checks and reasons.
+            USE WHEN — Right after voiceflow_test.run_suite, instead of reading its runs one by one.
+            AFTER — When `done` is false, follow the note.
+        cli:
+          command: test run wait-suite
+      x-speakeasy-group: test.run
+      x-speakeasy-name-override: wait-suite
+      summary: Wait for test suite
+      description: Wait until a suite finishes or the time is up.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+        - name: environmentAlias
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The alias of the environment to operate on (e.g. `main`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StableTestRunSuiteWaitRequest'
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableTestRunSuiteWaitResponse'
       tags:
         - Test Run
       security:
@@ -46358,6 +46509,41 @@ components:
           required:
             - type
           additionalProperties: false
+    StableTestFolder:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          description: The name of the folder.
+        parentID:
+          nullable: true
+          description: The ID of the folder this folder is nested in, or null for a top-level folder.
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - id
+        - name
+        - parentID
+        - createdAt
+        - updatedAt
+    StableTestFolderListResponse:
+      type: object
+      properties:
+        folders:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestFolder'
+      required:
+        - folders
     SimulationRunLog:
       oneOf:
         - $ref: '#/components/schemas/SimulationRunEndLog'
@@ -46618,6 +46804,71 @@ components:
       required:
         - testIDs
       additionalProperties: false
+    StableTestRunSuiteRun:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the run.
+        testID:
+          type: string
+          description: The ID of the test this run belongs to.
+        status:
+          type: string
+          enum:
+            - idle
+            - pending
+            - running
+            - failed
+            - passed
+            - canceled
+          description: Where the run is in its lifecycle.
+          x-enumNames:
+            - IDLE
+            - PENDING
+            - RUNNING
+            - FAILED
+            - PASSED
+            - CANCELED
+      required:
+        - id
+        - testID
+        - status
+    StableTestRunSuiteResponse:
+      type: object
+      properties:
+        bulkID:
+          type: string
+          description: Identifies this suite. Pass it to wait_suite to wait for every run in it.
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/StableTestRunSuiteRun'
+          description: One run per test, queued to start.
+      required:
+        - bulkID
+        - runs
+    StableTestRunSuiteRequest:
+      type: object
+      properties:
+        all:
+          description: Run every test in the environment. Pass exactly one of `all`, `testIDs` and `folderIDs`.
+          type: boolean
+        testIDs:
+          description: Run these tests, one run each, with no limit on how many. Pass exactly one of `all`, `testIDs` and `folderIDs`.
+          minItems: 1
+          type: array
+          items:
+            type: string
+            minLength: 1
+        folderIDs:
+          description: Run every test in these folders and in every folder nested under them. Pass exactly one of `all`, `testIDs` and `folderIDs`.
+          minItems: 1
+          type: array
+          items:
+            type: string
+            minLength: 1
+      additionalProperties: false
     StableTestRunCancelFinishedRun:
       type: object
       properties:
@@ -46788,6 +47039,153 @@ components:
           maximum: 120
       required:
         - runIDs
+      additionalProperties: false
+    StableTestRunSuiteCounts:
+      type: object
+      properties:
+        total:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Every run in the suite.
+        passed:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        failed:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        canceled:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        unfinished:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+          description: Runs that are still queued or running.
+      required:
+        - total
+        - passed
+        - failed
+        - canceled
+        - unfinished
+    StableTestRunSuiteWaitResponse:
+      type: object
+      properties:
+        bulkID:
+          type: string
+          description: The suite waited for.
+        done:
+          type: boolean
+          description: Every run in the suite has passed, failed or been canceled.
+        stoppedBy:
+          type: string
+          enum:
+            - finished
+            - timeout
+            - abort
+          x-enumNames:
+            - FINISHED
+            - TIMEOUT
+            - ABORT
+        waitedSeconds:
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        counts:
+          $ref: '#/components/schemas/StableTestRunSuiteCounts'
+        runs:
+          type: array
+          items:
+            type: object
+            properties:
+              runID:
+                type: string
+              testID:
+                type: string
+              status:
+                type: string
+                enum:
+                  - idle
+                  - pending
+                  - running
+                  - failed
+                  - passed
+                  - canceled
+                x-enumNames:
+                  - IDLE
+                  - PENDING
+                  - RUNNING
+                  - FAILED
+                  - PASSED
+                  - CANCELED
+              passedChecks:
+                nullable: true
+                type: number
+              totalChecks:
+                type: number
+              failReason:
+                nullable: true
+                type: string
+              failedChecks:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    checkID:
+                      nullable: true
+                      type: string
+                    type:
+                      nullable: true
+                      type: string
+                    reason:
+                      type: string
+                  required:
+                    - checkID
+                    - type
+                    - reason
+              logsIncomplete:
+                description: The run finished before all its logs were stored.
+                type: boolean
+            required:
+              - runID
+              - testID
+              - status
+              - passedChecks
+              - totalChecks
+              - failReason
+          description: 'The runs that did not pass: failed, canceled or still unfinished, failed ones first. Passed runs are only counted.'
+        omittedRuns:
+          description: How many more runs that did not pass were left out of `runs` to keep the response small.
+          type: integer
+          minimum: -9.007199254740991e+15
+          maximum: 9.007199254740991e+15
+        note:
+          type: string
+      required:
+        - bulkID
+        - done
+        - stoppedBy
+        - waitedSeconds
+        - counts
+        - runs
+    StableTestRunSuiteWaitRequest:
+      type: object
+      properties:
+        bulkID:
+          type: string
+          minLength: 1
+          description: The `bulkID` that starting the suite returned.
+        timeoutSeconds:
+          default: 45
+          description: 'How long to wait at most, in seconds: 45 by default, 120 at most.'
+          type: integer
+          minimum: 5
+          maximum: 120
+      required:
+        - bulkID
       additionalProperties: false
     StableTest:
       type: object

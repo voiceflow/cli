@@ -558,12 +558,12 @@ which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
 * [`delete`](docs/vf_document_delete.md) - Delete document
 * [`update`](docs/vf_document_update.md) - Update document
 
-#### [folder](docs/vf_document_folder.md)
+#### [document-folder](docs/vf_document_document-folder.md)
 
-* [`list`](docs/vf_document_folder_list.md) - List document folders
-* [`create`](docs/vf_document_folder_create.md) - Create document folder
-* [`update`](docs/vf_document_folder_update.md) - Update document folder
-* [`delete`](docs/vf_document_folder_delete.md) - Delete document folder
+* [`list`](docs/vf_document_document-folder_list.md) - List document folders
+* [`create`](docs/vf_document_document-folder_create.md) - Create document folder
+* [`update`](docs/vf_document_document-folder_update.md) - Update document folder
+* [`delete`](docs/vf_document_document-folder_delete.md) - Delete document folder
 
 ### [integration](docs/vf_integration.md)
 
@@ -669,12 +669,18 @@ which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
 * [`update`](docs/vf_test_check_update.md) - Update check
 * [`delete`](docs/vf_test_check_delete.md) - Delete check
 
+#### [test-folder](docs/vf_test_test-folder.md)
+
+* [`list`](docs/vf_test_test-folder_list.md) - List test folders
+
 #### [run](docs/vf_test_run.md)
 
 * [`search`](docs/vf_test_run_search.md) - Search runs
 * [`create`](docs/vf_test_run_create.md) - Create run
+* [`create-suite`](docs/vf_test_run_create-suite.md) - Run test suite
 * [`cancel`](docs/vf_test_run_cancel.md) - Cancel runs
 * [`wait`](docs/vf_test_run_wait.md) - Wait for runs
+* [`wait-suite`](docs/vf_test_run_wait-suite.md) - Wait for test suite
 * [`get`](docs/vf_test_run_get.md) - Get run
 * [`query-logs`](docs/vf_test_run_query-logs.md) - Query run logs
 
