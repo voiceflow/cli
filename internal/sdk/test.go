@@ -18,9 +18,10 @@ import (
 )
 
 type Test struct {
-	Turn  *Turn
-	Check *Check
-	Run   *Run
+	Turn   *Turn
+	Check  *Check
+	Folder *TestFolder
+	Run    *Run
 
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
@@ -34,6 +35,7 @@ func newTest(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks *ho
 		hooks:            hooks,
 		Turn:             newTurn(rootSDK, sdkConfig, hooks),
 		Check:            newCheck(rootSDK, sdkConfig, hooks),
+		Folder:           newTestFolder(rootSDK, sdkConfig, hooks),
 		Run:              newRun(rootSDK, sdkConfig, hooks),
 	}
 }

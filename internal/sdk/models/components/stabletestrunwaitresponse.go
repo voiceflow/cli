@@ -7,20 +7,20 @@ import (
 	"github.com/voiceflow/cli/internal/sdk/sdkinternal/utils"
 )
 
-type StoppedBy string
+type StableTestRunWaitResponseStoppedBy string
 
 const (
-	StoppedByFinished StoppedBy = "finished"
-	StoppedByTimeout  StoppedBy = "timeout"
-	StoppedByAbort    StoppedBy = "abort"
+	StableTestRunWaitResponseStoppedByFinished StableTestRunWaitResponseStoppedBy = "finished"
+	StableTestRunWaitResponseStoppedByTimeout  StableTestRunWaitResponseStoppedBy = "timeout"
+	StableTestRunWaitResponseStoppedByAbort    StableTestRunWaitResponseStoppedBy = "abort"
 )
 
-func (e StoppedBy) ToPointer() *StoppedBy {
+func (e StableTestRunWaitResponseStoppedBy) ToPointer() *StableTestRunWaitResponseStoppedBy {
 	return &e
 }
 
 // IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *StoppedBy) IsExact() bool {
+func (e *StableTestRunWaitResponseStoppedBy) IsExact() bool {
 	if e != nil {
 		switch *e {
 		case "finished", "timeout", "abort":
@@ -56,120 +56,120 @@ func (e *StableTestRunWaitResponseStatus) IsExact() bool {
 	return false
 }
 
-type FailedCheck struct {
+type StableTestRunWaitResponseFailedCheck struct {
 	CheckID *string `json:"checkID"`
 	Type    *string `json:"type"`
 	Reason  string  `json:"reason"`
 }
 
-func (f *FailedCheck) GetCheckID() *string {
-	if f == nil {
+func (s *StableTestRunWaitResponseFailedCheck) GetCheckID() *string {
+	if s == nil {
 		return nil
 	}
-	return f.CheckID
+	return s.CheckID
 }
 
-func (f *FailedCheck) GetType() *string {
-	if f == nil {
+func (s *StableTestRunWaitResponseFailedCheck) GetType() *string {
+	if s == nil {
 		return nil
 	}
-	return f.Type
+	return s.Type
 }
 
-func (f *FailedCheck) GetReason() string {
-	if f == nil {
+func (s *StableTestRunWaitResponseFailedCheck) GetReason() string {
+	if s == nil {
 		return ""
 	}
-	return f.Reason
+	return s.Reason
 }
 
-type Run struct {
-	RunID        string                          `json:"runID"`
-	TestID       string                          `json:"testID"`
-	Status       StableTestRunWaitResponseStatus `json:"status"`
-	PassedChecks *float64                        `json:"passedChecks"`
-	TotalChecks  float64                         `json:"totalChecks"`
-	FailReason   *string                         `json:"failReason"`
-	FailedChecks []FailedCheck                   `json:"failedChecks,omitzero"`
+type StableTestRunWaitResponseRun struct {
+	RunID        string                                 `json:"runID"`
+	TestID       string                                 `json:"testID"`
+	Status       StableTestRunWaitResponseStatus        `json:"status"`
+	PassedChecks *float64                               `json:"passedChecks"`
+	TotalChecks  float64                                `json:"totalChecks"`
+	FailReason   *string                                `json:"failReason"`
+	FailedChecks []StableTestRunWaitResponseFailedCheck `json:"failedChecks,omitzero"`
 	// The run finished before all its logs were stored.
 	LogsIncomplete *bool `json:"logsIncomplete,omitzero"`
 }
 
-func (r Run) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(r, "", false)
+func (s StableTestRunWaitResponseRun) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
 }
 
-func (r *Run) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
+func (s *StableTestRunWaitResponseRun) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Run) GetRunID() string {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetRunID() string {
+	if s == nil {
 		return ""
 	}
-	return r.RunID
+	return s.RunID
 }
 
-func (r *Run) GetTestID() string {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetTestID() string {
+	if s == nil {
 		return ""
 	}
-	return r.TestID
+	return s.TestID
 }
 
-func (r *Run) GetStatus() StableTestRunWaitResponseStatus {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetStatus() StableTestRunWaitResponseStatus {
+	if s == nil {
 		return StableTestRunWaitResponseStatus("")
 	}
-	return r.Status
+	return s.Status
 }
 
-func (r *Run) GetPassedChecks() *float64 {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetPassedChecks() *float64 {
+	if s == nil {
 		return nil
 	}
-	return r.PassedChecks
+	return s.PassedChecks
 }
 
-func (r *Run) GetTotalChecks() float64 {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetTotalChecks() float64 {
+	if s == nil {
 		return 0.0
 	}
-	return r.TotalChecks
+	return s.TotalChecks
 }
 
-func (r *Run) GetFailReason() *string {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetFailReason() *string {
+	if s == nil {
 		return nil
 	}
-	return r.FailReason
+	return s.FailReason
 }
 
-func (r *Run) GetFailedChecks() []FailedCheck {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetFailedChecks() []StableTestRunWaitResponseFailedCheck {
+	if s == nil {
 		return nil
 	}
-	return r.FailedChecks
+	return s.FailedChecks
 }
 
-func (r *Run) GetLogsIncomplete() *bool {
-	if r == nil {
+func (s *StableTestRunWaitResponseRun) GetLogsIncomplete() *bool {
+	if s == nil {
 		return nil
 	}
-	return r.LogsIncomplete
+	return s.LogsIncomplete
 }
 
 type StableTestRunWaitResponse struct {
 	// Every run found has passed, failed or been canceled.
-	Done           bool      `json:"done"`
-	StoppedBy      StoppedBy `json:"stoppedBy"`
-	WaitedSeconds  int64     `json:"waitedSeconds"`
-	Runs           []Run     `json:"runs"`
-	NotFoundRunIDs []string  `json:"notFoundRunIDs,omitzero"`
-	Note           *string   `json:"note,omitzero"`
+	Done           bool                               `json:"done"`
+	StoppedBy      StableTestRunWaitResponseStoppedBy `json:"stoppedBy"`
+	WaitedSeconds  int64                              `json:"waitedSeconds"`
+	Runs           []StableTestRunWaitResponseRun     `json:"runs"`
+	NotFoundRunIDs []string                           `json:"notFoundRunIDs,omitzero"`
+	Note           *string                            `json:"note,omitzero"`
 }
 
 func (s StableTestRunWaitResponse) MarshalJSON() ([]byte, error) {
@@ -190,9 +190,9 @@ func (s *StableTestRunWaitResponse) GetDone() bool {
 	return s.Done
 }
 
-func (s *StableTestRunWaitResponse) GetStoppedBy() StoppedBy {
+func (s *StableTestRunWaitResponse) GetStoppedBy() StableTestRunWaitResponseStoppedBy {
 	if s == nil {
-		return StoppedBy("")
+		return StableTestRunWaitResponseStoppedBy("")
 	}
 	return s.StoppedBy
 }
@@ -204,9 +204,9 @@ func (s *StableTestRunWaitResponse) GetWaitedSeconds() int64 {
 	return s.WaitedSeconds
 }
 
-func (s *StableTestRunWaitResponse) GetRuns() []Run {
+func (s *StableTestRunWaitResponse) GetRuns() []StableTestRunWaitResponseRun {
 	if s == nil {
-		return []Run{}
+		return []StableTestRunWaitResponseRun{}
 	}
 	return s.Runs
 }
