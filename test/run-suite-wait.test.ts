@@ -27,7 +27,7 @@ const BULK_ID = 'bulk-1';
 const SUITE_FLAGS = ['test', 'run', 'create-suite', '--project-id', 'p1', '--environment-alias', 'main'];
 
 type Counts = { total: number; passed: number; failed: number; canceled: number; unfinished: number };
-type Reply = { status: number; body: object };
+type Reply = { status: number; body: object | null; delayMs?: number };
 
 // A reply status that makes the mock send headers and half a body, then drop
 // the connection.
@@ -85,6 +85,7 @@ const waitReply = (counts: Counts, runs: object[] = []): Reply => ({
 
 let server: http.Server;
 let serverURL: string;
+let createReply: object | null;
 let waitReplies: Reply[];
 let requests: Array<{ path: string; body: any }>;
 
@@ -96,18 +97,12 @@ beforeAll(async () => {
       const pathname = new URL(req.url ?? '/', 'http://mock').pathname;
       requests.push({ path: pathname, body: raw ? JSON.parse(raw) : undefined });
 
-      const reply = (status: number, body: object) => {
+      const reply = (status: number, body: object | null) => {
         res.writeHead(status, { 'content-type': 'application/json' });
         res.end(JSON.stringify(body));
       };
       if (pathname.endsWith('/test-run/suite')) {
-        return reply(201, {
-          bulkID: BULK_ID,
-          runs: [
-            { id: 'r1', testID: 'test-r1', status: 'idle' },
-            { id: 'r2', testID: 'test-r2', status: 'idle' },
-          ],
-        });
+        return reply(201, createReply);
       }
       if (pathname.endsWith('/test-run/suite/wait')) {
         const next = waitReplies.length > 1 ? waitReplies.shift()! : waitReplies[0]!;
@@ -116,7 +111,7 @@ beforeAll(async () => {
           res.write('{"bulkID":');
           return res.socket?.destroy();
         }
-        return reply(next.status, next.body);
+        return setTimeout(() => reply(next.status, next.body), next.delayMs ?? 0);
       }
       return reply(404, { statusCode: 404, message: 'Not found' });
     });
@@ -131,6 +126,13 @@ afterAll(async () => {
 
 beforeEach(() => {
   requests = [];
+  createReply = {
+    bulkID: BULK_ID,
+    runs: [
+      { id: 'r1', testID: 'test-r1', status: 'idle' },
+      { id: 'r2', testID: 'test-r2', status: 'idle' },
+    ],
+  };
   waitReplies = [];
 });
 
@@ -147,6 +149,10 @@ function vf(args: string[], opts: { agentMode?: boolean } = {}) {
 
 const waits = () => requests.filter((request) => request.path.endsWith('/suite/wait'));
 
+// The flags a follow-up command needs to reach the suite, --server-url
+// included since vf() passes one.
+const target = () => `--project-id p1 --environment-alias main --server-url ${serverURL}`;
+
 describe('create-suite --wait', () => {
   it('waits until every run has finished and exits 0 when they all passed', async () => {
     waitReplies = [
@@ -159,6 +165,7 @@ describe('create-suite --wait', () => {
     expect(result.exitCode, result.stderr).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({ bulkID: BULK_ID, done: true, counts: { passed: 2 } });
     expect(result.stderr).toContain(`Started suite ${BULK_ID} with 2 runs`);
+    expect(result.stderr).toContain(`keep waiting with: vf test run wait-suite ${target()} --bulk-id ${BULK_ID}`);
     expect(result.stderr).toContain('1 of 2 passed, 1 still going');
     expect(waits()).toHaveLength(2);
     expect(waits()[0]!.body).toEqual({ bulkID: BULK_ID, timeoutSeconds: 45 });
@@ -172,7 +179,7 @@ describe('create-suite --wait', () => {
     expect(result.exitCode).toBe(1);
     expect(JSON.parse(result.stdout).runs[0].failedChecks[0].reason).toBe('Did not greet the user');
     expect(result.stderr).toContain(`1 of 2 runs in suite ${BULK_ID} did not pass (1 failed, 0 canceled)`);
-    expect(result.stderr).toContain('vf test run get --project-id p1 --environment-alias main --run-id <id>');
+    expect(result.stderr).toContain(`vf test run get ${target()} --run-id <id>`);
   });
 
   it('writes nothing but JSON to stderr in agent mode: progress events, then the error envelope', async () => {
@@ -199,9 +206,7 @@ describe('create-suite --wait', () => {
     expect(result.exitCode).toBe(1);
     expect(JSON.parse(result.stdout)).toMatchObject({ done: false, counts: { unfinished: 2 } });
     expect(result.stderr).toContain(`2 of 2 runs in suite ${BULK_ID} were still going after 3s`);
-    expect(result.stderr).toContain(
-      `vf test run wait-suite --project-id p1 --environment-alias main --bulk-id ${BULK_ID}`,
-    );
+    expect(result.stderr).toContain(`vf test run wait-suite ${target()} --bulk-id ${BULK_ID}`);
     expect(waits()[0]!.body.timeoutSeconds).toBe(5);
   });
 
@@ -247,8 +252,141 @@ describe('create-suite --wait', () => {
     expect(requests).toHaveLength(0);
   });
 
+  it('stops with the agent-mode envelope on a wait answer that decodes to nothing, instead of polling it', async () => {
+    for (const body of [null, {}]) {
+      requests = [];
+      waitReplies = [{ status: 200, body }];
+
+      const result = await vf([...SUITE_FLAGS, '--all', '--wait'], { agentMode: true });
+
+      expect(result.exitCode).toBe(1);
+      expect(waits()).toHaveLength(1);
+      const events = jsonStream(result.stderr);
+      expect(events.map((event) => event.status ?? event.error_type)).toEqual(['started', 'test_suite_wait_failed']);
+      expect(events[1]!.message).toContain(`stopped waiting for suite ${BULK_ID}: the API returned no result`);
+      expect(JSON.stringify(events[1]!.hints)).toContain(`vf test run wait-suite ${target()} --bulk-id ${BULK_ID}`);
+    }
+  });
+
+  it('keeps an API error structured, and says how to keep waiting rather than rerun, when a wait fails', async () => {
+    for (const [status, errorType] of [
+      [401, 'authentication_error'],
+      [404, 'not_found'],
+    ] as const) {
+      requests = [];
+      waitReplies = [{ status, body: { statusCode: status, message: 'Nope' } }];
+
+      const result = await vf([...SUITE_FLAGS, '--all', '--wait'], { agentMode: true });
+
+      expect(result.exitCode).toBe(1);
+      expect(waits()).toHaveLength(1);
+      const events = jsonStream(result.stderr);
+      expect(events.map((event) => event.status ?? event.error_type)).toEqual(['started', errorType]);
+      expect(events[1]).toMatchObject({ status_code: status, bulkID: BULK_ID });
+      expect(events[1]!.hints.at(-1)).toContain(`keep waiting with: vf test run wait-suite ${target()} --bulk-id ${BULK_ID}`);
+      expect(JSON.stringify(events[1]!.hints)).not.toContain('retry the command');
+    }
+  });
+
+  it('says how to keep waiting after an API error outside agent mode too', async () => {
+    waitReplies = [{ status: 404, body: { statusCode: 404, message: 'Nope' } }];
+
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('404');
+    expect(result.stderr).toContain(`keep waiting with: vf test run wait-suite ${target()} --bulk-id ${BULK_ID}`);
+  });
+
+  it('says how to keep waiting, not to rerun, when a server error outlasts the retries', async () => {
+    waitReplies = [{ status: 503, body: { statusCode: 503, message: 'Unavailable' } }];
+
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait'], { agentMode: true });
+
+    expect(result.exitCode).toBe(1);
+    expect(waits()).toHaveLength(4);
+    const events = jsonStream(result.stderr);
+    expect(events.map((event) => event.status ?? event.error_type)).toEqual([
+      'started', 'retrying', 'retrying', 'retrying', 'test_suite_wait_failed',
+    ]);
+    expect(JSON.stringify(events.at(-1)!.hints)).toContain(`vf test run wait-suite ${target()} --bulk-id ${BULK_ID}`);
+    expect(JSON.stringify(events.at(-1)!.hints)).not.toContain('retry the command');
+  }, 30_000);
+
+  it('reports the last answer as unfinished when a wait fails after --max-wait ran out', async () => {
+    waitReplies = [
+      waitReply({ total: 2, passed: 0, failed: 0, canceled: 0, unfinished: 2 }, [run('r1', 'running')]),
+      { status: 502, body: { statusCode: 502, message: 'Bad gateway' }, delayMs: 3500 },
+    ];
+
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait', '--max-wait', '4s']);
+
+    expect(result.exitCode).toBe(1);
+    expect(waits()).toHaveLength(2);
+    expect(result.stderr).not.toContain('Retrying');
+    expect(JSON.parse(result.stdout)).toMatchObject({ done: false, counts: { unfinished: 2 } });
+    expect(result.stderr).toContain(`were still going after 4s`);
+  });
+
+  it('does not wait on a started suite whose answer has no bulkID', async () => {
+    createReply = { runs: [] };
+
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait'], { agentMode: true });
+
+    expect(result.exitCode).toBe(1);
+    expect(waits()).toHaveLength(0);
+    const events = jsonStream(result.stderr);
+    expect(events.map((event) => event.error_type)).toEqual(['test_suite_wait_failed']);
+    expect(JSON.stringify(events[0]!.hints)).toContain(`vf test run search ${target()}`);
+  });
+
+  it('refuses a --jq that cannot run before starting the suite, not after the wait', async () => {
+    for (const jq of ['.counts |||', '.counts | no_such_function']) {
+      const result = await vf([...SUITE_FLAGS, '--all', '--wait', '--jq', jq]);
+
+      expect(result.exitCode, jq).toBe(1);
+      expect(result.stderr).toContain('invalid --jq expression');
+    }
+    expect(requests).toHaveLength(0);
+  });
+
+  it('checks the --wait flags under --dry-run too', async () => {
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait', '--max-wait', '0s', '--dry-run']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('--max-wait must be more than zero');
+    expect(requests).toHaveLength(0);
+  });
+
+  it('keeps stderr JSON in agent mode when --wait --dry-run fails before sending', async () => {
+    const result = await vf([...SUITE_FLAGS, '--wait', '--dry-run', '--body', '{bad'], { agentMode: true });
+
+    expect(result.exitCode).toBe(1);
+    expect(jsonStream(result.stderr)).toHaveLength(1);
+    expect(requests).toHaveLength(0);
+  });
+
+  it('lists --wait and --max-wait in --usage, for create-suite and every command above it', async () => {
+    for (const args of [[...SUITE_FLAGS, '--usage'], ['test', 'run', '--usage'], ['--usage']]) {
+      const result = await vf(args);
+
+      expect(result.exitCode, result.stderr).toBe(0);
+      const block = result.stdout.slice(result.stdout.indexOf('cmd "create-suite"'));
+      const createSuite = block.slice(0, block.search(/\n\s*\}\n/));
+      expect(createSuite, args.join(' ')).toContain('flag "--wait"');
+      expect(createSuite, args.join(' ')).toContain('flag "--max-wait <duration>"');
+      expect(result.stdout.match(/flag "--wait"/g), args.join(' ')).toHaveLength(1);
+    }
+  });
+
   it('reports invalid flag values with the agent-mode envelope', async () => {
-    for (const flags of [['--max-wait', '5m'], ['--wait', '--max-wait', '0s'], ['--wait', '--timeout', '3s']]) {
+    for (const flags of [
+      ['--max-wait', '5m'],
+      ['--wait', '--max-wait', '0s'],
+      ['--wait', '--timeout', '3s'],
+      ['--wait', '--timeout', 'abc'],
+      ['--wait', '--jq', '.counts |||'],
+    ]) {
       const result = await vf([...SUITE_FLAGS, '--all', ...flags], { agentMode: true });
 
       expect(result.exitCode, flags.join(' ')).toBe(1);

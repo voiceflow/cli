@@ -19,6 +19,7 @@
 package run
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -30,6 +31,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/itchyny/gojq"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/voiceflow/cli/internal/client"
@@ -80,6 +82,9 @@ func addCreateSuiteWait(cmd *cobra.Command) {
 			flag.Usage += " Separate IDs with commas or repeat the flag."
 		}
 	}
+	usage.AddFlags("test run create-suite",
+		usage.UsageFlag{Spec: "--" + suiteWaitFlag, Help: cmd.Flags().Lookup(suiteWaitFlag).Usage},
+		usage.UsageFlag{Spec: "--" + suiteMaxWaitFlag + " <duration>", Help: cmd.Flags().Lookup(suiteMaxWaitFlag).Usage})
 
 	cmd.Long += `
 
@@ -111,13 +116,35 @@ canceled, or when --max-wait (30 minutes by default) ran out first.`
 			}
 		}
 		if err := splitSuiteIDFlags(cmd); err != nil {
-			return err
+			return suiteError(cmd, "invalid_flag_value", err.Error(), nil)
 		}
-		if !wait || client.IsDryRun(cmd) {
+		if !wait {
 			return runCreateSuite(cmd, args)
 		}
-		return runCreateSuiteAndWait(cmd)
+		opts, err := suiteWaitOptionsFrom(cmd)
+		if err != nil {
+			return err
+		}
+		if client.IsDryRun(cmd) {
+			return inAgentEnvelope(cmd, runCreateSuite(cmd, args))
+		}
+		return inAgentEnvelope(cmd, runCreateSuiteAndWait(cmd, opts))
 	}
+}
+
+// inAgentEnvelope makes sure that in agent mode an error from --wait reaches
+// stderr as the structured envelope, after the JSON progress events, and never
+// as prose. Errors already printed (by output.Error or output.AgentModeError)
+// have an empty message, the same thing main.go checks before printing, and
+// flag-value errors are rendered by cli.Execute, so both are left alone. Every
+// failure after the suite has started is reported explicitly, so what reaches
+// this is a failure to start it.
+func inAgentEnvelope(cmd *cobra.Command, err error) error {
+	var flagErr *flagutil.FlagValueError
+	if err == nil || err.Error() == "" || errors.As(err, &flagErr) || !output.IsAgentMode() {
+		return err
+	}
+	return output.AgentModeError(cmd, "test_suite_start_failed", err.Error(), nil)
 }
 
 // splitSuiteIDFlags splits each value of --test-ids and --folder-ids on commas.
@@ -150,30 +177,54 @@ func splitIDs(values []string) []string {
 	return ids
 }
 
-// runCreateSuiteAndWait starts the suite the way runCreateSuiteCmd does, then
-// waits for it and reports the outcome.
-func runCreateSuiteAndWait(cmd *cobra.Command) error {
+type suiteWaitOptions struct {
+	maxWait        time.Duration
+	requestTimeout time.Duration
+}
+
+// suiteWaitOptionsFrom checks the flags --wait depends on before the suite
+// starts, so a mistake in them does not leave queued runs behind.
+func suiteWaitOptionsFrom(cmd *cobra.Command) (suiteWaitOptions, error) {
 	maxWait, err := cmd.Flags().GetDuration(suiteMaxWaitFlag)
 	if err != nil {
-		return err
+		return suiteWaitOptions{}, suiteError(cmd, "invalid_flag_value", err.Error(), nil)
 	}
 	if maxWait <= 0 {
-		return suiteError(cmd, "invalid_flag_value",
+		return suiteWaitOptions{}, suiteError(cmd, "invalid_flag_value",
 			fmt.Sprintf("--%s must be more than zero, got %s", suiteMaxWaitFlag, maxWait),
 			[]string{fmt.Sprintf("Pass a duration such as --%s 10m, or drop it to wait up to %s", suiteMaxWaitFlag, suiteDefaultMaxWait)})
 	}
-	// Checked before the suite starts, so a --timeout no wait can fit in does
-	// not leave queued runs behind.
 	requestTimeout, err := globalRequestTimeout(cmd)
 	if err != nil {
-		return err
+		return suiteWaitOptions{}, suiteError(cmd, "invalid_flag_value", err.Error(),
+			[]string{"Pass a duration such as --timeout 2m, or drop --timeout"})
 	}
 	if minTimeout := suiteWaitMinCallSeconds*time.Second + suiteWaitTimeoutHeadroom; requestTimeout > 0 && requestTimeout < minTimeout {
-		return suiteError(cmd, "invalid_flag_value",
+		return suiteWaitOptions{}, suiteError(cmd, "invalid_flag_value",
 			fmt.Sprintf("--%s needs a --timeout of at least %s, since each wait holds the request for %ds or more; got %s",
 				suiteWaitFlag, minTimeout, suiteWaitMinCallSeconds, requestTimeout),
 			[]string{fmt.Sprintf("Pass --timeout %s or more, or drop --timeout", minTimeout)})
 	}
+	// The result is only printed once the suite has finished, so a --jq that
+	// cannot run would otherwise fail after the whole wait. Compiling catches
+	// unknown functions as well as syntax errors.
+	if expression, _ := flagutil.GetStringFlag(cmd, "jq"); expression != "" {
+		query, err := gojq.Parse(expression)
+		if err == nil {
+			_, err = gojq.Compile(query)
+		}
+		if err != nil {
+			return suiteWaitOptions{}, suiteError(cmd, "invalid_flag_value", fmt.Sprintf("invalid --jq expression %q: %v", expression, err),
+				[]string{"Fix the expression, or drop --jq; nothing was started"})
+		}
+	}
+	return suiteWaitOptions{maxWait: maxWait, requestTimeout: requestTimeout}, nil
+}
+
+// runCreateSuiteAndWait starts the suite the way runCreateSuiteCmd does, then
+// waits for it and reports the outcome.
+func runCreateSuiteAndWait(cmd *cobra.Command, opts suiteWaitOptions) error {
+	maxWait := opts.maxWait
 	req, err := flagutil.BuildRequest[operations.StableTestRunControllerCreateSuiteRequest](cmd, createSuiteCmdMeta, "Body", "body")
 	if err != nil {
 		return err
@@ -194,18 +245,24 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 	if err != nil {
 		return output.Error(cmd, err)
 	}
-	suite := created.GetStableTestRunSuiteResponse()
-	if suite == nil {
-		return errors.New("the API started the suite but returned no bulkID to wait for")
+	target := suiteTarget{projectID: req.ProjectID, environmentAlias: req.EnvironmentAlias}
+	if serverURL, changed := flagutil.GetStringFlag(cmd, "server-url"); changed {
+		target.serverURL = serverURL
 	}
-
-	target := suiteTarget{projectID: req.ProjectID, environmentAlias: req.EnvironmentAlias, bulkID: suite.BulkID}
+	suite := created.GetStableTestRunSuiteResponse()
+	if suite == nil || suite.BulkID == "" {
+		return suiteError(cmd, "test_suite_wait_failed", "the API started the suite but returned no bulkID to wait for",
+			[]string{fmt.Sprintf("Find the runs it started: vf test run search %s", target.flags())})
+	}
+	target.bulkID = suite.BulkID
 	runs := "runs"
 	if len(suite.Runs) == 1 {
 		runs = "run"
 	}
+	resume := target.resume()
 	reportSuite(cmd,
-		fmt.Sprintf("Started suite %s with %d %s. Waiting up to %s for it to finish.", target.bulkID, len(suite.Runs), runs, maxWait),
+		fmt.Sprintf("Started suite %s with %d %s. Waiting up to %s for it to finish; if stopped early, keep waiting with: %s",
+			target.bulkID, len(suite.Runs), runs, maxWait, resume),
 		map[string]any{
 			"status":   "started",
 			"bulkID":   target.bulkID,
@@ -213,16 +270,21 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 			"max_wait": maxWait.String(),
 			"hints": []string{
 				"This command blocks until every run has finished, which can take many minutes, so run it in the background and read its output",
-				fmt.Sprintf("If it is stopped early, keep waiting with: vf test run wait-suite %s --bulk-id %s", target.flags(), target.bulkID),
+				"If it is stopped early, keep waiting with: " + resume,
 			},
 		})
 
-	waited, err := waitForSuite(cmd, target, sdkOpts, maxWait, requestTimeout)
+	waited, err := waitForSuite(cmd, target, sdkOpts, maxWait, opts.requestTimeout)
 	if err != nil {
 		return err
 	}
 	if err := output.Result(cmd, waited); err != nil {
-		return err
+		if err.Error() == "" {
+			return err
+		}
+		return suiteError(cmd, "test_suite_output_failed",
+			fmt.Sprintf("suite %s stopped being waited on, but its results could not be printed: %v", target.bulkID, err),
+			[]string{"Print them again with: " + resume})
 	}
 	return suiteOutcome(cmd, target, waited.GetStableTestRunSuiteWaitResponse(), maxWait)
 }
@@ -231,10 +293,29 @@ type suiteTarget struct {
 	projectID        string
 	environmentAlias string
 	bulkID           string
+	serverURL        string
 }
 
+// flags are the flags a follow-up command needs to reach the same suite,
+// quoted for a shell.
 func (t suiteTarget) flags() string {
-	return fmt.Sprintf("--project-id %s --environment-alias %s", t.projectID, t.environmentAlias)
+	flags := fmt.Sprintf("--project-id %s --environment-alias %s", shellQuote(t.projectID), shellQuote(t.environmentAlias))
+	if t.serverURL != "" {
+		flags += " --server-url " + shellQuote(t.serverURL)
+	}
+	return flags
+}
+
+// resume is the command that keeps waiting on the suite.
+func (t suiteTarget) resume() string {
+	return fmt.Sprintf("vf test run wait-suite %s --bulk-id %s", t.flags(), shellQuote(t.bulkID))
+}
+
+func shellQuote(value string) string {
+	if value != "" && strings.Trim(value, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.,:/@%+=") == "" {
+		return value
+	}
+	return "'" + strings.ReplaceAll(value, "'", `'\''`) + "'"
 }
 
 // waitForSuite waits until the suite is done or maxWait has passed, and
@@ -262,7 +343,7 @@ func waitForSuite(
 	for {
 		s, err := client.NewClient(cmd)
 		if err != nil {
-			return nil, err
+			return nil, suiteWaitFailed(cmd, target, err)
 		}
 		seconds := suiteWaitSeconds(time.Until(deadline), requestTimeout)
 		started := time.Now()
@@ -275,24 +356,39 @@ func waitForSuite(
 			if ctx.Err() == nil && isTransientWaitError(err) && failures < suiteWaitRetries && time.Until(deadline) > 0 {
 				failures++
 				delay := min(suiteWaitRetryDelay, time.Until(deadline))
+				reason, _, _ := strings.Cut(err.Error(), "\n")
 				reportSuite(cmd,
-					fmt.Sprintf("Waiting for suite %s failed (%v). Retrying in %s.", target.bulkID, err, delay.Round(time.Second)),
-					map[string]any{"status": "retrying", "bulkID": target.bulkID, "error": err.Error(), "retry_in": delay.Round(time.Second).String()})
+					fmt.Sprintf("Waiting for suite %s failed (%s). Retrying in %s.", target.bulkID, reason, delay.Round(time.Second)),
+					map[string]any{"status": "retrying", "bulkID": target.bulkID, "error": reason, "retry_in": delay.Round(time.Second).String()})
 				if err := sleepContext(ctx, delay); err != nil {
-					return nil, err
+					return nil, suiteWaitFailed(cmd, target, err)
 				}
 				if time.Until(deadline) <= 0 && last != nil {
 					return last, nil
 				}
 				continue
 			}
-			return nil, output.Error(cmd, err)
+			if ctx.Err() != nil {
+				return nil, suiteWaitFailed(cmd, target, ctx.Err())
+			}
+			if !isTransientWaitError(err) {
+				return nil, suiteAPIFailed(cmd, target, err)
+			}
+			// Out of time, the last answer is still the suite's state to report.
+			if time.Until(deadline) <= 0 && last != nil {
+				return last, nil
+			}
+			// Not output.Error, whose hint for these is to rerun the command,
+			// which would start another suite.
+			return nil, suiteWaitFailed(cmd, target, err)
 		}
 		failures = 0
 
+		// A body that decodes to nothing (null, {}) would otherwise read as
+		// "not done" and be polled until --max-wait.
 		result := res.GetStableTestRunSuiteWaitResponse()
-		if result == nil {
-			return nil, fmt.Errorf("the API returned no result while waiting for suite %s", target.bulkID)
+		if result == nil || result.BulkID == "" {
+			return nil, suiteWaitFailed(cmd, target, errors.New("the API returned no result"))
 		}
 		last = res
 		if result.Done || time.Until(deadline) <= 0 {
@@ -305,7 +401,7 @@ func waitForSuite(
 		}
 		if pause := min(suiteWaitMinInterval-time.Since(started), time.Until(deadline)); pause > 0 {
 			if err := sleepContext(ctx, pause); err != nil {
-				return nil, err
+				return nil, suiteWaitFailed(cmd, target, err)
 			}
 		}
 		if time.Until(deadline) <= 0 {
@@ -394,7 +490,7 @@ func suiteOutcome(
 		return suiteError(cmd, "test_suite_unfinished",
 			fmt.Sprintf("%d of %d runs in suite %s were still going after %s", counts.Unfinished, counts.Total, target.bulkID, maxWait),
 			[]string{
-				fmt.Sprintf("Keep waiting: vf test run wait-suite %s --bulk-id %s", target.flags(), target.bulkID),
+				"Keep waiting: " + target.resume(),
 				fmt.Sprintf("Stop them: vf test run cancel %s --run-ids <id> (the runs still going are listed in the output)", target.flags()),
 			})
 	}
@@ -424,12 +520,55 @@ func reportSuite(cmd *cobra.Command, prose string, event map[string]any) {
 	fmt.Fprintln(out, string(data))
 }
 
-// suiteError reports a suite that did not pass. In agent mode that is the
-// structured envelope every other failure uses; otherwise a message and hints
-// on stderr.
+// suiteWaitFailed reports a wait that stopped after the suite had started,
+// with the command that picks it up again.
+func suiteWaitFailed(cmd *cobra.Command, target suiteTarget, err error) error {
+	return suiteError(cmd, "test_suite_wait_failed",
+		fmt.Sprintf("stopped waiting for suite %s: %v", target.bulkID, err),
+		[]string{"The suite keeps running; keep waiting with: " + target.resume()})
+}
+
+// suiteAPIFailed reports an API error that ended the wait the way any command
+// reports one, keeping its error_type, status_code and hints, and adds the
+// command that picks the suite up again once the error is dealt with.
+func suiteAPIFailed(cmd *cobra.Command, target suiteTarget, err error) error {
+	resume := "The suite keeps running; once that is fixed, keep waiting with: " + target.resume()
+	stderr := cmd.ErrOrStderr()
+	if !output.IsAgentMode() {
+		reported := output.Error(cmd, err)
+		if reported.Error() == "" {
+			fmt.Fprintln(stderr, resume)
+			return reported
+		}
+		return errors.New(reported.Error() + "\n  " + resume)
+	}
+
+	var envelope bytes.Buffer
+	cmd.SetErr(&envelope)
+	reported := output.Error(cmd, err)
+	cmd.SetErr(stderr)
+	var fields map[string]any
+	if json.Unmarshal(envelope.Bytes(), &fields) != nil {
+		_, _ = stderr.Write(envelope.Bytes())
+		return reported
+	}
+	hints, _ := fields["hints"].([]any)
+	fields["hints"] = append(hints, resume)
+	fields["bulkID"] = target.bulkID
+	data, _ := json.MarshalIndent(fields, "", "  ")
+	fmt.Fprintln(stderr, string(data))
+	return reported
+}
+
+// suiteError reports a failure of --wait or of a suite. In agent mode that is
+// the structured envelope every other failure uses; otherwise a message and
+// hints on stderr.
 func suiteError(cmd *cobra.Command, errorType, message string, hints []string) error {
 	if output.IsAgentMode() {
 		return output.AgentModeError(cmd, errorType, message, hints)
+	}
+	if len(hints) == 0 {
+		return errors.New(message)
 	}
 	return errors.New(message + "\n  " + strings.Join(hints, "\n  "))
 }

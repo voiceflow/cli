@@ -21,6 +21,22 @@ func TestSplitIDsAcceptsCommasAndRepeatedFlags(t *testing.T) {
 	}
 }
 
+func TestShellQuoteKeepsHintsPasteable(t *testing.T) {
+	cases := map[string]string{
+		"6b05d5a960fbff504456c9d0":  "6b05d5a960fbff504456c9d0",
+		"https://api.voiceflow.com": "https://api.voiceflow.com",
+		"http://host/my api":        "'http://host/my api'",
+		"it's":                      `'it'\''s'`,
+		"$(rm -rf /)":               "'$(rm -rf /)'",
+		"":                          "''",
+	}
+	for value, want := range cases {
+		if got := shellQuote(value); got != want {
+			t.Errorf("shellQuote(%q) = %s, want %s", value, got, want)
+		}
+	}
+}
+
 func TestSuiteWaitSecondsStaysWithinWhatTheAPIAccepts(t *testing.T) {
 	cases := map[time.Duration]int64{
 		30 * time.Minute:        45,
