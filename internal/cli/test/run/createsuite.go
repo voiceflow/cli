@@ -38,6 +38,7 @@ func initCreateSuiteCmd(parent *cobra.Command) error {
 		return fmt.Errorf("invalid metadata for create-suite: %w", err)
 	}
 	cmd.Flags().String("body", "", "Request body as JSON (alternative to individual flags). Can also be provided via stdin.")
+	addCreateSuiteWait(cmd) // --wait and comma-separated IDs; see createsuite_wait.go
 	parent.AddCommand(cmd)
 	return nil
 }
