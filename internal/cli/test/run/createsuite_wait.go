@@ -91,14 +91,24 @@ canceled, or when --max-wait (30 minutes by default) ran out first.`
 
 	runCreateSuite := cmd.RunE
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if err := splitSuiteIDFlags(cmd); err != nil {
-			return err
+		if usage.UsageRequested(cmd) {
+			return runCreateSuite(cmd, args)
 		}
 		wait, _ := flagutil.GetBoolFlag(cmd, suiteWaitFlag)
 		if cmd.Flags().Changed(suiteMaxWaitFlag) && !wait {
 			return fmt.Errorf("--%s only applies with --%s", suiteMaxWaitFlag, suiteWaitFlag)
 		}
-		if !wait || usage.UsageRequested(cmd) || client.IsDryRun(cmd) {
+		// Prompted here rather than in the generated RunE, so IDs typed into the
+		// prompt are split too. Once the flags are set, it does not prompt again.
+		if interactive.ShouldPrompt(cmd, createSuiteCmdMeta) {
+			if err := interactive.PromptAndSetFlags(cmd, createSuiteCmdMeta); err != nil {
+				return err
+			}
+		}
+		if err := splitSuiteIDFlags(cmd); err != nil {
+			return err
+		}
+		if !wait || client.IsDryRun(cmd) {
 			return runCreateSuite(cmd, args)
 		}
 		return runCreateSuiteAndWait(cmd)
@@ -145,10 +155,15 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 	if maxWait <= 0 {
 		return fmt.Errorf("--%s must be more than zero, got %s", suiteMaxWaitFlag, maxWait)
 	}
-	if interactive.ShouldPrompt(cmd, createSuiteCmdMeta) {
-		if err := interactive.PromptAndSetFlags(cmd, createSuiteCmdMeta); err != nil {
-			return err
-		}
+	// Checked before the suite starts, so a --timeout no wait can fit in does
+	// not leave queued runs behind.
+	requestTimeout, err := globalRequestTimeout(cmd)
+	if err != nil {
+		return err
+	}
+	if minTimeout := suiteWaitMinCallSeconds*time.Second + suiteWaitTimeoutHeadroom; requestTimeout > 0 && requestTimeout < minTimeout {
+		return fmt.Errorf("--%s needs a --timeout of at least %s, since each wait holds the request for %ds or more; got %s",
+			suiteWaitFlag, minTimeout, suiteWaitMinCallSeconds, requestTimeout)
 	}
 	req, err := flagutil.BuildRequest[operations.StableTestRunControllerCreateSuiteRequest](cmd, createSuiteCmdMeta, "Body", "body")
 	if err != nil {
@@ -183,7 +198,7 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 	fmt.Fprintf(cmd.ErrOrStderr(), "Started suite %s with %d %s. Waiting up to %s for it to finish.\n",
 		target.bulkID, len(suite.Runs), runs, maxWait)
 
-	waited, err := waitForSuite(cmd, s, target, sdkOpts, maxWait)
+	waited, err := waitForSuite(cmd, s, target, sdkOpts, maxWait, requestTimeout)
 	if err != nil {
 		return err
 	}
@@ -205,23 +220,21 @@ func (t suiteTarget) flags() string {
 
 // waitForSuite waits until the suite is done or maxWait has passed, and
 // returns the last wait's response. Transient failures are retried, so one
-// dropped request does not end a long wait.
+// dropped request does not end a long wait, but a retry never waits past
+// maxWait once there is a response to report.
 func waitForSuite(
 	cmd *cobra.Command,
 	s *sdk.VoiceflowSDK,
 	target suiteTarget,
 	sdkOpts []operations.Option,
 	maxWait time.Duration,
+	requestTimeout time.Duration,
 ) (*operations.StableTestRunControllerWaitSuiteResponse, error) {
 	ctx := cmd.Context()
 	deadline := time.Now().Add(maxWait)
+	var last *operations.StableTestRunControllerWaitSuiteResponse
 	lastProgress := ""
 	failures := 0
-
-	requestTimeout, err := globalRequestTimeout(cmd)
-	if err != nil {
-		return nil, err
-	}
 
 	for {
 		seconds := suiteWaitSeconds(time.Until(deadline), requestTimeout)
@@ -234,10 +247,14 @@ func waitForSuite(
 		if err != nil {
 			if ctx.Err() == nil && isTransientWaitError(err) && failures < suiteWaitRetries && time.Until(deadline) > 0 {
 				failures++
+				delay := min(suiteWaitRetryDelay, time.Until(deadline))
 				fmt.Fprintf(cmd.ErrOrStderr(), "Waiting for suite %s failed (%v). Retrying in %s.\n",
-					target.bulkID, err, suiteWaitRetryDelay)
-				if err := sleepContext(ctx, suiteWaitRetryDelay); err != nil {
+					target.bulkID, err, delay.Round(time.Second))
+				if err := sleepContext(ctx, delay); err != nil {
 					return nil, err
+				}
+				if time.Until(deadline) <= 0 && last != nil {
+					return last, nil
 				}
 				continue
 			}
@@ -249,6 +266,7 @@ func waitForSuite(
 		if result == nil {
 			return nil, fmt.Errorf("the API returned no result while waiting for suite %s", target.bulkID)
 		}
+		last = res
 		if result.Done || time.Until(deadline) <= 0 {
 			return res, nil
 		}

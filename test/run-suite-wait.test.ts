@@ -176,6 +176,14 @@ describe('create-suite --wait', () => {
     expect(waits()).toHaveLength(2);
   });
 
+  it('refuses a --timeout no wait fits in, before starting the suite', async () => {
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait', '--timeout', '3s']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('--wait needs a --timeout of at least 10s');
+    expect(requests).toHaveLength(0);
+  });
+
   it('refuses --max-wait without --wait', async () => {
     const result = await vf([...SUITE_FLAGS, '--all', '--max-wait', '5m']);
 
