@@ -34,6 +34,8 @@ type fakeAuthServer struct {
 	accessTokenTTL    int64
 	rotateRefresh     bool
 	promptValues      []string // advertised as prompt_values_supported
+	resultURI         string   // advertised as authorization_result_uri
+	refuseCodes       bool
 }
 
 type pendingCode struct {
@@ -79,6 +81,7 @@ func (f *fakeAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request)
 		ResponseTypesSupported:        []string{"code"},
 		CodeChallengeMethodsSupported: []string{"S256"},
 		PromptValuesSupported:         promptValues,
+		AuthorizationResultURI:        f.resultURI,
 	})
 }
 
@@ -155,7 +158,7 @@ func (f *fakeAuthServer) handleToken(w http.ResponseWriter, r *http.Request) {
 	switch r.PostForm.Get("grant_type") {
 	case "authorization_code":
 		pending, ok := f.codes[r.PostForm.Get("code")]
-		if !ok {
+		if !ok || f.refuseCodes {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_grant"})
 			return
 		}
