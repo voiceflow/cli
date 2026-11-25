@@ -21,6 +21,7 @@ type VersionSettingsVoice struct {
 	BackgroundAudioSettings  *BackgroundAudioSettings                   `json:"backgroundAudioSettings,omitzero"`
 	AudioSync                *bool                                      `json:"audioSync,omitzero"`
 	KeypadInput              *VoiceKeypadSettings                       `json:"keypadInput,omitzero"`
+	TextsDuringCalls         *VoiceTextsDuringCallsSettings             `json:"textsDuringCalls,omitzero"`
 	SilenceTimeoutMs         *float64                                   `json:"silenceTimeoutMs,omitzero"`
 	MaxDuration              *VoiceMaxDurationSettings                  `json:"maxDuration,omitzero"`
 	CallerIdentity           *VersionSettingsVoiceCallerIdentity        `json:"callerIdentity,omitzero"`
@@ -217,6 +218,13 @@ func (v *VersionSettingsVoice) GetKeypadInput() *VoiceKeypadSettings {
 		return nil
 	}
 	return v.KeypadInput
+}
+
+func (v *VersionSettingsVoice) GetTextsDuringCalls() *VoiceTextsDuringCallsSettings {
+	if v == nil {
+		return nil
+	}
+	return v.TextsDuringCalls
 }
 
 func (v *VersionSettingsVoice) GetSilenceTimeoutMs() *float64 {
