@@ -20,9 +20,12 @@ package run
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"math"
+	"net"
 	"net/url"
 	"strings"
 	"time"
@@ -195,8 +198,18 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 	if len(suite.Runs) == 1 {
 		runs = "run"
 	}
-	fmt.Fprintf(cmd.ErrOrStderr(), "Started suite %s with %d %s. Waiting up to %s for it to finish.\n",
-		target.bulkID, len(suite.Runs), runs, maxWait)
+	reportSuite(cmd,
+		fmt.Sprintf("Started suite %s with %d %s. Waiting up to %s for it to finish.", target.bulkID, len(suite.Runs), runs, maxWait),
+		map[string]any{
+			"status":   "started",
+			"bulkID":   target.bulkID,
+			"runs":     len(suite.Runs),
+			"max_wait": maxWait.String(),
+			"hints": []string{
+				"This command blocks until every run has finished, which can take many minutes, so run it in the background and read its output",
+				fmt.Sprintf("If it is stopped early, keep waiting with: vf test run wait-suite %s --bulk-id %s", target.flags(), target.bulkID),
+			},
+		})
 
 	waited, err := waitForSuite(cmd, s, target, sdkOpts, maxWait, requestTimeout)
 	if err != nil {
@@ -248,8 +261,9 @@ func waitForSuite(
 			if ctx.Err() == nil && isTransientWaitError(err) && failures < suiteWaitRetries && time.Until(deadline) > 0 {
 				failures++
 				delay := min(suiteWaitRetryDelay, time.Until(deadline))
-				fmt.Fprintf(cmd.ErrOrStderr(), "Waiting for suite %s failed (%v). Retrying in %s.\n",
-					target.bulkID, err, delay.Round(time.Second))
+				reportSuite(cmd,
+					fmt.Sprintf("Waiting for suite %s failed (%v). Retrying in %s.", target.bulkID, err, delay.Round(time.Second)),
+					map[string]any{"status": "retrying", "bulkID": target.bulkID, "error": err.Error(), "retry_in": delay.Round(time.Second).String()})
 				if err := sleepContext(ctx, delay); err != nil {
 					return nil, err
 				}
@@ -272,7 +286,8 @@ func waitForSuite(
 		}
 		if progress := suiteProgress(result.Counts); progress != lastProgress {
 			lastProgress = progress
-			fmt.Fprintf(cmd.ErrOrStderr(), "Suite %s: %s.\n", target.bulkID, progress)
+			reportSuite(cmd, fmt.Sprintf("Suite %s: %s.", target.bulkID, progress),
+				map[string]any{"status": "waiting", "bulkID": target.bulkID, "counts": result.Counts})
 		}
 		if pause := min(suiteWaitMinInterval-time.Since(started), time.Until(deadline)); pause > 0 {
 			if err := sleepContext(ctx, pause); err != nil {
@@ -336,7 +351,9 @@ func isTransientWaitError(err error) bool {
 		return apiErr.StatusCode == 429 || apiErr.StatusCode >= 500
 	}
 	var urlErr *url.Error
-	return errors.As(err, &urlErr) || errors.Is(err, context.DeadlineExceeded)
+	var netErr net.Error
+	return errors.As(err, &urlErr) || errors.As(err, &netErr) ||
+		errors.Is(err, io.ErrUnexpectedEOF) || errors.Is(err, context.DeadlineExceeded)
 }
 
 func suiteProgress(counts components.StableTestRunSuiteCounts) string {
@@ -374,6 +391,23 @@ func suiteOutcome(
 			[]string{fmt.Sprintf("Read a run's logs: vf test run get %s --run-id <id>", target.flags())})
 	}
 	return nil
+}
+
+// reportSuite writes a progress update to stderr: prose for a person, and in
+// agent mode a JSON event, the way 'vf auth login' reports progress, so every
+// byte an agent reads from stderr parses.
+func reportSuite(cmd *cobra.Command, prose string, event map[string]any) {
+	out := cmd.ErrOrStderr()
+	if !output.IsAgentMode() {
+		fmt.Fprintln(out, prose)
+		return
+	}
+	data, err := json.MarshalIndent(event, "", "  ")
+	if err != nil {
+		fmt.Fprintln(out, prose)
+		return
+	}
+	fmt.Fprintln(out, string(data))
 }
 
 // suiteError reports a suite that did not pass. In agent mode that is the

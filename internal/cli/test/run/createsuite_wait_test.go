@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"slices"
 	"testing"
@@ -61,6 +62,7 @@ func TestOnlyTransientWaitErrorsAreRetried(t *testing.T) {
 		{"rate limited", apiError(429), true},
 		{"no answer", &url.Error{Op: "Post", URL: "https://api", Err: errors.New("connection reset")}, true},
 		{"request timed out", context.DeadlineExceeded, true},
+		{"answer cut off", fmt.Errorf("error reading response body: %w", io.ErrUnexpectedEOF), true},
 		{"suite not found", apiError(404), false},
 		{"invalid request", apiError(422), false},
 		{"anything else", errors.New("boom"), false},

@@ -29,6 +29,38 @@ const SUITE_FLAGS = ['test', 'run', 'create-suite', '--project-id', 'p1', '--env
 type Counts = { total: number; passed: number; failed: number; canceled: number; unfinished: number };
 type Reply = { status: number; body: object };
 
+// A reply status that makes the mock send headers and half a body, then drop
+// the connection.
+const TRUNCATE = -1;
+
+// Parses a stream of JSON values written one after another, failing on any
+// text between them.
+function jsonStream(text: string): any[] {
+  const values: any[] = [];
+  let rest = text.trim();
+  while (rest) {
+    let end = 0;
+    let depth = 0;
+    let inString = false;
+    for (let i = 0; i < rest.length; i += 1) {
+      const char = rest[i];
+      if (inString) {
+        if (char === '\\') i += 1;
+        else if (char === '"') inString = false;
+      } else if (char === '"') inString = true;
+      else if (char === '{') depth += 1;
+      else if (char === '}' && --depth === 0) {
+        end = i + 1;
+        break;
+      }
+    }
+    expect(end, `stderr is not only JSON:\n${text}`).toBeGreaterThan(0);
+    values.push(JSON.parse(rest.slice(0, end)));
+    rest = rest.slice(end).trim();
+  }
+  return values;
+}
+
 const run = (runID: string, status: string) => ({
   runID,
   testID: `test-${runID}`,
@@ -79,6 +111,11 @@ beforeAll(async () => {
       }
       if (pathname.endsWith('/test-run/suite/wait')) {
         const next = waitReplies.length > 1 ? waitReplies.shift()! : waitReplies[0]!;
+        if (next.status === TRUNCATE) {
+          res.writeHead(200, { 'content-type': 'application/json', 'content-length': '1000' });
+          res.write('{"bulkID":');
+          return res.socket?.destroy();
+        }
         return reply(next.status, next.body);
       }
       return reply(404, { statusCode: 404, message: 'Not found' });
@@ -138,15 +175,20 @@ describe('create-suite --wait', () => {
     expect(result.stderr).toContain('vf test run get --project-id p1 --environment-alias main --run-id <id>');
   });
 
-  it('reports a failed suite with the agent-mode envelope', async () => {
-    waitReplies = [waitReply({ total: 2, passed: 1, failed: 0, canceled: 1, unfinished: 0 }, [run('r1', 'canceled')])];
+  it('writes nothing but JSON to stderr in agent mode: progress events, then the error envelope', async () => {
+    waitReplies = [
+      waitReply({ total: 2, passed: 1, failed: 0, canceled: 0, unfinished: 1 }, [run('r2', 'running')]),
+      waitReply({ total: 2, passed: 1, failed: 0, canceled: 1, unfinished: 0 }, [run('r2', 'canceled')]),
+    ];
 
     const result = await vf([...SUITE_FLAGS, '--all', '--wait'], { agentMode: true });
 
     expect(result.exitCode).toBe(1);
-    const envelope = JSON.parse(result.stderr.slice(result.stderr.indexOf('{')));
-    expect(envelope.error_type).toBe('test_suite_failed');
-    expect(envelope.message).toContain('did not pass (0 failed, 1 canceled)');
+    const events = jsonStream(result.stderr);
+    expect(events.map((event) => event.status ?? event.error_type)).toEqual(['started', 'waiting', 'test_suite_failed']);
+    expect(events[0]).toMatchObject({ bulkID: BULK_ID, runs: 2 });
+    expect(events[1]).toMatchObject({ counts: { passed: 1, unfinished: 1 } });
+    expect(events[2]!.message).toContain('did not pass (0 failed, 1 canceled)');
   });
 
   it('exits 1 with the command to keep waiting when --max-wait runs out first', async () => {
@@ -166,6 +208,19 @@ describe('create-suite --wait', () => {
   it('retries a wait that hit a server error', async () => {
     waitReplies = [
       { status: 502, body: { statusCode: 502, message: 'Bad gateway' } },
+      waitReply({ total: 2, passed: 2, failed: 0, canceled: 0, unfinished: 0 }),
+    ];
+
+    const result = await vf([...SUITE_FLAGS, '--all', '--wait']);
+
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stderr).toContain('Retrying in 5s');
+    expect(waits()).toHaveLength(2);
+  });
+
+  it('retries a wait whose answer was cut off mid-body', async () => {
+    waitReplies = [
+      { status: TRUNCATE, body: {} },
       waitReply({ total: 2, passed: 2, failed: 0, canceled: 0, unfinished: 0 }),
     ];
 
