@@ -99,7 +99,9 @@ canceled, or when --max-wait (30 minutes by default) ran out first.`
 		}
 		wait, _ := flagutil.GetBoolFlag(cmd, suiteWaitFlag)
 		if cmd.Flags().Changed(suiteMaxWaitFlag) && !wait {
-			return fmt.Errorf("--%s only applies with --%s", suiteMaxWaitFlag, suiteWaitFlag)
+			return suiteError(cmd, "invalid_flag_value",
+				fmt.Sprintf("--%s only applies with --%s", suiteMaxWaitFlag, suiteWaitFlag),
+				[]string{fmt.Sprintf("Add --%s, or drop --%s", suiteWaitFlag, suiteMaxWaitFlag)})
 		}
 		// Prompted here rather than in the generated RunE, so IDs typed into the
 		// prompt are split too. Once the flags are set, it does not prompt again.
@@ -156,7 +158,9 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 		return err
 	}
 	if maxWait <= 0 {
-		return fmt.Errorf("--%s must be more than zero, got %s", suiteMaxWaitFlag, maxWait)
+		return suiteError(cmd, "invalid_flag_value",
+			fmt.Sprintf("--%s must be more than zero, got %s", suiteMaxWaitFlag, maxWait),
+			[]string{fmt.Sprintf("Pass a duration such as --%s 10m, or drop it to wait up to %s", suiteMaxWaitFlag, suiteDefaultMaxWait)})
 	}
 	// Checked before the suite starts, so a --timeout no wait can fit in does
 	// not leave queued runs behind.
@@ -165,8 +169,10 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 		return err
 	}
 	if minTimeout := suiteWaitMinCallSeconds*time.Second + suiteWaitTimeoutHeadroom; requestTimeout > 0 && requestTimeout < minTimeout {
-		return fmt.Errorf("--%s needs a --timeout of at least %s, since each wait holds the request for %ds or more; got %s",
-			suiteWaitFlag, minTimeout, suiteWaitMinCallSeconds, requestTimeout)
+		return suiteError(cmd, "invalid_flag_value",
+			fmt.Sprintf("--%s needs a --timeout of at least %s, since each wait holds the request for %ds or more; got %s",
+				suiteWaitFlag, minTimeout, suiteWaitMinCallSeconds, requestTimeout),
+			[]string{fmt.Sprintf("Pass --timeout %s or more, or drop --timeout", minTimeout)})
 	}
 	req, err := flagutil.BuildRequest[operations.StableTestRunControllerCreateSuiteRequest](cmd, createSuiteCmdMeta, "Body", "body")
 	if err != nil {
@@ -211,7 +217,7 @@ func runCreateSuiteAndWait(cmd *cobra.Command) error {
 			},
 		})
 
-	waited, err := waitForSuite(cmd, s, target, sdkOpts, maxWait, requestTimeout)
+	waited, err := waitForSuite(cmd, target, sdkOpts, maxWait, requestTimeout)
 	if err != nil {
 		return err
 	}
@@ -235,9 +241,13 @@ func (t suiteTarget) flags() string {
 // returns the last wait's response. Transient failures are retried, so one
 // dropped request does not end a long wait, but a retry never waits past
 // maxWait once there is a response to report.
+//
+// The client is rebuilt for every wait because that is when it resolves
+// credentials: an OAuth access token that expires during a long suite is
+// refreshed, as it is for any vf command, while a --token or VF_TOKEN still
+// wins.
 func waitForSuite(
 	cmd *cobra.Command,
-	s *sdk.VoiceflowSDK,
 	target suiteTarget,
 	sdkOpts []operations.Option,
 	maxWait time.Duration,
@@ -250,6 +260,10 @@ func waitForSuite(
 	failures := 0
 
 	for {
+		s, err := client.NewClient(cmd)
+		if err != nil {
+			return nil, err
+		}
 		seconds := suiteWaitSeconds(time.Until(deadline), requestTimeout)
 		started := time.Now()
 		res, err := waitOnce(ctx, s, operations.StableTestRunControllerWaitSuiteRequest{

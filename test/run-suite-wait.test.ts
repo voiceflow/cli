@@ -246,6 +246,18 @@ describe('create-suite --wait', () => {
     expect(result.stderr).toContain('--max-wait only applies with --wait');
     expect(requests).toHaveLength(0);
   });
+
+  it('reports invalid flag values with the agent-mode envelope', async () => {
+    for (const flags of [['--max-wait', '5m'], ['--wait', '--max-wait', '0s'], ['--wait', '--timeout', '3s']]) {
+      const result = await vf([...SUITE_FLAGS, '--all', ...flags], { agentMode: true });
+
+      expect(result.exitCode, flags.join(' ')).toBe(1);
+      const events = jsonStream(result.stderr);
+      expect(events, flags.join(' ')).toHaveLength(1);
+      expect(events[0]!.error_type).toBe('invalid_flag_value');
+    }
+    expect(requests).toHaveLength(0);
+  });
 });
 
 describe('create-suite IDs', () => {
