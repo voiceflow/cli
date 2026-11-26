@@ -35280,6 +35280,12 @@ components:
                 - src
             messageID:
               type: string
+            delivery:
+              type: string
+              enum:
+                - sms
+              x-enumNames:
+                - SMS
             sourceUrls:
               type: array
               items:

@@ -84,6 +84,29 @@ func (a *Audio) GetSrc() string {
 	return a.Src
 }
 
+type Delivery string
+
+const (
+	DeliverySms Delivery = "sms"
+)
+
+func (e Delivery) ToPointer() *Delivery {
+	return &e
+}
+func (e *Delivery) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "sms":
+		*e = Delivery(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for Delivery: %v", v)
+	}
+}
+
 type TextTraceSourceURL struct {
 	URL  string  `json:"url"`
 	Name *string `json:"name,omitzero"`
@@ -123,6 +146,7 @@ type TextTracePayload struct {
 	Voice      *string              `json:"voice,omitzero"`
 	Audio      *Audio               `json:"audio,omitzero"`
 	MessageID  string               `json:"messageID"`
+	Delivery   *Delivery            `json:"delivery,omitzero"`
 	SourceUrls []TextTraceSourceURL `json:"sourceUrls,omitzero"`
 }
 
@@ -240,6 +264,13 @@ func (t *TextTracePayload) GetMessageID() string {
 		return ""
 	}
 	return t.MessageID
+}
+
+func (t *TextTracePayload) GetDelivery() *Delivery {
+	if t == nil {
+		return nil
+	}
+	return t.Delivery
 }
 
 func (t *TextTracePayload) GetSourceUrls() []TextTraceSourceURL {
