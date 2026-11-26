@@ -250,7 +250,7 @@ const (
 	StableDocumentControllerCreateURLMarkdownConversionUnionTypeStableDocumentControllerCreateURLMarkdownConversionEnum StableDocumentControllerCreateURLMarkdownConversionUnionType = "StableDocumentController_createURL_markdownConversion_enum"
 )
 
-// StableDocumentControllerCreateURLMarkdownConversionUnion - When enabled, HTML is automatically converted to markdown to generate better chunks.
+// StableDocumentControllerCreateURLMarkdownConversionUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.
 type StableDocumentControllerCreateURLMarkdownConversionUnion struct {
 	Boolean                                                 *bool                                                    `queryParam:"inline" union:"member"`
 	StableDocumentControllerCreateURLMarkdownConversionEnum *StableDocumentControllerCreateURLMarkdownConversionEnum `queryParam:"inline" union:"member"`
@@ -366,6 +366,7 @@ const (
 	StableDocumentControllerCreateURLLlmBasedChunksUnionTypeStableDocumentControllerCreateURLLlmBasedChunksEnum StableDocumentControllerCreateURLLlmBasedChunksUnionType = "StableDocumentController_createURL_llmBasedChunks_enum"
 )
 
+// StableDocumentControllerCreateURLLlmBasedChunksUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
 type StableDocumentControllerCreateURLLlmBasedChunksUnion struct {
 	Boolean                                             *bool                                                `queryParam:"inline" union:"member"`
 	StableDocumentControllerCreateURLLlmBasedChunksEnum *StableDocumentControllerCreateURLLlmBasedChunksEnum `queryParam:"inline" union:"member"`
@@ -481,7 +482,7 @@ const (
 	StableDocumentControllerCreateURLLlmGeneratedQUnionTypeStableDocumentControllerCreateURLLlmGeneratedQEnum StableDocumentControllerCreateURLLlmGeneratedQUnionType = "StableDocumentController_createURL_llmGeneratedQ_enum"
 )
 
-// StableDocumentControllerCreateURLLlmGeneratedQUnion - When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+// StableDocumentControllerCreateURLLlmGeneratedQUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
 type StableDocumentControllerCreateURLLlmGeneratedQUnion struct {
 	Boolean                                            *bool                                               `queryParam:"inline" union:"member"`
 	StableDocumentControllerCreateURLLlmGeneratedQEnum *StableDocumentControllerCreateURLLlmGeneratedQEnum `queryParam:"inline" union:"member"`
@@ -597,7 +598,7 @@ const (
 	StableDocumentControllerCreateURLLlmContentSummarizationUnionTypeStableDocumentControllerCreateURLLlmContentSummarizationEnum StableDocumentControllerCreateURLLlmContentSummarizationUnionType = "StableDocumentController_createURL_llmContentSummarization_enum"
 )
 
-// StableDocumentControllerCreateURLLlmContentSummarizationUnion - When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+// StableDocumentControllerCreateURLLlmContentSummarizationUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
 type StableDocumentControllerCreateURLLlmContentSummarizationUnion struct {
 	Boolean                                                      *bool                                                         `queryParam:"inline" union:"member"`
 	StableDocumentControllerCreateURLLlmContentSummarizationEnum *StableDocumentControllerCreateURLLlmContentSummarizationEnum `queryParam:"inline" union:"member"`
@@ -713,7 +714,7 @@ const (
 	StableDocumentControllerCreateURLLlmPrependContextUnionTypeStableDocumentControllerCreateURLLlmPrependContextEnum StableDocumentControllerCreateURLLlmPrependContextUnionType = "StableDocumentController_createURL_llmPrependContext_enum"
 )
 
-// StableDocumentControllerCreateURLLlmPrependContextUnion - When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
+// StableDocumentControllerCreateURLLlmPrependContextUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 type StableDocumentControllerCreateURLLlmPrependContextUnion struct {
 	Boolean                                                *bool                                                   `queryParam:"inline" union:"member"`
 	StableDocumentControllerCreateURLLlmPrependContextEnum *StableDocumentControllerCreateURLLlmPrependContextEnum `queryParam:"inline" union:"member"`
@@ -919,14 +920,15 @@ type StableDocumentControllerCreateURLRequest struct {
 	MaxChunkSize *StableDocumentControllerCreateURLMaxChunkSize `queryParam:"style=form,explode=true,name=maxChunkSize"`
 	// If set to true, the existing table with the same name will be overwritten.
 	Overwrite *StableDocumentControllerCreateURLOverwriteUnion `queryParam:"style=form,explode=true,name=overwrite"`
-	// When enabled, HTML is automatically converted to markdown to generate better chunks.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.
 	MarkdownConversion *StableDocumentControllerCreateURLMarkdownConversionUnion `queryParam:"style=form,explode=true,name=markdownConversion"`
-	LlmBasedChunks     *StableDocumentControllerCreateURLLlmBasedChunksUnion     `queryParam:"style=form,explode=true,name=llmBasedChunks"`
-	// When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+	LlmBasedChunks *StableDocumentControllerCreateURLLlmBasedChunksUnion `queryParam:"style=form,explode=true,name=llmBasedChunks"`
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
 	LlmGeneratedQ *StableDocumentControllerCreateURLLlmGeneratedQUnion `queryParam:"style=form,explode=true,name=llmGeneratedQ"`
-	// When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
 	LlmContentSummarization *StableDocumentControllerCreateURLLlmContentSummarizationUnion `queryParam:"style=form,explode=true,name=llmContentSummarization"`
-	// When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 	LlmPrependContext *StableDocumentControllerCreateURLLlmPrependContextUnion `queryParam:"style=form,explode=true,name=llmPrependContext"`
 	// When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
 	SingleChunk *StableDocumentControllerCreateURLSingleChunkUnion `queryParam:"style=form,explode=true,name=singleChunk"`

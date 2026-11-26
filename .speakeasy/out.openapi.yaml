@@ -9419,7 +9419,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.'
             anyOf:
               - type: boolean
               - type: string
@@ -9433,6 +9433,7 @@ paths:
           required: false
           in: query
           schema:
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.'
             anyOf:
               - type: boolean
               - type: string
@@ -9446,7 +9447,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.'
             anyOf:
               - type: boolean
               - type: string
@@ -9460,7 +9461,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.'
             anyOf:
               - type: boolean
               - type: string
@@ -9474,7 +9475,7 @@ paths:
           required: false
           in: query
           schema:
-            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
             anyOf:
               - type: boolean
               - type: string
@@ -9577,7 +9578,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.'
             anyOf:
               - type: boolean
               - type: string
@@ -9591,6 +9592,7 @@ paths:
           required: false
           in: query
           schema:
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.'
             anyOf:
               - type: boolean
               - type: string
@@ -9604,7 +9606,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.'
             anyOf:
               - type: boolean
               - type: string
@@ -9618,7 +9620,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.'
             anyOf:
               - type: boolean
               - type: string
@@ -9632,7 +9634,7 @@ paths:
           required: false
           in: query
           schema:
-            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
             anyOf:
               - type: boolean
               - type: string
@@ -9758,7 +9760,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.'
             anyOf:
               - type: boolean
               - type: string
@@ -9772,6 +9774,7 @@ paths:
           required: false
           in: query
           schema:
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.'
             anyOf:
               - type: boolean
               - type: string
@@ -9785,7 +9788,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.'
             anyOf:
               - type: boolean
               - type: string
@@ -9799,7 +9802,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.'
             anyOf:
               - type: boolean
               - type: string
@@ -9813,7 +9816,7 @@ paths:
           required: false
           in: query
           schema:
-            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
             anyOf:
               - type: boolean
               - type: string
@@ -9944,7 +9947,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.'
             anyOf:
               - type: boolean
               - type: string
@@ -9958,7 +9961,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.'
             anyOf:
               - type: boolean
               - type: string
@@ -9972,7 +9975,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.'
             anyOf:
               - type: boolean
               - type: string
@@ -9986,7 +9989,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.'
             anyOf:
               - type: boolean
               - type: string
@@ -10000,7 +10003,7 @@ paths:
           required: false
           in: query
           schema:
-            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
             anyOf:
               - type: boolean
               - type: string
@@ -10082,7 +10085,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.'
             anyOf:
               - type: boolean
               - type: string
@@ -10096,7 +10099,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.'
             anyOf:
               - type: boolean
               - type: string
@@ -10110,7 +10113,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.'
             anyOf:
               - type: boolean
               - type: string
@@ -10124,7 +10127,7 @@ paths:
           required: false
           in: query
           schema:
-            description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.'
             anyOf:
               - type: boolean
               - type: string
@@ -10138,7 +10141,7 @@ paths:
           required: false
           in: query
           schema:
-            description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+            description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
             anyOf:
               - type: boolean
               - type: string
@@ -37462,7 +37465,7 @@ components:
             - MONTHLY
             - NEVER
         markdownConversion:
-          description: When enabled, HTML is automatically converted to markdown to generate better chunks.
+          description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.'
           anyOf:
             - type: boolean
             - type: string
@@ -37473,7 +37476,7 @@ components:
                 - "TRUE"
                 - "FALSE"
         llmBasedChunks:
-          description: When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+          description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.'
           anyOf:
             - type: boolean
             - type: string
@@ -37484,7 +37487,7 @@ components:
                 - "TRUE"
                 - "FALSE"
         llmGeneratedQ:
-          description: When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+          description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.'
           anyOf:
             - type: boolean
             - type: string
@@ -37495,7 +37498,7 @@ components:
                 - "TRUE"
                 - "FALSE"
         llmContentSummarization:
-          description: When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+          description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.'
           anyOf:
             - type: boolean
             - type: string
@@ -37506,7 +37509,7 @@ components:
                 - "TRUE"
                 - "FALSE"
         llmPrependContext:
-          description: 'When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
+          description: 'Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.'
           anyOf:
             - type: boolean
             - type: string
