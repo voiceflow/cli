@@ -33,9 +33,11 @@ const (
 	tokenEnvVar     = "VF_TOKEN"
 )
 
-type teachHook struct {
-	warnOnce sync.Once
-}
+// Once per process rather than per hook: a command that makes many requests
+// builds a new client, and so a new hook, for each of them.
+var tokenWarnOnce sync.Once
+
+type teachHook struct{}
 
 var _ beforeRequestHook = (*teachHook)(nil)
 var _ afterErrorHook = (*teachHook)(nil)
@@ -85,11 +87,11 @@ func (h *teachHook) BeforeRequest(_ BeforeRequestContext, req *http.Request) (*h
 	token := strings.TrimPrefix(authorization, "Bearer ")
 	switch {
 	case strings.HasPrefix(credential, "VF.DM."):
-		h.warnOnce.Do(func() {
+		tokenWarnOnce.Do(func() {
 			fmt.Fprintf(os.Stderr, "Warning: the configured token looks like a legacy Dialog Manager API key (VF.DM....). The CLI needs a personal access token (vfp_...) — create one under Settings → Access tokens: %s\n", authDocsURL)
 		})
 	case strings.TrimSpace(token) != token:
-		h.warnOnce.Do(func() {
+		tokenWarnOnce.Do(func() {
 			fmt.Fprintln(os.Stderr, "Warning: the configured token has leading or trailing whitespace — the API will likely reject it.")
 		})
 	}
