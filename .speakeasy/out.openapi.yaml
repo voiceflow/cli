@@ -11727,6 +11727,7 @@ paths:
             USE WHEN — Driving a conversation one message at a time, when each next message depends on the last reply. For a fixed list of messages, use voiceflow_conversation.run_script: one call for the whole exchange.
             AFTER — Inspect the returned trace array carefully: right trace type for the channel (text on chat, speak/audio on voice); tool called when expected and with the right args; error paths handled; no information leakage ("I checked the knowledge base..."); no re-greeting; variables not showing as literal "0" because they weren't pre-resolved. If needsRecompile is true, call voiceflow_environment.compile then send again; do not treat those traces as proof the latest edits work.
             DO NOT — Conclude success based on the visible agent reply alone. The reply often looks fine while a tool silently failed or returned empty — you'll only catch it by reading the trace.
+            DO NOT — Retry after a 402. It means the workspace is out of credits and the turn did not run: stop testing and give the user the link in the error's details.addCreditsURL. Once the user says credits were added, voiceflow_credits.get confirms it before you test again.
         cli:
           command: conversation send
       x-speakeasy-group: conversation
@@ -11764,6 +11765,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableConversationSendResponse'
+        "402":
+          description: The workspace is out of credits, so the turn did not run. details.addCreditsURL links to the page where the workspace adds credits or upgrades its plan.
       tags:
         - Conversation
       security:
@@ -11781,11 +11784,12 @@ paths:
           operation: run_script
           operationDescription: |-
             WHAT — Run a scripted conversation in one call: start a fresh conversation, send each user message in order — typed text or a button press — and return a short digest of every turn: who replied and what they said, the tools that ran, the variables that changed, warnings, errors, and the step that ended the conversation.
-            It never compiles. When needsRecompile is true the turns ran against the last compiled version: call voiceflow_environment.compile, then run the script again, and do not treat those turns as proof the latest edits work. The script stops early when the conversation ends, a send fails, a button is not on offer, the runtime logs an error outside a tool, or the credit limit is reached; the unsent messages come back in notSent. A failed tool or HTTP call is listed in its turn's errors and the script goes on. Read the conversation's logs with the transcriptID it returns.
+            It never compiles. When needsRecompile is true the turns ran against the last compiled version: call voiceflow_environment.compile, then run the script again, and do not treat those turns as proof the latest edits work. The script stops early when the conversation ends, a send fails, a button is not on offer, the runtime logs an error outside a tool, or the credit limit is reached; the unsent messages come back in notSent. When the workspace is out of credits before the launch, nothing runs and it answers 402 instead. A failed tool or HTTP call is listed in its turn's errors and the script goes on. Read the conversation's logs with the transcriptID it returns.
             USE WHEN — Checking how the agent handles a known sequence of user messages, such as a happy path, a button menu or an edge case, instead of sending each message separately. The body takes messages, the list to send: a string is typed, { "button": "<label>" } presses a button the reply before offered. Next to messages it takes variables, to preset values; launch, whose only field is payload, to start the way a website's widget does; and userID, to run as a caller with a known ID (draft only). Example body: { "messages": ["Hi", { "button": "Track order" }], "variables": { "plan": "pro" }, "launch": { "payload": { "lang": "de" } } }. To test a step deep in a workflow, send the messages that reach it. Compile the environment first after any edit.
             DO NOT — Use it when the next message depends on the reply; use voiceflow_conversation.send turn by turn for that.
             DO NOT — Treat a reply as proof a tool worked; read the turn's tool calls, warnings and errors.
             DO NOT — Treat ended: true as a normal finish; endedBy names the step that ended the whole conversation.
+            DO NOT — Retry after a 402. It means the workspace is out of credits and the script did not run: stop testing and give the user the link in the error's details.addCreditsURL. Once the user says credits were added, voiceflow_credits.get confirms it before you test again.
             NOTE — Every tool the agent calls runs for real, including tools that write to outside systems.
         cli:
           command: conversation run-script
@@ -11819,8 +11823,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableConversationScriptResponse'
+        "402":
+          description: The workspace is out of credits, so the turn did not run. details.addCreditsURL links to the page where the workspace adds credits or upgrades its plan.
       tags:
         - Conversation
+      security:
+        - token: []
+  /v1/stable/credits:
+    get:
+      operationId: StableCreditsController_get
+      x-vf:
+        mcp:
+          tool: voiceflow_credits
+          toolDescription: |-
+            Check whether the workspace that owns a project has credits left to run the agent. Every test conversation spends credits, and when they run out the runtime refuses turns.
+            Predecessor: have the projectID of the agent you are testing.
+            Successor: test with voiceflow_conversation.send or voiceflow_conversation.run_script when hasCredits is true; otherwise stop and give the user addCreditsURL.
+          operation: get
+          operationDescription: |-
+            WHAT — Check whether the workspace that owns the project has credits left, with the same check the runtime makes before each turn. hasCredits false means every conversation send or script answers 402 and runs nothing.
+            USE WHEN — Before a long test session, such as many voiceflow_conversation.send turns or several voiceflow_conversation.run_script runs; after either one answers 402; and when the user says they added credits, before you test again.
+            BEFORE — voiceflow_project.list if you do not have the projectID yet.
+            AFTER — When hasCredits is false, stop testing and give the user addCreditsURL so they can add credits or upgrade the plan. When it is true, go on testing.
+            DO NOT — Retry a send, a script or this check in a loop while hasCredits is false. Nothing changes until the user adds credits. A top-up can take up to a minute to show here, because billing caches the answer. After the user says they added credits, wait one minute and check once more. If hasCredits is still false, tell the user the credits have not arrived yet.
+            DO NOT — Read hasCredits true as a promise for a whole session. A long session can still run out part way; a 402 then means the same thing.
+        cli:
+          command: credits get
+      x-speakeasy-group: credits
+      x-speakeasy-name-override: get
+      summary: Get credits
+      description: Check whether the project's workspace has credits left to run the agent.
+      parameters:
+        - name: projectID
+          required: true
+          in: query
+          schema:
+            type: string
+            description: The ID of the project to operate on.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableCreditsResponse'
+      tags:
+        - Credits
       security:
         - token: []
   /v1/stable/conversation-state/{userID}:
@@ -33981,6 +34029,27 @@ components:
           description: A description of the variable, used by the agent to determine what value to provide.
           type: string
       additionalProperties: false
+    StableCredits:
+      type: object
+      properties:
+        hasCredits:
+          type: boolean
+          description: 'Whether the runtime runs the project''s next turn. False means the workspace is out of credits: a conversation send or script answers 402 and runs nothing until credits are added. True when the workspace has credits, when this cloud does not enforce credit limits, or when the billing service could not be reached, since the runtime then starts turns too.'
+        addCreditsURL:
+          type: string
+          description: The link to the page where the project's workspace adds credits or upgrades its plan. Give it to the user when hasCredits is false; they open it in a browser signed in to Voiceflow.
+      required:
+        - hasCredits
+        - addCreditsURL
+    StableCreditsResponse:
+      type: object
+      properties:
+        credits:
+          description: The credit standing of the project's workspace, read now.
+          allOf:
+            - $ref: '#/components/schemas/StableCredits'
+      required:
+        - credits
     AnyTrace:
       oneOf:
         - $ref: '#/components/schemas/AudioTrace'

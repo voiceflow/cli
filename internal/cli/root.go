@@ -14,6 +14,7 @@ import (
 	"github.com/voiceflow/cli/internal/cli/analytics"
 	"github.com/voiceflow/cli/internal/cli/apitool"
 	"github.com/voiceflow/cli/internal/cli/conversation"
+	"github.com/voiceflow/cli/internal/cli/credits"
 	"github.com/voiceflow/cli/internal/cli/document"
 	"github.com/voiceflow/cli/internal/cli/environment"
 	"github.com/voiceflow/cli/internal/cli/evaluation"
@@ -136,6 +137,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := conversation.InitConversationRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init conversation: %w", err)
+	}
+	if err := credits.InitCreditsRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init credits: %w", err)
 	}
 	if err := analytics.InitAnalyticsRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init analytics: %w", err)

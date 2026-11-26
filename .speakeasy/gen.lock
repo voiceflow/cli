@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 09c246eae2649ad46b3a77d28724240a
+  docChecksum: 5e14380255cb7e77d1da2c8e30a73953
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.343
-  configChecksum: 6a1bd3155928c3c119de6506d51e203f
+  releaseVersion: 0.2.344
+  configChecksum: 7ef558086d3d0d919e3202d27682e7d0
 persistentEdits:
-  generation_id: 980fa6ca-4139-432a-9170-7b70b66a01de
-  pristine_commit_hash: 1c500cf816cc41ba10d53486d505755e2b880492
-  pristine_tree_hash: 0045934588360b2b72c27143a3ea43f84fa7564d
+  generation_id: 9b129191-635a-41aa-b73e-7e2e2ed42366
+  pristine_commit_hash: e938f3d73395c2f90777ef3205dd84a36acd6682
+  pristine_tree_hash: 0fb69920bd5372dce93e909e20ab4328f1661d56
 features:
   cli:
     additionalProperties: 0.0.1
@@ -340,6 +340,14 @@ trackedFiles:
     id: 944f1b38e684
     last_write_checksum: sha1:2e3254866fa4cca8f77e8f2e8d1f1904b0051435
     pristine_git_object: 4d7cd9e17b6c2b323470e05fb3e3c0ba2e29427c
+  internal/cli/credits/get.go:
+    id: 76e28c8a3987
+    last_write_checksum: sha1:b1c0fa36b49a3a53a80f9168b7dd98deb9763b8a
+    pristine_git_object: de515b7d27d848826b270be50afe464db6f034af
+  internal/cli/credits/root.go:
+    id: 29f2695ef905
+    last_write_checksum: sha1:37f7a373a69cd634be6b06257845f8fc1e2a9eb9
+    pristine_git_object: f60f99dbf43ebafc089d25f4bca97ae4aa980535
   internal/cli/document/createmanagedsitemap.go:
     id: be15b9921d45
     last_write_checksum: sha1:e05e12385893c9508cccf5a117466d148977475f
@@ -910,8 +918,8 @@ trackedFiles:
     pristine_git_object: 9b632ab70b94b9d1b03c6d57bf8c1ed0f801adf6
   internal/cli/root.go:
     id: 239d55a0d6be
-    last_write_checksum: sha1:b40bc5ca35fe13277f92b96b46bdf261a11c1ba7
-    pristine_git_object: 63d6bb4cdca76c003189af903eb2d644c94adc6d
+    last_write_checksum: sha1:c0ef50603b2460ffefab519805ba6024d8ef340e
+    pristine_git_object: 3e70fe4042ffb2f644df2db1f9afdb48c67b0811
   internal/cli/secret/create.go:
     id: 24d44099e06b
     last_write_checksum: sha1:f69350df7da1382b73e53496a1a989a527705faa
@@ -1158,8 +1166,8 @@ trackedFiles:
     pristine_git_object: aefea088fc77bc8bbc656dadbd6c3d01e56a6520
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:2d6b8f71ccaff25426a6742c2e13731b5660759b
-    pristine_git_object: e81914c94dc50907194f58c2e16306a501de4981
+    last_write_checksum: sha1:11362c90d68cbed2e0c661761953ca34de7df3c7
+    pristine_git_object: 44e956e6802bb0d6f5ebc13ddedf67d90633ae6a
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1402,8 +1410,12 @@ trackedFiles:
     pristine_git_object: a26da50aaed87806bde5a84e3eabe0b0f213c133
   internal/sdk/conversation.go:
     id: d79c5e2c7c38
-    last_write_checksum: sha1:7278b7850ba6219ad608dc06c23098eb27185f0e
-    pristine_git_object: 0f4b80c24f8ae06d9684570433471b168cb62268
+    last_write_checksum: sha1:4da0b0d3cf1e2cd1f10e6c78dc7dc6ccdad53947
+    pristine_git_object: 7bbffe031a4bf7a27fa62a1a9649f3b4fde840c4
+  internal/sdk/credits.go:
+    id: 5a044e5f0348
+    last_write_checksum: sha1:911d3e29c99118aa2bbe4100efe43a3f9009c9e0
+    pristine_git_object: a060f5127dc2d9466a8b354ddb18b3de80ff5cd3
   internal/sdk/document.go:
     id: 1412eab331e6
     last_write_checksum: sha1:1bf349b1f29fa280afe3ed555ca42a965a623a31
@@ -2484,6 +2496,14 @@ trackedFiles:
     id: f31db6045b59
     last_write_checksum: sha1:e9a5f87d513857607559cd88a90e47e9249e3240
     pristine_git_object: ea4763dc17e71a7f95d47f70d71ea8a200f2fa1c
+  internal/sdk/models/components/stablecredits.go:
+    id: 49d8f3a87d3e
+    last_write_checksum: sha1:a8055e7043fee08310cf5ad842bb6c888279b83d
+    pristine_git_object: 51b2385672aa5219faf5496055fc4dfaafabffe7
+  internal/sdk/models/components/stablecreditsresponse.go:
+    id: fd6b5e0f351e
+    last_write_checksum: sha1:2a7ec40d566cb99f1c1c710c9c691470ee8ceaa2
+    pristine_git_object: 9e36398aebb943bece1c7b2c4b9196ff80f32149
   internal/sdk/models/components/stabledeleteresponse.go:
     id: a319ee6ecbde
     last_write_checksum: sha1:f84cacb10faa1bf720b75aa336666dbf52e8df5f
@@ -4632,6 +4652,10 @@ trackedFiles:
     id: 897056dc8438
     last_write_checksum: sha1:c2e0d3871e30a5969aa4934db1f12fd2cc03f0b1
     pristine_git_object: 01d3c6e524f0aa7f38fa9120c9b6da9d9c536a35
+  internal/sdk/models/operations/stablecreditscontrollerget.go:
+    id: 7afa06fa584a
+    last_write_checksum: sha1:8403cc57597a0a81e30d9a5fd798bd827b7a2738
+    pristine_git_object: 473507ec8eff44f859d4685fa2c6c13333fcd098
   internal/sdk/models/operations/stabledocumentcontrollercreatemanagedsitemap.go:
     id: b278f1bec859
     last_write_checksum: sha1:647f08952fb03a91dcc6e78c98333dfd5949e045
@@ -5622,8 +5646,8 @@ trackedFiles:
     pristine_git_object: 319f6d61ee986dfe1e8fe9e9b460b226fa669586
   internal/sdk/voiceflowsdk.go:
     id: f474e5d69d13
-    last_write_checksum: sha1:3e86da22e2700efd38aadb1d6d8b4aab74caa611
-    pristine_git_object: df2972f0e5893f212c8cfa2e9f33bed3c5ab3369
+    last_write_checksum: sha1:e6e4f616b6807382ad5dac8af6cb2c3ac7d937a0
+    pristine_git_object: a7c18ab9d65f9c7bf6b133532074474beccf6e13
   internal/sdk/widget.go:
     id: c64684ab09d5
     last_write_checksum: sha1:fa09e1c267f3cffcd9e4c2553229ca88a3daad6f
@@ -5642,8 +5666,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:98a78971be8a069dc05a9c1be8b43de8bc5fed5e
-    pristine_git_object: c5e80a4ae711708041d366b908f88d30a292994c
+    last_write_checksum: sha1:d22f2514ef320b749fb677bd674ecc82539adb2d
+    pristine_git_object: 17c86cba90fddf2367be5b4c888f819c35803405
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -9224,4 +9248,12 @@ examples:
       responses:
         "200":
           application/json: {"bulkID": "<id>", "done": true, "stoppedBy": "finished", "waitedSeconds": 934385, "counts": {"total": 626489, "passed": 673004, "failed": 859362, "canceled": 998258, "unfinished": 2980}, "runs": []}
+  StableCreditsController_get:
+    speakeasy-default-stable-credits-controller-get:
+      parameters:
+        query:
+          projectID: "<id>"
+      responses:
+        "200":
+          application/json: {"credits": {"hasCredits": false, "addCreditsURL": "https://pertinent-marksman.net/"}}
 examplesVersion: 1.0.2

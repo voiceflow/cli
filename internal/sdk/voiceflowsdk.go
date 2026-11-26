@@ -72,6 +72,7 @@ type VoiceflowSDK struct {
 	Secret        *Secret
 	KnowledgeBase *KnowledgeBase
 	Conversation  *Conversation
+	Credits       *Credits
 	Analytics     *Analytics
 	Test          *Test
 	Persona       *Persona
@@ -192,6 +193,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Secret = newSecret(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.KnowledgeBase = newKnowledgeBase(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Conversation = newConversation(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Credits = newCredits(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Analytics = newAnalytics(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Test = newTest(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Persona = newPersona(sdk, sdk.sdkConfiguration, sdk.hooks)

@@ -614,6 +614,10 @@ which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
 * [`delete`](docs/vf_conversation_state_delete.md) - Delete state
 * [`update-variables`](docs/vf_conversation_state_update-variables.md) - Update variables
 
+### [credits](docs/vf_credits.md)
+
+* [`get`](docs/vf_credits_get.md) - Get credits
+
 ### [analytics](docs/vf_analytics.md)
 
 ### [query](docs/vf_analytics_query.md)
