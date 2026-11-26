@@ -98,7 +98,7 @@ const (
 	StableDocumentUpdateManagedSitemapRequestMarkdownConversionUnionTypeStableDocumentUpdateManagedSitemapRequestMarkdownConversionEnum StableDocumentUpdateManagedSitemapRequestMarkdownConversionUnionType = "StableDocumentUpdateManagedSitemapRequest_markdownConversion_enum"
 )
 
-// StableDocumentUpdateManagedSitemapRequestMarkdownConversionUnion - When enabled, HTML is automatically converted to markdown to generate better chunks.
+// StableDocumentUpdateManagedSitemapRequestMarkdownConversionUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.
 type StableDocumentUpdateManagedSitemapRequestMarkdownConversionUnion struct {
 	Boolean                                                         *bool                                                            `queryParam:"inline" union:"member"`
 	StableDocumentUpdateManagedSitemapRequestMarkdownConversionEnum *StableDocumentUpdateManagedSitemapRequestMarkdownConversionEnum `queryParam:"inline" union:"member"`
@@ -214,7 +214,7 @@ const (
 	StableDocumentUpdateManagedSitemapRequestLlmBasedChunksUnionTypeStableDocumentUpdateManagedSitemapRequestLlmBasedChunksEnum StableDocumentUpdateManagedSitemapRequestLlmBasedChunksUnionType = "StableDocumentUpdateManagedSitemapRequest_llmBasedChunks_enum"
 )
 
-// StableDocumentUpdateManagedSitemapRequestLlmBasedChunksUnion - When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+// StableDocumentUpdateManagedSitemapRequestLlmBasedChunksUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
 type StableDocumentUpdateManagedSitemapRequestLlmBasedChunksUnion struct {
 	Boolean                                                     *bool                                                        `queryParam:"inline" union:"member"`
 	StableDocumentUpdateManagedSitemapRequestLlmBasedChunksEnum *StableDocumentUpdateManagedSitemapRequestLlmBasedChunksEnum `queryParam:"inline" union:"member"`
@@ -330,7 +330,7 @@ const (
 	StableDocumentUpdateManagedSitemapRequestLlmGeneratedQUnionTypeStableDocumentUpdateManagedSitemapRequestLlmGeneratedQEnum StableDocumentUpdateManagedSitemapRequestLlmGeneratedQUnionType = "StableDocumentUpdateManagedSitemapRequest_llmGeneratedQ_enum"
 )
 
-// StableDocumentUpdateManagedSitemapRequestLlmGeneratedQUnion - When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+// StableDocumentUpdateManagedSitemapRequestLlmGeneratedQUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
 type StableDocumentUpdateManagedSitemapRequestLlmGeneratedQUnion struct {
 	Boolean                                                    *bool                                                       `queryParam:"inline" union:"member"`
 	StableDocumentUpdateManagedSitemapRequestLlmGeneratedQEnum *StableDocumentUpdateManagedSitemapRequestLlmGeneratedQEnum `queryParam:"inline" union:"member"`
@@ -446,7 +446,7 @@ const (
 	StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationUnionTypeStableDocumentUpdateManagedSitemapRequestLlmContentSummarizationEnum StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationUnionType = "StableDocumentUpdateManagedSitemapRequest_llmContentSummarization_enum"
 )
 
-// StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationUnion - When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+// StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
 type StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationUnion struct {
 	Boolean                                                              *bool                                                                 `queryParam:"inline" union:"member"`
 	StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationEnum *StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationEnum `queryParam:"inline" union:"member"`
@@ -562,7 +562,7 @@ const (
 	StableDocumentUpdateManagedSitemapRequestLlmPrependContextUnionTypeStableDocumentUpdateManagedSitemapRequestLlmPrependContextEnum StableDocumentUpdateManagedSitemapRequestLlmPrependContextUnionType = "StableDocumentUpdateManagedSitemapRequest_llmPrependContext_enum"
 )
 
-// StableDocumentUpdateManagedSitemapRequestLlmPrependContextUnion - When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
+// StableDocumentUpdateManagedSitemapRequestLlmPrependContextUnion - Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 type StableDocumentUpdateManagedSitemapRequestLlmPrependContextUnion struct {
 	Boolean                                                        *bool                                                           `queryParam:"inline" union:"member"`
 	StableDocumentUpdateManagedSitemapRequestLlmPrependContextEnum *StableDocumentUpdateManagedSitemapRequestLlmPrependContextEnum `queryParam:"inline" union:"member"`
@@ -766,15 +766,15 @@ type StableDocumentUpdateManagedSitemapRequest struct {
 	Patterns *Patterns `json:"patterns,omitzero"`
 	// How often the sitemap is re-read to add the pages it newly lists and remove the ones it no longer does. Its pages are re-crawled on the same schedule. Also applied to the pages it has already imported.
 	RefreshRate *StableDocumentUpdateManagedSitemapRequestRefreshRate `json:"refreshRate,omitzero"`
-	// When enabled, HTML is automatically converted to markdown to generate better chunks.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, HTML is automatically converted to markdown to generate better chunks.
 	MarkdownConversion *StableDocumentUpdateManagedSitemapRequestMarkdownConversionUnion `json:"markdownConversion,omitzero"`
-	// When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM groups the content into logical sections by topic instead of splitting it on a fixed size. Best for complex documents covering varied topics.
 	LlmBasedChunks *StableDocumentUpdateManagedSitemapRequestLlmBasedChunksUnion `json:"llmBasedChunks,omitzero"`
-	// When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM will be used to generate a question based on the document context and specific chunk, then prepend it to the chunk. This enhances retrieval by aligning chunks with potential user queries.
 	LlmGeneratedQ *StableDocumentUpdateManagedSitemapRequestLlmGeneratedQUnion `json:"llmGeneratedQ,omitzero"`
-	// When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM summarizes and rewrites the content, removing unnecessary information and focusing on important parts to optimize for retrieval. Limited to 15 rows per table upload.
 	LlmContentSummarization *StableDocumentUpdateManagedSitemapRequestLlmContentSummarizationUnion `json:"llmContentSummarization,omitzero"`
-	// When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
+	// Deprecated and being phased out: it may be ignored, and the content chunked by its structure instead. Use `singleChunk` to keep a document whole. When enabled, an LLM generates a context summary based on the document and chunk context, and prepends it to each chunk. This improves retrieval by providing additional context to each chunk. Note: If both llmGeneratedQ and llmPrependContext are set to true, llmGeneratedQ takes precedence, and the context summarization will not be applied.
 	LlmPrependContext *StableDocumentUpdateManagedSitemapRequestLlmPrependContextUnion `json:"llmPrependContext,omitzero"`
 	// When enabled, the whole document is stored as a single chunk, so retrieval returns it in full. Documents above the embedding model input limit (about 30,000 characters) are split into chunks as usual. Takes precedence over llmBasedChunks.
 	SingleChunk *StableDocumentUpdateManagedSitemapRequestSingleChunkUnion `json:"singleChunk,omitzero"`
