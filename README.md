@@ -720,6 +720,12 @@ which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
 * [`update`](docs/vf_event_update.md) - Update event
 * [`delete`](docs/vf_event_delete.md) - Delete event
 
+### [billing](docs/vf_billing.md)
+
+### [subscription](docs/vf_billing_subscription.md)
+
+* [`get`](docs/vf_billing_subscription_get.md) - Get subscription
+
 </details>
 <!-- End Available Commands [operations] -->
 

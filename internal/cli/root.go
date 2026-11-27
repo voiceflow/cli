@@ -13,6 +13,7 @@ import (
 	"github.com/voiceflow/cli/internal/cli/agent"
 	"github.com/voiceflow/cli/internal/cli/analytics"
 	"github.com/voiceflow/cli/internal/cli/apitool"
+	"github.com/voiceflow/cli/internal/cli/billing"
 	"github.com/voiceflow/cli/internal/cli/conversation"
 	"github.com/voiceflow/cli/internal/cli/credits"
 	"github.com/voiceflow/cli/internal/cli/document"
@@ -158,6 +159,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 	if err := event.InitEventRoot(rootCmd); err != nil {
 		return nil, fmt.Errorf("init event: %w", err)
+	}
+	if err := billing.InitBillingRoot(rootCmd); err != nil {
+		return nil, fmt.Errorf("init billing: %w", err)
 	}
 	if err := initConfigureCmd(rootCmd); err != nil {
 		return nil, fmt.Errorf("init configure: %w", err)

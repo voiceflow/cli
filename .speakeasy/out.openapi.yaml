@@ -15730,6 +15730,47 @@ paths:
         - Event
       security:
         - token: []
+  /v1/stable/billing/subscription:
+    get:
+      operationId: StableBillingController_getSubscription
+      x-vf:
+        mcp:
+          tool: voiceflow_billing
+          toolDescription: |-
+            Read an organization's billing: its subscription plan, status, billing period, seats, add-ons and plan limits. Billing belongs to the ORGANIZATION, not to a workspace or project, so every call takes an `organizationID`. These operations only read; changing a plan or buying add-ons happens in the Voiceflow billing page.
+            Predecessor: get the organizationID from the workspace (every workspace carries its `organizationID`).
+            Successor: compare the plan limits with what the organization uses, or tell the user what their plan includes.
+          operation: get_subscription
+          operationDescription: |-
+            WHAT — Read the organization's subscription: its plan and status, the current billing period, editor seats, add-ons and plan limits.
+            USE WHEN — The user asks what plan they are on, when they renew, how many seats or phone numbers they have, or whether their plan allows more of something.
+            BEFORE — voiceflow_workspace.get or voiceflow_workspace.list for the organizationID if you do not have it.
+            DO NOT — Treat a null limit as unlimited. Null means the subscription does not set that limit; only `"unlimited"` means there is no cap.
+        cli:
+          command: billing subscription get
+      x-speakeasy-group: billing.subscription
+      x-speakeasy-name-override: get
+      summary: Get subscription
+      description: 'Get an organization''s subscription: plan, status, billing period, seats, add-ons and limits.'
+      parameters:
+        - name: organizationID
+          required: true
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            description: The organization to read billing for.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableBillingSubscriptionResponse'
+      tags:
+        - Billing
+      security:
+        - token: []
 info:
   title: Realtime
   description: Realtime gateway API service
@@ -34029,6 +34070,333 @@ components:
           description: A description of the variable, used by the agent to determine what value to provide.
           type: string
       additionalProperties: false
+    StableBillingSubscription:
+      type: object
+      properties:
+        organizationID:
+          type: string
+          description: The organization this subscription bills.
+        plan:
+          type: string
+          enum:
+            - starter
+            - pro
+            - team
+            - enterprise
+            - trial
+          description: The plan the organization is on.
+          x-enumNames:
+            - STARTER
+            - PRO
+            - TEAM
+            - ENTERPRISE
+            - TRIAL
+        status:
+          type: string
+          enum:
+            - future
+            - in_trial
+            - active
+            - non_renewing
+            - paused
+            - cancelled
+            - transferred
+          description: The subscription status. `non_renewing` ends at the end of the current period, and `cancelled` has already ended.
+          x-enumNames:
+            - FUTURE
+            - IN_TRIAL
+            - ACTIVE
+            - NON_RENEWING
+            - PAUSED
+            - CANCELLED
+            - TRANSFERRED
+        billingPeriod:
+          type: object
+          properties:
+            unit:
+              type: string
+              enum:
+                - month
+                - year
+              description: Whether the subscription is billed monthly or yearly.
+              x-enumNames:
+                - MONTH
+                - YEAR
+            currentPeriodStart:
+              nullable: true
+              description: When the current billing period started.
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+            currentPeriodEnd:
+              nullable: true
+              description: When the current billing period ends, which is when the next charge or renewal happens.
+              type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          required:
+            - unit
+            - currentPeriodStart
+            - currentPeriodEnd
+          description: The billing period the subscription is in.
+        trialEndsAt:
+          nullable: true
+          description: When the trial ends. Null when the subscription is not in a trial.
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        editorSeats:
+          type: object
+          properties:
+            included:
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+              description: Editor seats the plan includes, not counting purchased seats.
+            purchased:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: Extra editor seats bought as an add-on.
+          required:
+            - included
+            - purchased
+          description: Editor seats. The organization can have `included` + `purchased` editors.
+        addons:
+          type: object
+          properties:
+            seats:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: Extra editor seats bought.
+            phoneNumbers:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: Extra phone numbers bought.
+            callConcurrency:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: Extra concurrent calls bought.
+            credits:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: Credit add-on packs bought.
+            piiRedaction:
+              type: boolean
+              description: Whether the PII redaction add-on is on.
+          required:
+            - seats
+            - phoneNumbers
+            - callConcurrency
+            - credits
+            - piiRedaction
+          description: Add-ons bought on top of the plan, as quantities. Zero or false when not bought.
+        limits:
+          type: object
+          properties:
+            agents:
+              nullable: true
+              description: How many active agents (projects) each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            workspaces:
+              nullable: true
+              description: How many workspaces the organization can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            environments:
+              nullable: true
+              description: How many environments each project can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            personas:
+              nullable: true
+              description: How many personas each environment can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            knowledgeBaseSources:
+              nullable: true
+              description: How many knowledge base sources each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            phoneNumbers:
+              nullable: true
+              description: How many Voiceflow phone numbers each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            sipConnections:
+              nullable: true
+              description: How many SIP connections each workspace can have, Voiceflow SIP and bring-your-own combined. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            callConcurrency:
+              nullable: true
+              description: How many phone calls one agent can take at once. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            prototypeCallConcurrency:
+              nullable: true
+              description: How many phone calls one agent can take at once while prototyping. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            credits:
+              nullable: true
+              description: Credits included in each billing period. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            versionHistoryDays:
+              nullable: true
+              description: How many days versions are kept. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            transcriptHistoryDays:
+              nullable: true
+              description: How many days transcripts are kept. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            toolTimeoutMs:
+              nullable: true
+              description: The longest a tool call may run, in milliseconds. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+          required:
+            - agents
+            - workspaces
+            - environments
+            - personas
+            - knowledgeBaseSources
+            - phoneNumbers
+            - sipConnections
+            - callConcurrency
+            - prototypeCallConcurrency
+            - credits
+            - versionHistoryDays
+            - transcriptHistoryDays
+            - toolTimeoutMs
+          description: The plan limits, including what add-ons raise them to.
+        readAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          description: When this data was read. Billing data can be up to a minute old.
+      required:
+        - organizationID
+        - plan
+        - status
+        - billingPeriod
+        - trialEndsAt
+        - editorSeats
+        - addons
+        - limits
+        - readAt
+    StableBillingSubscriptionResponse:
+      type: object
+      properties:
+        subscription:
+          $ref: '#/components/schemas/StableBillingSubscription'
+      required:
+        - subscription
     StableCredits:
       type: object
       properties:

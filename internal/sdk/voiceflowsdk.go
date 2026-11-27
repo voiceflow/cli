@@ -79,6 +79,7 @@ type VoiceflowSDK struct {
 	Widget        *Widget
 	PhoneNumber   *PhoneNumber
 	Event         *Event
+	Billing       *Billing
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -200,6 +201,7 @@ func New(opts ...SDKOption) *VoiceflowSDK {
 	sdk.Widget = newWidget(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.PhoneNumber = newPhoneNumber(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Event = newEvent(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Billing = newBilling(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }
