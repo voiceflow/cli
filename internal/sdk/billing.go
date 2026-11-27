@@ -10,6 +10,7 @@ import (
 
 type Billing struct {
 	Subscription *Subscription
+	Credits      *BillingCredits
 
 	rootSDK          *VoiceflowSDK
 	sdkConfiguration config.SDKConfiguration
@@ -22,5 +23,6 @@ func newBilling(rootSDK *VoiceflowSDK, sdkConfig config.SDKConfiguration, hooks 
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
 		Subscription:     newSubscription(rootSDK, sdkConfig, hooks),
+		Credits:          newBillingCredits(rootSDK, sdkConfig, hooks),
 	}
 }
