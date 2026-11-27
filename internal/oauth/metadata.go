@@ -25,6 +25,9 @@ type Metadata struct {
 	// endpoint accepts (OpenID Connect Prompt Create 1.0). Signup needs
 	// "create" here.
 	PromptValuesSupported []string `json:"prompt_values_supported"`
+	// AuthorizationResultURI is the server's own page for how a login went
+	// (not part of RFC 8414). Empty leaves the CLI to show its own.
+	AuthorizationResultURI string `json:"authorization_result_uri,omitempty"`
 }
 
 // fallbackMetadata mirrors the published document at

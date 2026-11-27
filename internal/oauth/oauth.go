@@ -110,7 +110,7 @@ func parseRedirectTarget(raw string) (redirectTarget, error) {
 		return redirectTarget{}, fmt.Errorf("redirect URI %q is not a loopback http URI", raw)
 	}
 	host := u.Hostname()
-	if host != "127.0.0.1" && host != "localhost" && host != "::1" {
+	if !isLoopbackHost(host) {
 		return redirectTarget{}, fmt.Errorf("redirect URI %q is not a loopback address", raw)
 	}
 	port, err := strconv.Atoi(u.Port())
@@ -122,6 +122,10 @@ func parseRedirectTarget(raw string) (redirectTarget, error) {
 		path = "/"
 	}
 	return redirectTarget{Host: host, Port: port, Path: path}, nil
+}
+
+func isLoopbackHost(host string) bool {
+	return host == "127.0.0.1" || host == "localhost" || host == "::1"
 }
 
 // settings resolves the issuer, resource, and any pre-registered client from
@@ -247,6 +251,7 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 		return nil, err
 	}
 	defer callback.Close()
+	callback.ShowResultOn(newResultPage(md, client.ClientID, getenv, opts.OnAuthURL != nil))
 
 	scopes := opts.Scopes
 	if len(scopes) == 0 {
@@ -299,7 +304,15 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 		return nil, err
 	}
 
-	tok, err := exchangeCode(ctx, httpClient, md, client.ClientID, code, verifier.verifier, callback.RedirectURI(), cfg.Resource)
+	session, err := completeLogin(ctx, md, cfg, client.ClientID, code, verifier.verifier, callback.RedirectURI(), scopes)
+	// The browser is still waiting: the page it gets says how this went.
+	callback.Finish(outcomeOf(err))
+	return session, err
+}
+
+// completeLogin exchanges the authorization code and stores the session.
+func completeLogin(ctx context.Context, md Metadata, cfg settings, clientID, code, verifier, redirectURI string, scopes []string) (*Session, error) {
+	tok, err := exchangeCode(ctx, httpClient, md, clientID, code, verifier, redirectURI, cfg.Resource)
 	if err != nil {
 		return nil, fmt.Errorf("exchange authorization code: %w", err)
 	}
@@ -308,7 +321,7 @@ func Login(ctx context.Context, getenv func(string) string, opts LoginOptions) (
 	session := &Session{
 		Issuer:        md.Issuer,
 		TokenEndpoint: md.TokenEndpoint,
-		ClientID:      client.ClientID,
+		ClientID:      clientID,
 		Resource:      cfg.Resource,
 		Scope:         firstNonEmpty(tok.Scope, strings.Join(scopes, " ")),
 		TokenType:     firstNonEmpty(tok.TokenType, "Bearer"),

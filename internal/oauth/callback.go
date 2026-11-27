@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -28,6 +29,13 @@ type callbackServer struct {
 	redirectURI string
 	state       string
 	once        sync.Once
+
+	// page is the server's own page for how the login went, if it has one.
+	page atomic.Pointer[resultPage]
+	// done is closed once the login has ended, after outcome is set.
+	done    chan struct{}
+	outcome loginOutcome
+	ended   sync.Once
 }
 
 // startCallbackServer binds the first available address in candidates (each a
@@ -61,6 +69,7 @@ func startCallbackServer(candidates []redirectTarget, state string) (*callbackSe
 		results:     make(chan callbackResult, 1),
 		redirectURI: target.uri(),
 		state:       state,
+		done:        make(chan struct{}),
 	}
 
 	mux := http.NewServeMux()
@@ -106,20 +115,63 @@ func (c *callbackServer) handle(w http.ResponseWriter, r *http.Request) {
 		if description != "" {
 			message = fmt.Sprintf("%s: %s", errCode, description)
 		}
-		c.writePage(w, http.StatusOK, "Login failed", message)
+		outcome := loginOutcome{result: resultFailed, reason: reasonRefused}
+		if errCode == "access_denied" {
+			outcome = loginOutcome{result: resultDenied}
+		}
+		c.answer(w, r, outcome, http.StatusOK, "Login failed", message)
 		c.deliver(callbackResult{err: fmt.Errorf("authorization denied (%s)", message)})
 		return
 	}
 
 	code := query.Get("code")
 	if code == "" {
-		c.writePage(w, http.StatusBadRequest, "Login failed", "The login response contained no authorization code.")
+		c.answer(w, r, loginOutcome{result: resultFailed, reason: reasonRefused}, http.StatusBadRequest, "Login failed", "The login response contained no authorization code.")
 		c.deliver(callbackResult{err: fmt.Errorf("authorization response contained no code")})
 		return
 	}
 
-	c.writePage(w, http.StatusOK, "Signed in", "You can close this tab and return to your terminal.")
 	c.deliver(callbackResult{code: code})
+
+	// Nobody is signed in until the code is exchanged and the session stored,
+	// so the browser is not told before.
+	select {
+	case <-c.done:
+	case <-r.Context().Done():
+		return
+	}
+	if c.outcome.result == resultAuthorized {
+		c.answer(w, r, c.outcome, http.StatusOK, "Signed in", "You can close this tab and return to your terminal.")
+	} else {
+		c.answer(w, r, c.outcome, http.StatusOK, "Login failed", "Return to your terminal to see why.")
+	}
+}
+
+// ShowResultOn has the browser sent to page, when there is one, instead of
+// being shown one from here.
+func (c *callbackServer) ShowResultOn(page *resultPage) { c.page.Store(page) }
+
+// Finish ends the login for the browser, which waits to be told how it went.
+// Only the first call counts.
+func (c *callbackServer) Finish(outcome loginOutcome) {
+	c.ended.Do(func() {
+		c.outcome = outcome
+		close(c.done)
+	})
+}
+
+// answer tells the browser how the login went: on the server's own page, or
+// else with the heading and message here.
+func (c *callbackServer) answer(w http.ResponseWriter, r *http.Request, outcome loginOutcome, status int, heading, message string) {
+	location := c.page.Load().address(outcome)
+	if location == "" {
+		c.writePage(w, status, heading, message)
+		return
+	}
+	// This address holds the authorization code.
+	w.Header().Set("Referrer-Policy", "no-referrer")
+	w.Header().Set("Cache-Control", "no-store")
+	http.Redirect(w, r, location, http.StatusFound)
 }
 
 // deliver sends the first result and ignores any later ones, so a reloaded
@@ -140,8 +192,9 @@ func (c *callbackServer) Wait(ctx context.Context) (string, error) {
 }
 
 // Close shuts the server down, allowing in-flight responses a moment to reach
-// the browser.
+// the browser. One still waiting for the login to end is told that it failed.
 func (c *callbackServer) Close() {
+	c.Finish(loginOutcome{result: resultFailed})
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	_ = c.server.Shutdown(ctx)
