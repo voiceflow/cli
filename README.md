@@ -726,6 +726,10 @@ which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
 
 * [`get`](docs/vf_billing_subscription_get.md) - Get subscription
 
+### [billing-credits](docs/vf_billing_billing-credits.md)
+
+* [`get`](docs/vf_billing_billing-credits_get.md) - Get credits
+
 </details>
 <!-- End Available Commands [operations] -->
 

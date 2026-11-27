@@ -15737,7 +15737,7 @@ paths:
         mcp:
           tool: voiceflow_billing
           toolDescription: |-
-            Read an organization's billing: its subscription plan, status, billing period, seats, add-ons and plan limits. Billing belongs to the ORGANIZATION, not to a workspace or project, so every call takes an `organizationID`. These operations only read; changing a plan or buying add-ons happens in the Voiceflow billing page.
+            Read an organization's billing: its subscription plan, status, billing period, seats, add-ons and plan limits, and the credits it has used this billing period. Billing belongs to the ORGANIZATION, not to a workspace or project, so every call takes an `organizationID`. These operations only read; changing a plan or buying add-ons happens in the Voiceflow billing page.
             Predecessor: get the organizationID from the workspace (every workspace carries its `organizationID`).
             Successor: compare the plan limits with what the organization uses, or tell the user what their plan includes.
           operation: get_subscription
@@ -15767,6 +15767,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StableBillingSubscriptionResponse'
+      tags:
+        - Billing
+      security:
+        - token: []
+  /v1/stable/billing/credits:
+    get:
+      operationId: StableBillingController_getCredits
+      x-vf:
+        mcp:
+          tool: voiceflow_billing
+          toolDescription: |-
+            Read an organization's billing: its subscription plan, status, billing period, seats, add-ons and plan limits, and the credits it has used this billing period. Billing belongs to the ORGANIZATION, not to a workspace or project, so every call takes an `organizationID`. These operations only read; changing a plan or buying add-ons happens in the Voiceflow billing page.
+            Predecessor: get the organizationID from the workspace (every workspace carries its `organizationID`).
+            Successor: compare the plan limits with what the organization uses, or tell the user what their plan includes.
+          operation: get_credits
+          operationDescription: |-
+            WHAT — Read the organization's credit balance for the current billing period: credits consumed, the plan allotment, and when the period starts and ends.
+            USE WHEN — The user asks how many credits they have used this billing period, what their plan allots, or when their credits reset.
+            BEFORE — voiceflow_workspace.get or voiceflow_workspace.list for the organizationID if you do not have it.
+            DO NOT — Use this to check whether an agent can still run a test conversation; voiceflow_credits.get answers that for one project.
+        cli:
+          command: billing credits get
+      x-speakeasy-group: billing.credits
+      x-speakeasy-name-override: get
+      summary: Get credits
+      description: Get how many credits an organization has used against its allotment in the current billing period, and when the period ends.
+      parameters:
+        - name: organizationID
+          required: true
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            description: The organization to read billing for.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableBillingCreditsResponse'
       tags:
         - Billing
       security:
@@ -34397,6 +34438,72 @@ components:
           $ref: '#/components/schemas/StableBillingSubscription'
       required:
         - subscription
+    StableBillingCredits:
+      type: object
+      properties:
+        organizationID:
+          type: string
+          description: The organization these credits belong to.
+        consumed:
+          type: number
+          minimum: 0
+          description: Credits used so far in the current billing period.
+        allotment:
+          type: number
+          minimum: 0
+          description: Credits the plan includes each billing period.
+        periodStart:
+          nullable: true
+          description: When the billing period these credits count against started.
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        periodEnd:
+          nullable: true
+          description: When the billing period ends and the credits reset. Null when the organization has no subscription.
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        autoTopUp:
+          type: object
+          properties:
+            allowed:
+              type: boolean
+              description: Whether the plan allows auto top-ups. False when the organization has no subscription.
+            enabled:
+              type: boolean
+              description: Whether the organization has turned auto top-ups on.
+            creditAmount:
+              nullable: true
+              description: Credits each auto top-up buys. Null when the organization has never set an amount.
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+          required:
+            - allowed
+            - enabled
+            - creditAmount
+          description: Auto top-ups buy more credits when the organization runs out. Changed on the Voiceflow billing page.
+        readAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          description: When this data was read.
+      required:
+        - organizationID
+        - consumed
+        - allotment
+        - periodStart
+        - periodEnd
+        - autoTopUp
+        - readAt
+    StableBillingCreditsResponse:
+      type: object
+      properties:
+        credits:
+          $ref: '#/components/schemas/StableBillingCredits'
+      required:
+        - credits
     StableCredits:
       type: object
       properties:

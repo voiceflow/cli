@@ -5,6 +5,7 @@ package billing
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/voiceflow/cli/internal/cli/billing/billingcredits"
 	"github.com/voiceflow/cli/internal/cli/billing/subscription"
 	"github.com/voiceflow/cli/internal/usage"
 )
@@ -23,6 +24,9 @@ func InitBillingRoot(parent *cobra.Command) error {
 	}
 
 	if err := subscription.InitSubscriptionRoot(BillingCmd); err != nil {
+		return err
+	}
+	if err := billingcredits.InitBillingCreditsRoot(BillingCmd); err != nil {
 		return err
 	}
 

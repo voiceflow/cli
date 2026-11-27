@@ -1,16 +1,16 @@
 lockVersion: 2.0.0
 id: dc2c0508-b612-415b-b8a2-ee24d48dde4f
 management:
-  docChecksum: 79f38b1c88d79e92a783ed2f27d384b6
+  docChecksum: 814146c164fd0269e9cb07d91c3348d1
   docVersion: 1.0.0
   speakeasyVersion: 1.796.2
   generationVersion: 2.933.0
-  releaseVersion: 0.2.346
-  configChecksum: 32ef259caf78ebafd8567d80a28f2b74
+  releaseVersion: 0.2.347
+  configChecksum: 7f2530a2521acbfc430ddd2cc316c9bf
 persistentEdits:
-  generation_id: aa94e502-4fb6-4261-8404-728f758db572
-  pristine_commit_hash: 6cea08d76abbc8dacd42aa6cbd80713d905caeaa
-  pristine_tree_hash: a9f8c3c1a1cb59923a7dff11a4d9360d92b5f2f0
+  generation_id: 02a511a6-4856-4359-9a76-c34f46a599d7
+  pristine_commit_hash: dfd88f8344eb0c6d39343a5b7ca1dfdc7002e8de
+  pristine_tree_hash: 1af4f278fd2b10718b3dc813b39d746999f21acf
 features:
   cli:
     additionalProperties: 0.0.1
@@ -304,10 +304,18 @@ trackedFiles:
     id: 5ae1b1dce495
     last_write_checksum: sha1:a405c42a541972816a7b027867b868ec9e1e0e30
     pristine_git_object: a807a2c600f43643b4fa2a3c54417dbf1bc56ae3
+  internal/cli/billing/billingcredits/get.go:
+    id: 747c28beeb12
+    last_write_checksum: sha1:66840a74cbe8b8ba413677bee53ed9ccd9ee9303
+    pristine_git_object: 5ae603a77ccf423149094fb82e925b9c9dc654c4
+  internal/cli/billing/billingcredits/root.go:
+    id: dcc8de7409da
+    last_write_checksum: sha1:f155e885b9fa7c57c074af2b66d6a275f204051b
+    pristine_git_object: 887b99f84440be033ed21277191572e751cf7fc0
   internal/cli/billing/root.go:
     id: e4d7cba42048
-    last_write_checksum: sha1:daa8af08ab291d0fb2fb2c56dcc103a197e83c63
-    pristine_git_object: 41e77c262d1360a5727e05ba292ca6b4d8b0962b
+    last_write_checksum: sha1:87071544dab0eda98e224c2442ba369929bb5072
+    pristine_git_object: 03d87dfacc806a454b683dac0eee35635f19c8a8
   internal/cli/billing/subscription/get.go:
     id: d70e59d1c0e8
     last_write_checksum: sha1:3a234129355394eca1e95ebda24cefa4c718a586
@@ -1178,8 +1186,8 @@ trackedFiles:
     pristine_git_object: aefea088fc77bc8bbc656dadbd6c3d01e56a6520
   internal/cli/version.go:
     id: 7b0665492f72
-    last_write_checksum: sha1:34f4353b88bc3db8e07e3ebc4934d701fc0bd76f
-    pristine_git_object: 5c558dc041fcb5b2c9b45f9b1d9e006987f8f3f6
+    last_write_checksum: sha1:f9da31296737992be744fd755bc5e77acbd685c6
+    pristine_git_object: c0bfcd5c5239750096ccb3ac69abb6d2203cb27c
   internal/cli/whoami.go:
     id: c1787f2298ec
     last_write_checksum: sha1:4707bf9d69e980ce47c18e77b2f8d93b95ae700b
@@ -1418,8 +1426,12 @@ trackedFiles:
     pristine_git_object: 085c2c3af9610e4e4ec5a3af21d435d1528e5da7
   internal/sdk/billing.go:
     id: 08fbafbf8672
-    last_write_checksum: sha1:c1d2fd579d35d1a67ddb99b8b3cd058215b4b830
-    pristine_git_object: 0db721cc9953233a77023aa76fab24e7c301077d
+    last_write_checksum: sha1:737985c72c23a9bbc6ce4582488b4ffb9eca209c
+    pristine_git_object: 14922b26f1a0e944b94b96a46e6300ccb23c60a8
+  internal/sdk/billingcredits.go:
+    id: ab1da47e3f95
+    last_write_checksum: sha1:7654ae636cb5603b0e793541041b6d3c4ff5b5cd
+    pristine_git_object: a443f6eaeb308ddf8f6dc79ee9f67c8e2074d330
   internal/sdk/check.go:
     id: 3e5991daf9a9
     last_write_checksum: sha1:c69377b6df7cd6335c72e8fa181fc7d1c7dce246
@@ -2440,6 +2452,14 @@ trackedFiles:
     id: cc1334724204
     last_write_checksum: sha1:9a364c27252e1a1d67d679b93be672413e5aeae2
     pristine_git_object: c6a8f983af70351e78224e2ac11889a07243465a
+  internal/sdk/models/components/stablebillingcredits.go:
+    id: 576eccbebdac
+    last_write_checksum: sha1:ebe15096659f400ffe8145314fb676f357d22ba8
+    pristine_git_object: 660e77c1bd34cd49b89406826fecaa098a77e987
+  internal/sdk/models/components/stablebillingcreditsresponse.go:
+    id: 5696471c3c70
+    last_write_checksum: sha1:a123a7986e31a10f6e9857e6cedc84acce894582
+    pristine_git_object: 53e7ed9489b2caf984497cded2bc90186ef81602
   internal/sdk/models/components/stablebillingsubscription.go:
     id: ef52deb2fe63
     last_write_checksum: sha1:2038434432ba534f70d55da9f2129d6b4278852e
@@ -4652,6 +4672,10 @@ trackedFiles:
     id: 89d1458c2221
     last_write_checksum: sha1:11b55eac15da8e8514bf614a2290315f94912841
     pristine_git_object: e3d83a23b6f2d76de429dc14264fc29754183b39
+  internal/sdk/models/operations/stablebillingcontrollergetcredits.go:
+    id: a6feefcc8c36
+    last_write_checksum: sha1:8db35fbfdcebc1d3af03c2b0589b47cdc7d072a5
+    pristine_git_object: 399a0d36772d85931d70d1f306dc7c512e84b702
   internal/sdk/models/operations/stablebillingcontrollergetsubscription.go:
     id: 95f0a5cb7471
     last_write_checksum: sha1:adeeea9e6ef18b36d6dea7355515e64f1af5db8b
@@ -5698,8 +5722,8 @@ trackedFiles:
     pristine_git_object: 7e1f465c87ec82286f5efb5c1be95501ba0a1cc8
   internal/usage/schema.go:
     id: 0f40f4612437
-    last_write_checksum: sha1:88624b1052fe210a0952be2fb82ad2681d30166b
-    pristine_git_object: 28d2e476ce1458a2afd5c60fc2b07c2dd0a20ab2
+    last_write_checksum: sha1:8f0b57520dd197f5e0dc205dc3b438114b05cf28
+    pristine_git_object: 09f85bd40e5c196f268f2fde816e821d37d9c499
   scripts/install.ps1:
     id: fee0853709e9
     last_write_checksum: sha1:b3d96744de86a1ec1c475e6d58a5c4adc52d3edc
@@ -9296,4 +9320,12 @@ examples:
       responses:
         "200":
           application/json: {"subscription": {"organizationID": "<id>", "plan": "trial", "status": "paused", "billingPeriod": {"unit": "month", "currentPeriodStart": "2025-07-26T07:17:38.445Z", "currentPeriodEnd": "2026-02-14T17:49:29.211Z"}, "trialEndsAt": "2025-11-10T16:08:40.864Z", "editorSeats": {"included": 176286, "purchased": 622610}, "addons": {"seats": 125583, "phoneNumbers": 559767, "callConcurrency": 802156, "credits": 540638, "piiRedaction": false}, "limits": {"agents": 369663, "workspaces": null, "environments": "unlimited", "personas": 821260, "knowledgeBaseSources": "unlimited", "phoneNumbers": "unlimited", "sipConnections": 669256, "callConcurrency": 920490, "prototypeCallConcurrency": 13767, "credits": 676513, "versionHistoryDays": 782846, "transcriptHistoryDays": "unlimited", "toolTimeoutMs": 650340}, "readAt": "2024-06-10T13:21:48.882Z"}}
+  StableBillingController_getCredits:
+    speakeasy-default-stable-billing-controller-get-credits:
+      parameters:
+        query:
+          organizationID: "<id>"
+      responses:
+        "200":
+          application/json: {"credits": {"organizationID": "<id>", "consumed": 2510.5, "allotment": 4393.83, "periodStart": "2025-04-22T00:54:25.034Z", "periodEnd": "2025-11-28T20:37:29.533Z", "autoTopUp": {"allowed": true, "enabled": true, "creditAmount": 502512}, "readAt": "2025-11-30T14:48:45.296Z"}}
 examplesVersion: 1.0.2
