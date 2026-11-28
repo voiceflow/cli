@@ -15812,6 +15812,48 @@ paths:
         - Billing
       security:
         - token: []
+  /v1/stable/billing/limits:
+    get:
+      operationId: StableBillingController_getLimits
+      x-vf:
+        mcp:
+          tool: voiceflow_billing
+          toolDescription: |-
+            Read an organization's billing: its subscription plan, status, billing period, seats, add-ons and plan limits, and the credits it has used this billing period. Billing belongs to the ORGANIZATION, not to a workspace or project, so every call takes an `organizationID`. These operations only read; changing a plan or buying add-ons happens in the Voiceflow billing page.
+            Predecessor: get the organizationID from the workspace (every workspace carries its `organizationID`).
+            Successor: compare the plan limits with what the organization uses, or tell the user what their plan includes.
+          operation: get_limits
+          operationDescription: |-
+            WHAT — Read each plan limit next to how much of it the organization uses now. Organization-wide limits carry one `used` count; per-workspace and per-project limits carry a `usage` list with one count per workspace or project. Those lists cover only the workspaces the caller belongs to, unless the caller is an organization admin or a service account.
+            USE WHEN — The user asks how close they are to a limit, why they cannot add another project, seat, document, environment, persona or phone number, or which workspace or project is at its limit.
+            BEFORE — voiceflow_workspace.get or voiceflow_workspace.list for the organizationID if you do not have it.
+            DO NOT — Add up a `usage` list and compare the sum with the limit. The limit applies to each workspace or project on its own.
+            DO NOT — Treat a null limit as unlimited. Null means the subscription does not set that limit; only `"unlimited"` means there is no cap.
+        cli:
+          command: billing limits get
+      x-speakeasy-group: billing.limits
+      x-speakeasy-name-override: get
+      summary: Get limits
+      description: Get each plan limit next to the organization's current usage.
+      parameters:
+        - name: organizationID
+          required: true
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            description: The organization to read billing for.
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StableBillingLimitsResponse'
+      tags:
+        - Billing
+      security:
+        - token: []
 info:
   title: Realtime
   description: Realtime gateway API service
@@ -34245,9 +34287,9 @@ components:
         limits:
           type: object
           properties:
-            agents:
+            projects:
               nullable: true
-              description: How many active agents (projects) each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              description: How many active projects each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
               anyOf:
                 - type: integer
                   minimum: 0
@@ -34402,7 +34444,7 @@ components:
                   x-enumNames:
                     - UNLIMITED
           required:
-            - agents
+            - projects
             - workspaces
             - environments
             - personas
@@ -34504,6 +34546,309 @@ components:
           $ref: '#/components/schemas/StableBillingCredits'
       required:
         - credits
+    StableBillingLimits:
+      type: object
+      properties:
+        projects:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many active projects a workspace can have. The limit applies to each workspace on its own. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableBillingWorkspaceLimitUsage'
+              description: One count per workspace the caller can see. Each count is compared with the limit on its own; adding them up means nothing.
+          required:
+            - limit
+            - usage
+          description: How many active projects a workspace can have. Counted per workspace.
+        workspaces:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many workspaces the organization can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            used:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: How much of the limit the organization uses now.
+          required:
+            - limit
+            - used
+          description: How many workspaces the organization can have. Counted for the whole organization.
+        editorSeats:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many editors the organization can have, purchased seats included. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            used:
+              type: integer
+              minimum: 0
+              maximum: 9.007199254740991e+15
+              description: How much of the limit the organization uses now.
+          required:
+            - limit
+            - used
+          description: How many editors the organization can have, purchased seats included. Counted for the whole organization.
+        knowledgeBaseSources:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many knowledge base sources a project can have. The limit applies to each project on its own. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableBillingProjectLimitUsage'
+              description: One count per project in the workspaces the caller can see. Each count is compared with the limit on its own; adding them up means nothing.
+          required:
+            - limit
+            - usage
+          description: How many knowledge base sources a project can have. Counted per project.
+        environments:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many environments a project can have, not counting Voiceflow-managed ones. The limit applies to each project on its own. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableBillingProjectLimitUsage'
+              description: One count per project in the workspaces the caller can see. Each count is compared with the limit on its own; adding them up means nothing.
+          required:
+            - limit
+            - usage
+          description: How many environments a project can have, not counting Voiceflow-managed ones. Counted per project.
+        personas:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many personas each environment of a project can have. A project uses as many as its fullest environment. The limit applies to each project on its own. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableBillingProjectLimitUsage'
+              description: One count per project in the workspaces the caller can see. Each count is compared with the limit on its own; adding them up means nothing.
+          required:
+            - limit
+            - usage
+          description: How many personas each environment of a project can have. A project uses as many as its fullest environment. Counted per project.
+        phoneNumbers:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many Voiceflow phone numbers a workspace can have. The limit applies to each workspace on its own. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableBillingWorkspaceLimitUsage'
+              description: One count per workspace the caller can see. Each count is compared with the limit on its own; adding them up means nothing.
+          required:
+            - limit
+            - usage
+          description: How many Voiceflow phone numbers a workspace can have. Counted per workspace.
+        sipConnections:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many SIP connections a workspace can have. The limit applies to each workspace on its own. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+            usage:
+              type: array
+              items:
+                $ref: '#/components/schemas/StableBillingWorkspaceLimitUsage'
+              description: One count per workspace the caller can see. Each count is compared with the limit on its own; adding them up means nothing.
+          required:
+            - limit
+            - usage
+          description: How many SIP connections a workspace can have. Counted per workspace.
+        callConcurrency:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many phone calls one agent can take at once. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+          required:
+            - limit
+          description: How many phone calls one agent can take at once. Not counted, so there is no usage.
+        transcriptHistoryDays:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many days transcripts are kept. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+          required:
+            - limit
+          description: How many days transcripts are kept. Not counted, so there is no usage.
+        versionHistoryDays:
+          type: object
+          properties:
+            limit:
+              nullable: true
+              description: How many days versions are kept. `"unlimited"` when there is no cap, null when the subscription does not set it.
+              anyOf:
+                - type: integer
+                  minimum: 0
+                  maximum: 9.007199254740991e+15
+                - type: string
+                  enum:
+                    - unlimited
+                  x-enumNames:
+                    - UNLIMITED
+          required:
+            - limit
+          description: How many days versions are kept. Not counted, so there is no usage.
+      required:
+        - projects
+        - workspaces
+        - editorSeats
+        - knowledgeBaseSources
+        - environments
+        - personas
+        - phoneNumbers
+        - sipConnections
+        - callConcurrency
+        - transcriptHistoryDays
+        - versionHistoryDays
+      description: Each plan limit next to how much of it is used now, including what add-ons raise the limits to.
+    StableBillingWorkspaceLimitUsage:
+      type: object
+      properties:
+        workspaceID:
+          type: string
+          description: The workspace this count is for.
+        used:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+          description: How much of the limit this workspace uses now.
+      required:
+        - workspaceID
+        - used
+    StableBillingProjectLimitUsage:
+      type: object
+      properties:
+        projectID:
+          type: string
+          description: The project this count is for.
+        used:
+          type: integer
+          minimum: 0
+          maximum: 9.007199254740991e+15
+          description: How much of the limit this project uses now.
+      required:
+        - projectID
+        - used
+    StableBillingLimitsResponse:
+      type: object
+      properties:
+        limits:
+          $ref: '#/components/schemas/StableBillingLimits'
+        readAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+          description: When this data was read. Counts are live, and the limits can be up to a minute old.
+      required:
+        - limits
+        - readAt
     StableCredits:
       type: object
       properties:

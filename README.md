@@ -730,6 +730,10 @@ which names the coding agent running the CLI (`claude_code`, `codex`, …) or is
 
 * [`get`](docs/vf_billing_billing-credits_get.md) - Get credits
 
+### [limits](docs/vf_billing_limits.md)
+
+* [`get`](docs/vf_billing_limits_get.md) - Get limits
+
 </details>
 <!-- End Available Commands [operations] -->
 

@@ -269,26 +269,26 @@ func (u Included) MarshalJSON() ([]byte, error) {
 	return nil, errors.New("could not marshal union type Included: all fields are null")
 }
 
-// EditorSeats - Editor seats. The organization can have `included` + `purchased` editors.
-type EditorSeats struct {
+// StableBillingSubscriptionEditorSeats - Editor seats. The organization can have `included` + `purchased` editors.
+type StableBillingSubscriptionEditorSeats struct {
 	// Editor seats the plan includes, not counting purchased seats.
 	Included Included `json:"included"`
 	// Extra editor seats bought as an add-on.
 	Purchased int64 `json:"purchased"`
 }
 
-func (e *EditorSeats) GetIncluded() Included {
-	if e == nil {
+func (s *StableBillingSubscriptionEditorSeats) GetIncluded() Included {
+	if s == nil {
 		return Included{}
 	}
-	return e.Included
+	return s.Included
 }
 
-func (e *EditorSeats) GetPurchased() int64 {
-	if e == nil {
+func (s *StableBillingSubscriptionEditorSeats) GetPurchased() int64 {
+	if s == nil {
 		return 0
 	}
-	return e.Purchased
+	return s.Purchased
 }
 
 // Addons - Add-ons bought on top of the plan, as quantities. Zero or false when not bought.
@@ -340,80 +340,80 @@ func (a *Addons) GetPiiRedaction() bool {
 	return a.PiiRedaction
 }
 
-type AgentsEnum string
+type ProjectsEnum string
 
 const (
-	AgentsEnumUnlimited AgentsEnum = "unlimited"
+	ProjectsEnumUnlimited ProjectsEnum = "unlimited"
 )
 
-func (e AgentsEnum) ToPointer() *AgentsEnum {
+func (e ProjectsEnum) ToPointer() *ProjectsEnum {
 	return &e
 }
-func (e *AgentsEnum) UnmarshalJSON(data []byte) error {
+func (e *ProjectsEnum) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 	switch v {
 	case "unlimited":
-		*e = AgentsEnum(v)
+		*e = ProjectsEnum(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for AgentsEnum: %v", v)
+		return fmt.Errorf("invalid value for ProjectsEnum: %v", v)
 	}
 }
 
-type AgentsType string
+type ProjectsType string
 
 const (
-	AgentsTypeInteger    AgentsType = "integer"
-	AgentsTypeAgentsEnum AgentsType = "agents_enum"
-	AgentsTypeUnknown    AgentsType = "Unknown"
+	ProjectsTypeInteger      ProjectsType = "integer"
+	ProjectsTypeProjectsEnum ProjectsType = "projects_enum"
+	ProjectsTypeUnknown      ProjectsType = "Unknown"
 )
 
-// Agents - How many active agents (projects) each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
-type Agents struct {
-	Integer    *int64          `queryParam:"inline" union:"member"`
-	AgentsEnum *AgentsEnum     `queryParam:"inline" union:"member"`
-	UnknownRaw json.RawMessage `json:"-" union:"unknown"`
+// Projects - How many active projects each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+type Projects struct {
+	Integer      *int64          `queryParam:"inline" union:"member"`
+	ProjectsEnum *ProjectsEnum   `queryParam:"inline" union:"member"`
+	UnknownRaw   json.RawMessage `json:"-" union:"unknown"`
 
-	Type AgentsType
+	Type ProjectsType
 }
 
-func CreateAgentsInteger(integer int64) Agents {
-	typ := AgentsTypeInteger
+func CreateProjectsInteger(integer int64) Projects {
+	typ := ProjectsTypeInteger
 
-	return Agents{
+	return Projects{
 		Integer: &integer,
 		Type:    typ,
 	}
 }
 
-func CreateAgentsAgentsEnum(agentsEnum AgentsEnum) Agents {
-	typ := AgentsTypeAgentsEnum
+func CreateProjectsProjectsEnum(projectsEnum ProjectsEnum) Projects {
+	typ := ProjectsTypeProjectsEnum
 
-	return Agents{
-		AgentsEnum: &agentsEnum,
-		Type:       typ,
+	return Projects{
+		ProjectsEnum: &projectsEnum,
+		Type:         typ,
 	}
 }
 
-func CreateAgentsUnknown(raw json.RawMessage) Agents {
-	return Agents{
+func CreateProjectsUnknown(raw json.RawMessage) Projects {
+	return Projects{
 		UnknownRaw: raw,
-		Type:       AgentsTypeUnknown,
+		Type:       ProjectsTypeUnknown,
 	}
 }
 
-func (u Agents) GetUnknownRaw() json.RawMessage {
+func (u Projects) GetUnknownRaw() json.RawMessage {
 	return u.UnknownRaw
 }
 
-func (u Agents) IsUnknown() bool {
-	return u.Type == AgentsTypeUnknown
+func (u Projects) IsUnknown() bool {
+	return u.Type == ProjectsTypeUnknown
 }
 
-func (u *Agents) UnmarshalJSON(data []byte) error {
+func (u *Projects) UnmarshalJSON(data []byte) error {
 
 	var candidates []utils.UnionCandidate
 
@@ -421,22 +421,22 @@ func (u *Agents) UnmarshalJSON(data []byte) error {
 	var integer int64 = int64(0)
 	if err := utils.UnmarshalJSON(data, &integer, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AgentsTypeInteger,
+			Type:  ProjectsTypeInteger,
 			Value: &integer,
 		})
 	}
 
-	var agentsEnum AgentsEnum = AgentsEnum("")
-	if err := utils.UnmarshalJSON(data, &agentsEnum, "", true, nil); err == nil {
+	var projectsEnum ProjectsEnum = ProjectsEnum("")
+	if err := utils.UnmarshalJSON(data, &projectsEnum, "", true, nil); err == nil {
 		candidates = append(candidates, utils.UnionCandidate{
-			Type:  AgentsTypeAgentsEnum,
-			Value: &agentsEnum,
+			Type:  ProjectsTypeProjectsEnum,
+			Value: &projectsEnum,
 		})
 	}
 
 	if len(candidates) == 0 {
 		u.UnknownRaw = json.RawMessage(data)
-		u.Type = AgentsTypeUnknown
+		u.Type = ProjectsTypeUnknown
 		return nil
 	}
 
@@ -444,39 +444,39 @@ func (u *Agents) UnmarshalJSON(data []byte) error {
 	best := utils.PickBestUnionCandidate(candidates, data)
 	if best == nil {
 		u.UnknownRaw = json.RawMessage(data)
-		u.Type = AgentsTypeUnknown
+		u.Type = ProjectsTypeUnknown
 		return nil
 	}
 
 	// Set the union type and value based on the best candidate
-	u.Type = best.Type.(AgentsType)
+	u.Type = best.Type.(ProjectsType)
 	switch best.Type {
-	case AgentsTypeInteger:
+	case ProjectsTypeInteger:
 		u.Integer = best.Value.(*int64)
 		return nil
-	case AgentsTypeAgentsEnum:
-		u.AgentsEnum = best.Value.(*AgentsEnum)
+	case ProjectsTypeProjectsEnum:
+		u.ProjectsEnum = best.Value.(*ProjectsEnum)
 		return nil
 	}
 
 	u.UnknownRaw = json.RawMessage(data)
-	u.Type = AgentsTypeUnknown
+	u.Type = ProjectsTypeUnknown
 	return nil
 }
 
-func (u Agents) MarshalJSON() ([]byte, error) {
+func (u Projects) MarshalJSON() ([]byte, error) {
 	if u.Integer != nil {
 		return utils.MarshalJSON(u.Integer, "", true)
 	}
 
-	if u.AgentsEnum != nil {
-		return utils.MarshalJSON(u.AgentsEnum, "", true)
+	if u.ProjectsEnum != nil {
+		return utils.MarshalJSON(u.ProjectsEnum, "", true)
 	}
 
 	if u.UnknownRaw != nil {
 		return json.RawMessage(u.UnknownRaw), nil
 	}
-	return nil, errors.New("could not marshal union type Agents: all fields are null")
+	return nil, errors.New("could not marshal union type Projects: all fields are null")
 }
 
 type WorkspacesEnum string
@@ -2149,8 +2149,8 @@ func (u ToolTimeoutMs) MarshalJSON() ([]byte, error) {
 
 // Limits - The plan limits, including what add-ons raise them to.
 type Limits struct {
-	// How many active agents (projects) each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
-	Agents *Agents `json:"agents"`
+	// How many active projects each workspace can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
+	Projects *Projects `json:"projects"`
 	// How many workspaces the organization can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
 	Workspaces *Workspaces `json:"workspaces"`
 	// How many environments each project can have. `"unlimited"` when there is no cap, null when the subscription does not set it.
@@ -2177,11 +2177,11 @@ type Limits struct {
 	ToolTimeoutMs *ToolTimeoutMs `json:"toolTimeoutMs"`
 }
 
-func (l *Limits) GetAgents() *Agents {
+func (l *Limits) GetProjects() *Projects {
 	if l == nil {
 		return nil
 	}
-	return l.Agents
+	return l.Projects
 }
 
 func (l *Limits) GetWorkspaces() *Workspaces {
@@ -2280,7 +2280,7 @@ type StableBillingSubscription struct {
 	// When the trial ends. Null when the subscription is not in a trial.
 	TrialEndsAt *time.Time `json:"trialEndsAt"`
 	// Editor seats. The organization can have `included` + `purchased` editors.
-	EditorSeats EditorSeats `json:"editorSeats"`
+	EditorSeats StableBillingSubscriptionEditorSeats `json:"editorSeats"`
 	// Add-ons bought on top of the plan, as quantities. Zero or false when not bought.
 	Addons Addons `json:"addons"`
 	// The plan limits, including what add-ons raise them to.
@@ -2335,9 +2335,9 @@ func (s *StableBillingSubscription) GetTrialEndsAt() *time.Time {
 	return s.TrialEndsAt
 }
 
-func (s *StableBillingSubscription) GetEditorSeats() EditorSeats {
+func (s *StableBillingSubscription) GetEditorSeats() StableBillingSubscriptionEditorSeats {
 	if s == nil {
-		return EditorSeats{}
+		return StableBillingSubscriptionEditorSeats{}
 	}
 	return s.EditorSeats
 }
